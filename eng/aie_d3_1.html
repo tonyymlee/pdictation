@@ -6,7 +6,7 @@
   <title id="browserWindowTitle">Happy Primary School English Dictation</title>
 
   <!-- 🎨 Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 450'%3E%3Cpolygon points='250,0 187.5,108.25 312.5,108.25' fill='%2352B766'/%3E%3Cpolygon points='250,216.5 187.5,108.25 312.5,108.25' fill='%2348A172'/%3E%3Cpolygon points='187.5,108.25 125,216.5 250,216.5' fill='%2300A884'/%3E%3Cpolygon points='125,216.5 62.5,324.75 187.5,324.75' fill='%23008BAA'/%3E%3Cpolygon points='62.5,324.75 0,433 125,433' fill='%230052B4'/%3E%3Cpolygon points='312.5,108.25 250,216.5 375,216.5' fill='%2392C128'/%3E%3Cpolygon points='375,216.5 312.5,324.75 437.5,324.75' fill='%23DDA100'/%3E%3Cpolygon points='437.5,324.75 375,433 500,433' fill='%23A43161'/%3E%3Cpolygon points='312.5,324.75 250,433 375,433' fill='%23C0444A'/%3E%3Cpolygon points='375,216.5 250,324.75 312.5,324.75' fill='%23D48000'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 450'%3E%3Cpolygon points='250,0 187.5,108.25 312.5,108.25' fill='%2352B766'/%3E%3Cpolygon points='250,216.5 187.5,108.25 312.5,108.25' fill='%2348A172'/%3E%3Cpolygon points='187.5,108.25 125,216.5 250,216.5' fill='%2300A884'/%3E%3Cpolygon points='62.5,324.75 0,433 125,433' fill='%230052B4'/%3E%3Cpolygon points='312.5,108.25 250,216.5 375,216.5' fill='%2392C128'/%3E%3Cpolygon points='375,216.5 312.5,324.75 437.5,324.75' fill='%23DDA100'/%3E%3Cpolygon points='437.5,324.75 375,433 500,433' fill='%23A43161'/%3E%3Cpolygon points='312.5,324.75 250,433 375,433' fill='%23C0444A'/%3E%3Cpolygon points='375,216.5 250,324.75 312.5,324.75' fill='%23D48000'/%3E%3C/svg%3E">
 
   <style>
     :root {
@@ -1278,6 +1278,9 @@
 
     function exportCurrentAppAsHTML() {
       try {
+        const editor = document.getElementById('rawTextEditor');
+        const currentContent = editor ? editor.value : '';
+
         const clonedHtml = document.documentElement.cloneNode(true);
         const clonedBody = clonedHtml.querySelector('body');
         
@@ -1287,6 +1290,27 @@
         if (clonedEditorSec) {
           clonedEditorSec.style.display = 'none';
         }
+
+        const clonedTextArea = clonedHtml.querySelector('#rawTextEditor');
+        if (clonedTextArea) {
+          clonedTextArea.textContent = currentContent;
+        }
+
+        // Add auto-parse script execution for the exported file on load
+        let scriptTag = clonedHtml.querySelector('#autoLoadScript');
+        if (!scriptTag) {
+          scriptTag = document.createElement('script');
+          scriptTag.id = 'autoLoadScript';
+          clonedHtml.querySelector('body').appendChild(scriptTag);
+        }
+        scriptTag.textContent = `
+          document.addEventListener('DOMContentLoaded', function() {
+            const editor = document.getElementById('rawTextEditor');
+            if (editor && editor.value.trim()) {
+              parseAndApplyFullText(editor.value);
+            }
+          });
+        `;
 
         let htmlContent = "<!DOCTYPE html>\n" + clonedHtml.outerHTML;
         const fileName = "P4E_2627D3.html";

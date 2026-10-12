@@ -5,7 +5,7 @@
   <title id="browserWindowTitle">Happy Primary School (26/27 Division 1) Primary 4 Dictation 3 scope</title>
 
   <!-- 🎨 Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 450'%3E%3Cpolygon points='250,0 187.5,108.25 312.5,108.25' fill='%2352B766'/%3E%3Cpolygon points='250,216.5 187.5,108.25 312.5,108.25' fill='%2348A172'/%3E%3Cpolygon points='187.5,108.25 125,216.5 250,216.5' fill='%2300A884'/%3E%3Cpolygon points='125,216.5 62.5,324.75 187.5,324.75' fill='%23008BAA'/%3E%3Cpolygon points='62.5,324.75 0,433 125,433' fill='%230052B4'/%3E%3Cpolygon points='312.5,108.25 250,216.5 375,216.5' fill='%2392C128'/%3E%3Cpolygon points='375,216.5 312.5,324.75 437.5,324.75' fill='%23DDA100'/%3E%3Cpolygon points='437.5,324.75 375,433 500,433' fill='%23A43161'/%3E%3Cpolygon points='312.5,324.75 250,433 375,433' fill='%23C0444A'/%3E%3Cpolygon points='375,216.5 250,324.75 312.5,324.75' fill='%23D48000'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 450'%3E%3Cpolygon points='250,0 187.5,108.25 312.5,108.25' fill='%2352B766'/%3E%3Cpolygon points='250,216.5 187.5,108.25 312.5,108.25' fill='%2348A172'/%3E%3Cpolygon points='187.5,108.25 125,216.5 250,216.5' fill='%2300A884'/%3E%3Cpolygon points='62.5,324.75 0,433 125,433' fill='%230052B4'/%3E%3Cpolygon points='312.5,108.25 250,216.5 375,216.5' fill='%2392C128'/%3E%3Cpolygon points='375,216.5 312.5,324.75 437.5,324.75' fill='%23DDA100'/%3E%3Cpolygon points='437.5,324.75 375,433 500,433' fill='%23A43161'/%3E%3Cpolygon points='312.5,324.75 250,433 375,433' fill='%23C0444A'/%3E%3Cpolygon points='375,216.5 250,324.75 312.5,324.75' fill='%23D48000'/%3E%3C/svg%3E">
 
   <style>
     :root {
@@ -701,10 +701,10 @@
       <div class="nav-card">
         <div class="nav-card-title">Dictation Scope</div>
         <div class="nav-tabs">
-          <button class="tab-btn" id="btn_tab1" onclick="switchTab('tab1', this)">
+          <button class="tab-btn active" id="btn_tab1" onclick="switchTab('tab1', this)">
             <span class="tab-icon">🔤</span> Vocabulary
           </button>
-          <button class="tab-btn active" id="btn_tab2" onclick="switchTab('tab2', this)">
+          <button class="tab-btn" id="btn_tab2" onclick="switchTab('tab2', this)">
             <span class="tab-icon">📖</span> Passage
           </button>
           <button class="tab-btn" id="btn_tab3" onclick="switchTab('tab3', this)">
@@ -729,14 +729,31 @@
           📁 Load Text File (.txt / .json)
           <input type="file" id="fileImporter" accept=".txt,.json" style="display:none;" onchange="handleFileImport(event)">
         </label>
-        <textarea id="rawTextEditor" placeholder="Paste full content here..."></textarea>
+        <textarea id="rawTextEditor" placeholder="Paste full content here...">
+Ying Wa Primary School (26/27 Division 1)
+Primary 4 Dictation 3 scope
+Date of Dictation: 15th October,2026 (Friday) 
+
+Part A: Vocabulary (15% @3, Sp.-3 P./C.-1)
+hard-working	polite	brave
+messy	cleanest	outgoing
+selfish	biggest	generous
+timid	kindest	highest
+friendliest	funniest	
+
+Part B: Textbook - Lighthouse (pp.36-37)(70% @3, Sp.-3 P./C.-1) - Growing up
+
+Not necessarily. They had more free time but this does not mean that they were lazy. Many of them still worked very hard and had a lot of good qualities. Being a good student does not mean just getting high grades at school. It also means having good character⁴ — doing the right things and being a nice person. 
+You cannot change your character overnight, but there are many things you can do to help you become a good person. The easiest way is to start with your school life. You can start by keeping your school desk clean and tidy. Being tidy is better than being messy. It shows that you know how to look after your own things. Your classmates will want to come over to your seat and chat with you! 
+Remember to greet your teachers and classmates at school. Don’t be shy or rude. A polite and outgoing student can make a lot of friends! You can also try to be generous. No one likes a selfish person. Next time you have some cake, give the biggest piece to your friends. You will feel happier sharing food with others than eating it on your own. 
+Students with these good qualities usually grow up to become good people. It is time for you to set goals for yourself.</textarea>
         <button class="btn-action" onclick="refreshContentFromEditor()">🔄 Update Content</button>
         <button class="btn-export" onclick="exportCurrentAppAsHTML()">📥 Export HTML</button>
       </div>
     </aside>
 
     <main id="mainContent" class="mode-show">
-      <div class="toolbar-card hidden is-scrolled" id="vocabToolbar">
+      <div class="toolbar-card" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
           <span class="toolbar-options">
@@ -756,7 +773,7 @@
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="Copy Content">C</button>
       </div>
 
-      <div class="toolbar-card is-scrolled" id="dictationToolbar">
+      <div class="toolbar-card hidden" id="dictationToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="Back to Top">Passage</button>
           <span class="toolbar-options">
@@ -776,375 +793,91 @@
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="Copy Content">C</button>
       </div>
 
-      <div id="contentArea"><div class="dictation-list" id="dictationList">
-            <div class="dictation-row" id="dcard_1" onclick="clickPlayDictation(1)">
-              <div>
-                <div class="sentence-index">#1</div>
-                <div class="sentence-text"><span class="nowrap-word">Not</span> <span class="nowrap-word">necessarily.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(1)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_2" onclick="clickPlayDictation(2)">
-              <div>
-                <div class="sentence-index">#2</div>
-                <div class="sentence-text"><span class="nowrap-word">They</span> <span class="nowrap-word">had</span> <span class="nowrap-word">more</span> <span class="nowrap-word">free</span> <span class="nowrap-word">time</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(2)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_3" onclick="clickPlayDictation(3)">
-              <div>
-                <div class="sentence-index">#3</div>
-                <div class="sentence-text"><span class="nowrap-word">but</span> <span class="nowrap-word">this</span> <span class="nowrap-word">does</span> <span class="nowrap-word">not</span> <span class="nowrap-word">mean</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(3)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_4" onclick="clickPlayDictation(4)">
-              <div>
-                <div class="sentence-index">#4</div>
-                <div class="sentence-text"><span class="nowrap-word">that</span> <span class="nowrap-word">they</span> <span class="nowrap-word">were</span> <span class="nowrap-word">lazy.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(4)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_5" onclick="clickPlayDictation(5)">
-              <div>
-                <div class="sentence-index">#5</div>
-                <div class="sentence-text"><span class="nowrap-word">Many</span> <span class="nowrap-word">of</span> <span class="nowrap-word">them</span> <span class="nowrap-word">still</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(5)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_6" onclick="clickPlayDictation(6)">
-              <div>
-                <div class="sentence-index">#6</div>
-                <div class="sentence-text"><span class="nowrap-word">worked</span> <span class="nowrap-word">very</span> <span class="nowrap-word">hard</span> <span class="nowrap-word">and</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(6)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_7" onclick="clickPlayDictation(7)">
-              <div>
-                <div class="sentence-index">#7</div>
-                <div class="sentence-text"><span class="nowrap-word">had</span> <span class="nowrap-word">a</span> <span class="nowrap-word">lot</span> <span class="nowrap-word">of</span> <span class="nowrap-word">good</span> <span class="nowrap-word">qualities.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(7)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_8" onclick="clickPlayDictation(8)">
-              <div>
-                <div class="sentence-index">#8</div>
-                <div class="sentence-text"><span class="nowrap-word">Being</span> <span class="nowrap-word">a</span> <span class="nowrap-word">good</span> <span class="nowrap-word">student</span> <span class="nowrap-word">does</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(8)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_9" onclick="clickPlayDictation(9)">
-              <div>
-                <div class="sentence-index">#9</div>
-                <div class="sentence-text"><span class="nowrap-word">not</span> <span class="nowrap-word">mean</span> <span class="nowrap-word">just</span> <span class="nowrap-word">getting</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(9)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_10" onclick="clickPlayDictation(10)">
-              <div>
-                <div class="sentence-index">#10</div>
-                <div class="sentence-text"><span class="nowrap-word">high</span> <span class="nowrap-word">grades</span> <span class="nowrap-word">at</span> <span class="nowrap-word">school.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(10)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_11" onclick="clickPlayDictation(11)">
-              <div>
-                <div class="sentence-index">#11</div>
-                <div class="sentence-text"><span class="nowrap-word">It</span> <span class="nowrap-word">also</span> <span class="nowrap-word">means</span> <span class="nowrap-word">having</span> <span class="nowrap-word">good</span> <span class="nowrap-word">character⁴</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(11)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_12" onclick="clickPlayDictation(12)">
-              <div>
-                <div class="sentence-index">#12</div>
-                <div class="sentence-text"><span class="nowrap-word">—</span> <span class="nowrap-word">doing</span> <span class="nowrap-word">the</span> <span class="nowrap-word">right</span> <span class="nowrap-word">things</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(12)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_13" onclick="clickPlayDictation(13)">
-              <div>
-                <div class="sentence-index">#13</div>
-                <div class="sentence-text"><span class="nowrap-word">and</span> <span class="nowrap-word">being</span> <span class="nowrap-word">a</span> <span class="nowrap-word">nice</span> <span class="nowrap-word">person.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(13)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_14" onclick="clickPlayDictation(14)">
-              <div>
-                <div class="sentence-index">#14</div>
-                <div class="sentence-text"><span class="nowrap-word">You</span> <span class="nowrap-word">cannot</span> <span class="nowrap-word">change</span> <span class="nowrap-word">your</span> <span class="nowrap-word">character</span> <span class="nowrap-word">overnight,</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(14)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_15" onclick="clickPlayDictation(15)">
-              <div>
-                <div class="sentence-index">#15</div>
-                <div class="sentence-text"><span class="nowrap-word">but</span> <span class="nowrap-word">there</span> <span class="nowrap-word">are</span> <span class="nowrap-word">many</span> <span class="nowrap-word">things</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(15)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_16" onclick="clickPlayDictation(16)">
-              <div>
-                <div class="sentence-index">#16</div>
-                <div class="sentence-text"><span class="nowrap-word">you</span> <span class="nowrap-word">can</span> <span class="nowrap-word">do</span> <span class="nowrap-word">to</span> <span class="nowrap-word">help</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(16)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_17" onclick="clickPlayDictation(17)">
-              <div>
-                <div class="sentence-index">#17</div>
-                <div class="sentence-text"><span class="nowrap-word">you</span> <span class="nowrap-word">become</span> <span class="nowrap-word">a</span> <span class="nowrap-word">good</span> <span class="nowrap-word">person.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(17)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_18" onclick="clickPlayDictation(18)">
-              <div>
-                <div class="sentence-index">#18</div>
-                <div class="sentence-text"><span class="nowrap-word">The</span> <span class="nowrap-word">easiest</span> <span class="nowrap-word">way</span> <span class="nowrap-word">is</span> <span class="nowrap-word">to</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(18)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_19" onclick="clickPlayDictation(19)">
-              <div>
-                <div class="sentence-index">#19</div>
-                <div class="sentence-text"><span class="nowrap-word">start</span> <span class="nowrap-word">with</span> <span class="nowrap-word">your</span> <span class="nowrap-word">school</span> <span class="nowrap-word">life.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(19)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_20" onclick="clickPlayDictation(20)">
-              <div>
-                <div class="sentence-index">#20</div>
-                <div class="sentence-text"><span class="nowrap-word">You</span> <span class="nowrap-word">can</span> <span class="nowrap-word">start</span> <span class="nowrap-word">by</span> <span class="nowrap-word">keeping</span> <span class="nowrap-word">your</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(20)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_21" onclick="clickPlayDictation(21)">
-              <div>
-                <div class="sentence-index">#21</div>
-                <div class="sentence-text"><span class="nowrap-word">school</span> <span class="nowrap-word">desk</span> <span class="nowrap-word">clean</span> <span class="nowrap-word">and</span> <span class="nowrap-word">tidy.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(21)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_22" onclick="clickPlayDictation(22)">
-              <div>
-                <div class="sentence-index">#22</div>
-                <div class="sentence-text"><span class="nowrap-word">Being</span> <span class="nowrap-word">tidy</span> <span class="nowrap-word">is</span> <span class="nowrap-word">better</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(22)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_23" onclick="clickPlayDictation(23)">
-              <div>
-                <div class="sentence-index">#23</div>
-                <div class="sentence-text"><span class="nowrap-word">than</span> <span class="nowrap-word">being</span> <span class="nowrap-word">messy.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(23)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_24" onclick="clickPlayDictation(24)">
-              <div>
-                <div class="sentence-index">#24</div>
-                <div class="sentence-text"><span class="nowrap-word">It</span> <span class="nowrap-word">shows</span> <span class="nowrap-word">that</span> <span class="nowrap-word">you</span> <span class="nowrap-word">know</span> <span class="nowrap-word">how</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(24)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_25" onclick="clickPlayDictation(25)">
-              <div>
-                <div class="sentence-index">#25</div>
-                <div class="sentence-text"><span class="nowrap-word">to</span> <span class="nowrap-word">look</span> <span class="nowrap-word">after</span> <span class="nowrap-word">your</span> <span class="nowrap-word">own</span> <span class="nowrap-word">things.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(25)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_26" onclick="clickPlayDictation(26)">
-              <div>
-                <div class="sentence-index">#26</div>
-                <div class="sentence-text"><span class="nowrap-word">Your</span> <span class="nowrap-word">classmates</span> <span class="nowrap-word">will</span> <span class="nowrap-word">want</span> <span class="nowrap-word">to</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(26)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_27" onclick="clickPlayDictation(27)">
-              <div>
-                <div class="sentence-index">#27</div>
-                <div class="sentence-text"><span class="nowrap-word">come</span> <span class="nowrap-word">over</span> <span class="nowrap-word">to</span> <span class="nowrap-word">your</span> <span class="nowrap-word">seat</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(27)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_28" onclick="clickPlayDictation(28)">
-              <div>
-                <div class="sentence-index">#28</div>
-                <div class="sentence-text"><span class="nowrap-word">and</span> <span class="nowrap-word">chat</span> <span class="nowrap-word">with</span> <span class="nowrap-word">you!</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(28)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_29" onclick="clickPlayDictation(29)">
-              <div>
-                <div class="sentence-index">#29</div>
-                <div class="sentence-text"><span class="nowrap-word">Remember</span> <span class="nowrap-word">to</span> <span class="nowrap-word">greet</span> <span class="nowrap-word">your</span> <span class="nowrap-word">teachers</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(29)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_30" onclick="clickPlayDictation(30)">
-              <div>
-                <div class="sentence-index">#30</div>
-                <div class="sentence-text"><span class="nowrap-word">and</span> <span class="nowrap-word">classmates</span> <span class="nowrap-word">at</span> <span class="nowrap-word">school.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(30)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_31" onclick="clickPlayDictation(31)">
-              <div>
-                <div class="sentence-index">#31</div>
-                <div class="sentence-text"><span class="nowrap-word">Don’t</span> <span class="nowrap-word">be</span> <span class="nowrap-word">shy</span> <span class="nowrap-word">or</span> <span class="nowrap-word">rude.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(31)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_32" onclick="clickPlayDictation(32)">
-              <div>
-                <div class="sentence-index">#32</div>
-                <div class="sentence-text"><span class="nowrap-word">A</span> <span class="nowrap-word">polite</span> <span class="nowrap-word">and</span> <span class="nowrap-word">outgoing</span> <span class="nowrap-word">student</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(32)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_33" onclick="clickPlayDictation(33)">
-              <div>
-                <div class="sentence-index">#33</div>
-                <div class="sentence-text"><span class="nowrap-word">can</span> <span class="nowrap-word">make</span> <span class="nowrap-word">a</span> <span class="nowrap-word">lot</span> <span class="nowrap-word">of</span> <span class="nowrap-word">friends!</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(33)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_34" onclick="clickPlayDictation(34)">
-              <div>
-                <div class="sentence-index">#34</div>
-                <div class="sentence-text"><span class="nowrap-word">You</span> <span class="nowrap-word">can</span> <span class="nowrap-word">also</span> <span class="nowrap-word">try</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(34)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_35" onclick="clickPlayDictation(35)">
-              <div>
-                <div class="sentence-index">#35</div>
-                <div class="sentence-text"><span class="nowrap-word">to</span> <span class="nowrap-word">be</span> <span class="nowrap-word">generous.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(35)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_36" onclick="clickPlayDictation(36)">
-              <div>
-                <div class="sentence-index">#36</div>
-                <div class="sentence-text"><span class="nowrap-word">No</span> <span class="nowrap-word">one</span> <span class="nowrap-word">likes</span> <span class="nowrap-word">a</span> <span class="nowrap-word">selfish</span> <span class="nowrap-word">person.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(36)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_37" onclick="clickPlayDictation(37)">
-              <div>
-                <div class="sentence-index">#37</div>
-                <div class="sentence-text"><span class="nowrap-word">Next</span> <span class="nowrap-word">time</span> <span class="nowrap-word">you</span> <span class="nowrap-word">have</span> <span class="nowrap-word">some</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(37)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_38" onclick="clickPlayDictation(38)">
-              <div>
-                <div class="sentence-index">#38</div>
-                <div class="sentence-text"><span class="nowrap-word">cake,</span> <span class="nowrap-word">give</span> <span class="nowrap-word">the</span> <span class="nowrap-word">biggest</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(38)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_39" onclick="clickPlayDictation(39)">
-              <div>
-                <div class="sentence-index">#39</div>
-                <div class="sentence-text"><span class="nowrap-word">piece</span> <span class="nowrap-word">to</span> <span class="nowrap-word">your</span> <span class="nowrap-word">friends.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(39)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_40" onclick="clickPlayDictation(40)">
-              <div>
-                <div class="sentence-index">#40</div>
-                <div class="sentence-text"><span class="nowrap-word">You</span> <span class="nowrap-word">will</span> <span class="nowrap-word">feel</span> <span class="nowrap-word">happier</span> <span class="nowrap-word">sharing</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(40)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_41" onclick="clickPlayDictation(41)">
-              <div>
-                <div class="sentence-index">#41</div>
-                <div class="sentence-text"><span class="nowrap-word">food</span> <span class="nowrap-word">with</span> <span class="nowrap-word">others</span> <span class="nowrap-word">than</span> <span class="nowrap-word">eating</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(41)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_42" onclick="clickPlayDictation(42)">
-              <div>
-                <div class="sentence-index">#42</div>
-                <div class="sentence-text"><span class="nowrap-word">it</span> <span class="nowrap-word">on</span> <span class="nowrap-word">your</span> <span class="nowrap-word">own.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(42)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_43" onclick="clickPlayDictation(43)">
-              <div>
-                <div class="sentence-index">#43</div>
-                <div class="sentence-text"><span class="nowrap-word">Students</span> <span class="nowrap-word">with</span> <span class="nowrap-word">these</span> <span class="nowrap-word">good</span> <span class="nowrap-word">qualities</span> <span class="nowrap-word">usually</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(43)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_44" onclick="clickPlayDictation(44)">
-              <div>
-                <div class="sentence-index">#44</div>
-                <div class="sentence-text"><span class="nowrap-word">grow</span> <span class="nowrap-word">up</span> <span class="nowrap-word">to</span> <span class="nowrap-word">become</span> <span class="nowrap-word">good</span> <span class="nowrap-word">people.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(44)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_45" onclick="clickPlayDictation(45)">
-              <div>
-                <div class="sentence-index">#45</div>
-                <div class="sentence-text"><span class="nowrap-word">It</span> <span class="nowrap-word">is</span> <span class="nowrap-word">time</span> <span class="nowrap-word">for</span> <span class="nowrap-word">you</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(45)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_46" onclick="clickPlayDictation(46)">
-              <div>
-                <div class="sentence-index">#46</div>
-                <div class="sentence-text"><span class="nowrap-word">to</span> <span class="nowrap-word">set</span> <span class="nowrap-word">goals</span> <span class="nowrap-word">for</span> <span class="nowrap-word">yourself.</span></div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(46)">▶</button>
-            </div>
-          </div></div>
+      <div id="contentArea"><div class="words-grid">
+          <div class="word-card" id="card_0" onclick="clickPlayVocab(0)">
+            <div class="word-index">#1</div>
+            <div class="word-text" title="hard-working">hard-working</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(0)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_1" onclick="clickPlayVocab(1)">
+            <div class="word-index">#2</div>
+            <div class="word-text" title="polite">polite</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(1)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_2" onclick="clickPlayVocab(2)">
+            <div class="word-index">#3</div>
+            <div class="word-text" title="brave">brave</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(2)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_3" onclick="clickPlayVocab(3)">
+            <div class="word-index">#4</div>
+            <div class="word-text" title="messy">messy</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(3)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_4" onclick="clickPlayVocab(4)">
+            <div class="word-index">#5</div>
+            <div class="word-text" title="cleanest">cleanest</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(4)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_5" onclick="clickPlayVocab(5)">
+            <div class="word-index">#6</div>
+            <div class="word-text" title="outgoing">outgoing</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(5)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_6" onclick="clickPlayVocab(6)">
+            <div class="word-index">#7</div>
+            <div class="word-text" title="selfish">selfish</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(6)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_7" onclick="clickPlayVocab(7)">
+            <div class="word-index">#8</div>
+            <div class="word-text" title="biggest">biggest</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(7)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_8" onclick="clickPlayVocab(8)">
+            <div class="word-index">#9</div>
+            <div class="word-text" title="generous">generous</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(8)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_9" onclick="clickPlayVocab(9)">
+            <div class="word-index">#10</div>
+            <div class="word-text" title="timid">timid</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(9)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_10" onclick="clickPlayVocab(10)">
+            <div class="word-index">#11</div>
+            <div class="word-text" title="kindest">kindest</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(10)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_11" onclick="clickPlayVocab(11)">
+            <div class="word-index">#12</div>
+            <div class="word-text" title="highest">highest</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(11)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_12" onclick="clickPlayVocab(12)">
+            <div class="word-index">#13</div>
+            <div class="word-text" title="friendliest">friendliest</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(12)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_13" onclick="clickPlayVocab(13)">
+            <div class="word-index">#14</div>
+            <div class="word-text" title="funniest">funniest</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(13)">▶</button>
+          </div>
+        </div></div>
     </main>
   </div>
 
@@ -1640,6 +1373,9 @@
 
     function exportCurrentAppAsHTML() {
       try {
+        const editor = document.getElementById('rawTextEditor');
+        const currentContent = editor ? editor.value : '';
+
         const clonedHtml = document.documentElement.cloneNode(true);
         const clonedBody = clonedHtml.querySelector('body');
         
@@ -1649,6 +1385,27 @@
         if (clonedEditorSec) {
           clonedEditorSec.style.display = 'none';
         }
+
+        const clonedTextArea = clonedHtml.querySelector('#rawTextEditor');
+        if (clonedTextArea) {
+          clonedTextArea.textContent = currentContent;
+        }
+
+        // Add auto-parse script execution for the exported file on load
+        let scriptTag = clonedHtml.querySelector('#autoLoadScript');
+        if (!scriptTag) {
+          scriptTag = document.createElement('script');
+          scriptTag.id = 'autoLoadScript';
+          clonedHtml.querySelector('body').appendChild(scriptTag);
+        }
+        scriptTag.textContent = `
+          document.addEventListener('DOMContentLoaded', function() {
+            const editor = document.getElementById('rawTextEditor');
+            if (editor && editor.value.trim()) {
+              parseAndApplyFullText(editor.value);
+            }
+          });
+        `;
 
         let htmlContent = "<!DOCTYPE html>\n" + clonedHtml.outerHTML;
         const fileName = "P4E_2627D3.html";
@@ -2194,4 +1951,11 @@
     window.onload = autoInitApp;
   </script>
 
-</body></html>
+<script id="autoLoadScript">
+          document.addEventListener('DOMContentLoaded', function() {
+            const editor = document.getElementById('rawTextEditor');
+            if (editor && editor.value.trim()) {
+              parseAndApplyFullText(editor.value);
+            }
+          });
+        </script></body></html>
