@@ -5,7 +5,7 @@
   <title id="browserWindowTitle">Happy Primary School (26/27 Division 1) Primary 4 Dictation 3 scope</title>
 
   <!-- 🎨 Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 450'%3E%3Cpolygon points='250,0 187.5,108.25 312.5,108.25' fill='%2352B766'/%3E%3Cpolygon points='250,216.5 187.5,108.25 312.5,108.25' fill='%2348A172'/%3E%3Cpolygon points='187.5,108.25 125,216.5 250,216.5' fill='%2300A884'/%3E%3Cpolygon points='125,216.5 62.5,324.75 187.5,324.75' fill='%23008BAA'/%3E%3Cpolygon points='62.5,324.75 0,433 125,433' fill='%230052B4'/%3E%3Cpolygon points='312.5,108.25 250,216.5 375,216.5' fill='%2392C128'/%3E%3Cpolygon points='375,216.5 312.5,324.75 437.5,324.75' fill='%23DDA100'/%3E%3Cpolygon points='437.5,324.75 375,433 500,433' fill='%23A43161'/%3E%3Cpolygon points='312.5,324.75 250,433 375,433' fill='%23C0444A'/%3E%3Cpolygon points='375,216.5 250,324.75 312.5,324.75' fill='%23D48000'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 450'%3E%3Cpolygon points='250,0 187.5,108.25 312.5,108.25' fill='%2352B766'/%3E%3Cpolygon points='250,216.5 187.5,108.25 312.5,108.25' fill='%2348A172'/%3E%3Cpolygon points='187.5,108.25 125,216.5 250,216.5' fill='%2300A884'/%3E%3Cpolygon points='62.5,324.75 0,433 125,433' fill='%230052B4'/%3E%3Cpolygon points='312.5,108.25 250,216.5 375,216.5' fill='%2392C128'/%3E%3Cpolygon points='375,216.5 312.5,324.75 437.5,324.75' fill='%23DDA100'/%3E%3Cpolygon points='437.5,324.75 375,433 500,433' fill='%23A43161'/%3E%3Cpolygon points='312.5,324.75 250,433 375,433' fill='%23C0444A'/%3E%3Cpolygon points='375,216.5 250,324.75 312.5,324.75' fill='%23D48000'/%3E%3C/svg%3E">
 
   <style>
     :root {
@@ -86,7 +86,7 @@
       border: none;
       height: 38px;
       border-radius: 8px;
-      font-size: 1.05rem;
+      font-size: 0.95rem;
       font-weight: bold;
       cursor: pointer;
       display: inline-flex;
@@ -128,11 +128,10 @@
     .btn-mode-opt {
       background-color: #bb3fd4 !important;
       color: #ffffff !important;
-      min-width: 42px;
-      font-size: 0.9rem;
+      min-width: 52px;
+      font-size: 0.88rem;
     }
     .btn-mode-opt:hover { background-color: #a02bb8 !important; }
-    .btn-hdr-opt.btn-faint-text { color: rgba(255, 255, 255, 0.3) !important; }
 
     .timer-clock-box {
       display: inline-flex;
@@ -539,6 +538,25 @@
       text-align: center;
     }
 
+    /* Chinese Text Alignment Controls */
+    .zh-text {
+      font-size: 0.95rem;
+      color: #0d47a1;
+      font-weight: bold;
+      margin-top: 4px;
+      min-height: 1.2em;
+    }
+
+    /* Left-align Chinese text in passage rows */
+    .dictation-row .zh-text {
+      text-align: left !important;
+    }
+
+    /* Keep Chinese text centered in grid cards */
+    .word-card .zh-text {
+      text-align: center !important;
+    }
+
     /* Shared Play Button for Vocab & Dictation */
     .card-play-btn {
       position: absolute;
@@ -558,18 +576,11 @@
       z-index: 2;
     }
     
-    .card-play-btn:hover {
-      background: #ffe0b2;
-    }
+    .card-play-btn:hover { background: #ffe0b2; }
 
     /* Word card specific position */
-    .word-card .card-play-btn {
-      right: 6px;
-      bottom: 6px;
-    }
-    .word-card .card-play-btn:hover {
-      transform: scale(1.1);
-    }
+    .word-card .card-play-btn { right: 6px; bottom: 6px; }
+    .word-card .card-play-btn:hover { transform: scale(1.1); }
 
     /* Dictation list structure */
     .dictation-list { display: flex; flex-direction: column; gap: 10px; }
@@ -604,9 +615,7 @@
       right: 12px;
       bottom: auto;
     }
-    .dictation-row .card-play-btn:hover {
-      transform: translateY(-50%) scale(1.1);
-    }
+    .dictation-row .card-play-btn:hover { transform: translateY(-50%) scale(1.1); }
 
     .sentence-index { font-size: 0.8rem; color: #888; margin-bottom: 2px; }
     
@@ -623,8 +632,17 @@
       display: inline-block !important;
     }
 
-    .mode-blank .sentence-text, .mode-blank .word-text { display: none !important; }
-    .mode-show .sentence-text, .mode-show .word-text { display: block !important; }
+    /* Display Mode Control Styles */
+    .mode-E .sentence-text, .mode-E .word-text { display: block !important; }
+    .mode-E .zh-text { display: none !important; }
+
+    .mode-EC .sentence-text, .mode-EC .word-text { display: block !important; }
+    .mode-EC .zh-text { display: block !important; }
+
+    .mode-C .sentence-text, .mode-C .word-text { display: none !important; }
+    .mode-C .zh-text { display: block !important; }
+
+    .mode-Blank .sentence-text, .mode-Blank .word-text, .mode-Blank .zh-text { display: none !important; }
 
     .paragraph-break {
       background-color: #fff3e0;
@@ -701,7 +719,7 @@
         </svg>
       </button>
 
-      <button class="btn-hdr-opt btn-mode-opt btn-faint-text" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">Blank</button>
+      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">E+C</button>
       
       <div class="timer-clock-box" title="Remaining Time">
         <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 0%, rgb(229, 231, 235) 0%);"></div>
@@ -767,7 +785,7 @@ Students with these good qualities usually grow up to become good people. It is 
       </div>
     </aside>
 
-    <main id="mainContent" class="mode-blank">
+    <main id="mainContent" class="mode-E+C">
       <div class="toolbar-card" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
@@ -814,84 +832,98 @@ Students with these good qualities usually grow up to become good people. It is 
           <div class="word-card" id="card_0" onclick="clickPlayVocab(0)">
             <div class="word-index">#1</div>
             <div class="word-text" title="hard-working">hard-working</div>
+            <div class="zh-text" data-en="hard-working">勤奮</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(0)">▶</button>
           </div>
         
           <div class="word-card" id="card_1" onclick="clickPlayVocab(1)">
             <div class="word-index">#2</div>
             <div class="word-text" title="polite">polite</div>
+            <div class="zh-text" data-en="polite">有禮貌</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(1)">▶</button>
           </div>
         
           <div class="word-card" id="card_2" onclick="clickPlayVocab(2)">
             <div class="word-index">#3</div>
             <div class="word-text" title="brave">brave</div>
+            <div class="zh-text" data-en="brave">勇敢傳說</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(2)">▶</button>
           </div>
         
           <div class="word-card" id="card_3" onclick="clickPlayVocab(3)">
             <div class="word-index">#4</div>
             <div class="word-text" title="messy">messy</div>
+            <div class="zh-text" data-en="messy">混亂的</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(3)">▶</button>
           </div>
         
           <div class="word-card" id="card_4" onclick="clickPlayVocab(4)">
             <div class="word-index">#5</div>
             <div class="word-text" title="cleanest">cleanest</div>
+            <div class="zh-text" data-en="cleanest">最乾淨</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(4)">▶</button>
           </div>
         
           <div class="word-card" id="card_5" onclick="clickPlayVocab(5)">
             <div class="word-index">#6</div>
             <div class="word-text" title="outgoing">outgoing</div>
+            <div class="zh-text" data-en="outgoing">向外</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(5)">▶</button>
           </div>
         
           <div class="word-card" id="card_6" onclick="clickPlayVocab(6)">
             <div class="word-index">#7</div>
             <div class="word-text" title="selfish">selfish</div>
+            <div class="zh-text" data-en="selfish">自私</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(6)">▶</button>
           </div>
         
           <div class="word-card" id="card_7" onclick="clickPlayVocab(7)">
             <div class="word-index">#8</div>
             <div class="word-text" title="biggest">biggest</div>
+            <div class="zh-text" data-en="biggest">最大</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(7)">▶</button>
           </div>
         
           <div class="word-card" id="card_8" onclick="clickPlayVocab(8)">
             <div class="word-index">#9</div>
             <div class="word-text" title="generous">generous</div>
+            <div class="zh-text" data-en="generous">慷慨的</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(8)">▶</button>
           </div>
         
           <div class="word-card" id="card_9" onclick="clickPlayVocab(9)">
             <div class="word-index">#10</div>
             <div class="word-text" title="timid">timid</div>
+            <div class="zh-text" data-en="timid">膽怯</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(9)">▶</button>
           </div>
         
           <div class="word-card" id="card_10" onclick="clickPlayVocab(10)">
             <div class="word-index">#11</div>
             <div class="word-text" title="kindest">kindest</div>
+            <div class="zh-text" data-en="kindest">最善良的</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(10)">▶</button>
           </div>
         
           <div class="word-card" id="card_11" onclick="clickPlayVocab(11)">
             <div class="word-index">#12</div>
             <div class="word-text" title="highest">highest</div>
+            <div class="zh-text" data-en="highest">最高</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(11)">▶</button>
           </div>
         
           <div class="word-card" id="card_12" onclick="clickPlayVocab(12)">
             <div class="word-index">#13</div>
             <div class="word-text" title="friendliest">friendliest</div>
+            <div class="zh-text" data-en="friendliest">最友善</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(12)">▶</button>
           </div>
         
           <div class="word-card" id="card_13" onclick="clickPlayVocab(13)">
             <div class="word-index">#14</div>
             <div class="word-text" title="funniest">funniest</div>
+            <div class="zh-text" data-en="funniest">最有趣的</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(13)">▶</button>
           </div>
         </div></div>
@@ -913,13 +945,19 @@ Students with these good qualities usually grow up to become good people. It is 
     let totalTimerSeconds = 0;
     let remainingSeconds = 0;
     let wakeUpTimeout = null; 
-    let displayMode = 'blank';
-    let wakeLock = null; 
+    
+    // Cycle modes: 'E' -> 'E+C' -> 'C' -> 'Blank'
+    const displayModes = ['E', 'E+C', 'C', 'Blank'];
+    let displayModeIndex = 1; // Default to E+C
 
+    let wakeLock = null; 
     let currentSpeechId = 0; 
 
     let availableVoices = [];
     let selectedVoiceURI = localStorage.getItem('fixedDictationVoiceURI') || '';
+
+    // Global in-memory cache for loaded translations
+    const translationCache = {};
 
     const synth = window.speechSynthesis;
 
@@ -944,6 +982,62 @@ Students with these good qualities usually grow up to become good people. It is 
       "next to", "other than", "out of", "run out of", "so as to", "such as", "take care of",
       "thanks to", "together with", "up to"
     ];
+
+    function extractTranslation(text) {
+      if (!text) return { en: "", zh: "" };
+      
+      // Parse parenthetical translations embedded in text
+      const match = text.match(/^(.*?)\s*[\(\（]([^\)\）]+)[\)\）]\s*$/);
+      if (match) {
+        return { en: match[1].trim(), zh: match[2].trim() };
+      }
+
+      const cleanEn = text.trim();
+      return { en: cleanEn, zh: translationCache[cleanEn.toLowerCase()] || "" };
+    }
+
+    // Dynamic translation using MyMemory Free API (Supports CORS out of the box)
+    async function fetchOnlineTranslation(text) {
+      if (!text || !text.trim()) return "";
+      const cleanText = text.trim();
+      const lowerKey = cleanText.toLowerCase();
+
+      if (translationCache[lowerKey]) {
+        return translationCache[lowerKey];
+      }
+
+      try {
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=en|zh-TW`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data && data.responseData && data.responseData.translatedText) {
+          let translated = data.responseData.translatedText;
+          // MyMemory sometimes includes the original query if no translation is found. 
+          // We'll cache and return what it provides.
+          translationCache[lowerKey] = translated;
+          return translated;
+        }
+      } catch (err) {
+        console.warn('MyMemory translation failed:', err);
+      }
+      return "";
+    }
+
+    async function loadDynamicTranslations() {
+      const zhElements = document.querySelectorAll('.zh-text[data-en]');
+      for (const el of zhElements) {
+        const enText = el.getAttribute('data-en');
+        if (enText && !el.textContent.trim()) {
+          const zh = await fetchOnlineTranslation(enText);
+          if (zh) {
+            el.textContent = zh;
+          }
+          // Slight delay between requests to respect free API limits (1-2 req/sec)
+          await new Promise(r => setTimeout(r, 400));
+        }
+      }
+    }
 
     function isMaleVoice(voice) {
       const name = voice.name.toLowerCase();
@@ -1103,27 +1197,27 @@ Students with these good qualities usually grow up to become good people. It is 
     });
 
     function toggleDisplayMode() {
-      displayMode = (displayMode === 'show') ? 'blank' : 'show';
+      displayModeIndex = (displayModeIndex + 1) % displayModes.length;
       updateDisplayModeUI();
     }
 
     function updateDisplayModeUI() {
       const btn = document.getElementById('displayModeBtn');
       const mainContent = document.getElementById('mainContent');
+      const currentMode = displayModes[displayModeIndex];
 
       if (btn) {
-        if (displayMode === 'blank') {
-          btn.textContent = 'Blank';
+        btn.textContent = currentMode;
+        if (currentMode === 'Blank') {
           btn.classList.add('btn-faint-text');
         } else {
-          btn.textContent = 'Show';
           btn.classList.remove('btn-faint-text');
         }
       }
 
       if (mainContent) {
-        mainContent.classList.remove('mode-blank', 'mode-show');
-        mainContent.classList.add('mode-' + displayMode);
+        mainContent.classList.remove('mode-E', 'mode-EC', 'mode-C', 'mode-Blank');
+        mainContent.classList.add('mode-' + currentMode);
       }
     }
 
@@ -1298,7 +1392,7 @@ Students with these good qualities usually grow up to become good people. It is 
     }
 
     function parseAndApplyFullText(fullText) {
-      displayMode = 'blank';
+      displayModeIndex = 1; // Default E+C
 
       if (!fullText || !fullText.trim()) {
         partAVocab = [];
@@ -1471,6 +1565,9 @@ Students with these good qualities usually grow up to become good people. It is 
         let rawText = (currentTab === 'tab2') ? partBText : partCText;
         renderDictation(area, rawText);
       }
+
+      // Trigger dynamic fetch when tab renders
+      loadDynamicTranslations();
     }
 
     function renderVocabGrid(container) {
@@ -1480,11 +1577,13 @@ Students with these good qualities usually grow up to become good people. It is 
       }
 
       let html = '<div class="words-grid">';
-      partAVocab.forEach((word, idx) => {
+      partAVocab.forEach((wordRaw, idx) => {
+        const { en, zh } = extractTranslation(wordRaw);
         html += `
           <div class="word-card" id="card_${idx}" onclick="clickPlayVocab(${idx})">
             <div class="word-index">#${idx + 1}</div>
-            <div class="word-text" title="${word}">${word}</div>
+            <div class="word-text" title="${en}">${en}</div>
+            <div class="zh-text" data-en="${en}">${zh}</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(${idx})">▶</button>
           </div>
         `;
@@ -1507,13 +1606,15 @@ Students with these good qualities usually grow up to become good people. It is 
         if (item.type === 'break') {
           html += `<div class="paragraph-break" id="break_card">--- Next Paragraph ---</div>`;
         } else if (item.type === 'sentence') {
-          let formattedText = item.text.split(' ').map(w => `<span class="nowrap-word">${w}</span>`).join(' ');
+          const { en, zh } = extractTranslation(item.text);
+          let formattedText = en.split(' ').map(w => `<span class="nowrap-word">${w}</span>`).join(' ');
 
           html += `
             <div class="dictation-row" id="dcard_${item.index}" onclick="clickPlayDictation(${item.index})">
               <div>
                 <div class="sentence-index">#${item.index}</div>
                 <div class="sentence-text">${formattedText}</div>
+                <div class="zh-text" data-en="${en}">${zh}</div>
               </div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(${item.index})">▶</button>
             </div>
@@ -1567,9 +1668,9 @@ Students with these good qualities usually grow up to become good people. It is 
       try { synth.cancel(); } catch(e){}
       if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
 
-      let preparedText = text;
+      let preparedText = isIntroOrEnding ? text : extractTranslation(text).en;
       if (!isIntroOrEnding && (currentTab === 'tab2' || currentTab === 'tab3')) {
-        preparedText = convertPunctuationToSpeech(text);
+        preparedText = convertPunctuationToSpeech(preparedText);
       }
 
       const segments = preparedText.split('~PAUSE2~').map(s => s.trim()).filter(Boolean);
@@ -1838,7 +1939,7 @@ Students with these good qualities usually grow up to become good people. It is 
       } else {
         const secPerWordInput = document.getElementById('secPerWordInput');
         const secPerWord = secPerWordInput ? (parseFloat(secPerWordInput.value) || 1.5) : 1.5;
-        const wordCount = countWords(item.text) || 1;
+        const wordCount = countWords(extractTranslation(item.text).en) || 1;
         
         const pauseSec = Math.max(Math.round(wordCount * secPerWord), 4);
 
