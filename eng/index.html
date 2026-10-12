@@ -5,7 +5,7 @@
   <title id="browserWindowTitle">Happy Primary School (26/27 Division 1) Primary 4 Dictation 3 scope</title>
 
   <!-- 🎨 Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 450'%3E%3Cpolygon points='250,0 187.5,108.25 312.5,108.25' fill='%2352B766'/%3E%3Cpolygon points='250,216.5 187.5,108.25 312.5,108.25' fill='%2348A172'/%3E%3Cpolygon points='187.5,108.25 125,216.5 250,216.5' fill='%2300A884'/%3E%3Cpolygon points='62.5,324.75 0,433 125,433' fill='%230052B4'/%3E%3Cpolygon points='312.5,108.25 250,216.5 375,216.5' fill='%2392C128'/%3E%3Cpolygon points='375,216.5 312.5,324.75 437.5,324.75' fill='%23DDA100'/%3E%3Cpolygon points='437.5,324.75 375,433 500,433' fill='%23A43161'/%3E%3Cpolygon points='312.5,324.75 250,433 375,433' fill='%23C0444A'/%3E%3Cpolygon points='375,216.5 250,324.75 312.5,324.75' fill='%23D48000'/%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 450'%3E%3Cpolygon points='250,0 187.5,108.25 312.5,108.25' fill='%2352B766'/%3E%3Cpolygon points='250,216.5 187.5,108.25 312.5,108.25' fill='%2348A172'/%3E%3Cpolygon points='187.5,108.25 125,216.5 250,216.5' fill='%2300A884'/%3E%3Cpolygon points='125,216.5 62.5,324.75 187.5,324.75' fill='%23008BAA'/%3E%3Cpolygon points='62.5,324.75 0,433 125,433' fill='%230052B4'/%3E%3Cpolygon points='312.5,108.25 250,216.5 375,216.5' fill='%2392C128'/%3E%3Cpolygon points='375,216.5 312.5,324.75 437.5,324.75' fill='%23DDA100'/%3E%3Cpolygon points='437.5,324.75 375,433 500,433' fill='%23A43161'/%3E%3Cpolygon points='312.5,324.75 250,433 375,433' fill='%23C0444A'/%3E%3Cpolygon points='375,216.5 250,324.75 312.5,324.75' fill='%23D48000'/%3E%3C/svg%3E">
 
   <style>
     :root {
@@ -35,6 +35,7 @@
       height: 100vh;
       height: 100dvh;
       overflow: hidden;
+      touch-action: pan-y;
     }
 
     header {
@@ -216,6 +217,8 @@
       flex-shrink: 0;
       gap: 12px;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
       transition: margin-left 0.3s ease, transform 0.3s ease;
       z-index: 950;
       border-right: 1px solid rgba(255,255,255,0.2);
@@ -363,6 +366,8 @@
       flex: 1;
       padding: 15px 20px;
       overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
       background-color: var(--main-bg);
       transition: width 0.3s ease;
       scroll-behavior: smooth;
@@ -408,14 +413,14 @@
     .toolbar-options {
       display: inline-flex;
       align-items: center;
-      gap: 12px;
+      gap: 8px;
       color: #1a1a1a;
       font-weight: bold;
       flex-wrap: wrap;
     }
 
     .toolbar-card input[type="number"], .toolbar-card select {
-      padding: 4px 6px;
+      padding: 4px 4px;
       font-size: 0.9rem;
       font-family: inherit;
       border-radius: 4px;
@@ -424,7 +429,18 @@
       color: #2b2b2b;
     }
 
-    .toolbar-card input[type="number"] { width: 55px; }
+    /* Adjusted to fit exactly 2 digits */
+    .toolbar-card input[type="number"] { 
+      width: 38px; 
+      text-align: center;
+      -moz-appearance: textfield;
+    }
+
+    .toolbar-card input[type="number"]::-webkit-outer-spin-button,
+    .toolbar-card input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
 
     .btn-tag-icon {
       background-color: #e65100 !important;
@@ -686,7 +702,7 @@
         </svg>
       </button>
 
-      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">Show</button>
+      <button class="btn-hdr-opt btn-mode-opt btn-faint-text" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">Blank</button>
       
       <div class="timer-clock-box" title="Remaining Time">
         <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 0%, rgb(229, 231, 235) 0%);"></div>
@@ -752,13 +768,13 @@ Students with these good qualities usually grow up to become good people. It is 
       </div>
     </aside>
 
-    <main id="mainContent" class="mode-show">
+    <main id="mainContent" class="mode-blank">
       <div class="toolbar-card" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
           <span class="toolbar-options">
-            <label>Interval: <input type="number" id="vocabDelayInput" value="12" min="1"> s</label>
-            <label>Speed: 
+            <label>I: <input type="number" id="vocabDelayInput" value="12" min="1" max="99"> s</label>
+            <label>S: 
               <select id="vocabVoiceSpeedSelect">
                 <option value="0.5">0.5x</option>
                 <option value="0.75" selected="">0.75x</option>
@@ -777,8 +793,8 @@ Students with these good qualities usually grow up to become good people. It is 
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="Back to Top">Passage</button>
           <span class="toolbar-options">
-            <label>Sec / Word: <input type="number" id="secPerWordInput" value="1.5" min="0.5" step="0.1"> s</label>
-            <label>Speed: 
+            <label>I: <input type="number" id="secPerWordInput" value="1.5" min="0.5" step="0.1" max="99"> s</label>
+            <label>S: 
               <select id="voiceSpeedSelect">
                 <option value="0.5">0.5x</option>
                 <option value="0.75" selected="">0.75x</option>
@@ -896,7 +912,7 @@ Students with these good qualities usually grow up to become good people. It is 
     let totalTimerSeconds = 0;
     let remainingSeconds = 0;
     let wakeUpTimeout = null; 
-    let displayMode = 'show';
+    let displayMode = 'blank';
     let wakeLock = null; 
 
     let currentSpeechId = 0; 
@@ -1282,6 +1298,8 @@ Students with these good qualities usually grow up to become good people. It is 
     }
 
     function parseAndApplyFullText(fullText) {
+      displayMode = 'blank';
+
       if (!fullText || !fullText.trim()) {
         partAVocab = [];
         partBText = "";
@@ -1391,7 +1409,6 @@ Students with these good qualities usually grow up to become good people. It is 
           clonedTextArea.textContent = currentContent;
         }
 
-        // Add auto-parse script execution for the exported file on load
         let scriptTag = clonedHtml.querySelector('#autoLoadScript');
         if (!scriptTag) {
           scriptTag = document.createElement('script');
