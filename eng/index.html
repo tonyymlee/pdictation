@@ -429,7 +429,6 @@
       color: #2b2b2b;
     }
 
-    /* Adjusted to fit exactly 2 digits */
     .toolbar-card input[type="number"] { 
       width: 38px; 
       text-align: center;
@@ -702,7 +701,7 @@
         </svg>
       </button>
 
-      <button class="btn-hdr-opt btn-mode-opt btn-faint-text" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">Blank</button>
+      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">Show</button>
       
       <div class="timer-clock-box" title="Remaining Time">
         <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 0%, rgb(229, 231, 235) 0%);"></div>
@@ -768,7 +767,7 @@ Students with these good qualities usually grow up to become good people. It is 
       </div>
     </aside>
 
-    <main id="mainContent" class="mode-blank">
+    <main id="mainContent" class="mode-show">
       <div class="toolbar-card" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
@@ -1164,7 +1163,6 @@ Students with these good qualities usually grow up to become good people. It is 
         .replace(/;/g, " ~PAUSE2~ semicolon ~PAUSE2~ ")
         .replace(/:/g, " ~PAUSE2~ colon ~PAUSE2~ ")
         .replace(/["“”]/g, " ~PAUSE2~ open quote ~PAUSE2~ ")
-        .replace(/['‘’]/g, " ~PAUSE2~ apostrophe ~PAUSE2~ ")
         .replace(/\(/g, " ~PAUSE2~ open bracket ~PAUSE2~ ")         .replace(/\)/g, " ~PAUSE2~ close bracket ~PAUSE2~ ")
         .replace(/[-–—]/g, " ~PAUSE2~ hyphen ~PAUSE2~ ")
         .replace(/\s+/g, " ")
