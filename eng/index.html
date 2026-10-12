@@ -701,7 +701,7 @@
         </svg>
       </button>
 
-      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">Show</button>
+      <button class="btn-hdr-opt btn-mode-opt btn-faint-text" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">Blank</button>
       
       <div class="timer-clock-box" title="Remaining Time">
         <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 0%, rgb(229, 231, 235) 0%);"></div>
@@ -767,7 +767,7 @@ Students with these good qualities usually grow up to become good people. It is 
       </div>
     </aside>
 
-    <main id="mainContent" class="mode-show">
+    <main id="mainContent" class="mode-blank">
       <div class="toolbar-card" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
@@ -775,11 +775,12 @@ Students with these good qualities usually grow up to become good people. It is 
             <label>I: <input type="number" id="vocabDelayInput" value="12" min="1" max="99"> s</label>
             <label>S: 
               <select id="vocabVoiceSpeedSelect">
-                <option value="0.5">0.5x</option>
+                <option value="0.6">0.6x</option>
+                <option value="0.7">0.7x</option>
                 <option value="0.75" selected="">0.75x</option>
                 <option value="0.88">0.88x</option>
+                <option value="0.95">0.95x</option>
                 <option value="1.0">1.0x</option>
-                <option value="1.25">1.25x</option>
                 <option value="1.5">1.5x</option>
               </select>
             </label>
@@ -795,11 +796,12 @@ Students with these good qualities usually grow up to become good people. It is 
             <label>I: <input type="number" id="secPerWordInput" value="1.5" min="0.5" step="0.1" max="99"> s</label>
             <label>S: 
               <select id="voiceSpeedSelect">
-                <option value="0.5">0.5x</option>
+                <option value="0.6">0.6x</option>
+                <option value="0.7">0.7x</option>
                 <option value="0.75" selected="">0.75x</option>
                 <option value="0.88">0.88x</option>
+                <option value="0.95">0.95x</option>
                 <option value="1.0">1.0x</option>
-                <option value="1.25">1.25x</option>
                 <option value="1.5">1.5x</option>
               </select>
             </label>
