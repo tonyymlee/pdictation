@@ -84,9 +84,9 @@
 </head>
 <body class="classroom-bg text-slate-800 dark:text-slate-100 flex flex-col items-center pt-0 px-3 sm:px-5 pb-5 select-none relative overflow-x-hidden min-h-screen">
 
-    <!-- Virtual Classroom Background Graphic (Pencils, Notepad, Rulers, Blobs) -->
+    <!-- Virtual Classroom Background Graphic -->
     <div class="fixed inset-0 pointer-events-none z-0 opacity-90 dark:opacity-20 flex justify-between items-between">
-        <!-- Top-Left Corner Graphic (Pencils, Book, Erasers, Shapes) -->
+        <!-- Top-Left Corner Graphic -->
         <svg class="absolute top-0 left-0 w-48 h-48 sm:w-72 sm:h-72" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M-30 -30 Q120 -10 140 70 Q160 150 50 180 Q-20 200 -40 100 Z" fill="#FDF2F8" class="dark:fill-rose-950/20"/>
             <g transform="translate(20, 25) rotate(42)">
@@ -117,7 +117,7 @@
             <path d="M 120,70 L 132,60 L 144,70 L 132,80 Z" stroke="#EAB308" stroke-width="2" fill="none" opacity="0.6"/>
         </svg>
 
-        <!-- Bottom-Right Corner Graphic (Notepad, Triangle Ruler, Pencils, Eraser) -->
+        <!-- Bottom-Right Corner Graphic -->
         <svg class="absolute bottom-0 right-0 w-52 h-52 sm:w-80 sm:h-80" viewBox="0 0 260 260" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M280 280 L120 280 Q90 180 160 110 Q220 50 280 120 Z" fill="#ECFDF5" class="dark:fill-emerald-950/20"/>
             <g transform="translate(130, 130) rotate(-14)">
@@ -149,7 +149,7 @@
 
     <div class="w-full max-w-xs sm:max-w-sm flex flex-col items-center z-10 relative mt-0">
         
-        <!-- Header Card Component (Flush against top edge, rounded bottom corners) -->
+        <!-- Header Card Component (Flush against top edge) -->
         <header class="w-full glass-card rounded-b-2xl rounded-t-none px-3.5 py-2.5 mb-2 shadow-sm flex items-center justify-between">
             <div class="flex items-center space-x-3">
                 <!-- AI Dictation Speech Bubble Icon -->
@@ -261,13 +261,23 @@
             }
         }
 
-        // Initialize theme based on user history or system preference
+        // Automatic Time-Based Theme Logic (Day: 8 AM - 8 PM, Night: 8 PM - 8 AM)
         (function initTheme() {
             const savedTheme = localStorage.getItem('theme');
-            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
-                document.documentElement.classList.add('dark');
+            if (savedTheme) {
+                if (savedTheme === 'dark') {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
             } else {
-                document.documentElement.classList.remove('dark');
+                const currentHour = new Date().getHours();
+                // 8 AM (8) to 7:59 PM (19) = Day mode; 8 PM (20) to 7:59 AM (7) = Night mode
+                if (currentHour >= 8 && currentHour < 20) {
+                    document.documentElement.classList.remove('dark');
+                } else {
+                    document.documentElement.classList.add('dark');
+                }
             }
         })();
     </script>
