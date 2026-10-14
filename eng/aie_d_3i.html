@@ -1576,7 +1576,26 @@
         const vocabDelayVal = document.getElementById('vocabDelayInput')?.value || "10";
         const vocabSpeedVal = document.getElementById('vocabVoiceSpeedSelect')?.value || "0.6";
         const secPerWordVal = document.getElementById('secPerWordInput')?.value || "2.8";
-        const passageSpeedVal = document.getElementById('voiceSpeedSelect')?.value || "0.75";
+        const passageSpeedVal = document.getElementById('voiceSpeedSelect')?.value || "0.6";
+
+        // Sync values into cloned DOM attributes so they persist directly in HTML inputs/selects
+        const clonedVDelay = clonedHtml.querySelector('#vocabDelayInput');
+        if (clonedVDelay) clonedVDelay.setAttribute('value', vocabDelayVal);
+
+        const clonedVSpeedOpts = clonedHtml.querySelectorAll('#vocabVoiceSpeedSelect option');
+        clonedVSpeedOpts.forEach(opt => {
+          if (opt.value === vocabSpeedVal) opt.setAttribute('selected', 'selected');
+          else opt.removeAttribute('selected');
+        });
+
+        const clonedPSec = clonedHtml.querySelector('#secPerWordInput');
+        if (clonedPSec) clonedPSec.setAttribute('value', secPerWordVal);
+
+        const clonedPSpeedOpts = clonedHtml.querySelectorAll('#voiceSpeedSelect option');
+        clonedPSpeedOpts.forEach(opt => {
+          if (opt.value === passageSpeedVal) opt.setAttribute('selected', 'selected');
+          else opt.removeAttribute('selected');
+        });
 
         let scriptTag = clonedHtml.querySelector('#autoLoadScript');
         if (!scriptTag) {
