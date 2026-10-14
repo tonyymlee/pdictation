@@ -63,6 +63,40 @@
       padding: 0 10px;
     }
 
+    .home-link-btn {
+      position: absolute;
+      left: 0;
+      top: 6px;
+      background: #928ff2;
+      color: #ffffff;
+      border: none;
+      height: 38px;
+      width: 38px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.15s, background-color 0.15s;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .home-link-btn:hover {
+      background-color: #7d7ae6;
+      transform: scale(1.05);
+    }
+
+    .home-link-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+
     header h1 {
       font-size: clamp(1rem, 2.8vw, 1.3rem);
       font-weight: bold;
@@ -128,8 +162,8 @@
     .btn-mode-opt {
       background-color: #bb3fd4 !important;
       color: #ffffff !important;
-      min-width: 52px;
-      font-size: 0.88rem;
+      min-width: 60px;
+      font-size: 0.85rem;
     }
     .btn-mode-opt:hover { background-color: #a02bb8 !important; }
 
@@ -691,6 +725,12 @@
 
   <header>
     <div class="header-top-row">
+      <a href="https://tonyymlee.github.io/pdictation/" class="home-link-btn" title="Home">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </a>
       <h1 id="appMainTitle">Happy Primary School (26/27 Division 1)<br>Primary 4 Dictation 3 scope</h1>
     </div>
     <div class="header-controls">
@@ -720,7 +760,7 @@
         </svg>
       </button>
 
-      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">C</button>
+      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">C+E</button>
       
       <div class="timer-clock-box" title="Remaining Time">
         <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 0%, rgb(229, 231, 235) 0%);"></div>
@@ -786,8 +826,8 @@ Students with these good qualities usually grow up to become good people. It is 
       </div>
     </aside>
 
-    <main id="mainContent" class="mode-C">
-      <div class="toolbar-card hidden is-scrolled" id="vocabToolbar">
+    <main id="mainContent" class="mode-EC">
+      <div class="toolbar-card hidden" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
           <span class="toolbar-options">
@@ -808,7 +848,7 @@ Students with these good qualities usually grow up to become good people. It is 
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="Copy Content">C</button>
       </div>
 
-      <div class="toolbar-card is-scrolled" id="dictationToolbar">
+      <div class="toolbar-card" id="dictationToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="Back to Top">Passage</button>
           <span class="toolbar-options">
@@ -1263,9 +1303,14 @@ Students with these good qualities usually grow up to become good people. It is 
     let remainingSeconds = 0;
     let wakeUpTimeout = null; 
     
-    // Cycle modes: 'E' -> 'E+C' -> 'C' -> 'Blank'
-    const displayModes = ['E', 'E+C', 'C', 'Blank'];
-    let displayModeIndex = 2; // Default to C
+    // Cycle modes matching exact user labels: 'Chi' -> 'Eng' -> 'C+E' -> 'Blank'
+    const displayModes = [
+      { id: 'C', label: 'Chi' },
+      { id: 'E', label: 'Eng' },
+      { id: 'EC', label: 'C+E' },
+      { id: 'Blank', label: 'Blank' }
+    ];
+    let displayModeIndex = 0; // Default to Chi
 
     let wakeLock = null; 
     let currentSpeechId = 0; 
@@ -1304,7 +1349,6 @@ Students with these good qualities usually grow up to become good people. It is 
     function extractTranslation(text) {
       if (!text) return { en: "", zh: "" };
       
-      // Parse parenthetical translations embedded in text
       const match = text.match(/^(.*?)\s*[\(\（]([^\)\）]+)[\)\）]\s*$/);
       if (match) {
         return { en: match[1].trim(), zh: match[2].trim() };
@@ -1314,7 +1358,6 @@ Students with these good qualities usually grow up to become good people. It is 
       return { en: cleanEn, zh: translationCache[cleanEn.toLowerCase()] || "" };
     }
 
-    // Dynamic translation using MyMemory Free API
     async function fetchOnlineTranslation(text) {
       if (!text || !text.trim()) return "";
       const cleanText = text.trim();
@@ -1340,18 +1383,15 @@ Students with these good qualities usually grow up to become good people. It is 
       return "";
     }
 
-    // Background Pre-Loader: Fetches ALL phrases (Vocab + Passage + Unseen) so Export has them ready.
     async function preloadAllTranslations() {
       const exportBtn = document.querySelector('.btn-export');
       let neededSet = new Set();
       
-      // Collect Vocab Phrases
       partAVocab.forEach(w => {
          const ext = extractTranslation(w);
          if (!ext.zh && ext.en) neededSet.add(ext.en.trim());
       });
       
-      // Collect Passage & Unseen Phrases
       [partBText, partCText].forEach(text => {
          buildDictationQueue(text).forEach(q => {
            if (q.type === 'sentence') {
@@ -1376,8 +1416,8 @@ Students with these good qualities usually grow up to become good people. It is 
       for (let i = 0; i < needed.length; i++) {
         if (exportBtn) exportBtn.textContent = `⏳ Translating (${needed.length - i})`;
         await fetchOnlineTranslation(needed[i]);
-        await new Promise(r => setTimeout(r, 400)); // Respect API limits
-        updateActiveTranslations(); // Update DOM instantly if user is looking at it
+        await new Promise(r => setTimeout(r, 400));
+        updateActiveTranslations();
       }
 
       isTranslating = false;
@@ -1387,7 +1427,6 @@ Students with these good qualities usually grow up to become good people. It is 
       updateActiveTranslations();
     }
 
-    // Instantly injects cached translations into the active screen
     function updateActiveTranslations() {
       const zhElements = document.querySelectorAll('.zh-text[data-en]');
       for (const el of zhElements) {
@@ -1508,12 +1547,85 @@ Students with these good qualities usually grow up to become good people. It is 
 
     function copyCurrentContent(btnElement) {
       let copyText = "";
+      const currentMode = displayModes[displayModeIndex].id; // 'C', 'E', 'EC', or 'Blank'
+
+      const shouldIncludeEn = (currentMode === 'E' || currentMode === 'EC' || currentMode === 'Blank');
+      const shouldIncludeZh = (currentMode === 'C' || currentMode === 'EC' || currentMode === 'Blank');
+
       if (currentTab === 'tab1') {
-        copyText = partAVocab.join("\n");
-      } else if (currentTab === 'tab2') {
-        copyText = partBText;
-      } else if (currentTab === 'tab3') {
-        copyText = partCText;
+        let rawEnList = [];
+        let rawZhList = [];
+
+        partAVocab.forEach((wordRaw) => {
+          const { en, zh } = extractTranslation(wordRaw);
+          if (en) rawEnList.push(en);
+          if (zh) rawZhList.push(zh);
+        });
+
+        function chunkIntoRows(arr, itemsPerRow = 3) {
+          let rows = [];
+          for (let i = 0; i < arr.length; i += itemsPerRow) {
+            let chunk = arr.slice(i, i + itemsPerRow);
+            rows.push(chunk.join("\t"));
+          }
+          return rows.join("\n");
+        }
+
+        let parts = [];
+        if (shouldIncludeEn && rawEnList.length > 0) {
+          parts.push("=== English ===\n" + chunkIntoRows(rawEnList, 3));
+        }
+        if (shouldIncludeZh && rawZhList.length > 0) {
+          parts.push("=== Chinese ===\n" + chunkIntoRows(rawZhList, 3));
+        }
+        copyText = parts.join("\n\n");
+      } else {
+        let rawText = (currentTab === 'tab2') ? partBText : partCText;
+        let dictQueue = buildDictationQueue(rawText);
+        
+        let enParagraphs = [];
+        let zhParagraphs = [];
+
+        let currentEnSentences = [];
+        let currentZhSentences = [];
+
+        dictQueue.forEach(item => {
+          if (item.type === 'break') {
+            if (currentEnSentences.length > 0) {
+              enParagraphs.push(currentEnSentences.join(" "));
+              currentEnSentences = [];
+            }
+            if (currentZhSentences.length > 0) {
+              zhParagraphs.push(currentZhSentences.join(" "));
+              currentZhSentences = [];
+            }
+          } else if (item.type === 'sentence') {
+            const { en, zh } = extractTranslation(item.text);
+            let finalZh = zh;
+            if (!finalZh && translationCache[en.toLowerCase()]) {
+              finalZh = translationCache[en.toLowerCase()];
+            }
+
+            if (en) currentEnSentences.push(en);
+            if (finalZh) currentZhSentences.push(finalZh);
+          }
+        });
+
+        if (currentEnSentences.length > 0) {
+          enParagraphs.push(currentEnSentences.join(" "));
+        }
+        if (currentZhSentences.length > 0) {
+          zhParagraphs.push(currentZhSentences.join(" "));
+        }
+
+        let parts = [];
+        if (shouldIncludeEn && enParagraphs.length > 0) {
+          parts.push("=== English ===\n" + enParagraphs.join("\n\n"));
+        }
+        if (shouldIncludeZh && zhParagraphs.length > 0) {
+          parts.push("=== Chinese ===\n" + zhParagraphs.join("\n\n"));
+        }
+        copyText = parts.join("\n\n");
       }
 
       if (copyText) {
@@ -1564,20 +1676,15 @@ Students with these good qualities usually grow up to become good people. It is 
     function updateDisplayModeUI() {
       const btn = document.getElementById('displayModeBtn');
       const mainContent = document.getElementById('mainContent');
-      const currentMode = displayModes[displayModeIndex];
+      const currentModeObj = displayModes[displayModeIndex];
 
       if (btn) {
-        btn.textContent = currentMode;
-        if (currentMode === 'Blank') {
-          btn.classList.add('btn-faint-text');
-        } else {
-          btn.classList.remove('btn-faint-text');
-        }
+        btn.textContent = currentModeObj.label;
       }
 
       if (mainContent) {
         mainContent.classList.remove('mode-E', 'mode-EC', 'mode-C', 'mode-Blank');
-        mainContent.classList.add('mode-' + currentMode);
+        mainContent.classList.add('mode-' + currentModeObj.id);
       }
     }
 
@@ -1656,12 +1763,14 @@ Students with these good qualities usually grow up to become good people. It is 
 
       rawLines.forEach(line => {
         const trimmedLine = line.trim();
-        if (!trimmedLine) return; // Completely ignore empty blank lines
-
-        // If we already have content, hitting a new line means a new paragraph
-        if (hasAddedContent) {
-          breakCount++;
-          queueList.push({ type: 'break', text: 'Next Paragraph', breakId: breakCount });
+        
+        // Empty lines indicate paragraph breaks
+        if (!trimmedLine) {
+          if (hasAddedContent) {
+            breakCount++;
+            queueList.push({ type: 'break', text: 'Next Paragraph', breakId: breakCount });
+          }
+          return;
         }
 
         let lineHasContent = false;
@@ -1720,7 +1829,6 @@ Students with these good qualities usually grow up to become good people. It is 
         }
       });
 
-      // Cleanup redundant trailing/consecutive breaks just in case
       const cleaned = [];
       queueList.forEach(item => {
         if (item.type === 'break' && cleaned.length > 0 && cleaned[cleaned.length - 1].type === 'break') {
@@ -1761,7 +1869,7 @@ Students with these good qualities usually grow up to become good people. It is 
     }
 
     function parseAndApplyFullText(fullText) {
-      displayModeIndex = 2; // Default C
+      displayModeIndex = 0; // Default to Chi
 
       if (!fullText || !fullText.trim()) {
         partAVocab = [];
@@ -1792,7 +1900,6 @@ Students with these good qualities usually grow up to become good people. It is 
 
       lines.forEach(line => {
         const trimmed = line.trim();
-        if (!trimmed) return;
         const lower = trimmed.toLowerCase();
 
         if (lower.includes('date of dictation')) {
@@ -1813,15 +1920,17 @@ Students with these good qualities usually grow up to become good people. It is 
         }
 
         if (currentSection === 'header') {
-          headerLines.push(trimmed);
+          if (trimmed) headerLines.push(trimmed);
         } else if (currentSection === 'partA') {
-          let cleanLine = trimmed.replace(/^\d+[\.\)]\s*/, '');
-          let items = cleanLine.split(/[\t,]+/).map(w => w.trim()).filter(Boolean);
-          items.forEach(w => parsedPartA.push(w));
+          if (trimmed) {
+            let cleanLine = trimmed.replace(/^\d+[\.\)]\s*/, '');
+            let items = cleanLine.split(/[\t,]+/).map(w => w.trim()).filter(Boolean);
+            items.forEach(w => parsedPartA.push(w));
+          }
         } else if (currentSection === 'partB') {
-          parsedPartB.push(line);
+          if (trimmed) parsedPartB.push(trimmed);
         } else if (currentSection === 'partC') {
-          parsedPartC.push(line);
+          if (trimmed) parsedPartC.push(trimmed);
         }
       });
 
@@ -1838,12 +1947,10 @@ Students with these good qualities usually grow up to become good people. It is 
       }
 
       partAVocab = parsedPartA;
-      partBText = parsedPartB.join('\n');
-      partCText = parsedPartC.join('\n');
+      partBText = parsedPartB.join('\n\n');
+      partCText = parsedPartC.join('\n\n');
 
       renderTab();
-      
-      // Automatically trigger translation for the entire file (Vocab + Passage)
       preloadAllTranslations();
     }
 
@@ -1875,11 +1982,15 @@ Students with these good qualities usually grow up to become good people. It is 
           clonedTextArea.textContent = currentContent;
         }
         
-        // Ensure the exported button looks normal even if we exported mid-translation
         const clonedExportBtn = clonedHtml.querySelector('.btn-export');
         if (clonedExportBtn) {
           clonedExportBtn.textContent = "📥 Export HTML";
         }
+
+        const vocabDelayVal = document.getElementById('vocabDelayInput')?.value || "12";
+        const vocabSpeedVal = document.getElementById('vocabVoiceSpeedSelect')?.value || "0.75";
+        const secPerWordVal = document.getElementById('secPerWordInput')?.value || "1.5";
+        const passageSpeedVal = document.getElementById('voiceSpeedSelect')?.value || "0.75";
 
         let scriptTag = clonedHtml.querySelector('#autoLoadScript');
         if (!scriptTag) {
@@ -1888,11 +1999,19 @@ Students with these good qualities usually grow up to become good people. It is 
           clonedHtml.querySelector('body').appendChild(scriptTag);
         }
 
-        // INJECT THE CURRENT TRANSLATION CACHE SO IT DOES NOT NEED TO FETCH AGAIN
         scriptTag.textContent = `
           document.addEventListener('DOMContentLoaded', function() {
             const savedCache = ${JSON.stringify(translationCache)};
             Object.assign(translationCache, savedCache);
+
+            const vDelay = document.getElementById('vocabDelayInput');
+            if (vDelay) vDelay.value = "${vocabDelayVal}";
+            const vSpeed = document.getElementById('vocabVoiceSpeedSelect');
+            if (vSpeed) vSpeed.value = "${vocabSpeedVal}";
+            const pSec = document.getElementById('secPerWordInput');
+            if (pSec) pSec.value = "${secPerWordVal}";
+            const pSpeed = document.getElementById('voiceSpeedSelect');
+            if (pSpeed) pSpeed.value = "${passageSpeedVal}";
 
             const editor = document.getElementById('rawTextEditor');
             if (editor && editor.value.trim()) {
@@ -1949,7 +2068,6 @@ Students with these good qualities usually grow up to become good people. It is 
         renderDictation(area, rawText);
       }
 
-      // Fill in immediately available cached translations
       updateActiveTranslations();
     }
 
@@ -2445,7 +2563,6 @@ Students with these good qualities usually grow up to become good people. It is 
         });
       }
 
-      // Initialize Display Mode UI immediately
       updateDisplayModeUI();
 
       switchTab('tab1', document.getElementById('btn_tab1'));
@@ -2459,6 +2576,15 @@ Students with these good qualities usually grow up to become good people. It is 
           document.addEventListener('DOMContentLoaded', function() {
             const savedCache = {"hard-working":"勤奮","polite":"有禮貌","brave":"勇敢傳說","messy":"混亂的","cleanest":"最乾淨","outgoing":"向外","selfish":"自私","biggest":"最大","generous":"慷慨的","timid":"膽怯","kindest":"最善良的","highest":"最高","friendliest":"最友善","funniest":"最有趣的","not necessarily.":"「不一定。」","they had more free time":"他們有更多空閒時間","but this does not mean":"這並不意味著","that they were lazy.":"他們很懶惰","many of them still":"他們中的許多人仍然","worked very hard and":"非常努力地工作，","had a lot of good qualities.":"有很多優秀的品質","being a good student does":"做一個好學生","not mean just getting":"不僅僅是","high grades at school.":"學校的高分","it also means having good character⁴":"這也意味著要有良好的品格，","— doing the right things":"—做正確的事情","and being a nice person.":"並成為一個好人","you cannot change your character overnight,":"你不能一夜之間改變你的角色","but there are many things":"但有很多事情","you can do to help":"你可以提供協助","you become a good person.":"你會成為一個好人。","the easiest way is to":"最簡單的方法是","start with your school life.":"從你的學校生活開始","you can start by keeping your":"你可以先保留你的","school desk clean and tidy.":"書桌乾淨整潔。","being tidy is better":"整潔比較好","than being messy.":"而不是亂七八糟。","it shows that you know how":"這表明你知道如何","to look after your own things.":"照顧自己的東西","your classmates will want to":"你的同學會想要","come over to your seat":"過來你的座位","and chat with you!":"並與您聊天！","remember to greet your teachers":"記得跟老師打招呼","and classmates at school.":"和同學在學校","don’t be shy or rude.":"不要害羞或無禮。","a polite and outgoing student":"有禮貌且外向的學生","can make a lot of friends!":"可以交到很多朋友！","you can also try":"您也可以嘗試","to be generous.":"慷慨大方","no one likes a selfish person.":"沒有人喜歡自私的人。","next time you have some":"下次您有一些","cake, give the biggest":"蛋糕，給最大的","piece to your friends.":"送給朋友。","you will feel happier sharing":"分享會讓你感覺更快樂","food with others than eating":"與他人一起吃飯而不是吃飯","it on your own.":"就靠你自己了。","students with these good qualities usually":"具備這些優良品質的學生通常","grow up to become good people.":"長大後成為好人。","it is time for you":"是時候為您服務了","to set goals for yourself.":"為自己設定目標。"};
             Object.assign(translationCache, savedCache);
+
+            const vDelay = document.getElementById('vocabDelayInput');
+            if (vDelay) vDelay.value = "12";
+            const vSpeed = document.getElementById('vocabVoiceSpeedSelect');
+            if (vSpeed) vSpeed.value = "0.75";
+            const pSec = document.getElementById('secPerWordInput');
+            if (pSec) pSec.value = "1.5";
+            const pSpeed = document.getElementById('voiceSpeedSelect');
+            if (pSpeed) pSpeed.value = "0.75";
 
             const editor = document.getElementById('rawTextEditor');
             if (editor && editor.value.trim()) {
