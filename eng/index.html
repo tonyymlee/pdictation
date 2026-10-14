@@ -1,2623 +1,303 @@
 <!DOCTYPE html>
-<html lang="en"><head>
+<html lang="en">
+<head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title id="browserWindowTitle">Happy Primary School (26/27 Division 1) Primary 4 Dictation 3 scope</title>
-
-  <!-- 🎨 Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 450'%3E%3Cpolygon points='250,0 187.5,108.25 312.5,108.25' fill='%2352B766'/%3E%3Cpolygon points='250,216.5 187.5,108.25 312.5,108.25' fill='%2348A172'/%3E%3Cpolygon points='187.5,108.25 125,216.5 250,216.5' fill='%2300A884'/%3E%3Cpolygon points='62.5,324.75 0,433 125,433' fill='%230052B4'/%3E%3Cpolygon points='312.5,108.25 250,216.5 375,216.5' fill='%2392C128'/%3E%3Cpolygon points='375,216.5 312.5,324.75 437.5,324.75' fill='%23DDA100'/%3E%3Cpolygon points='437.5,324.75 375,433 500,433' fill='%23A43161'/%3E%3Cpolygon points='312.5,324.75 250,433 375,433' fill='%23C0444A'/%3E%3Cpolygon points='375,216.5 250,324.75 312.5,324.75' fill='%23D48000'/%3E%3C/svg%3E">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Server Directory Browser</title>
   <style>
     :root {
-      --header-bg: #fc7f19;
-      --header-text: #ffffff;
-      --sidebar-bg: #fc7f19; 
+      --bg-color: #f8f9fa;
       --card-bg: #ffffff;
-      --active-green: #e65100;
-      --main-bg: #fc7f19;
-      --text-color: #2b2b2b;
-      --font-family: "Calibri", "Segoe UI", Arial, sans-serif;
+      --text-color: #212529;
+      --border-color: #e9ecef;
+      --hover-bg: #f1f3f5;
+      --accent-color: #0d6efd;
+      --folder-color: #ffc107;
+      --file-color: #6c757d;
     }
 
-    * { 
-      box-sizing: border-box; 
-      margin: 0; 
-      padding: 0; 
-      -webkit-tap-highlight-color: transparent; 
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     }
 
     body {
-      font-family: var(--font-family);
-      background-color: var(--main-bg);
+      background-color: var(--bg-color);
       color: var(--text-color);
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-      height: 100dvh;
-      overflow: hidden;
-      touch-action: pan-y;
+      padding: 20px;
     }
 
-    header {
-      background-color: var(--header-bg);
-      color: var(--header-text);
-      padding: 10px 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
-      border-bottom: 1px solid rgba(255,255,255,0.2);
-      flex-shrink: 0;
-      gap: 6px;
-    }
-
-    .header-top-row {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 100%;
-      position: relative;
-      padding: 0 10px;
-    }
-
-    .home-link-btn {
-      position: absolute;
-      left: 0;
-      top: 6px;
-      background: #928ff2;
-      color: #ffffff;
-      border: none;
-      height: 38px;
-      width: 38px;
-      border-radius: 8px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      transition: transform 0.15s, background-color 0.15s;
-      text-decoration: none;
-      cursor: pointer;
-    }
-
-    .home-link-btn:hover {
-      background-color: #7d7ae6;
-      transform: scale(1.05);
-    }
-
-    .home-link-btn svg {
-      width: 22px;
-      height: 22px;
-      fill: none;
-      stroke: #ffffff;
-      stroke-width: 2;
-      stroke-linejoin: round;
-      stroke-linecap: round;
-    }
-
-    header h1 {
-      font-size: clamp(1rem, 2.8vw, 1.3rem);
-      font-weight: bold;
-      text-align: center;
-      letter-spacing: 0.5px;
-      line-height: 1.3;
-    }
-
-    .header-controls {
-      display: flex;
-      gap: 8px;
-      align-items: center;
-      flex-wrap: wrap;
-      justify-content: center;
-      width: 100%;
-    }
-
-    .menu-toggle-btn, .btn-icon, .btn-hdr-opt {
-      background: #ffffff;
-      color: #333333;
-      border: none;
-      height: 38px;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: bold;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-      transition: transform 0.15s, background-color 0.15s, color 0.15s;
-      user-select: none;
-      padding: 0 10px;
-    }
-
-    .menu-toggle-btn, .btn-icon {
-      width: 38px;
-      font-size: 1.1rem;
-      padding: 0;
-    }
-
-    .menu-toggle-btn:hover, .btn-icon:hover, .btn-hdr-opt:hover {
-      background-color: #f0f0f0;
-      transform: scale(1.05);
-    }
-
-    .menu-toggle-btn svg { width: 26px; height: 26px; }
-
-    .btn-play-icon svg { width: 34px; height: 34px; }
-    .btn-play-icon { background-color: #2e7d32; color: #ffffff; }
-    .btn-play-icon:hover { background-color: #1b5e20; }
-
-    .btn-pause-icon { background-color: #ef6c00; color: #ffffff; }
-    .btn-pause-icon:hover { background-color: #d86000; }
-    .btn-pause-icon.is-paused { background-color: #1565c0; }
-    .btn-pause-icon.is-paused:hover { background-color: #0d47a1; }
-    .btn-pause-icon svg { width: 26px; height: 26px; }
-
-    .btn-reset-icon { background-color: #c62828; color: white; }
-    .btn-reset-icon:hover { background-color: #b22424; }
-    .btn-reset-icon svg { width: 26px; height: 26px; }
-
-    .btn-mode-opt {
-      background-color: #bb3fd4 !important;
-      color: #ffffff !important;
-      min-width: 60px;
-      font-size: 0.85rem;
-    }
-    .btn-mode-opt:hover { background-color: #a02bb8 !important; }
-
-    .timer-clock-box {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0, 0, 0, 0.25);
-      padding: 5px;
-      border-radius: 50%;
-      height: 38px;
-      width: 38px;
-      box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
-    }
-
-    .timer-pie {
-      width: 28px;
-      height: 28px;
-      border-radius: 50%;
-      background: conic-gradient(#3b82f6 0%, #f3f4f6 0%);
-      border: 3.5px solid #000000;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-      position: relative;
-      flex-shrink: 0;
-      transition: background 0.2s linear;
-    }
-
-    .timer-pie::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 5px;
-      height: 5px;
-      background: #000000;
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    .btn-action {
-      padding: 8px 14px;
-      font-size: 0.95rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-      font-family: inherit;
-      background-color: #1565c0;
-    }
-
-    .btn-export {
-      padding: 8px 14px;
-      font-size: 0.95rem;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      color: white;
-      font-family: inherit;
-      background-color: #6a1b9a;
-      transition: background-color 0.2s;
-    }
-
-    .app-container {
-      display: flex;
-      flex: 1;
-      overflow: hidden;
-      position: relative;
-      background-color: var(--main-bg);
-    }
-
-    .mobile-overlay {
-      display: none;
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(0, 0, 0, 0.5);
-      z-index: 900;
-    }
-
-    aside {
-      width: 290px;
-      background-color: var(--sidebar-bg);
-      display: flex;
-      flex-direction: column;
-      padding: 15px;
-      flex-shrink: 0;
-      gap: 12px;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      touch-action: pan-y;
-      transition: margin-left 0.3s ease, transform 0.3s ease;
-      z-index: 950;
-      border-right: 1px solid rgba(255,255,255,0.2);
-    }
-
-    aside.collapsed { margin-left: -290px; }
-
-    .nav-card {
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
       background: var(--card-bg);
-      border-radius: 12px;
-      padding: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .nav-card-title {
-      font-size: 1.05rem;
-      font-weight: bold;
-      color: #1a1a1a;
-      padding-bottom: 8px;
-      border-bottom: 1px solid #f0f0f0;
-    }
-
-    .nav-tabs {
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-    }
-
-    .nav-tabs button {
-      background: transparent;
-      border: none;
-      color: #2b2b2b;
-      padding: 10px 14px;
-      text-align: left;
-      font-size: 0.95rem;
-      font-family: inherit;
-      cursor: pointer;
-      width: 100%;
       border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+      border: 1px solid var(--border-color);
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 20px;
+      background-color: #fff;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      margin-bottom: 10px;
+    }
+
+    .breadcrumb {
       display: flex;
-      align-items: center;
-      gap: 8px;
-      min-height: 42px;
-      transition: all 0.2s ease;
-    }
-
-    .nav-tabs button.active {
-      background-color: var(--active-green);
-      color: #ffffff;
-      font-weight: bold;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-    }
-
-    .nav-tabs button:hover:not(.active) { background-color: #f5f5f5; }
-    .tab-icon { font-size: 1.1rem; display: inline-block; }
-
-    .voice-select-box {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .voice-select-box label {
-      font-size: 0.85rem;
-      font-weight: bold;
-      color: #333;
-    }
-
-    .voice-select-box select {
-      width: 100%;
-      padding: 6px 8px;
-      font-size: 0.85rem;
-      font-family: inherit;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      background-color: #ffffff;
-      color: #2b2b2b;
-      cursor: pointer;
-      outline: none;
-    }
-
-    .filter-checkbox-label {
-      font-size: 0.8rem;
-      color: #555;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      cursor: pointer;
-      margin-top: 2px;
-      user-select: none;
-    }
-
-    .editor-box {
-      background: var(--card-bg);
-      border-radius: 12px;
-      padding: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-      display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: auto;
-    }
-
-    .editor-box h3 {
-      font-size: 0.95rem;
-      font-weight: bold;
-      color: #e65100;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 4px;
-    }
-
-    .editor-box textarea {
-      width: 100%;
-      height: 120px;
-      font-family: var(--font-family);
-      font-size: 0.85rem;
-      padding: 8px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-      background-color: #ffffff;
-      color: #2b2b2b;
-      resize: vertical;
-      white-space: pre-wrap;
-    }
-
-    .file-input-label {
-      background: #e65100;
-      color: white;
-      padding: 8px;
-      border-radius: 6px;
-      font-size: 0.85rem;
-      text-align: center;
-      cursor: pointer;
-      min-height: 38px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    main {
-      flex: 1;
-      padding: 15px 20px;
-      overflow-y: auto;
-      -webkit-overflow-scrolling: touch;
-      touch-action: pan-y;
-      background-color: var(--main-bg);
-      transition: width 0.3s ease;
-      scroll-behavior: smooth;
-    }
-
-    .toolbar-card {
-      position: sticky;
-      top: 0;
-      z-index: 800;
-      background: #ffffff;
-      padding: 10px 14px;
-      border-radius: 8px;
-      margin-bottom: 15px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      font-size: 0.95rem;
       flex-wrap: wrap;
-      transition: background-color 0.25s ease, box-shadow 0.25s ease, padding 0.25s ease;
-    }
-
-    .toolbar-card.is-scrolled {
-      background-color: transparent !important;
-      background: transparent !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      box-shadow: none !important;
-      padding-left: 0;
-      padding-right: 0;
-    }
-
-    .toolbar-card.is-scrolled .toolbar-options { display: none !important; }
-
-    .toolbar-card.is-scrolled .btn-tag-icon,
-    .toolbar-card.is-scrolled .btn-copy-icon {
-      opacity: 0.85;
-      backdrop-filter: blur(4px);
-      -webkit-backdrop-filter: blur(4px);
-    }
-
-    .toolbar-options {
-      display: inline-flex;
       align-items: center;
-      gap: 8px;
-      color: #1a1a1a;
-      font-weight: bold;
-      flex-wrap: wrap;
-    }
-
-    .toolbar-card input[type="number"], .toolbar-card select {
-      padding: 4px 4px;
-      font-size: 0.9rem;
-      font-family: inherit;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-      background-color: #ffffff;
-      color: #2b2b2b;
-    }
-
-    .toolbar-card input[type="number"] { 
-      width: 38px; 
-      text-align: center;
-      -moz-appearance: textfield;
-    }
-
-    .toolbar-card input[type="number"]::-webkit-outer-spin-button,
-    .toolbar-card input[type="number"]::-webkit-inner-spin-button {
-      -webkit-appearance: none;
-      margin: 0;
-    }
-
-    .btn-tag-icon {
-      background-color: #e65100 !important;
-      color: #ffffff !important;
-      border: none;
-      height: 36px;
-      padding: 0 12px;
-      border-radius: 8px;
+      gap: 5px;
       font-size: 0.95rem;
-      font-weight: bold;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-      user-select: none;
-      cursor: pointer;
-      transition: opacity 0.25s ease, transform 0.15s ease;
+      color: var(--accent-color);
     }
 
-    .btn-tag-icon:hover { transform: scale(1.05); opacity: 1 !important; }
-
-    .btn-copy-icon {
-      background-color: #54d1f0;
-      color: #ffffff;
-      border: none;
-      height: 36px;
-      padding: 0 14px;
-      border-radius: 8px;
-      font-size: 0.95rem;
-      font-weight: bold;
+    .breadcrumb span {
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
-      transition: transform 0.15s, background-color 0.15s, opacity 0.25s ease;
-      user-select: none;
-      margin-left: auto;
     }
 
-    .btn-copy-icon:hover { background-color: #38c4e8; transform: scale(1.05); opacity: 1 !important; }
+    .breadcrumb span:hover {
+      text-decoration: underline;
+    }
 
-    /* Word Card Grid */
-    .words-grid {
+    .breadcrumb .separator {
+      color: var(--file-color);
+      cursor: default;
+    }
+
+    .list-header, .item {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: 12px;
-    }
-
-    .word-card {
-      background: white;
-      border: 1px solid #ffe0b2;
-      border-radius: 8px;
-      padding: 14px 10px;
-      display: flex;
-      flex-direction: column;
+      grid-template-columns: 30px 1fr 100px 180px;
+      padding: 12px 20px;
       align-items: center;
-      position: relative;
+    }
+
+    .list-header {
+      font-weight: bold;
+      background-color: var(--bg-color);
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.85rem;
+      text-transform: uppercase;
+      color: var(--file-color);
+    }
+
+    .item-list {
+      list-style: none;
+    }
+
+    .item {
+      border-bottom: 1px solid var(--border-color);
       cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      min-height: 80px;
-      justify-content: center;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: background-color 0.15s ease;
+      text-decoration: none;
+      color: inherit;
     }
 
-    .word-card:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    .item:last-child {
+      border-bottom: none;
     }
 
-    .word-card.active-reading {
-      border: 2px solid #e65100;
-      background-color: #fff3e0;
+    .item:hover {
+      background-color: var(--hover-bg);
     }
 
-    .word-card.active-reading .word-text { color: #d32f2f !important; }
-
-    .word-index {
-      position: absolute;
-      left: 8px;
-      top: 6px;
-      font-size: 0.8rem;
-      color: #888888;
+    .icon {
       font-weight: bold;
     }
 
-    .word-text { 
-      font-size: 1.1rem; 
-      font-weight: bold;
-      color: #2b2b2b;
-      margin-top: 6px;
-      white-space: nowrap !important;
-      display: inline-block !important;
+    .icon.folder { color: var(--folder-color); }
+    .icon.file { color: var(--file-color); }
+
+    .name {
       overflow: hidden;
       text-overflow: ellipsis;
-      max-width: 95%;
+      white-space: nowrap;
+    }
+
+    .size, .modified {
+      font-size: 0.85rem;
+      color: var(--file-color);
+    }
+
+    .empty-state, .loading-state, .error-state {
+      padding: 40px;
       text-align: center;
+      color: var(--file-color);
     }
 
-    /* Chinese Text Alignment Controls */
-    .zh-text {
-      font-size: 0.95rem;
-      color: #0d47a1;
-      font-weight: bold;
-      margin-top: 4px;
-      min-height: 1.2em;
-    }
-
-    /* Left-align Chinese text in passage rows */
-    .dictation-row .zh-text {
-      text-align: left !important;
-    }
-
-    /* Keep Chinese text centered in grid cards */
-    .word-card .zh-text {
-      text-align: center !important;
-    }
-
-    /* Shared Play Button for Vocab & Dictation */
-    .card-play-btn {
-      position: absolute;
-      background: #fff3e0;
-      color: #e65100;
-      border: none;
-      border-radius: 50%;
-      width: 28px;
-      height: 28px;
-      font-size: 0.75rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      transition: background 0.15s, transform 0.15s;
-      z-index: 2;
-    }
-    
-    .card-play-btn:hover { background: #ffe0b2; }
-
-    /* Word card specific position */
-    .word-card .card-play-btn { right: 6px; bottom: 6px; }
-    .word-card .card-play-btn:hover { transform: scale(1.1); }
-
-    /* Dictation list structure */
-    .dictation-list { display: flex; flex-direction: column; gap: 10px; }
-
-    .dictation-row {
-      background: white;
-      border: 1px solid #ffe0b2;
-      border-radius: 8px;
-      padding: 12px 48px 12px 16px;
-      cursor: pointer;
-      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-      transition: transform 0.15s ease;
-      position: relative;
-    }
-
-    .dictation-row:hover { transform: translateX(3px); }
-
-    .dictation-row.active-reading {
-      border: 2px solid #e65100;
-      background-color: #fff3e0;
-    }
-
-    .dictation-row.active-reading .sentence-text {
-      color: #d32f2f !important;
-      font-weight: bold;
-    }
-
-    /* Dictation row specific button position */
-    .dictation-row .card-play-btn {
-      top: 50%;
-      transform: translateY(-50%);
-      right: 12px;
-      bottom: auto;
-    }
-    .dictation-row .card-play-btn:hover { transform: translateY(-50%) scale(1.1); }
-
-    .sentence-index { font-size: 0.8rem; color: #888; margin-bottom: 2px; }
-    
-    .sentence-text { 
-      font-size: 1.25rem; 
-      line-height: 1.45; 
-      color: #2b2b2b; 
-      word-break: normal;
-      hyphens: none;
-    }
-
-    .sentence-text span.nowrap-word {
-      white-space: nowrap !important;
-      display: inline-block !important;
-    }
-
-    /* Display Mode Control Styles */
-    .mode-E .sentence-text, .mode-E .word-text { display: block !important; }
-    .mode-E .zh-text { display: none !important; }
-
-    .mode-EC .sentence-text, .mode-EC .word-text { display: block !important; }
-    .mode-EC .zh-text { display: block !important; }
-
-    .mode-C .sentence-text, .mode-C .word-text { display: none !important; }
-    .mode-C .zh-text { display: block !important; }
-
-    .mode-Blank .sentence-text, .mode-Blank .word-text, .mode-Blank .zh-text { display: none !important; }
-
-    .paragraph-break {
-      background-color: #fff3e0;
-      border-left: 4px solid #e65100;
-      padding: 8px 12px;
-      margin: 6px 0;
-      font-size: 1rem;
-      color: #e65100;
-      position: relative;
-    }
-
-    .empty-prompt {
-      color: #ffffff;
-      text-align: center;
-      padding: 40px 20px;
-      font-size: 1.15rem;
-    }
-
-    .hidden { display: none !important; }
-
-    /* Exported HTML Background Theme */
-    body.exported-app { --main-bg: #f7dec8 !important; --sidebar-bg: #f7dec8 !important; }
-    body.exported-app main { background-color: #f7dec8 !important; }
-    body.exported-app .app-container { background-color: #f7dec8 !important; }
-    body.exported-app aside { background-color: #f7dec8 !important; border-right: 1px solid rgba(0,0,0,0.1); }
-    body.exported-app header { background-color: #fc7f19 !important; color: #ffffff !important; border-bottom: 1px solid rgba(255,255,255,0.2) !important; }
-    body.exported-app header h1 { color: #ffffff !important; }
-
-    @media (max-width: 768px) {
-      aside {
-        position: absolute;
-        top: 0; bottom: 0; left: 0;
-        transform: translateX(-100%);
-        margin-left: 0 !important;
-        box-shadow: 4px 0 15px rgba(0,0,0,0.3);
-      }
-      aside.open { transform: translateX(0); }
-      .mobile-overlay.open { display: block; }
-      main { padding: 10px; }
-      .words-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+    .error-state {
+      color: #dc3545;
     }
   </style>
 </head>
-<body class="exported-app">
+<body>
 
-  <header>
-    <div class="header-top-row">
-      <a href="https://tonyymlee.github.io/pdictation/" class="home-link-btn" title="Home">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-      </a>
-      <h1 id="appMainTitle"><span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School (26/27 Division 1)<br>Primary 4 Dictation 3 scope</h1>
+<div class="container">
+  <div class="header">
+    <h1>Directory Browser</h1>
+    <div class="breadcrumb" id="breadcrumb">
+      <!-- Breadcrumbs injected dynamically -->
     </div>
-    <div class="header-controls">
-      <button class="menu-toggle-btn" onclick="toggleSidebarMenu()" title="Show/Hide Menu">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="7"></circle>
-          <circle cx="28" cy="32" r="5" fill="currentColor"></circle>
-          <rect x="42" y="28" width="34" height="8" rx="4" fill="currentColor"></rect>
-          <circle cx="28" cy="50" r="5" fill="currentColor"></circle>
-          <rect x="42" y="46" width="34" height="8" rx="4" fill="currentColor"></rect>
-          <circle cx="28" cy="68" r="5" fill="currentColor"></circle>
-          <rect x="42" y="64" width="34" height="8" rx="4" fill="currentColor"></rect>
-        </svg>
-      </button>
-
-      <button class="btn-icon btn-play-icon" onclick="startAutoPlay()" title="Start Auto-Play">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <text x="50%" y="54%" dominant-baseline="central" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-weight="900" font-size="52">GO</text>
-        </svg>
-      </button>
-
-      <button class="btn-icon btn-pause-icon" id="pauseResumeBtn" onclick="togglePauseResume()" title="Pause"><svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="3" width="5" height="18" rx="1.5"></rect><rect x="14" y="3" width="5" height="18" rx="1.5"></rect></svg></button>
-      
-      <button class="btn-icon btn-reset-icon" onclick="resetPlayback()" title="Reset">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"></path>
-        </svg>
-      </button>
-
-      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">C+E</button>
-      
-      <div class="timer-clock-box" title="Remaining Time">
-        <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 0%, rgb(229, 231, 235) 0%);"></div>
-      </div>
-    </div>
-  </header>
-
-  <div class="app-container">
-    <div class="mobile-overlay" id="mobileOverlay" onclick="closeSidebarMenu()"></div>
-
-    <aside id="sidebar">
-      <div class="nav-card">
-        <div class="nav-card-title">Dictation Scope</div>
-        <div class="nav-tabs">
-          <button class="tab-btn" id="btn_tab1" onclick="switchTab('tab1', this)">
-            <span class="tab-icon">🔤</span> Vocabulary
-          </button>
-          <button class="tab-btn active" id="btn_tab2" onclick="switchTab('tab2', this)">
-            <span class="tab-icon">📖</span> Passage
-          </button>
-          <button class="tab-btn" id="btn_tab3" onclick="switchTab('tab3', this)">
-            <span class="tab-icon">🎯</span> Unseen
-          </button>
-        </div>
-
-        <div class="voice-select-box">
-          <label for="voiceSelect">🗣️ Select Voice:</label>
-          <select id="voiceSelect" onchange="changeVoice()"><option value="Google UK English Female">👨 Google UK English Female (en-GB)</option><option value="Google UK English Male">👨 Google UK English Male (en-GB)</option><option value="Google US English">👩 Google US English (en-US)</option><option value="Microsoft David - English (United States)">👨 Microsoft David - English (United States) (en-US)</option><option value="Microsoft Mark - English (United States)">👨 Microsoft Mark - English (United States) (en-US)</option><option value="Microsoft Zira - English (United States)">👩 Microsoft Zira - English (United States) (en-US)</option></select>
-          
-          <label class="filter-checkbox-label">
-            <input type="checkbox" id="englishOnlyCheck" checked="" onchange="populateVoices()">
-            English Voices Only
-          </label>
-        </div>
-      </div>
-
-      <div class="editor-box" id="editorSection" style="display: none;">
-        <h3>Load / Edit Content</h3>
-        <label class="file-input-label">
-          📁 Load Text File (.txt / .json)
-          <input type="file" id="fileImporter" accept=".txt,.json" style="display:none;" onchange="handleFileImport(event)">
-        </label>
-        <textarea id="rawTextEditor" placeholder="Paste full content here...">
-Ying Wa Primary School (26/27 Division 1)
-Primary 4 Dictation 3 scope
-Date of Dictation: 15th October,2026 (Friday) 
-
-Part A: Vocabulary (15% @3, Sp.-3 P./C.-1)
-hard-working	polite	brave
-messy	cleanest	outgoing
-selfish	biggest	generous
-timid	kindest	highest
-friendliest	funniest	
-
-Part B: Textbook - Lighthouse (pp.36-37)(70% @3, Sp.-3 P./C.-1) - Growing up
-
-Not necessarily. They had more free time but this does not mean that they were lazy. Many of them still worked very hard and had a lot of good qualities. Being a good student does not mean just getting high grades at school. It also means having good character⁴ — doing the right things and being a nice person. 
-You cannot change your character overnight, but there are many things you can do to help you become a good person. The easiest way is to start with your school life. You can start by keeping your school desk clean and tidy. Being tidy is better than being messy. It shows that you know how to look after your own things. Your classmates will want to come over to your seat and chat with you! 
-Remember to greet your teachers and classmates at school. Don’t be shy or rude. A polite and outgoing student can make a lot of friends! You can also try to be generous. No one likes a selfish person. Next time you have some cake, give the biggest piece to your friends. You will feel happier sharing food with others than eating it on your own. 
-Students with these good qualities usually grow up to become good people. It is time for you to set goals for yourself.</textarea>
-        <button class="btn-action" onclick="refreshContentFromEditor()">🔄 Update Content</button>
-        <button class="btn-export" onclick="exportCurrentAppAsHTML()">📥 Export HTML</button>
-      </div>
-    </aside>
-
-    <main id="mainContent" class="mode-EC">
-      <div class="toolbar-card hidden is-scrolled" id="vocabToolbar">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
-          <span class="toolbar-options">
-            <label>I: <input type="number" id="vocabDelayInput" value="12" min="1" max="99"> s</label>
-            <label>S: 
-              <select id="vocabVoiceSpeedSelect">
-                <option value="0.6">0.6x</option>
-                <option value="0.7">0.7x</option>
-                <option value="0.75" selected="">0.75x</option>
-                <option value="0.88">0.88x</option>
-                <option value="0.95">0.95x</option>
-                <option value="1.0">1.0x</option>
-                <option value="1.5">1.5x</option>
-              </select>
-            </label>
-          </span>
-        </div>
-        <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="Copy Content">C</button>
-      </div>
-
-      <div class="toolbar-card is-scrolled" id="dictationToolbar">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="Back to Top">Passage</button>
-          <span class="toolbar-options">
-            <label>I: <input type="number" id="secPerWordInput" value="1.5" min="0.5" step="0.1" max="99"> s</label>
-            <label>S: 
-              <select id="voiceSpeedSelect">
-                <option value="0.6">0.6x</option>
-                <option value="0.7">0.7x</option>
-                <option value="0.75" selected="">0.75x</option>
-                <option value="0.88">0.88x</option>
-                <option value="0.95">0.95x</option>
-                <option value="1.0">1.0x</option>
-                <option value="1.5">1.5x</option>
-              </select>
-            </label>
-          </span>
-        </div>
-        <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="Copy Content">C</button>
-      </div>
-
-      <div id="contentArea"><div class="dictation-list" id="dictationList">
-            <div class="dictation-row" id="dcard_1" onclick="clickPlayDictation(1)">
-              <div>
-                <div class="sentence-index">#1</div>
-                <div class="sentence-text"><span class="nowrap-word">Not</span> <span class="nowrap-word">necessarily.</span></div>
-                <div class="zh-text" data-en="Not necessarily.">「不一定。」</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(1)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_2" onclick="clickPlayDictation(2)">
-              <div>
-                <div class="sentence-index">#2</div>
-                <div class="sentence-text"><span class="nowrap-word">They</span> <span class="nowrap-word">had</span> <span class="nowrap-word">more</span> <span class="nowrap-word">free</span> <span class="nowrap-word">time</span></div>
-                <div class="zh-text" data-en="They had more free time">他們有更多空閒時間</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(2)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_3" onclick="clickPlayDictation(3)">
-              <div>
-                <div class="sentence-index">#3</div>
-                <div class="sentence-text"><span class="nowrap-word">but</span> <span class="nowrap-word">this</span> <span class="nowrap-word">does</span> <span class="nowrap-word">not</span> <span class="nowrap-word">mean</span></div>
-                <div class="zh-text" data-en="but this does not mean">這並不意味著</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(3)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_4" onclick="clickPlayDictation(4)">
-              <div>
-                <div class="sentence-index">#4</div>
-                <div class="sentence-text"><span class="nowrap-word">that</span> <span class="nowrap-word">they</span> <span class="nowrap-word">were</span> <span class="nowrap-word">lazy.</span></div>
-                <div class="zh-text" data-en="that they were lazy.">他們很懶惰</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(4)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_5" onclick="clickPlayDictation(5)">
-              <div>
-                <div class="sentence-index">#5</div>
-                <div class="sentence-text"><span class="nowrap-word">Many</span> <span class="nowrap-word">of</span> <span class="nowrap-word">them</span> <span class="nowrap-word">still</span></div>
-                <div class="zh-text" data-en="Many of them still">他們中的許多人仍然</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(5)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_6" onclick="clickPlayDictation(6)">
-              <div>
-                <div class="sentence-index">#6</div>
-                <div class="sentence-text"><span class="nowrap-word">worked</span> <span class="nowrap-word">very</span> <span class="nowrap-word">hard</span> <span class="nowrap-word">and</span></div>
-                <div class="zh-text" data-en="worked very hard and">非常努力地工作，</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(6)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_7" onclick="clickPlayDictation(7)">
-              <div>
-                <div class="sentence-index">#7</div>
-                <div class="sentence-text"><span class="nowrap-word">had</span> <span class="nowrap-word">a</span> <span class="nowrap-word">lot</span> <span class="nowrap-word">of</span> <span class="nowrap-word">good</span> <span class="nowrap-word">qualities.</span></div>
-                <div class="zh-text" data-en="had a lot of good qualities.">有很多優秀的品質</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(7)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_8" onclick="clickPlayDictation(8)">
-              <div>
-                <div class="sentence-index">#8</div>
-                <div class="sentence-text"><span class="nowrap-word">Being</span> <span class="nowrap-word">a</span> <span class="nowrap-word">good</span> <span class="nowrap-word">student</span> <span class="nowrap-word">does</span></div>
-                <div class="zh-text" data-en="Being a good student does">做一個好學生</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(8)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_9" onclick="clickPlayDictation(9)">
-              <div>
-                <div class="sentence-index">#9</div>
-                <div class="sentence-text"><span class="nowrap-word">not</span> <span class="nowrap-word">mean</span> <span class="nowrap-word">just</span> <span class="nowrap-word">getting</span></div>
-                <div class="zh-text" data-en="not mean just getting">不僅僅是</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(9)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_10" onclick="clickPlayDictation(10)">
-              <div>
-                <div class="sentence-index">#10</div>
-                <div class="sentence-text"><span class="nowrap-word">high</span> <span class="nowrap-word">grades</span> <span class="nowrap-word">at</span> <span class="nowrap-word">school.</span></div>
-                <div class="zh-text" data-en="high grades at school.">學校的高分</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(10)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_11" onclick="clickPlayDictation(11)">
-              <div>
-                <div class="sentence-index">#11</div>
-                <div class="sentence-text"><span class="nowrap-word">It</span> <span class="nowrap-word">also</span> <span class="nowrap-word">means</span> <span class="nowrap-word">having</span> <span class="nowrap-word">good</span> <span class="nowrap-word">character⁴</span></div>
-                <div class="zh-text" data-en="It also means having good character⁴">這也意味著要有良好的品格，</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(11)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_12" onclick="clickPlayDictation(12)">
-              <div>
-                <div class="sentence-index">#12</div>
-                <div class="sentence-text"><span class="nowrap-word">—</span> <span class="nowrap-word">doing</span> <span class="nowrap-word">the</span> <span class="nowrap-word">right</span> <span class="nowrap-word">things</span></div>
-                <div class="zh-text" data-en="— doing the right things">—做正確的事情</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(12)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_13" onclick="clickPlayDictation(13)">
-              <div>
-                <div class="sentence-index">#13</div>
-                <div class="sentence-text"><span class="nowrap-word">and</span> <span class="nowrap-word">being</span> <span class="nowrap-word">a</span> <span class="nowrap-word">nice</span> <span class="nowrap-word">person.</span></div>
-                <div class="zh-text" data-en="and being a nice person.">並成為一個好人</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(13)">▶</button>
-            </div>
-          <div class="paragraph-break" id="break_1">--- Next Paragraph ---</div>
-            <div class="dictation-row" id="dcard_14" onclick="clickPlayDictation(14)">
-              <div>
-                <div class="sentence-index">#14</div>
-                <div class="sentence-text"><span class="nowrap-word">You</span> <span class="nowrap-word">cannot</span> <span class="nowrap-word">change</span> <span class="nowrap-word">your</span> <span class="nowrap-word">character</span> <span class="nowrap-word">overnight,</span></div>
-                <div class="zh-text" data-en="You cannot change your character overnight,">你不能一夜之間改變你的角色</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(14)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_15" onclick="clickPlayDictation(15)">
-              <div>
-                <div class="sentence-index">#15</div>
-                <div class="sentence-text"><span class="nowrap-word">but</span> <span class="nowrap-word">there</span> <span class="nowrap-word">are</span> <span class="nowrap-word">many</span> <span class="nowrap-word">things</span></div>
-                <div class="zh-text" data-en="but there are many things">但有很多事情</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(15)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_16" onclick="clickPlayDictation(16)">
-              <div>
-                <div class="sentence-index">#16</div>
-                <div class="sentence-text"><span class="nowrap-word">you</span> <span class="nowrap-word">can</span> <span class="nowrap-word">do</span> <span class="nowrap-word">to</span> <span class="nowrap-word">help</span></div>
-                <div class="zh-text" data-en="you can do to help">你可以提供協助</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(16)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_17" onclick="clickPlayDictation(17)">
-              <div>
-                <div class="sentence-index">#17</div>
-                <div class="sentence-text"><span class="nowrap-word">you</span> <span class="nowrap-word">become</span> <span class="nowrap-word">a</span> <span class="nowrap-word">good</span> <span class="nowrap-word">person.</span></div>
-                <div class="zh-text" data-en="you become a good person.">你會成為一個好人。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(17)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_18" onclick="clickPlayDictation(18)">
-              <div>
-                <div class="sentence-index">#18</div>
-                <div class="sentence-text"><span class="nowrap-word">The</span> <span class="nowrap-word">easiest</span> <span class="nowrap-word">way</span> <span class="nowrap-word">is</span> <span class="nowrap-word">to</span></div>
-                <div class="zh-text" data-en="The easiest way is to">最簡單的方法是</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(18)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_19" onclick="clickPlayDictation(19)">
-              <div>
-                <div class="sentence-index">#19</div>
-                <div class="sentence-text"><span class="nowrap-word">start</span> <span class="nowrap-word">with</span> <span class="nowrap-word">your</span> <span class="nowrap-word">school</span> <span class="nowrap-word">life.</span></div>
-                <div class="zh-text" data-en="start with your school life.">從你的學校生活開始</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(19)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_20" onclick="clickPlayDictation(20)">
-              <div>
-                <div class="sentence-index">#20</div>
-                <div class="sentence-text"><span class="nowrap-word">You</span> <span class="nowrap-word">can</span> <span class="nowrap-word">start</span> <span class="nowrap-word">by</span> <span class="nowrap-word">keeping</span> <span class="nowrap-word">your</span></div>
-                <div class="zh-text" data-en="You can start by keeping your">你可以先保留你的</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(20)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_21" onclick="clickPlayDictation(21)">
-              <div>
-                <div class="sentence-index">#21</div>
-                <div class="sentence-text"><span class="nowrap-word">school</span> <span class="nowrap-word">desk</span> <span class="nowrap-word">clean</span> <span class="nowrap-word">and</span> <span class="nowrap-word">tidy.</span></div>
-                <div class="zh-text" data-en="school desk clean and tidy.">書桌乾淨整潔。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(21)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_22" onclick="clickPlayDictation(22)">
-              <div>
-                <div class="sentence-index">#22</div>
-                <div class="sentence-text"><span class="nowrap-word">Being</span> <span class="nowrap-word">tidy</span> <span class="nowrap-word">is</span> <span class="nowrap-word">better</span></div>
-                <div class="zh-text" data-en="Being tidy is better">整潔比較好</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(22)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_23" onclick="clickPlayDictation(23)">
-              <div>
-                <div class="sentence-index">#23</div>
-                <div class="sentence-text"><span class="nowrap-word">than</span> <span class="nowrap-word">being</span> <span class="nowrap-word">messy.</span></div>
-                <div class="zh-text" data-en="than being messy.">而不是亂七八糟。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(23)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_24" onclick="clickPlayDictation(24)">
-              <div>
-                <div class="sentence-index">#24</div>
-                <div class="sentence-text"><span class="nowrap-word">It</span> <span class="nowrap-word">shows</span> <span class="nowrap-word">that</span> <span class="nowrap-word">you</span> <span class="nowrap-word">know</span> <span class="nowrap-word">how</span></div>
-                <div class="zh-text" data-en="It shows that you know how">這表明你知道如何</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(24)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_25" onclick="clickPlayDictation(25)">
-              <div>
-                <div class="sentence-index">#25</div>
-                <div class="sentence-text"><span class="nowrap-word">to</span> <span class="nowrap-word">look</span> <span class="nowrap-word">after</span> <span class="nowrap-word">your</span> <span class="nowrap-word">own</span> <span class="nowrap-word">things.</span></div>
-                <div class="zh-text" data-en="to look after your own things.">照顧自己的東西</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(25)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_26" onclick="clickPlayDictation(26)">
-              <div>
-                <div class="sentence-index">#26</div>
-                <div class="sentence-text"><span class="nowrap-word">Your</span> <span class="nowrap-word">classmates</span> <span class="nowrap-word">will</span> <span class="nowrap-word">want</span> <span class="nowrap-word">to</span></div>
-                <div class="zh-text" data-en="Your classmates will want to">你的同學會想要</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(26)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_27" onclick="clickPlayDictation(27)">
-              <div>
-                <div class="sentence-index">#27</div>
-                <div class="sentence-text"><span class="nowrap-word">come</span> <span class="nowrap-word">over</span> <span class="nowrap-word">to</span> <span class="nowrap-word">your</span> <span class="nowrap-word">seat</span></div>
-                <div class="zh-text" data-en="come over to your seat">過來你的座位</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(27)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_28" onclick="clickPlayDictation(28)">
-              <div>
-                <div class="sentence-index">#28</div>
-                <div class="sentence-text"><span class="nowrap-word">and</span> <span class="nowrap-word">chat</span> <span class="nowrap-word">with</span> <span class="nowrap-word">you!</span></div>
-                <div class="zh-text" data-en="and chat with you!">並與您聊天！</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(28)">▶</button>
-            </div>
-          <div class="paragraph-break" id="break_2">--- Next Paragraph ---</div>
-            <div class="dictation-row" id="dcard_29" onclick="clickPlayDictation(29)">
-              <div>
-                <div class="sentence-index">#29</div>
-                <div class="sentence-text"><span class="nowrap-word">Remember</span> <span class="nowrap-word">to</span> <span class="nowrap-word">greet</span> <span class="nowrap-word">your</span> <span class="nowrap-word">teachers</span></div>
-                <div class="zh-text" data-en="Remember to greet your teachers">記得跟老師打招呼</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(29)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_30" onclick="clickPlayDictation(30)">
-              <div>
-                <div class="sentence-index">#30</div>
-                <div class="sentence-text"><span class="nowrap-word">and</span> <span class="nowrap-word">classmates</span> <span class="nowrap-word">at</span> <span class="nowrap-word">school.</span></div>
-                <div class="zh-text" data-en="and classmates at school.">和同學在學校</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(30)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_31" onclick="clickPlayDictation(31)">
-              <div>
-                <div class="sentence-index">#31</div>
-                <div class="sentence-text"><span class="nowrap-word">Don’t</span> <span class="nowrap-word">be</span> <span class="nowrap-word">shy</span> <span class="nowrap-word">or</span> <span class="nowrap-word">rude.</span></div>
-                <div class="zh-text" data-en="Don’t be shy or rude.">不要害羞或無禮。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(31)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_32" onclick="clickPlayDictation(32)">
-              <div>
-                <div class="sentence-index">#32</div>
-                <div class="sentence-text"><span class="nowrap-word">A</span> <span class="nowrap-word">polite</span> <span class="nowrap-word">and</span> <span class="nowrap-word">outgoing</span> <span class="nowrap-word">student</span></div>
-                <div class="zh-text" data-en="A polite and outgoing student">有禮貌且外向的學生</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(32)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_33" onclick="clickPlayDictation(33)">
-              <div>
-                <div class="sentence-index">#33</div>
-                <div class="sentence-text"><span class="nowrap-word">can</span> <span class="nowrap-word">make</span> <span class="nowrap-word">a</span> <span class="nowrap-word">lot</span> <span class="nowrap-word">of</span> <span class="nowrap-word">friends!</span></div>
-                <div class="zh-text" data-en="can make a lot of friends!">可以交到很多朋友！</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(33)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_34" onclick="clickPlayDictation(34)">
-              <div>
-                <div class="sentence-index">#34</div>
-                <div class="sentence-text"><span class="nowrap-word">You</span> <span class="nowrap-word">can</span> <span class="nowrap-word">also</span> <span class="nowrap-word">try</span></div>
-                <div class="zh-text" data-en="You can also try">您也可以嘗試</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(34)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_35" onclick="clickPlayDictation(35)">
-              <div>
-                <div class="sentence-index">#35</div>
-                <div class="sentence-text"><span class="nowrap-word">to</span> <span class="nowrap-word">be</span> <span class="nowrap-word">generous.</span></div>
-                <div class="zh-text" data-en="to be generous.">慷慨大方</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(35)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_36" onclick="clickPlayDictation(36)">
-              <div>
-                <div class="sentence-index">#36</div>
-                <div class="sentence-text"><span class="nowrap-word">No</span> <span class="nowrap-word">one</span> <span class="nowrap-word">likes</span> <span class="nowrap-word">a</span> <span class="nowrap-word">selfish</span> <span class="nowrap-word">person.</span></div>
-                <div class="zh-text" data-en="No one likes a selfish person.">沒有人喜歡自私的人。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(36)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_37" onclick="clickPlayDictation(37)">
-              <div>
-                <div class="sentence-index">#37</div>
-                <div class="sentence-text"><span class="nowrap-word">Next</span> <span class="nowrap-word">time</span> <span class="nowrap-word">you</span> <span class="nowrap-word">have</span> <span class="nowrap-word">some</span></div>
-                <div class="zh-text" data-en="Next time you have some">下次您有一些</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(37)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_38" onclick="clickPlayDictation(38)">
-              <div>
-                <div class="sentence-index">#38</div>
-                <div class="sentence-text"><span class="nowrap-word">cake,</span> <span class="nowrap-word">give</span> <span class="nowrap-word">the</span> <span class="nowrap-word">biggest</span></div>
-                <div class="zh-text" data-en="cake, give the biggest">蛋糕，給最大的</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(38)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_39" onclick="clickPlayDictation(39)">
-              <div>
-                <div class="sentence-index">#39</div>
-                <div class="sentence-text"><span class="nowrap-word">piece</span> <span class="nowrap-word">to</span> <span class="nowrap-word">your</span> <span class="nowrap-word">friends.</span></div>
-                <div class="zh-text" data-en="piece to your friends.">送給朋友。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(39)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_40" onclick="clickPlayDictation(40)">
-              <div>
-                <div class="sentence-index">#40</div>
-                <div class="sentence-text"><span class="nowrap-word">You</span> <span class="nowrap-word">will</span> <span class="nowrap-word">feel</span> <span class="nowrap-word">happier</span> <span class="nowrap-word">sharing</span></div>
-                <div class="zh-text" data-en="You will feel happier sharing">分享會讓你感覺更快樂</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(40)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_41" onclick="clickPlayDictation(41)">
-              <div>
-                <div class="sentence-index">#41</div>
-                <div class="sentence-text"><span class="nowrap-word">food</span> <span class="nowrap-word">with</span> <span class="nowrap-word">others</span> <span class="nowrap-word">than</span> <span class="nowrap-word">eating</span></div>
-                <div class="zh-text" data-en="food with others than eating">與他人一起吃飯而不是吃飯</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(41)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_42" onclick="clickPlayDictation(42)">
-              <div>
-                <div class="sentence-index">#42</div>
-                <div class="sentence-text"><span class="nowrap-word">it</span> <span class="nowrap-word">on</span> <span class="nowrap-word">your</span> <span class="nowrap-word">own.</span></div>
-                <div class="zh-text" data-en="it on your own.">就靠你自己了。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(42)">▶</button>
-            </div>
-          <div class="paragraph-break" id="break_3">--- Next Paragraph ---</div>
-            <div class="dictation-row" id="dcard_43" onclick="clickPlayDictation(43)">
-              <div>
-                <div class="sentence-index">#43</div>
-                <div class="sentence-text"><span class="nowrap-word">Students</span> <span class="nowrap-word">with</span> <span class="nowrap-word">these</span> <span class="nowrap-word">good</span> <span class="nowrap-word">qualities</span> <span class="nowrap-word">usually</span></div>
-                <div class="zh-text" data-en="Students with these good qualities usually">具備這些優良品質的學生通常</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(43)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_44" onclick="clickPlayDictation(44)">
-              <div>
-                <div class="sentence-index">#44</div>
-                <div class="sentence-text"><span class="nowrap-word">grow</span> <span class="nowrap-word">up</span> <span class="nowrap-word">to</span> <span class="nowrap-word">become</span> <span class="nowrap-word">good</span> <span class="nowrap-word">people.</span></div>
-                <div class="zh-text" data-en="grow up to become good people.">長大後成為好人。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(44)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_45" onclick="clickPlayDictation(45)">
-              <div>
-                <div class="sentence-index">#45</div>
-                <div class="sentence-text"><span class="nowrap-word">It</span> <span class="nowrap-word">is</span> <span class="nowrap-word">time</span> <span class="nowrap-word">for</span> <span class="nowrap-word">you</span></div>
-                <div class="zh-text" data-en="It is time for you">是時候為您服務了</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(45)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_46" onclick="clickPlayDictation(46)">
-              <div>
-                <div class="sentence-index">#46</div>
-                <div class="sentence-text"><span class="nowrap-word">to</span> <span class="nowrap-word">set</span> <span class="nowrap-word">goals</span> <span class="nowrap-word">for</span> <span class="nowrap-word">yourself.</span></div>
-                <div class="zh-text" data-en="to set goals for yourself.">為自己設定目標。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(46)">▶</button>
-            </div>
-          </div></div>
-    </main>
   </div>
 
-  <script>
-    let partAVocab = []; 
-    let partBText = "";
-    let partCText = "";
+  <div class="list-header">
+    <span></span>
+    <span>Name</span>
+    <span>Size</span>
+    <span>Last Modified</span>
+  </div>
 
-    let currentTab = 'tab1';
-    let isPlaying = false;
-    let isPaused = false;
-    let isReviewPhase = false; 
-    let playIndex = 0;
-    let queue = [];
-    let timerInterval = null;
-    let totalTimerSeconds = 0;
-    let remainingSeconds = 0;
-    let wakeUpTimeout = null; 
+  <div id="content">
+    <div class="loading-state">Loading directory contents...</div>
+  </div>
+</div>
+
+<script>
+  // API endpoint for fetching directory contents
+  const API_URL = '/api/files'; 
+
+  let currentPath = '';
+
+  // Fetch directory data from server
+  async function loadDirectory(path = '') {
+    const contentDiv = document.getElementById('content');
+    contentDiv.innerHTML = '<div class="loading-state">Loading directory contents...</div>';
     
-    // Cycle modes matching exact user labels: 'Chi' -> 'Eng' -> 'C+E' -> 'Blank'
-    const displayModes = [
-      { id: 'C', label: 'Chi' },
-      { id: 'E', label: 'Eng' },
-      { id: 'EC', label: 'C+E' },
-      { id: 'Blank', label: 'Blank' }
-    ];
-    let displayModeIndex = 0; // Default to Chi
-
-    let wakeLock = null; 
-    let currentSpeechId = 0; 
-    let isTranslating = false; 
-
-    let availableVoices = [];
-    let selectedVoiceURI = localStorage.getItem('fixedDictationVoiceURI') || '';
-
-    // Global in-memory cache for loaded translations
-    const translationCache = {};
-
-    const synth = window.speechSynthesis;
-
-    const pauseIconSvg = `<svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="3" width="5" height="18" rx="1.5"/><rect x="14" y="3" width="5" height="18" rx="1.5"/></svg>`;
-    const playIconSvg = `<svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>`;
-
-    const maleKeywords = [
-      'david', 'mark', 'george', 'daniel', 'richard', 'james', 'thomas', 'guy', 'male', 
-      'alex', 'fred', 'bruce', 'paul', 'john', 'michael', 'steven', 'peter', 'tom', 'sam',
-      'oliver', 'harry', 'jack', 'jacob', 'charlie', 'william', 'ryan', 'noah',
-      'liam', 'mason', 'ethan', 'benjamin', 'lucas', 'henry', 'alexander', 'sebas', 'matthew'
-    ];
-
-    const protectedPhrases = [
-      "at the bottom of", "at the end of", "at the top of", "in addition to", "in accordance with",
-      "in the middle of", "look forward to", "on behalf of", "on top of", "a couple of",
-      "a lot of", "a number of", "ahead of", "along with", "apart from", "as far as",
-      "as long as", "as soon as", "as well as", "back and forth", "because of", "catch up with",
-      "close to", "come up with", "due to", "except for", "far away from", "for example",
-      "for instance", "get along with", "get rid of", "in favor of", "in front of", "in order to",
-      "instead of", "keep up with", "look after", "look down on", "look for", "look up to",
-      "next to", "other than", "out of", "run out of", "so as to", "such as", "take care of",
-      "thanks to", "together with", "up to"
-    ];
-
-    function extractTranslation(text) {
-      if (!text) return { en: "", zh: "" };
+    try {
+      // Send path as a query parameter
+      const response = await fetch(`${API_URL}?path=${encodeURIComponent(path)}`);
       
-      const match = text.match(/^(.*?)\s*[\(\（]([^\)\）]+)[\)\）]\s*$/);
-      if (match) {
-        return { en: match[1].trim(), zh: match[2].trim() };
+      if (!response.ok) {
+        throw new Error(`Server returned status ${response.status}`);
       }
 
-      const cleanEn = text.trim();
-      return { en: cleanEn, zh: translationCache[cleanEn.toLowerCase()] || "" };
+      const data = await response.json();
+      currentPath = path;
+      
+      renderBreadcrumbs(currentPath);
+      renderList(data);
+    } catch (error) {
+      contentDiv.innerHTML = `<div class="error-state">Failed to load directory: ${error.message}</div>`;
+    }
+  }
+
+  // Render Breadcrumb navigation
+  function renderBreadcrumbs(path) {
+    const breadcrumbContainer = document.getElementById('breadcrumb');
+    breadcrumbContainer.innerHTML = '';
+
+    const rootSpan = document.createElement('span');
+    rootSpan.textContent = 'Root';
+    rootSpan.onclick = () => loadDirectory('');
+    breadcrumbContainer.appendChild(rootSpan);
+
+    if (!path) return;
+
+    const parts = path.split('/').filter(p => p.length > 0);
+    let accumulatedPath = '';
+
+    parts.forEach((part) => {
+      accumulatedPath += '/' + part;
+      const targetPath = accumulatedPath;
+
+      const separator = document.createElement('span');
+      separator.className = 'separator';
+      separator.textContent = ' / ';
+      breadcrumbContainer.appendChild(separator);
+
+      const itemSpan = document.createElement('span');
+      itemSpan.textContent = part;
+      itemSpan.onclick = () => loadDirectory(targetPath);
+      breadcrumbContainer.appendChild(itemSpan);
+    });
+  }
+
+  // Render File and Directory List
+  function renderList(items) {
+    const contentDiv = document.getElementById('content');
+
+    if (!items || items.length === 0) {
+      contentDiv.innerHTML = '<div class="empty-state">This directory is empty.</div>';
+      return;
     }
 
-    async function fetchOnlineTranslation(text) {
-      if (!text || !text.trim()) return "";
-      const cleanText = text.trim();
-      const lowerKey = cleanText.toLowerCase();
+    const list = document.createElement('ul');
+    list.className = 'item-list';
 
-      if (translationCache[lowerKey]) {
-        return translationCache[lowerKey];
-      }
-
-      try {
-        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=en|zh-TW`;
-        const response = await fetch(url);
-        const data = await response.json();
-        
-        if (data && data.responseData && data.responseData.translatedText) {
-          let translated = data.responseData.translatedText;
-          translationCache[lowerKey] = translated;
-          return translated;
-        }
-      } catch (err) {
-        console.warn('MyMemory translation failed:', err);
-      }
-      return "";
-    }
-
-    async function preloadAllTranslations() {
-      const exportBtn = document.querySelector('.btn-export');
-      let neededSet = new Set();
-      
-      partAVocab.forEach(w => {
-         const ext = extractTranslation(w);
-         if (!ext.zh && ext.en) neededSet.add(ext.en.trim());
-      });
-      
-      [partBText, partCText].forEach(text => {
-         buildDictationQueue(text).forEach(q => {
-           if (q.type === 'sentence') {
-             const ext = extractTranslation(q.text);
-             if (!ext.zh && ext.en) neededSet.add(ext.en.trim());
-           }
-         });
-      });
-      
-      let needed = Array.from(neededSet).filter(en => !translationCache[en.toLowerCase()]);
-      
-      if (needed.length === 0) {
-        updateActiveTranslations();
-        return;
-      }
-
-      isTranslating = true;
-      if (exportBtn) {
-        exportBtn.textContent = `⏳ Translating...`;
-      }
-
-      for (let i = 0; i < needed.length; i++) {
-        if (exportBtn) exportBtn.textContent = `⏳ Translating (${needed.length - i})`;
-        await fetchOnlineTranslation(needed[i]);
-        await new Promise(r => setTimeout(r, 400));
-        updateActiveTranslations();
-      }
-
-      isTranslating = false;
-      if (exportBtn) {
-        exportBtn.textContent = "📥 Export HTML";
-      }
-      updateActiveTranslations();
-    }
-
-    function updateActiveTranslations() {
-      const zhElements = document.querySelectorAll('.zh-text[data-en]');
-      for (const el of zhElements) {
-        const enText = el.getAttribute('data-en');
-        if (enText && !el.textContent.trim()) {
-          const zh = translationCache[enText.toLowerCase()];
-          if (zh) el.textContent = zh;
-        }
-      }
-    }
-
-    function isMaleVoice(voice) {
-      const name = voice.name.toLowerCase();
-      return maleKeywords.some(keyword => name.includes(keyword));
-    }
-
-    function populateVoices() {
-      if (!synth) return;
-      
-      const voices = synth.getVoices();
-      if (!voices || voices.length === 0) return;
-
-      const englishOnlyCheck = document.getElementById('englishOnlyCheck');
-      const filterEnglish = englishOnlyCheck ? englishOnlyCheck.checked : true;
-
-      let filteredVoices = voices;
-
-      if (filterEnglish) {
-        filteredVoices = voices.filter(v => v.lang.startsWith('en'));
-      }
-
-      filteredVoices.sort((a, b) => {
-        if (a.lang < b.lang) return -1;
-        if (a.lang > b.lang) return 1;
+    // Sort folders first, then files alphabetically
+    items.sort((a, b) => {
+      if (a.isDirectory === b.isDirectory) {
         return a.name.localeCompare(b.name);
-      });
-
-      availableVoices = filteredVoices;
-
-      const voiceSelect = document.getElementById('voiceSelect');
-      if (!voiceSelect) return;
-
-      voiceSelect.innerHTML = '';
-      
-      availableVoices.forEach((voice) => {
-        const option = document.createElement('option');
-        const genderTag = isMaleVoice(voice) ? '👨' : '👩';
-        option.textContent = `${genderTag} ${voice.name} (${voice.lang})`;
-        option.value = voice.voiceURI;
-
-        if (selectedVoiceURI && voice.voiceURI === selectedVoiceURI) {
-          option.selected = true;
-        }
-        voiceSelect.appendChild(option);
-      });
-
-      if (!voiceSelect.value && availableVoices.length > 0) {
-        voiceSelect.value = availableVoices[0].voiceURI;
-        selectedVoiceURI = availableVoices[0].voiceURI;
-        localStorage.setItem('fixedDictationVoiceURI', selectedVoiceURI);
       }
-    }
-
-    function changeVoice() {
-      const voiceSelect = document.getElementById('voiceSelect');
-      if (voiceSelect) {
-        selectedVoiceURI = voiceSelect.value;
-        localStorage.setItem('fixedDictationVoiceURI', selectedVoiceURI);
-      }
-    }
-
-    function scrollToTop() {
-      const mainContent = document.getElementById('mainContent');
-      if (mainContent) {
-        mainContent.scrollTo({ top: 0, behavior: 'smooth' });
-      }
-    }
-
-    function copyTextToClipboard(textToCopy, successCallback) {
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(textToCopy).then(() => {
-          if (successCallback) successCallback();
-        }).catch(() => {
-          fallbackCopyText(textToCopy, successCallback);
-        });
-      } else {
-        fallbackCopyText(textToCopy, successCallback);
-      }
-    }
-
-    function fallbackCopyText(textToCopy, successCallback) {
-      const textArea = document.createElement("textarea");
-      textArea.value = textToCopy;
-      textArea.style.position = "fixed";
-      textArea.style.top = "0";
-      textArea.style.left = "0";
-      textArea.style.width = "2em";
-      textArea.style.height = "2em";
-      textArea.style.padding = "0";
-      textArea.style.border = "none";
-      textArea.style.outline = "none";
-      textArea.style.boxShadow = "none";
-      textArea.style.background = "transparent";
-      document.body.appendChild(textArea);
-      textArea.focus();
-      textArea.select();
-
-      try {
-        const successful = document.execCommand('copy');
-        if (successful && successCallback) {
-          successCallback();
-        }
-      } catch (err) {
-        console.error('Fallback copy failed:', err);
-      }
-      document.body.removeChild(textArea);
-    }
-
-    function copyCurrentContent(btnElement) {
-      let copyText = "";
-      const currentMode = displayModes[displayModeIndex].id; // 'C', 'E', 'EC', or 'Blank'
-
-      const shouldIncludeEn = (currentMode === 'E' || currentMode === 'EC' || currentMode === 'Blank');
-      const shouldIncludeZh = (currentMode === 'C' || currentMode === 'EC' || currentMode === 'Blank');
-
-      if (currentTab === 'tab1') {
-        let rawEnList = [];
-        let rawZhList = [];
-
-        partAVocab.forEach((wordRaw) => {
-          const { en, zh } = extractTranslation(wordRaw);
-          if (en) rawEnList.push(en);
-          if (zh) rawZhList.push(zh);
-        });
-
-        function chunkIntoRows(arr, itemsPerRow = 3) {
-          let rows = [];
-          for (let i = 0; i < arr.length; i += itemsPerRow) {
-            let chunk = arr.slice(i, i + itemsPerRow);
-            rows.push(chunk.join("\t"));
-          }
-          return rows.join("\n");
-        }
-
-        let parts = [];
-        if (shouldIncludeEn && rawEnList.length > 0) {
-          parts.push("=== English ===\n" + chunkIntoRows(rawEnList, 3));
-        }
-        if (shouldIncludeZh && rawZhList.length > 0) {
-          parts.push("=== Chinese ===\n" + chunkIntoRows(rawZhList, 3));
-        }
-        copyText = parts.join("\n\n");
-      } else {
-        let rawText = (currentTab === 'tab2') ? partBText : partCText;
-        let dictQueue = buildDictationQueue(rawText);
-        
-        let enParagraphs = [];
-        let zhParagraphs = [];
-
-        let currentEnSentences = [];
-        let currentZhSentences = [];
-
-        dictQueue.forEach(item => {
-          if (item.type === 'break') {
-            if (currentEnSentences.length > 0) {
-              enParagraphs.push(currentEnSentences.join(" "));
-              currentEnSentences = [];
-            }
-            if (currentZhSentences.length > 0) {
-              zhParagraphs.push(currentZhSentences.join(" "));
-              currentZhSentences = [];
-            }
-          } else if (item.type === 'sentence') {
-            const { en, zh } = extractTranslation(item.text);
-            let finalZh = zh;
-            if (!finalZh && translationCache[en.toLowerCase()]) {
-              finalZh = translationCache[en.toLowerCase()];
-            }
-
-            if (en) currentEnSentences.push(en);
-            if (finalZh) currentZhSentences.push(finalZh);
-          }
-        });
-
-        if (currentEnSentences.length > 0) {
-          enParagraphs.push(currentEnSentences.join(" "));
-        }
-        if (currentZhSentences.length > 0) {
-          zhParagraphs.push(currentZhSentences.join(" "));
-        }
-
-        let parts = [];
-        if (shouldIncludeEn && enParagraphs.length > 0) {
-          parts.push("=== English ===\n" + enParagraphs.join("\n\n"));
-        }
-        if (shouldIncludeZh && zhParagraphs.length > 0) {
-          parts.push("=== Chinese ===\n" + zhParagraphs.join("\n\n"));
-        }
-        copyText = parts.join("\n\n");
-      }
-
-      if (copyText) {
-        copyTextToClipboard(copyText, () => {
-          if (btnElement) {
-            const originalText = btnElement.textContent;
-            btnElement.textContent = "Copied!";
-            setTimeout(() => {
-              btnElement.textContent = originalText;
-            }, 1500);
-          }
-        });
-      }
-    }
-
-    async function requestWakeLock() {
-      try {
-        if ('wakeLock' in navigator) {
-          wakeLock = await navigator.wakeLock.request('screen');
-        }
-      } catch (err) {
-        console.warn(`Wake Lock error: ${err.name}, ${err.message}`);
-      }
-    }
-
-    async function releaseWakeLock() {
-      if (wakeLock !== null) {
-        try {
-          await wakeLock.release();
-          wakeLock = null;
-        } catch (err) {
-          console.warn(`Wake Lock release error: ${err.name}, ${err.message}`);
-        }
-      }
-    }
-
-    document.addEventListener('visibilitychange', async () => {
-      if (wakeLock !== null && document.visibilityState === 'visible' && isPlaying) {
-        await requestWakeLock();
-      }
+      return a.isDirectory ? -1 : 1;
     });
 
-    function toggleDisplayMode() {
-      displayModeIndex = (displayModeIndex + 1) % displayModes.length;
-      updateDisplayModeUI();
-    }
+    items.forEach(item => {
+      const li = document.createElement('li');
+      li.className = 'item';
 
-    function updateDisplayModeUI() {
-      const btn = document.getElementById('displayModeBtn');
-      const mainContent = document.getElementById('mainContent');
-      const currentModeObj = displayModes[displayModeIndex];
+      const iconClass = item.isDirectory ? 'folder' : 'file';
+      const iconSymbol = item.isDirectory ? '📁' : '📄';
 
-      if (btn) {
-        btn.textContent = currentModeObj.label;
-      }
+      li.innerHTML = `
+        <span class="icon ${iconClass}">${iconSymbol}</span>
+        <span class="name">${escapeHtml(item.name)}</span>
+        <span class="size">${item.isDirectory ? '-' : formatBytes(item.size)}</span>
+        <span class="modified">${item.modified ? formatDate(item.modified) : '-'}</span>
+      `;
 
-      if (mainContent) {
-        mainContent.classList.remove('mode-E', 'mode-EC', 'mode-C', 'mode-Blank');
-        mainContent.classList.add('mode-' + currentModeObj.id);
-      }
-    }
-
-    function toggleSidebarMenu() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('mobileOverlay');
-      if (!sidebar) return;
-
-      if (window.innerWidth <= 768) {
-        sidebar.classList.toggle('open');
-        if (overlay) overlay.classList.toggle('open');
-      } else {
-        sidebar.classList.toggle('collapsed');
-      }
-    }
-
-    function closeSidebarMenu() {
-      const sidebar = document.getElementById('sidebar');
-      const overlay = document.getElementById('mobileOverlay');
-      if (sidebar) sidebar.classList.remove('open');
-      if (overlay) overlay.classList.remove('open');
-    }
-
-    function countWords(text) {
-      if (!text) return 0;
-      const cleanText = text.replace(/[^a-zA-Z0-9\s'-]/g, ' ').trim();
-      if (!cleanText) return 0;
-      return cleanText.split(/\s+/).filter(Boolean).length;
-    }
-
-    function convertPunctuationToSpeech(text) {
-      if (!text) return "";
-
-      let spoken = text
-        .replace(/,/g, " ~PAUSE2~ comma ~PAUSE2~ ")
-        .replace(/\./g, " ~PAUSE2~ full stop ~PAUSE2~ ")
-        .replace(/\?/g, " ~PAUSE2~ question mark ~PAUSE2~ ")
-        .replace(/!/g, " ~PAUSE2~ exclamation mark ~PAUSE2~ ")
-        .replace(/;/g, " ~PAUSE2~ semicolon ~PAUSE2~ ")
-        .replace(/:/g, " ~PAUSE2~ colon ~PAUSE2~ ")
-        .replace(/["“”]/g, " ~PAUSE2~ open quote ~PAUSE2~ ")
-        .replace(/\(/g, " ~PAUSE2~ open bracket ~PAUSE2~ ") .replace(/\)/g, " ~PAUSE2~ close bracket ~PAUSE2~ ")
-        .replace(/[-–—]/g, " ~PAUSE2~ hyphen ~PAUSE2~ ")
-        .replace(/\s+/g, " ")
-        .trim();
-
-      return spoken;
-    }
-
-    function splitWordsIntoParts(words, numParts) {
-      const totalWords = words.length;
-      const baseSize = Math.floor(totalWords / numParts);
-      const remainder = totalWords % numParts;
-      const parts = [];
-      let currentIndex = 0;
-
-      for (let i = 0; i < numParts; i++) {
-        const size = baseSize + (i < remainder ? 1 : 0);
-        const chunk = words.slice(currentIndex, currentIndex + size);
-        if (chunk.length > 0) {
-          parts.push(chunk.join(" "));
+      li.onclick = () => {
+        if (item.isDirectory) {
+          const newPath = currentPath ? `${currentPath}/${item.name}` : item.name;
+          loadDirectory(newPath);
+        } else {
+          // Trigger file download/view
+          const downloadUrl = `/api/download?path=${encodeURIComponent(currentPath ? `${currentPath}/${item.name}` : item.name)}`;
+          window.open(downloadUrl, '_blank');
         }
-        currentIndex += size;
-      }
-      return parts;
-    }
-
-    function buildDictationQueue(rawText) {
-      if (!rawText || !rawText.trim()) return [];
-      
-      const rawLines = rawText.split('\n');
-      const queueList = [];
-      let globalIndex = 0;
-      let breakCount = 0;
-      let hasAddedContent = false;
-
-      rawLines.forEach(line => {
-        const trimmedLine = line.trim();
-        
-        // Empty lines indicate paragraph breaks
-        if (!trimmedLine) {
-          if (hasAddedContent) {
-            breakCount++;
-            queueList.push({ type: 'break', text: 'Next Paragraph', breakId: breakCount });
-          }
-          return;
-        }
-
-        let lineHasContent = false;
-        let sentences = trimmedLine.match(/[^.!?;]+[.!?;]?/g) || [trimmedLine];
-
-        sentences.forEach(s => {
-          let clause = s.trim();
-          if (!clause) return;
-
-          lineHasContent = true;
-          let phraseMap = [];
-          let tempClause = clause;
-
-          protectedPhrases.forEach((phrase) => {
-            const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
-            tempClause = tempClause.replace(regex, (match) => {
-              const placeholder = `__PHRASE_${phraseMap.length}__`;
-              phraseMap.push({ placeholder, text: match });
-              return placeholder;
-            });
-          });
-
-          let tokens = tempClause.split(/\s+/).filter(Boolean);
-          let wCount = countWords(clause);
-
-          let targetParts = 1;
-          if (wCount > 20) {
-            targetParts = 4;
-          } else if (wCount > 12) {
-            targetParts = 3;
-          } else if (wCount > 6) {
-            targetParts = 2;
-          }
-
-          if (targetParts === 1) {
-            globalIndex++;
-            queueList.push({ type: 'sentence', text: clause, index: globalIndex });
-          } else {
-            let splitChunks = splitWordsIntoParts(tokens, targetParts);
-            splitChunks.forEach(chunkText => {
-              let restored = chunkText;
-              phraseMap.forEach(item => {
-                restored = restored.replace(item.placeholder, item.text);
-              });
-
-              if (restored.trim()) {
-                globalIndex++;
-                queueList.push({ type: 'sentence', text: restored.trim(), index: globalIndex });
-              }
-            });
-          }
-        });
-
-        if (lineHasContent) {
-          hasAddedContent = true;
-        }
-      });
-
-      const cleaned = [];
-      queueList.forEach(item => {
-        if (item.type === 'break' && cleaned.length > 0 && cleaned[cleaned.length - 1].type === 'break') {
-          return;
-        }
-        cleaned.push(item);
-      });
-
-      if (cleaned.length > 0 && cleaned[cleaned.length - 1].type === 'break') {
-        cleaned.pop();
-      }
-
-      let reIdx = 0;
-      cleaned.forEach(item => {
-        if (item.type === 'sentence') {
-          reIdx++;
-          item.index = reIdx;
-        }
-      });
-
-      return cleaned;
-    }
-
-    function handleFileImport(event) {
-      const file = event.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const fileContent = e.target.result;
-        const editor = document.getElementById('rawTextEditor');
-        if (editor) {
-          editor.value = fileContent;
-        }
-        parseAndApplyFullText(fileContent);
-        event.target.value = '';
       };
-      reader.readAsText(file);
-    }
 
-    function parseAndApplyFullText(fullText) {
-      displayModeIndex = 0; // Default to Chi
-
-      if (!fullText || !fullText.trim()) {
-        partAVocab = [];
-        partBText = "";
-        partCText = "";
-        document.getElementById('appMainTitle').innerHTML = '<span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School English Dictation';
-        document.getElementById('browserWindowTitle').textContent = "Happy Primary School English Dictation";
-        renderTab();
-        return;
-      }
-
-      const lines = fullText.split('\n');
-      const lowerFullText = fullText.toLowerCase();
-      
-      const hasHeaders = lowerFullText.includes('part a') || 
-                         lowerFullText.includes('part b') || 
-                         lowerFullText.includes('part c') || 
-                         lowerFullText.includes('vocabulary') || 
-                         lowerFullText.includes('passage') || 
-                         lowerFullText.includes('unseen');
-
-      let currentSection = hasHeaders ? 'header' : 'partA';
-      
-      let headerLines = [];
-      let parsedPartA = [];
-      let parsedPartB = [];
-      let parsedPartC = [];
-
-      lines.forEach(line => {
-        const trimmed = line.trim();
-        const lower = trimmed.toLowerCase();
-
-        if (lower.includes('date of dictation')) {
-          return;
-        }
-
-        if (lower.startsWith('part a') || lower === 'part a' || lower.includes('vocabulary')) {
-          currentSection = 'partA';
-          return;
-        }
-        if (lower.startsWith('part b') || lower === 'part b' || lower.includes('passage')) {
-          currentSection = 'partB';
-          return;
-        }
-        if (lower.startsWith('part c') || lower === 'part c' || lower.includes('unseen')) {
-          currentSection = 'partC';
-          return;
-        }
-
-        if (currentSection === 'header') {
-          if (trimmed) headerLines.push(trimmed);
-        } else if (currentSection === 'partA') {
-          if (trimmed) {
-            let cleanLine = trimmed.replace(/^\d+[\.\)]\s*/, '');
-            let items = cleanLine.split(/[\t,]+/).map(w => w.trim()).filter(Boolean);
-            items.forEach(w => parsedPartA.push(w));
-          }
-        } else if (currentSection === 'partB') {
-          if (trimmed) parsedPartB.push(trimmed);
-        } else if (currentSection === 'partC') {
-          if (trimmed) parsedPartC.push(trimmed);
-        }
-      });
-
-      if (headerLines.length > 0) {
-        headerLines[0] = headerLines[0].replace(/^.*?School/i, 'Happy Primary School');
-        if (headerLines[0].startsWith('Happy')) {
-          headerLines[0] = '<span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>' + headerLines[0].substring(1);
-        }
-        
-        const titleHtml = headerLines.join('<br>');
-        const plainTitleText = headerLines.join(' ').replace(/<[^>]*>/g, '');
-        document.getElementById('appMainTitle').innerHTML = titleHtml;
-        document.getElementById('browserWindowTitle').textContent = plainTitleText;
-      } else {
-        document.getElementById('appMainTitle').innerHTML = '<span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School English Dictation';
-        document.getElementById('browserWindowTitle').textContent = "Happy Primary School English Dictation";
-      }
-
-      partAVocab = parsedPartA;
-      partBText = parsedPartB.join('\n\n');
-      partCText = parsedPartC.join('\n\n');
-
-      renderTab();
-      preloadAllTranslations();
-    }
-
-    function refreshContentFromEditor() {
-      const editor = document.getElementById('rawTextEditor');
-      if (editor) {
-        parseAndApplyFullText(editor.value);
-      }
-      closeSidebarMenu();
-    }
-
-    function exportCurrentAppAsHTML() {
-      try {
-        const editor = document.getElementById('rawTextEditor');
-        const currentContent = editor ? editor.value : '';
-
-        const clonedHtml = document.documentElement.cloneNode(true);
-        const clonedBody = clonedHtml.querySelector('body');
-        
-        clonedBody.classList.add('exported-app');
-
-        const clonedEditorSec = clonedHtml.querySelector('#editorSection');
-        if (clonedEditorSec) {
-          clonedEditorSec.style.display = 'none';
-        }
-
-        const clonedTextArea = clonedHtml.querySelector('#rawTextEditor');
-        if (clonedTextArea) {
-          clonedTextArea.textContent = currentContent;
-        }
-        
-        const clonedExportBtn = clonedHtml.querySelector('.btn-export');
-        if (clonedExportBtn) {
-          clonedExportBtn.textContent = "📥 Export HTML";
-        }
-
-        const vocabDelayVal = document.getElementById('vocabDelayInput')?.value || "12";
-        const vocabSpeedVal = document.getElementById('vocabVoiceSpeedSelect')?.value || "0.75";
-        const secPerWordVal = document.getElementById('secPerWordInput')?.value || "1.5";
-        const passageSpeedVal = document.getElementById('voiceSpeedSelect')?.value || "0.75";
-
-        let scriptTag = clonedHtml.querySelector('#autoLoadScript');
-        if (!scriptTag) {
-          scriptTag = document.createElement('script');
-          scriptTag.id = 'autoLoadScript';
-          clonedHtml.querySelector('body').appendChild(scriptTag);
-        }
-
-        scriptTag.textContent = `
-          document.addEventListener('DOMContentLoaded', function() {
-            const savedCache = ${JSON.stringify(translationCache)};
-            Object.assign(translationCache, savedCache);
-
-            const vDelay = document.getElementById('vocabDelayInput');
-            if (vDelay) vDelay.value = "${vocabDelayVal}";
-            const vSpeed = document.getElementById('vocabVoiceSpeedSelect');
-            if (vSpeed) vSpeed.value = "${vocabSpeedVal}";
-            const pSec = document.getElementById('secPerWordInput');
-            if (pSec) pSec.value = "${secPerWordVal}";
-            const pSpeed = document.getElementById('voiceSpeedSelect');
-            if (pSpeed) pSpeed.value = "${passageSpeedVal}";
-
-            const editor = document.getElementById('rawTextEditor');
-            if (editor && editor.value.trim()) {
-              parseAndApplyFullText(editor.value);
-            }
-          });
-        `;
-
-        let htmlContent = "<!DOCTYPE html>\n" + clonedHtml.outerHTML;
-        const fileName = "P4E_2627D3.html";
-
-        const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
-        const blobUrl = URL.createObjectURL(blob);
-        
-        const downloadAnchor = document.createElement("a");
-        downloadAnchor.href = blobUrl;
-        downloadAnchor.download = fileName;
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        document.body.removeChild(downloadAnchor);
-
-        setTimeout(() => {
-          URL.revokeObjectURL(blobUrl);
-        }, 1000);
-      } catch (err) {
-        console.error("Export Error:", err);
-        alert("Error exporting HTML file.");
-      }
-    }
-
-    function renderTab() {
-      resetPlayback();
-
-      const area = document.getElementById('contentArea');
-      const vocabToolbar = document.getElementById('vocabToolbar');
-      const dictationToolbar = document.getElementById('dictationToolbar');
-      const dictationTagBtn = document.getElementById('dictationTagBtn');
-
-      if (!area) return;
-
-      if (currentTab === 'tab1') {
-        if (vocabToolbar) vocabToolbar.classList.remove('hidden');
-        if (dictationToolbar) dictationToolbar.classList.add('hidden');
-        renderVocabGrid(area);
-      } else {
-        if (vocabToolbar) vocabToolbar.classList.add('hidden');
-        if (dictationToolbar) dictationToolbar.classList.remove('hidden');
-
-        if (dictationTagBtn) {
-          dictationTagBtn.textContent = (currentTab === 'tab2') ? 'Passage' : 'Unseen';
-        }
-
-        let rawText = (currentTab === 'tab2') ? partBText : partCText;
-        renderDictation(area, rawText);
-      }
-
-      updateActiveTranslations();
-    }
-
-    function renderVocabGrid(container) {
-      if (!partAVocab || partAVocab.length === 0) {
-        container.innerHTML = '<div class="empty-prompt">(Currently empty. Paste or load content in the left menu.)</div>';
-        return;
-      }
-
-      let html = '<div class="words-grid">';
-      partAVocab.forEach((wordRaw, idx) => {
-        const { en, zh } = extractTranslation(wordRaw);
-        html += `
-          <div class="word-card" id="card_${idx}" onclick="clickPlayVocab(${idx})">
-            <div class="word-index">#${idx + 1}</div>
-            <div class="word-text" title="${en}">${en}</div>
-            <div class="zh-text" data-en="${en}">${zh}</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(${idx})">▶</button>
-          </div>
-        `;
-      });
-      html += '</div>';
-      container.innerHTML = html;
-      updateDisplayModeUI();
-    }
-
-    function renderDictation(container, rawText) {
-      const queueList = buildDictationQueue(rawText);
-      if (!queueList || queueList.length === 0) {
-        container.innerHTML = '<div class="empty-prompt">(Currently empty. Paste or load content in the left menu.)</div>';
-        return;
-      }
-
-      let html = '<div class="dictation-list" id="dictationList">';
-
-      queueList.forEach(item => {
-        if (item.type === 'break') {
-          html += `<div class="paragraph-break" id="break_${item.breakId}">--- Next Paragraph ---</div>`;
-        } else if (item.type === 'sentence') {
-          const { en, zh } = extractTranslation(item.text);
-          let formattedText = en.split(' ').map(w => `<span class="nowrap-word">${w}</span>`).join(' ');
-
-          html += `
-            <div class="dictation-row" id="dcard_${item.index}" onclick="clickPlayDictation(${item.index})">
-              <div>
-                <div class="sentence-index">#${item.index}</div>
-                <div class="sentence-text">${formattedText}</div>
-                <div class="zh-text" data-en="${en}">${zh}</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(${item.index})">▶</button>
-            </div>
-          `;
-        }
-      });
-
-      html += '</div>';
-      container.innerHTML = html;
-      updateDisplayModeUI();
-    }
-
-    function switchTab(tabId, element) {
-      currentTab = tabId;
-      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-      if (element) {
-        element.classList.add('active');
-      } else {
-        const btn = document.getElementById('btn_' + tabId);
-        if (btn) btn.classList.add('active');
-      }
-      renderTab();
-      if (window.innerWidth <= 768) {
-        closeSidebarMenu();
-      }
-    }
-
-    function delayPromise(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    function getSelectedSpeechRate() {
-      let speedSelect = null;
-      if (currentTab === 'tab1') {
-        speedSelect = document.getElementById('vocabVoiceSpeedSelect');
-      } else {
-        speedSelect = document.getElementById('voiceSpeedSelect');
-      }
-      return speedSelect ? (parseFloat(speedSelect.value) || 0.75) : 0.75;
-    }
-
-    function speakText(text, isIntroOrEnding, onEndCallback) {
-      if (!synth) {
-        if (onEndCallback) onEndCallback();
-        return;
-      }
-
-      currentSpeechId++;
-      const mySpeechId = currentSpeechId;
-      
-      try { synth.cancel(); } catch(e){}
-      if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
-
-      let preparedText = isIntroOrEnding ? text : extractTranslation(text).en;
-      if (!isIntroOrEnding && (currentTab === 'tab2' || currentTab === 'tab3')) {
-        preparedText = convertPunctuationToSpeech(preparedText);
-      }
-
-      const segments = preparedText.split('~PAUSE2~').map(s => s.trim()).filter(Boolean);
-
-      if (segments.length === 0) {
-        if (onEndCallback) onEndCallback();
-        return;
-      }
-
-      const currentRate = getSelectedSpeechRate();
-
-      const voices = synth.getVoices();
-      let targetVoice = null;
-      if (selectedVoiceURI) {
-        targetVoice = voices.find(v => v.voiceURI === selectedVoiceURI);
-      }
-      if (!targetVoice && availableVoices.length > 0) {
-        targetVoice = availableVoices[0];
-      }
-
-      (async () => {
-        for (let i = 0; i < segments.length; i++) {
-          if (mySpeechId !== currentSpeechId) return;
-
-          const segText = segments[i].replace(/[\u2070-\u209F\u00B2\u00B3\u00B9]/g, '');
-          if (!segText) continue;
-
-          await new Promise((resolve) => {
-            const utterance = new SpeechSynthesisUtterance(segText);
-            utterance.lang = 'en-US';
-            if (targetVoice) utterance.voice = targetVoice;
-            utterance.rate = currentRate;
-
-            utterance.onend = () => resolve();
-            utterance.onerror = () => resolve();
-
-            synth.speak(utterance);
-          });
-
-          if (mySpeechId !== currentSpeechId) return;
-
-          if (i < segments.length - 1) {
-            await delayPromise(2000);
-          }
-        }
-
-        if (mySpeechId === currentSpeechId && onEndCallback) {
-          onEndCallback();
-        }
-      })();
-    }
-
-    function startTimer(seconds, onFinish) {
-      clearInterval(timerInterval);
-      totalTimerSeconds = Math.round(seconds);
-      remainingSeconds = totalTimerSeconds;
-      updateTimerDisplay();
-
-      timerInterval = setInterval(() => {
-        if (isPaused) return;
-        remainingSeconds--;
-        updateTimerDisplay();
-        if (remainingSeconds <= 0) {
-          clearInterval(timerInterval);
-          if (onFinish) onFinish();
-        }
-      }, 1000);
-    }
-
-    function updateTimerDisplay() {
-      const pie = document.getElementById('timerPie');
-
-      if (remainingSeconds > 0 && totalTimerSeconds > 0) {
-        const pct = (remainingSeconds / totalTimerSeconds) * 100;
-        if (pie) pie.style.background = `conic-gradient(#3b82f6 ${pct}%, #e5e7eb ${pct}%)`;
-      } else {
-        if (pie) pie.style.background = `conic-gradient(#3b82f6 0%, #e5e7eb 0%)`;
-      }
-    }
-
-    function getCurrentTabTitle() {
-      if (currentTab === 'tab1') return 'Vocabulary';
-      if (currentTab === 'tab2') return 'Passage';
-      if (currentTab === 'tab3') return 'Unseen';
-      return 'Dictation';
-    }
-
-    function startAutoPlay() {
-      resetPlayback();
-      isPlaying = true;
-      isPaused = false;
-      isReviewPhase = false;
-
-      requestWakeLock();
-
-      if (currentTab === 'tab1') {
-        queue = partAVocab;
-      } else {
-        let rawText = (currentTab === 'tab2') ? partBText : partCText;
-        queue = buildDictationQueue(rawText).filter(q => q.type === 'sentence' || q.type === 'break');
-      }
-
-      playIndex = 0;
-      if (queue.length === 0) {
-        releaseWakeLock();
-        return;
-      }
-
-      const tabTitle = getCurrentTabTitle();
-      speakText(`Attention students, we will now start ${tabTitle}. Please get ready.`, true, () => {
-        if (!isPlaying) return;
-        startTimer(6, () => {
-          if (!isPlaying) return;
-          if (currentTab === 'tab1') {
-            playNextVocabStep();
-          } else {
-            playNextDictationStep();
-          }
-        });
-      });
-    }
-
-    function playNextVocabStep() {
-      if (!isPlaying) return;
-
-      if (playIndex >= queue.length) {
-        if (!isReviewPhase) {
-          isReviewPhase = true;
-          playIndex = 0;
-          
-          startTimer(4, () => {
-            if (!isPlaying) return;
-            speakText("I have finished reading all items. Now reading all items once for final review.", true, () => {
-              if (!isPlaying) return;
-              startTimer(4, () => {
-                if (!isPlaying) return;
-                playNextVocabStep();
-              });
-            });
-          });
-        } else {
-          speakText("End of vocabulary dictation. Please check your spelling.", true, () => {
-            resetPlayback();
-          });
-        }
-        return;
-      }
-
-      highlightVocabCard(playIndex);
-      const word = queue[playIndex];
-
-      if (isReviewPhase) {
-        speakText(word, false, () => {
-          if (!isPlaying) return;
-          startTimer(2, () => {
-            if (!isPlaying) return;
-            playIndex++;
-            playNextVocabStep();
-          });
-        });
-      } else {
-        const vocabDelayInput = document.getElementById('vocabDelayInput');
-        const customDelay = vocabDelayInput ? (parseInt(vocabDelayInput.value) || 12) : 12;
-
-        speakText(word, false, () => {
-          if (!isPlaying) return;
-          startTimer(5, () => {
-            if (!isPlaying) return;
-            speakText(word, false, () => {
-              if (!isPlaying) return;
-              startTimer(customDelay, () => {
-                if (!isPlaying) return;
-                playIndex++;
-                playNextVocabStep();
-              });
-            });
-          });
-        });
-      }
-    }
-
-    function highlightVocabCard(idx) {
-      document.querySelectorAll('.word-card').forEach(c => c.classList.remove('active-reading'));
-      const card = document.getElementById(`card_${idx}`);
-      if (card) {
-        card.classList.add('active-reading');
-        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-
-    function clickPlayVocab(idx) {
-      highlightVocabCard(idx);
-      if (!partAVocab || !partAVocab[idx]) return;
-
-      if (isPlaying) {
-        if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
-        clearInterval(timerInterval);
-        queue = partAVocab;
-        playIndex = idx;
-        playNextVocabStep();
-      } else {
-        if (synth) {
-          synth.cancel();
-          const emptyUtter = new SpeechSynthesisUtterance('');
-          synth.speak(emptyUtter);
-        }
-        speakText(partAVocab[idx], false, null);
-      }
-    }
-
-    function playNextDictationStep() {
-      if (!isPlaying) return;
-
-      if (playIndex >= queue.length) {
-        if (!isReviewPhase) {
-          isReviewPhase = true;
-          playIndex = 0;
-          
-          startTimer(4, () => {
-            if (!isPlaying) return;
-            speakText("I have finished reading the passage. Now reading the complete text once for review.", true, () => {
-              if (!isPlaying) return;
-              startTimer(4, () => {
-                if (!isPlaying) return;
-                playNextDictationStep();
-              });
-            });
-          });
-        } else {
-          speakText("Dictation is now finished. Please spend 2 minutes checking your work carefully.", true, () => {
-            resetPlayback();
-          });
-        }
-        return;
-      }
-
-      const item = queue[playIndex];
-
-      if (item.type === 'break') {
-        highlightDictationCard(`break_${item.breakId}`);
-        startTimer(2, () => {
-          if (!isPlaying) return;
-          speakText("Next paragraph", true, () => {
-            if (!isPlaying) return;
-            startTimer(2, () => {
-              if (!isPlaying) return;
-              playIndex++;
-              playNextDictationStep();
-            });
-          });
-        });
-        return;
-      }
-
-      highlightDictationCard(`dcard_${item.index}`);
-
-      if (isReviewPhase) {
-        speakText(item.text, false, () => {
-          if (!isPlaying) return;
-          startTimer(2, () => {
-            if (!isPlaying) return;
-            playIndex++;
-            playNextDictationStep();
-          });
-        });
-      } else {
-        const secPerWordInput = document.getElementById('secPerWordInput');
-        const secPerWord = secPerWordInput ? (parseFloat(secPerWordInput.value) || 1.5) : 1.5;
-        const wordCount = countWords(extractTranslation(item.text).en) || 1;
-        
-        const pauseSec = Math.max(Math.round(wordCount * secPerWord), 4);
-
-        speakText(item.text, false, () => {
-          if (!isPlaying) return;
-          startTimer(pauseSec, () => {
-            if (!isPlaying) return;
-            speakText(item.text, false, () => {
-              if (!isPlaying) return;
-              startTimer(pauseSec + 3, () => {
-                if (!isPlaying) return;
-                playIndex++;
-                playNextDictationStep();
-              });
-            });
-          });
-        });
-      }
-    }
-
-    function highlightDictationCard(cardId) {
-      document.querySelectorAll('.dictation-row, .paragraph-break').forEach(c => c.classList.remove('active-reading'));
-      const card = document.getElementById(cardId);
-      if (card) {
-        card.classList.add('active-reading');
-        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      }
-    }
-
-    function clickPlayDictation(index) {
-      highlightDictationCard(`dcard_${index}`);
-      let rawText = (currentTab === 'tab2') ? partBText : partCText;
-      const dictQueue = buildDictationQueue(rawText).filter(q => q.type === 'sentence' || q.type === 'break');
-
-      if (isPlaying) {
-        if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
-        clearInterval(timerInterval);
-        queue = dictQueue;
-        playIndex = dictQueue.findIndex(q => q.index === index);
-        if (playIndex !== -1) {
-          playNextDictationStep();
-        }
-      } else {
-        if (synth) {
-          synth.cancel();
-          const emptyUtter = new SpeechSynthesisUtterance('');
-          synth.speak(emptyUtter);
-        }
-        const item = dictQueue.find(q => q.index === index);
-        if (item) {
-          speakText(item.text, false, null); 
-        }
-      }
-    }
-
-    function togglePauseResume() {
-      if (!isPlaying || !synth) return;
-      const btn = document.getElementById('pauseResumeBtn');
-      isPaused = !isPaused;
-      
-      if (isPaused) {
-        synth.pause();
-        if (btn) {
-          btn.innerHTML = playIconSvg;
-          btn.classList.add('is-paused');
-          btn.title = 'Resume';
-        }
-      } else {
-        synth.resume();
-        if (btn) {
-          btn.innerHTML = pauseIconSvg;
-          btn.classList.remove('is-paused');
-          btn.title = 'Pause';
-        }
-      }
-    }
-
-    function resetPlayback() {
-      isPlaying = false;
-      isPaused = false;
-      isReviewPhase = false;
-      playIndex = 0;
-      currentSpeechId++;
-
-      releaseWakeLock();
-
-      const btn = document.getElementById('pauseResumeBtn');
-      if (btn) {
-        btn.innerHTML = pauseIconSvg;
-        btn.classList.remove('is-paused');
-        btn.title = 'Pause';
-      }
-
-      if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
-      clearInterval(timerInterval);
-      remainingSeconds = 0;
-      totalTimerSeconds = 0;
-      updateTimerDisplay();
-      if (synth) synth.cancel();
-      document.querySelectorAll('.active-reading').forEach(c => c.classList.remove('active-reading'));
-    }
-
-    
-    let secretHClickCount = 0;
-    let secretHClickTimer = null;
-
-    function handleSecretHClick(e) {
-      if (e) e.stopPropagation();
-      secretHClickCount++;
-      
-      clearTimeout(secretHClickTimer);
-      secretHClickTimer = setTimeout(() => {
-        secretHClickCount = 0;
-      }, 3000);
-
-      if (secretHClickCount >= 5) {
-        secretHClickCount = 0;
-        window.location.href = 'https://tonyymlee.github.io/pdictation/eng/aie_d.html';
-      }
-    }
-
-    function initSecretHLink() {
-      const trigger = document.getElementById('secretHTrigger');
-      if (!trigger) return;
-      trigger.addEventListener('click', handleSecretHClick);
-    }
-
-    function autoInitApp() {
-      initSecretHLink();
-      if (synth) {
-        populateVoices();
-        synth.onvoiceschanged = () => {
-          populateVoices();
-        };
-      }
-
-      const mainContent = document.getElementById('mainContent');
-      if (mainContent) {
-        mainContent.addEventListener('scroll', () => {
-          const toolbars = document.querySelectorAll('.toolbar-card');
-          if (mainContent.scrollTop > 0) {
-            toolbars.forEach(tb => tb.classList.add('is-scrolled'));
-          } else {
-            toolbars.forEach(tb => tb.classList.remove('is-scrolled'));
-          }
-        });
-      }
-
-      updateDisplayModeUI();
-
-      switchTab('tab1', document.getElementById('btn_tab1'));
-    }
-
-    document.addEventListener('DOMContentLoaded', autoInitApp);
-    window.onload = autoInitApp;
-  </script>
-
-<script id="autoLoadScript">
-          document.addEventListener('DOMContentLoaded', function() {
-            const savedCache = {"hard-working":"勤奮","polite":"有禮貌","brave":"勇敢傳說","messy":"混亂的","cleanest":"最乾淨","outgoing":"向外","selfish":"自私","biggest":"最大","generous":"慷慨的","timid":"膽怯","kindest":"最善良的","highest":"最高","friendliest":"最友善","funniest":"最有趣的","not necessarily.":"「不一定。」","they had more free time":"他們有更多空閒時間","but this does not mean":"這並不意味著","that they were lazy.":"他們很懶惰","many of them still":"他們中的許多人仍然","worked very hard and":"非常努力地工作，","had a lot of good qualities.":"有很多優秀的品質","being a good student does":"做一個好學生","not mean just getting":"不僅僅是","high grades at school.":"學校的高分","it also means having good character⁴":"這也意味著要有良好的品格，","— doing the right things":"—做正確的事情","and being a nice person.":"並成為一個好人","you cannot change your character overnight,":"你不能一夜之間改變你的角色","but there are many things":"但有很多事情","you can do to help":"你可以提供協助","you become a good person.":"你會成為一個好人。","the easiest way is to":"最簡單的方法是","start with your school life.":"從你的學校生活開始","you can start by keeping your":"你可以先保留你的","school desk clean and tidy.":"書桌乾淨整潔。","being tidy is better":"整潔比較好","than being messy.":"而不是亂七八糟。","it shows that you know how":"這表明你知道如何","to look after your own things.":"照顧自己的東西","your classmates will want to":"你的同學會想要","come over to your seat":"過來你的座位","and chat with you!":"並與您聊天！","remember to greet your teachers":"記得跟老師打招呼","and classmates at school.":"和同學在學校","don’t be shy or rude.":"不要害羞或無禮。","a polite and outgoing student":"有禮貌且外向的學生","can make a lot of friends!":"可以交到很多朋友！","you can also try":"您也可以嘗試","to be generous.":"慷慨大方","no one likes a selfish person.":"沒有人喜歡自私的人。","next time you have some":"下次您有一些","cake, give the biggest":"蛋糕，給最大的","piece to your friends.":"送給朋友。","you will feel happier sharing":"分享會讓你感覺更快樂","food with others than eating":"與他人一起吃飯而不是吃飯","it on your own.":"就靠你自己了。","students with these good qualities usually":"具備這些優良品質的學生通常","grow up to become good people.":"長大後成為好人。","it is time for you":"是時候為您服務了","to set goals for yourself.":"為自己設定目標。"};
-            Object.assign(translationCache, savedCache);
-
-            const vDelay = document.getElementById('vocabDelayInput');
-            if (vDelay) vDelay.value = "12";
-            const vSpeed = document.getElementById('vocabVoiceSpeedSelect');
-            if (vSpeed) vSpeed.value = "0.75";
-            const pSec = document.getElementById('secPerWordInput');
-            if (pSec) pSec.value = "1.5";
-            const pSpeed = document.getElementById('voiceSpeedSelect');
-            if (pSpeed) pSpeed.value = "0.75";
-
-            const editor = document.getElementById('rawTextEditor');
-            if (editor && editor.value.trim()) {
-              parseAndApplyFullText(editor.value);
-            }
-          });
-        </script></body></html>
+      list.appendChild(li);
+    });
+
+    contentDiv.innerHTML = '';
+    contentDiv.appendChild(list);
+  }
+
+  // Helper: Format File Sizes
+  function formatBytes(bytes, decimals = 1) {
+    if (!bytes || bytes === 0) return '0 B';
+    const k = 1024;
+    const sizes = ['B', 'KB', 'MB', 'GB', 'TB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(decimals)) + ' ' + sizes[i];
+  }
+
+  // Helper: Format Date
+  function formatDate(dateStr) {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+
+  // Helper: Prevent XSS
+  function escapeHtml(str) {
+    return str.replace(/&/g, "&amp;")
+              .replace(/</g, "&lt;")
+              .replace(/>/g, "&gt;")
+              .replace(/"/g, "&quot;")
+              .replace(/'/g, "&#039;");
+  }
+
+  // Initial Load
+  document.addEventListener('DOMContentLoaded', () => loadDirectory(''));
+</script>
+
+</body>
+</html>
