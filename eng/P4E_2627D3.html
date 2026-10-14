@@ -731,7 +731,7 @@
           <polyline points="9 22 9 12 15 12 15 22"></polyline>
         </svg>
       </a>
-      <h1 id="appMainTitle">Happy Primary School (26/27 Division 1)<br>Primary 4 Dictation 3 scope</h1>
+      <h1 id="appMainTitle"><span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School (26/27 Division 1)<br>Primary 4 Dictation 3 scope</h1>
     </div>
     <div class="header-controls">
       <button class="menu-toggle-btn" onclick="toggleSidebarMenu()" title="Show/Hide Menu">
@@ -827,7 +827,7 @@ Students with these good qualities usually grow up to become good people. It is 
     </aside>
 
     <main id="mainContent" class="mode-EC">
-      <div class="toolbar-card hidden" id="vocabToolbar">
+      <div class="toolbar-card hidden is-scrolled" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
           <span class="toolbar-options">
@@ -848,7 +848,7 @@ Students with these good qualities usually grow up to become good people. It is 
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="Copy Content">C</button>
       </div>
 
-      <div class="toolbar-card" id="dictationToolbar">
+      <div class="toolbar-card is-scrolled" id="dictationToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="Back to Top">Passage</button>
           <span class="toolbar-options">
@@ -1875,7 +1875,7 @@ Students with these good qualities usually grow up to become good people. It is 
         partAVocab = [];
         partBText = "";
         partCText = "";
-        document.getElementById('appMainTitle').innerHTML = "Happy Primary School English Dictation";
+        document.getElementById('appMainTitle').innerHTML = '<span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School English Dictation';
         document.getElementById('browserWindowTitle').textContent = "Happy Primary School English Dictation";
         renderTab();
         return;
@@ -1936,13 +1936,16 @@ Students with these good qualities usually grow up to become good people. It is 
 
       if (headerLines.length > 0) {
         headerLines[0] = headerLines[0].replace(/^.*?School/i, 'Happy Primary School');
+        if (headerLines[0].startsWith('Happy')) {
+          headerLines[0] = '<span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>' + headerLines[0].substring(1);
+        }
         
         const titleHtml = headerLines.join('<br>');
-        const plainTitleText = headerLines.join(' ');
+        const plainTitleText = headerLines.join(' ').replace(/<[^>]*>/g, '');
         document.getElementById('appMainTitle').innerHTML = titleHtml;
         document.getElementById('browserWindowTitle').textContent = plainTitleText;
       } else {
-        document.getElementById('appMainTitle').innerHTML = "Happy Primary School English Dictation";
+        document.getElementById('appMainTitle').innerHTML = '<span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School English Dictation';
         document.getElementById('browserWindowTitle').textContent = "Happy Primary School English Dictation";
       }
 
@@ -2543,7 +2546,33 @@ Students with these good qualities usually grow up to become good people. It is 
       document.querySelectorAll('.active-reading').forEach(c => c.classList.remove('active-reading'));
     }
 
+    
+    let secretHClickCount = 0;
+    let secretHClickTimer = null;
+
+    function handleSecretHClick(e) {
+      if (e) e.stopPropagation();
+      secretHClickCount++;
+      
+      clearTimeout(secretHClickTimer);
+      secretHClickTimer = setTimeout(() => {
+        secretHClickCount = 0;
+      }, 3000);
+
+      if (secretHClickCount >= 5) {
+        secretHClickCount = 0;
+        window.location.href = 'https://tonyymlee.github.io/pdictation/eng/aie_d.html';
+      }
+    }
+
+    function initSecretHLink() {
+      const trigger = document.getElementById('secretHTrigger');
+      if (!trigger) return;
+      trigger.addEventListener('click', handleSecretHClick);
+    }
+
     function autoInitApp() {
+      initSecretHLink();
       if (synth) {
         populateVoices();
         synth.onvoiceschanged = () => {
