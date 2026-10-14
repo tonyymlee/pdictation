@@ -775,10 +775,10 @@
       <div class="nav-card">
         <div class="nav-card-title">Dictation Scope</div>
         <div class="nav-tabs">
-          <button class="tab-btn active" id="btn_tab1" onclick="switchTab('tab1', this)">
+          <button class="tab-btn" id="btn_tab1" onclick="switchTab('tab1', this)">
             <span class="tab-icon">🔤</span> Vocabulary
           </button>
-          <button class="tab-btn" id="btn_tab2" onclick="switchTab('tab2', this)">
+          <button class="tab-btn active" id="btn_tab2" onclick="switchTab('tab2', this)">
             <span class="tab-icon">📖</span> Passage
           </button>
           <button class="tab-btn" id="btn_tab3" onclick="switchTab('tab3', this)">
@@ -827,7 +827,7 @@ Students with these good qualities usually grow up to become good people. It is 
     </aside>
 
     <main id="mainContent" class="mode-C">
-      <div class="toolbar-card" id="vocabToolbar">
+      <div class="toolbar-card hidden is-scrolled" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
           <span class="toolbar-options">
@@ -837,9 +837,10 @@ Students with these good qualities usually grow up to become good people. It is 
                 <option value="0.95">0.95x</option>
                 <option value="0.88">0.88x</option>
                 <option value="0.7">0.7x</option>
-                <option value="0.6" selected="selected">0.6x</option>
+                <option value="0.6">0.6x</option>
                 <option value="0.5">0.5x</option>
-                <option value="0.38">0.38x</option>
+                <option value="0.38" selected="selected">0.38x</option>
+                <option value="0.3">0.3x</option>
                 <option value="0.2">0.2x</option>
                 <option value="0.1">0.1x</option>
               </select>
@@ -849,7 +850,7 @@ Students with these good qualities usually grow up to become good people. It is 
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="Copy Content">C</button>
       </div>
 
-      <div class="toolbar-card hidden" id="dictationToolbar">
+      <div class="toolbar-card is-scrolled" id="dictationToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="Back to Top">Passage</button>
           <span class="toolbar-options">
@@ -861,7 +862,8 @@ Students with these good qualities usually grow up to become good people. It is 
                 <option value="0.7">0.7x</option>
                 <option value="0.6">0.6x</option>
                 <option value="0.5">0.5x</option>
-                <option value="0.38" selected="selected">0.38x</option>
+                <option value="0.38">0.38x</option>
+                <option value="0.3" selected="selected">0.3x</option>
                 <option value="0.2">0.2x</option>
                 <option value="0.1">0.1x</option>
               </select>
@@ -871,105 +873,421 @@ Students with these good qualities usually grow up to become good people. It is 
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="Copy Content">C</button>
       </div>
 
-      <div id="contentArea"><div class="words-grid">
-          <div class="word-card" id="card_0" onclick="clickPlayVocab(0)">
-            <div class="word-index">#1</div>
-            <div class="word-text" title="hard-working">hard-working</div>
-            <div class="zh-text" data-en="hard-working">勤奮</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(0)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_1" onclick="clickPlayVocab(1)">
-            <div class="word-index">#2</div>
-            <div class="word-text" title="polite">polite</div>
-            <div class="zh-text" data-en="polite">有禮貌</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(1)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_2" onclick="clickPlayVocab(2)">
-            <div class="word-index">#3</div>
-            <div class="word-text" title="brave">brave</div>
-            <div class="zh-text" data-en="brave">勇敢傳說</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(2)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_3" onclick="clickPlayVocab(3)">
-            <div class="word-index">#4</div>
-            <div class="word-text" title="messy">messy</div>
-            <div class="zh-text" data-en="messy">混亂的</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(3)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_4" onclick="clickPlayVocab(4)">
-            <div class="word-index">#5</div>
-            <div class="word-text" title="cleanest">cleanest</div>
-            <div class="zh-text" data-en="cleanest">最乾淨</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(4)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_5" onclick="clickPlayVocab(5)">
-            <div class="word-index">#6</div>
-            <div class="word-text" title="outgoing">outgoing</div>
-            <div class="zh-text" data-en="outgoing">向外</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(5)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_6" onclick="clickPlayVocab(6)">
-            <div class="word-index">#7</div>
-            <div class="word-text" title="selfish">selfish</div>
-            <div class="zh-text" data-en="selfish">自私</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(6)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_7" onclick="clickPlayVocab(7)">
-            <div class="word-index">#8</div>
-            <div class="word-text" title="biggest">biggest</div>
-            <div class="zh-text" data-en="biggest">最大</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(7)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_8" onclick="clickPlayVocab(8)">
-            <div class="word-index">#9</div>
-            <div class="word-text" title="generous">generous</div>
-            <div class="zh-text" data-en="generous">慷慨的</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(8)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_9" onclick="clickPlayVocab(9)">
-            <div class="word-index">#10</div>
-            <div class="word-text" title="timid">timid</div>
-            <div class="zh-text" data-en="timid">膽怯</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(9)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_10" onclick="clickPlayVocab(10)">
-            <div class="word-index">#11</div>
-            <div class="word-text" title="kindest">kindest</div>
-            <div class="zh-text" data-en="kindest">最善良的</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(10)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_11" onclick="clickPlayVocab(11)">
-            <div class="word-index">#12</div>
-            <div class="word-text" title="highest">highest</div>
-            <div class="zh-text" data-en="highest">最高</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(11)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_12" onclick="clickPlayVocab(12)">
-            <div class="word-index">#13</div>
-            <div class="word-text" title="friendliest">friendliest</div>
-            <div class="zh-text" data-en="friendliest">最友善</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(12)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_13" onclick="clickPlayVocab(13)">
-            <div class="word-index">#14</div>
-            <div class="word-text" title="funniest">funniest</div>
-            <div class="zh-text" data-en="funniest">最有趣的</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(13)">▶</button>
-          </div>
-        </div></div>
+      <div id="contentArea"><div class="dictation-list" id="dictationList">
+            <div class="dictation-row" id="dcard_1" onclick="clickPlayDictation(1)">
+              <div>
+                <div class="sentence-index">#1</div>
+                <div class="sentence-text"><span class="nowrap-word">Not</span> <span class="nowrap-word">necessarily.</span></div>
+                <div class="zh-text" data-en="Not necessarily.">「不一定。」</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(1)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_2" onclick="clickPlayDictation(2)">
+              <div>
+                <div class="sentence-index">#2</div>
+                <div class="sentence-text"><span class="nowrap-word">They</span> <span class="nowrap-word">had</span> <span class="nowrap-word">more</span> <span class="nowrap-word">free</span> <span class="nowrap-word">time</span></div>
+                <div class="zh-text" data-en="They had more free time">他們有更多空閒時間</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(2)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_3" onclick="clickPlayDictation(3)">
+              <div>
+                <div class="sentence-index">#3</div>
+                <div class="sentence-text"><span class="nowrap-word">but</span> <span class="nowrap-word">this</span> <span class="nowrap-word">does</span> <span class="nowrap-word">not</span> <span class="nowrap-word">mean</span></div>
+                <div class="zh-text" data-en="but this does not mean">這並不意味著</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(3)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_4" onclick="clickPlayDictation(4)">
+              <div>
+                <div class="sentence-index">#4</div>
+                <div class="sentence-text"><span class="nowrap-word">that</span> <span class="nowrap-word">they</span> <span class="nowrap-word">were</span> <span class="nowrap-word">lazy.</span></div>
+                <div class="zh-text" data-en="that they were lazy.">他們很懶惰</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(4)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_5" onclick="clickPlayDictation(5)">
+              <div>
+                <div class="sentence-index">#5</div>
+                <div class="sentence-text"><span class="nowrap-word">Many</span> <span class="nowrap-word">of</span> <span class="nowrap-word">them</span> <span class="nowrap-word">still</span></div>
+                <div class="zh-text" data-en="Many of them still">他們中的許多人仍然</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(5)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_6" onclick="clickPlayDictation(6)">
+              <div>
+                <div class="sentence-index">#6</div>
+                <div class="sentence-text"><span class="nowrap-word">worked</span> <span class="nowrap-word">very</span> <span class="nowrap-word">hard</span> <span class="nowrap-word">and</span></div>
+                <div class="zh-text" data-en="worked very hard and">非常努力地工作，</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(6)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_7" onclick="clickPlayDictation(7)">
+              <div>
+                <div class="sentence-index">#7</div>
+                <div class="sentence-text"><span class="nowrap-word">had</span> <span class="nowrap-word">a</span> <span class="nowrap-word">lot</span> <span class="nowrap-word">of</span> <span class="nowrap-word">good</span> <span class="nowrap-word">qualities.</span></div>
+                <div class="zh-text" data-en="had a lot of good qualities.">有很多優秀的品質</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(7)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_8" onclick="clickPlayDictation(8)">
+              <div>
+                <div class="sentence-index">#8</div>
+                <div class="sentence-text"><span class="nowrap-word">Being</span> <span class="nowrap-word">a</span> <span class="nowrap-word">good</span> <span class="nowrap-word">student</span> <span class="nowrap-word">does</span></div>
+                <div class="zh-text" data-en="Being a good student does">做一個好學生</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(8)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_9" onclick="clickPlayDictation(9)">
+              <div>
+                <div class="sentence-index">#9</div>
+                <div class="sentence-text"><span class="nowrap-word">not</span> <span class="nowrap-word">mean</span> <span class="nowrap-word">just</span> <span class="nowrap-word">getting</span></div>
+                <div class="zh-text" data-en="not mean just getting">不僅僅是</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(9)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_10" onclick="clickPlayDictation(10)">
+              <div>
+                <div class="sentence-index">#10</div>
+                <div class="sentence-text"><span class="nowrap-word">high</span> <span class="nowrap-word">grades</span> <span class="nowrap-word">at</span> <span class="nowrap-word">school.</span></div>
+                <div class="zh-text" data-en="high grades at school.">學校的高分</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(10)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_11" onclick="clickPlayDictation(11)">
+              <div>
+                <div class="sentence-index">#11</div>
+                <div class="sentence-text"><span class="nowrap-word">It</span> <span class="nowrap-word">also</span> <span class="nowrap-word">means</span> <span class="nowrap-word">having</span> <span class="nowrap-word">good</span> <span class="nowrap-word">character⁴</span></div>
+                <div class="zh-text" data-en="It also means having good character⁴">這也意味著要有良好的品格，</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(11)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_12" onclick="clickPlayDictation(12)">
+              <div>
+                <div class="sentence-index">#12</div>
+                <div class="sentence-text"><span class="nowrap-word">—</span> <span class="nowrap-word">doing</span> <span class="nowrap-word">the</span> <span class="nowrap-word">right</span> <span class="nowrap-word">things</span></div>
+                <div class="zh-text" data-en="— doing the right things">—做正確的事情</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(12)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_13" onclick="clickPlayDictation(13)">
+              <div>
+                <div class="sentence-index">#13</div>
+                <div class="sentence-text"><span class="nowrap-word">and</span> <span class="nowrap-word">being</span> <span class="nowrap-word">a</span> <span class="nowrap-word">nice</span> <span class="nowrap-word">person.</span></div>
+                <div class="zh-text" data-en="and being a nice person.">並成為一個好人</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(13)">▶</button>
+            </div>
+          <div class="paragraph-break" id="break_1">--- Next Paragraph ---</div>
+            <div class="dictation-row" id="dcard_14" onclick="clickPlayDictation(14)">
+              <div>
+                <div class="sentence-index">#14</div>
+                <div class="sentence-text"><span class="nowrap-word">You</span> <span class="nowrap-word">cannot</span> <span class="nowrap-word">change</span> <span class="nowrap-word">your</span> <span class="nowrap-word">character</span> <span class="nowrap-word">overnight,</span></div>
+                <div class="zh-text" data-en="You cannot change your character overnight,">你不能一夜之間改變你的角色</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(14)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_15" onclick="clickPlayDictation(15)">
+              <div>
+                <div class="sentence-index">#15</div>
+                <div class="sentence-text"><span class="nowrap-word">but</span> <span class="nowrap-word">there</span> <span class="nowrap-word">are</span> <span class="nowrap-word">many</span> <span class="nowrap-word">things</span></div>
+                <div class="zh-text" data-en="but there are many things">但有很多事情</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(15)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_16" onclick="clickPlayDictation(16)">
+              <div>
+                <div class="sentence-index">#16</div>
+                <div class="sentence-text"><span class="nowrap-word">you</span> <span class="nowrap-word">can</span> <span class="nowrap-word">do</span> <span class="nowrap-word">to</span> <span class="nowrap-word">help</span></div>
+                <div class="zh-text" data-en="you can do to help">你可以提供協助</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(16)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_17" onclick="clickPlayDictation(17)">
+              <div>
+                <div class="sentence-index">#17</div>
+                <div class="sentence-text"><span class="nowrap-word">you</span> <span class="nowrap-word">become</span> <span class="nowrap-word">a</span> <span class="nowrap-word">good</span> <span class="nowrap-word">person.</span></div>
+                <div class="zh-text" data-en="you become a good person.">你會成為一個好人。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(17)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_18" onclick="clickPlayDictation(18)">
+              <div>
+                <div class="sentence-index">#18</div>
+                <div class="sentence-text"><span class="nowrap-word">The</span> <span class="nowrap-word">easiest</span> <span class="nowrap-word">way</span> <span class="nowrap-word">is</span> <span class="nowrap-word">to</span></div>
+                <div class="zh-text" data-en="The easiest way is to">最簡單的方法是</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(18)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_19" onclick="clickPlayDictation(19)">
+              <div>
+                <div class="sentence-index">#19</div>
+                <div class="sentence-text"><span class="nowrap-word">start</span> <span class="nowrap-word">with</span> <span class="nowrap-word">your</span> <span class="nowrap-word">school</span> <span class="nowrap-word">life.</span></div>
+                <div class="zh-text" data-en="start with your school life.">從你的學校生活開始</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(19)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_20" onclick="clickPlayDictation(20)">
+              <div>
+                <div class="sentence-index">#20</div>
+                <div class="sentence-text"><span class="nowrap-word">You</span> <span class="nowrap-word">can</span> <span class="nowrap-word">start</span> <span class="nowrap-word">by</span> <span class="nowrap-word">keeping</span> <span class="nowrap-word">your</span></div>
+                <div class="zh-text" data-en="You can start by keeping your">你可以先保留你的</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(20)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_21" onclick="clickPlayDictation(21)">
+              <div>
+                <div class="sentence-index">#21</div>
+                <div class="sentence-text"><span class="nowrap-word">school</span> <span class="nowrap-word">desk</span> <span class="nowrap-word">clean</span> <span class="nowrap-word">and</span> <span class="nowrap-word">tidy.</span></div>
+                <div class="zh-text" data-en="school desk clean and tidy.">書桌乾淨整潔。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(21)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_22" onclick="clickPlayDictation(22)">
+              <div>
+                <div class="sentence-index">#22</div>
+                <div class="sentence-text"><span class="nowrap-word">Being</span> <span class="nowrap-word">tidy</span> <span class="nowrap-word">is</span> <span class="nowrap-word">better</span></div>
+                <div class="zh-text" data-en="Being tidy is better">整潔比較好</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(22)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_23" onclick="clickPlayDictation(23)">
+              <div>
+                <div class="sentence-index">#23</div>
+                <div class="sentence-text"><span class="nowrap-word">than</span> <span class="nowrap-word">being</span> <span class="nowrap-word">messy.</span></div>
+                <div class="zh-text" data-en="than being messy.">而不是亂七八糟。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(23)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_24" onclick="clickPlayDictation(24)">
+              <div>
+                <div class="sentence-index">#24</div>
+                <div class="sentence-text"><span class="nowrap-word">It</span> <span class="nowrap-word">shows</span> <span class="nowrap-word">that</span> <span class="nowrap-word">you</span> <span class="nowrap-word">know</span> <span class="nowrap-word">how</span></div>
+                <div class="zh-text" data-en="It shows that you know how">這表明你知道如何</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(24)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_25" onclick="clickPlayDictation(25)">
+              <div>
+                <div class="sentence-index">#25</div>
+                <div class="sentence-text"><span class="nowrap-word">to</span> <span class="nowrap-word">look</span> <span class="nowrap-word">after</span> <span class="nowrap-word">your</span> <span class="nowrap-word">own</span> <span class="nowrap-word">things.</span></div>
+                <div class="zh-text" data-en="to look after your own things.">照顧自己的東西</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(25)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_26" onclick="clickPlayDictation(26)">
+              <div>
+                <div class="sentence-index">#26</div>
+                <div class="sentence-text"><span class="nowrap-word">Your</span> <span class="nowrap-word">classmates</span> <span class="nowrap-word">will</span> <span class="nowrap-word">want</span> <span class="nowrap-word">to</span></div>
+                <div class="zh-text" data-en="Your classmates will want to">你的同學會想要</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(26)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_27" onclick="clickPlayDictation(27)">
+              <div>
+                <div class="sentence-index">#27</div>
+                <div class="sentence-text"><span class="nowrap-word">come</span> <span class="nowrap-word">over</span> <span class="nowrap-word">to</span> <span class="nowrap-word">your</span> <span class="nowrap-word">seat</span></div>
+                <div class="zh-text" data-en="come over to your seat">過來你的座位</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(27)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_28" onclick="clickPlayDictation(28)">
+              <div>
+                <div class="sentence-index">#28</div>
+                <div class="sentence-text"><span class="nowrap-word">and</span> <span class="nowrap-word">chat</span> <span class="nowrap-word">with</span> <span class="nowrap-word">you!</span></div>
+                <div class="zh-text" data-en="and chat with you!">並與您聊天！</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(28)">▶</button>
+            </div>
+          <div class="paragraph-break" id="break_2">--- Next Paragraph ---</div>
+            <div class="dictation-row" id="dcard_29" onclick="clickPlayDictation(29)">
+              <div>
+                <div class="sentence-index">#29</div>
+                <div class="sentence-text"><span class="nowrap-word">Remember</span> <span class="nowrap-word">to</span> <span class="nowrap-word">greet</span> <span class="nowrap-word">your</span> <span class="nowrap-word">teachers</span></div>
+                <div class="zh-text" data-en="Remember to greet your teachers">記得跟老師打招呼</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(29)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_30" onclick="clickPlayDictation(30)">
+              <div>
+                <div class="sentence-index">#30</div>
+                <div class="sentence-text"><span class="nowrap-word">and</span> <span class="nowrap-word">classmates</span> <span class="nowrap-word">at</span> <span class="nowrap-word">school.</span></div>
+                <div class="zh-text" data-en="and classmates at school.">和同學在學校</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(30)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_31" onclick="clickPlayDictation(31)">
+              <div>
+                <div class="sentence-index">#31</div>
+                <div class="sentence-text"><span class="nowrap-word">Don’t</span> <span class="nowrap-word">be</span> <span class="nowrap-word">shy</span> <span class="nowrap-word">or</span> <span class="nowrap-word">rude.</span></div>
+                <div class="zh-text" data-en="Don’t be shy or rude.">不要害羞或無禮。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(31)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_32" onclick="clickPlayDictation(32)">
+              <div>
+                <div class="sentence-index">#32</div>
+                <div class="sentence-text"><span class="nowrap-word">A</span> <span class="nowrap-word">polite</span> <span class="nowrap-word">and</span> <span class="nowrap-word">outgoing</span> <span class="nowrap-word">student</span></div>
+                <div class="zh-text" data-en="A polite and outgoing student">有禮貌且外向的學生</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(32)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_33" onclick="clickPlayDictation(33)">
+              <div>
+                <div class="sentence-index">#33</div>
+                <div class="sentence-text"><span class="nowrap-word">can</span> <span class="nowrap-word">make</span> <span class="nowrap-word">a</span> <span class="nowrap-word">lot</span> <span class="nowrap-word">of</span> <span class="nowrap-word">friends!</span></div>
+                <div class="zh-text" data-en="can make a lot of friends!">可以交到很多朋友！</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(33)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_34" onclick="clickPlayDictation(34)">
+              <div>
+                <div class="sentence-index">#34</div>
+                <div class="sentence-text"><span class="nowrap-word">You</span> <span class="nowrap-word">can</span> <span class="nowrap-word">also</span> <span class="nowrap-word">try</span></div>
+                <div class="zh-text" data-en="You can also try">您也可以嘗試</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(34)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_35" onclick="clickPlayDictation(35)">
+              <div>
+                <div class="sentence-index">#35</div>
+                <div class="sentence-text"><span class="nowrap-word">to</span> <span class="nowrap-word">be</span> <span class="nowrap-word">generous.</span></div>
+                <div class="zh-text" data-en="to be generous.">慷慨大方</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(35)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_36" onclick="clickPlayDictation(36)">
+              <div>
+                <div class="sentence-index">#36</div>
+                <div class="sentence-text"><span class="nowrap-word">No</span> <span class="nowrap-word">one</span> <span class="nowrap-word">likes</span> <span class="nowrap-word">a</span> <span class="nowrap-word">selfish</span> <span class="nowrap-word">person.</span></div>
+                <div class="zh-text" data-en="No one likes a selfish person.">沒有人喜歡自私的人。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(36)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_37" onclick="clickPlayDictation(37)">
+              <div>
+                <div class="sentence-index">#37</div>
+                <div class="sentence-text"><span class="nowrap-word">Next</span> <span class="nowrap-word">time</span> <span class="nowrap-word">you</span> <span class="nowrap-word">have</span> <span class="nowrap-word">some</span></div>
+                <div class="zh-text" data-en="Next time you have some">下次您有一些</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(37)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_38" onclick="clickPlayDictation(38)">
+              <div>
+                <div class="sentence-index">#38</div>
+                <div class="sentence-text"><span class="nowrap-word">cake,</span> <span class="nowrap-word">give</span> <span class="nowrap-word">the</span> <span class="nowrap-word">biggest</span></div>
+                <div class="zh-text" data-en="cake, give the biggest">蛋糕，給最大的</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(38)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_39" onclick="clickPlayDictation(39)">
+              <div>
+                <div class="sentence-index">#39</div>
+                <div class="sentence-text"><span class="nowrap-word">piece</span> <span class="nowrap-word">to</span> <span class="nowrap-word">your</span> <span class="nowrap-word">friends.</span></div>
+                <div class="zh-text" data-en="piece to your friends.">送給朋友。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(39)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_40" onclick="clickPlayDictation(40)">
+              <div>
+                <div class="sentence-index">#40</div>
+                <div class="sentence-text"><span class="nowrap-word">You</span> <span class="nowrap-word">will</span> <span class="nowrap-word">feel</span> <span class="nowrap-word">happier</span> <span class="nowrap-word">sharing</span></div>
+                <div class="zh-text" data-en="You will feel happier sharing">分享會讓你感覺更快樂</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(40)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_41" onclick="clickPlayDictation(41)">
+              <div>
+                <div class="sentence-index">#41</div>
+                <div class="sentence-text"><span class="nowrap-word">food</span> <span class="nowrap-word">with</span> <span class="nowrap-word">others</span> <span class="nowrap-word">than</span> <span class="nowrap-word">eating</span></div>
+                <div class="zh-text" data-en="food with others than eating">與他人一起吃飯而不是吃飯</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(41)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_42" onclick="clickPlayDictation(42)">
+              <div>
+                <div class="sentence-index">#42</div>
+                <div class="sentence-text"><span class="nowrap-word">it</span> <span class="nowrap-word">on</span> <span class="nowrap-word">your</span> <span class="nowrap-word">own.</span></div>
+                <div class="zh-text" data-en="it on your own.">就靠你自己了。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(42)">▶</button>
+            </div>
+          <div class="paragraph-break" id="break_3">--- Next Paragraph ---</div>
+            <div class="dictation-row" id="dcard_43" onclick="clickPlayDictation(43)">
+              <div>
+                <div class="sentence-index">#43</div>
+                <div class="sentence-text"><span class="nowrap-word">Students</span> <span class="nowrap-word">with</span> <span class="nowrap-word">these</span> <span class="nowrap-word">good</span> <span class="nowrap-word">qualities</span> <span class="nowrap-word">usually</span></div>
+                <div class="zh-text" data-en="Students with these good qualities usually">具備這些優良品質的學生通常</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(43)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_44" onclick="clickPlayDictation(44)">
+              <div>
+                <div class="sentence-index">#44</div>
+                <div class="sentence-text"><span class="nowrap-word">grow</span> <span class="nowrap-word">up</span> <span class="nowrap-word">to</span> <span class="nowrap-word">become</span> <span class="nowrap-word">good</span> <span class="nowrap-word">people.</span></div>
+                <div class="zh-text" data-en="grow up to become good people.">長大後成為好人。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(44)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_45" onclick="clickPlayDictation(45)">
+              <div>
+                <div class="sentence-index">#45</div>
+                <div class="sentence-text"><span class="nowrap-word">It</span> <span class="nowrap-word">is</span> <span class="nowrap-word">time</span> <span class="nowrap-word">for</span> <span class="nowrap-word">you</span></div>
+                <div class="zh-text" data-en="It is time for you">是時候為您服務了</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(45)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_46" onclick="clickPlayDictation(46)">
+              <div>
+                <div class="sentence-index">#46</div>
+                <div class="sentence-text"><span class="nowrap-word">to</span> <span class="nowrap-word">set</span> <span class="nowrap-word">goals</span> <span class="nowrap-word">for</span> <span class="nowrap-word">yourself.</span></div>
+                <div class="zh-text" data-en="to set goals for yourself.">為自己設定目標。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(46)">▶</button>
+            </div>
+          </div></div>
     </main>
   </div>
 
@@ -1685,9 +2003,9 @@ Students with these good qualities usually grow up to become good people. It is 
         }
 
         const vocabDelayVal = document.getElementById('vocabDelayInput')?.value || "10";
-        const vocabSpeedVal = document.getElementById('vocabVoiceSpeedSelect')?.value || "0.6";
+        const vocabSpeedVal = document.getElementById('vocabVoiceSpeedSelect')?.value || "0.38";
         const secPerWordVal = document.getElementById('secPerWordInput')?.value || "2.8";
-        const passageSpeedVal = document.getElementById('voiceSpeedSelect')?.value || "0.38";
+        const passageSpeedVal = document.getElementById('voiceSpeedSelect')?.value || "0.3";
 
         // Sync values into cloned DOM attributes so they persist directly in HTML inputs/selects
         const clonedVDelay = clonedHtml.querySelector('#vocabDelayInput');
@@ -2322,11 +2640,11 @@ Students with these good qualities usually grow up to become good people. It is 
             const vDelay = document.getElementById('vocabDelayInput');
             if (vDelay) vDelay.value = "10";
             const vSpeed = document.getElementById('vocabVoiceSpeedSelect');
-            if (vSpeed) vSpeed.value = "0.6";
+            if (vSpeed) vSpeed.value = "0.38";
             const pSec = document.getElementById('secPerWordInput');
             if (pSec) pSec.value = "2.8";
             const pSpeed = document.getElementById('voiceSpeedSelect');
-            if (pSpeed) pSpeed.value = "0.38";
+            if (pSpeed) pSpeed.value = "0.3";
 
             const editor = document.getElementById('rawTextEditor');
             if (editor && editor.value.trim()) {
