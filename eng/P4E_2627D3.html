@@ -840,6 +840,7 @@ Students with these good qualities usually grow up to become good people. It is 
                 <option value="0.6" selected="selected">0.6x</option>
                 <option value="0.5">0.5x</option>
                 <option value="0.38">0.38x</option>
+                <option value="0.2">0.2x</option>
                 <option value="0.1">0.1x</option>
               </select>
             </label>
@@ -858,9 +859,10 @@ Students with these good qualities usually grow up to become good people. It is 
                 <option value="0.95">0.95x</option>
                 <option value="0.88">0.88x</option>
                 <option value="0.7">0.7x</option>
-                <option value="0.6" selected="selected">0.6x</option>
+                <option value="0.6">0.6x</option>
                 <option value="0.5">0.5x</option>
-                <option value="0.38">0.38x</option>
+                <option value="0.38" selected="selected">0.38x</option>
+                <option value="0.2">0.2x</option>
                 <option value="0.1">0.1x</option>
               </select>
             </label>
@@ -1685,7 +1687,7 @@ Students with these good qualities usually grow up to become good people. It is 
         const vocabDelayVal = document.getElementById('vocabDelayInput')?.value || "10";
         const vocabSpeedVal = document.getElementById('vocabVoiceSpeedSelect')?.value || "0.6";
         const secPerWordVal = document.getElementById('secPerWordInput')?.value || "2.8";
-        const passageSpeedVal = document.getElementById('voiceSpeedSelect')?.value || "0.6";
+        const passageSpeedVal = document.getElementById('voiceSpeedSelect')?.value || "0.38";
 
         // Sync values into cloned DOM attributes so they persist directly in HTML inputs/selects
         const clonedVDelay = clonedHtml.querySelector('#vocabDelayInput');
@@ -2324,7 +2326,7 @@ Students with these good qualities usually grow up to become good people. It is 
             const pSec = document.getElementById('secPerWordInput');
             if (pSec) pSec.value = "2.8";
             const pSpeed = document.getElementById('voiceSpeedSelect');
-            if (pSpeed) pSpeed.value = "0.6";
+            if (pSpeed) pSpeed.value = "0.38";
 
             const editor = document.getElementById('rawTextEditor');
             if (editor && editor.value.trim()) {
