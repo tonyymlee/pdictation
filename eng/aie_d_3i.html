@@ -820,7 +820,7 @@
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
           <span class="toolbar-options">
-            <label>I: <input type="number" id="vocabDelayInput" value="2.8" min="0.5" step="0.1" max="99"> s</label>
+            <label>I: <input type="number" id="vocabDelayInput" value="10" min="0.5" step="0.1" max="99"> s</label>
             <label>S: 
               <select id="vocabVoiceSpeedSelect">
                 <option value="0.95">0.95x</option>
@@ -1571,7 +1571,7 @@
           clonedExportBtn.textContent = "📥 Export HTML";
         }
 
-        const vocabDelayVal = document.getElementById('vocabDelayInput')?.value || "2.8";
+        const vocabDelayVal = document.getElementById('vocabDelayInput')?.value || "10";
         const vocabSpeedVal = document.getElementById('vocabVoiceSpeedSelect')?.value || "0.6";
         const secPerWordVal = document.getElementById('secPerWordInput')?.value || "2.8";
         const passageSpeedVal = document.getElementById('voiceSpeedSelect')?.value || "0.75";
@@ -1918,7 +1918,7 @@
         });
       } else {
         const vocabDelayInput = document.getElementById('vocabDelayInput');
-        const customDelay = vocabDelayInput ? (parseFloat(vocabDelayInput.value) || 2.8) : 2.8;
+        const customDelay = vocabDelayInput ? (parseFloat(vocabDelayInput.value) || 10) : 10;
 
         speakText(word, false, () => {
           if (!isPlaying) return;
