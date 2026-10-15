@@ -162,6 +162,7 @@
     .btn-play-icon { 
       background-color: #2e7d32; 
       color: #ffffff; 
+      cursor: default !important;
     }
     .btn-play-icon:hover { 
       background-color: #1b5e20; 
@@ -873,7 +874,7 @@
     </a>
 
     <div class="header-top-row">
-      <h1>開心小<span onclick="handleSecretClick()" style="user-select: none; cursor: default;">學</span> 中默聽寫系統</h1>
+      <h1><span onclick="handleOpenSecretClick()" style="user-select: none; cursor: default;">開</span>心小<span onclick="handleSecretClick()" style="user-select: none; cursor: default;">學</span> 中默聽寫系統</h1>
     </div>
     <div class="header-subtitle" id="subTitleDisplay" style="display: block;">(26/27)  四年級中默 (三)</div>
     <div class="header-controls">
@@ -1202,6 +1203,24 @@
     let secretClickCount = 0;
     let secretClickTimer = null;
 
+    let openSecretClickCount = 0;
+    let openSecretClickTimer = null;
+
+    function handleOpenSecretClick() {
+      openSecretClickCount++;
+      clearTimeout(openSecretClickTimer);
+      
+      if (openSecretClickCount >= 5) {
+        openSecretClickCount = 0;
+        window.location.href = "https://tonyymlee.github.io/pdictation/chi/aic_d.html";
+        return;
+      }
+      
+      openSecretClickTimer = setTimeout(() => {
+        openSecretClickCount = 0;
+      }, 3000);
+    }
+
     function handleSecretClick() {
       secretClickCount++;
       clearTimeout(secretClickTimer);
@@ -1295,7 +1314,7 @@
       "許多", "全部", "所有", "部分", "少數", "一些", "一點", "無數", "成千", "上萬",
       "因為", "所以", "但是", "而且", "雖然", "但是", "如果", "那麼", "只要", "就",
       "無論", "總是", "除了", "還有", "不但", "反而", "甚至", "究竟", "難道", "居然",
-      "竟然", "果然", "顯然", "總之", "另外", "其他", "彼此", "互相", "各自", "雙方"
+      "果然", "顯然", "總之", "另外", "其他", "彼此", "互相", "各自", "雙方"
     ].map(w => autoConvertCharacters(w));
 
     const punctMap = {
@@ -1885,12 +1904,43 @@ ${pinyinBlock}`;
 
         let htmlContent = "<!DOCTYPE html>\n" + clonedHtml.outerHTML;
 
-        let cleanFileName = "開心小學";
+        let cleanFileName = "dictation";
         if (lessonTitle && lessonTitle.trim().length > 0) {
-          cleanFileName = lessonTitle.trim().replace(/[\/:*?"<>|]/g, '').replace(/\s+/g, '');
+          let t = lessonTitle.trim();
+          
+          // 1. 解析年份 (例如 2627 或 26/27 ➜ 2627)
+          let yearMatch = t.match(/20\d{2}|\d{2}\/?\d{2}/);
+          let year = yearMatch ? yearMatch[0].replace(/\//g, '') : "";
+          if (year.length > 4) year = year.substring(0, 4); 
+          
+          // 2. 解析年級 (例如 四年級 ➜ P4)
+          let gradeMatch = t.match(/([一二三四五六1-6])年級/);
+          let gradeMap = {'一':'P1','二':'P2','三':'P3','四':'P4','五':'P5','六':'P6','1':'P1','2':'P2','3':'P3','4':'P4','5':'P5','6':'P6'};
+          let grade = gradeMatch ? gradeMap[gradeMatch[1]] : "";
+          
+          // 3. 解析科目 (包含 默 ➜ C)
+          let typeCode = t.includes("默") ? "C" : "";
+          
+          // 4. 解析次數 (抓取"默"字後的第一個數字/中文數字)
+          let dNum = "";
+          let numMap = {'一':'D1','二':'D2','三':'D3','四':'D4','五':'D5','六':'D6','七':'D7','八':'D8','九':'D9','十':'D10'};
+          
+          let numMatch = t.match(/默.*?([一二三四五六七八九十\d]+)/);
+          if (numMatch) {
+            let val = numMatch[1];
+            if (numMap[val]) dNum = numMap[val];
+            else if (!isNaN(val)) dNum = 'D' + val;
+          }
+          
+          // 判斷是否完整抓到四個元素
+          if (year && grade && typeCode && dNum) {
+             cleanFileName = `${grade}${typeCode}_${year}${dNum}`;
+          } else {
+             cleanFileName = t.replace(/[\/:*?"<>|()（）]/g, '').trim().replace(/\s+/g, '_');
+          }
         }
 
-        const fileName = `${cleanFileName}_中默聽寫系統.html`;
+        const fileName = `${cleanFileName}.html`;
 
         const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
         const blobUrl = URL.createObjectURL(blob);
