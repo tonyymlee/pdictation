@@ -31,26 +31,33 @@
       padding: 0;
     }
 
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
     body {
       background-color: var(--bg-color);
       font-family: var(--font-sans);
       color: var(--text-dark);
       min-height: 100vh;
-      padding-top: 160px; /* Space for fixed header */
+      padding-top: 135px; /* Exact height spacing so content flows right under header without white gap */
       padding-bottom: 45px;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
     }
 
-    /* Green Header Styling - Fixed Position */
+    /* Green Header Styling - Fixed Position Flush Top */
     header.dark-green-header {
       background-color: var(--dark-green-bg);
       text-align: center;
-      padding: 20px 20px;
+      padding: 16px 20px;
       width: 100%;
       position: fixed;
       top: 0;
       left: 0;
+      right: 0;
+      margin: 0;
       z-index: 1000;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
     }
@@ -319,7 +326,7 @@
     /* Home Button Positioning and Purple Rounded Icon Style */
     .home-btn {
       position: absolute;
-      top: 16px;
+      top: 50%; transform: translateY(-50%);
       left: 12px;
       color: #ffffff;
       font-size: 1.4rem;
@@ -338,7 +345,7 @@
 
     .home-btn:hover {
       background: #725be5;
-      transform: scale(1.06);
+      transform: translateY(-50%) scale(1.06);
       box-shadow: 0 4px 10px rgba(0,0,0,0.25);
     }
 
