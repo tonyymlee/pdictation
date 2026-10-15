@@ -867,7 +867,7 @@
 
   <header>
     <!-- 🏠 Home Icon Vector SVG (Top Left 2mm, Enlarged to 46x46px) -->
-    <a href="https://tonyymlee.github.io/pdictation/" class="home-link-icon" title="返回主頁">
+    <a href="https://tonyymlee.github.io/pdictation/chi/" class="home-link-icon" title="返回主頁">
       <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
         <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v6H4a1 1 0 0 1-1-1v-9.5z"></path>
       </svg>
@@ -1526,7 +1526,7 @@
       let currentWord = "";
 
       for (let char of convertedText) {
-        if ("。\.，,！？\?；;：:«»“”\"''「」『』《》〈〉<>\(\)（）─—\-…".includes(char)) {
+        if (`。\.，,！？\?；;：:«»“”"''「」『』《》〈〉<>\(\)（）─—\-…`.includes(char)) {
           if (currentWord) {
             result += getDynamicPinyin(currentWord) + " ";
             currentWord = "";
@@ -1817,7 +1817,7 @@ ${pinyinBlock}`;
         let processedLine = trimmedLine.replace(/\s+/g, '');
         let clauses = [];
         let cur = "";
-        let closingPuncts = "」』》〉）)\"''";
+        let closingPuncts = `」』》〉）)"''`;
         let splittingPuncts = "。，.,！？?；;：:─—-…";
 
         for (let i = 0; i < processedLine.length; i++) {
@@ -2829,6 +2829,7 @@ function autoInitApp() {
     document.addEventListener('DOMContentLoaded', autoInitApp);
     window.onload = autoInitApp;
   </script>
+
 
 <div style="display: none;"><textarea id="rawTextEditor" placeholder="在此粘貼全文或點擊選擇檔案上傳...">Title:  開心小學 (26/27)  四年級評1
 
