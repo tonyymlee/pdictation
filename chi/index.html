@@ -487,6 +487,22 @@
         svg.onmouseleave = () => { centerCircle.style.backgroundColor = ''; };
       }
 
+      let checkResults = new Array(numCells).fill(false); // Track validity of each cell link
+      let checksCompleted = 0;
+
+      function updateCenterTextIfAllInvalid() {
+        checksCompleted++;
+        if (checksCompleted === numCells) {
+          const allInvalid = checkResults.every(valid => !valid);
+          if (allInvalid && centerCircle) {
+            const levelText = centerCircle.querySelector('.level-text');
+            const subText = centerCircle.querySelector('.sub-text');
+            if (levelText) levelText.style.color = '#adb1b8';
+            if (subText) subText.style.color = '#adb1b8';
+          }
+        }
+      }
+
       for (let i = 0; i < numCells; i++) {
         const startAngle = i * anglePerCell + offsetAngle;
         const endAngle = (i + 1) * anglePerCell + offsetAngle;
@@ -499,13 +515,49 @@
         path.setAttribute("class", "cell-slice");
 
         const item = cellData[i];
+        const fileCode = item.isEval ? `E${item.id.replace('評', '')}` : `D${item.id}`;
+        const fileName = `${grade}C_${fileCode}.html`;
 
+        let isLinkValid = true;
 
-        path.onclick = () => {
-          const fileCode = item.isEval ? `E${item.id.replace('評', '')}` : `D${item.id}`;
-          const fileName = `${grade}C_${fileCode}.html`;
+        path.onclick = (e) => {
+          if (!isLinkValid) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
           window.location.href = fileName;
         };
+
+        const cellIndex = i;
+
+        // Auto-check link validity in background
+        fetch(fileName, { method: 'HEAD' })
+          .then(response => {
+            if (!response.ok) {
+              isLinkValid = false;
+              checkResults[cellIndex] = false;
+              path.setAttribute("fill", "#9CA3AF"); // Grey out invalid/missing link cell
+              path.setAttribute("opacity", "0.6");
+              path.style.cursor = "not-allowed";
+              path.title = "網頁暫未開放 (Link Invalid / Pending)";
+              path.onclick = (e) => { e.preventDefault(); e.stopPropagation(); return false; };
+            } else {
+              checkResults[cellIndex] = true;
+            }
+            updateCenterTextIfAllInvalid();
+          })
+          .catch(error => {
+            // Handle offline/local fetch errors for non-existent local files
+            isLinkValid = false;
+            checkResults[cellIndex] = false;
+            path.setAttribute("fill", "#9CA3AF"); // Grey out invalid link cell
+            path.setAttribute("opacity", "0.6");
+            path.style.cursor = "not-allowed";
+            path.title = "網頁暫未開放 (Link Invalid / Pending)";
+            path.onclick = (e) => { e.preventDefault(); e.stopPropagation(); return false; };
+            updateCenterTextIfAllInvalid();
+          });
 
         svg.appendChild(path);
 
