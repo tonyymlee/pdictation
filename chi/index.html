@@ -158,10 +158,7 @@
       transition: background-color 0.3s ease;
     }
 
-    /* Change center circle background color to #49fcfc when hovering anywhere on the rainbow wheel */
-    .wheel-wrapper:has(.rainbow-svg:hover) .center-circle {
-      background-color: #49fcfc;
-    }
+    /* CSS hover rule removed to allow JS to control hover color when all links are invalid */
 
     .center-circle .level-text {
       font-family: var(--font-en);
@@ -484,16 +481,7 @@
       const centerCircle = svg.parentElement.querySelector('.center-circle');
       let isAllWheelInvalid = false;
 
-      if (centerCircle) {
-        svg.onmouseenter = () => {
-          if (!isAllWheelInvalid) {
-            centerCircle.style.backgroundColor = '#49fcfc';
-          }
-        };
-        svg.onmouseleave = () => {
-          centerCircle.style.backgroundColor = '';
-        };
-      }
+      
 
       let checkResults = new Array(numCells).fill(false); // Track validity of each cell link
       let checksCompleted = 0;

@@ -481,16 +481,7 @@
       const centerCircle = svg.parentElement.querySelector('.center-circle');
       let isAllWheelInvalid = false;
 
-      if (centerCircle) {
-        svg.addEventListener('mouseenter', () => {
-          if (!isAllWheelInvalid) {
-            centerCircle.style.backgroundColor = '#49fcfc';
-          }
-        });
-        svg.addEventListener('mouseleave', () => {
-          centerCircle.style.backgroundColor = '';
-        });
-      }
+      
 
       let checkResults = new Array(numCells).fill(false); // Track validity of each cell link
       let checksCompleted = 0;
