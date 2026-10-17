@@ -876,7 +876,7 @@
     <div class="header-top-row">
       <h1><span onclick="handleOpenSecretClick()" style="user-select: none; cursor: default;">開</span>心小<span onclick="handleSecretClick()" style="user-select: none; cursor: default;">學</span> 中默聽寫系統</h1>
     </div>
-    <div class="header-subtitle" id="subTitleDisplay" style="display: block;">(26/27)  四年級中默 (1)</div>
+    <div class="header-subtitle" id="subTitleDisplay" style="display: block;">(26/27)  四年級中默 (2)</div>
     <div class="header-controls">
       <button class="menu-toggle-btn" onclick="toggleSidebarMenu()" title="顯示 / 隱藏選單">
         <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -905,7 +905,7 @@
       </button>
 
       <button class="btn-hdr-opt btn-lang-opt" id="langSwitchBtn" onclick="toggleLanguage()" title="切換朗讀語言">廣</button>
-      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="切換顯示模式">漢+拼</button>
+      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="切換顯示模式">拼</button>
       
       <div class="timer-clock-box" title="剩餘時間倒數">
         <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 0%, rgb(229, 231, 235) 0%);"></div>
@@ -958,7 +958,7 @@
       </div>
     </aside>
 
-    <main id="mainContent" class="mode-hanPinyin">
+    <main id="mainContent" class="mode-pinyin">
       <div class="toolbar-card hidden is-scrolled" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">詞語</button>
@@ -999,275 +999,221 @@
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="複製當前顯示文字">抄</button>
       </div>
 
-      <div id="contentArea"><div class="dictation-list" id="dictationList"><h2 style="font-size:1.2rem; color:#ffffff; margin: 8px 0 4px;">課 1《週記一則 ──掌聲》</h2>
+      <div id="contentArea"><div class="dictation-list" id="dictationList"><h2 style="font-size:1.2rem; color:#ffffff; margin: 8px 0 4px;">課 2《日記一則 ── 那一瞬》</h2>
             <div class="dictation-row" id="dcard_1" onclick="clickPlayDictation(1)">
               <div class="sentence-index">#1</div>
-              <div class="sentence-text">星期一，</div>
-              <div class="sentence-pinyin">xīng qī yī</div>
+              <div class="sentence-text">老師也在等。</div>
+              <div class="sentence-pinyin">lǎo shī yě zài děng</div>
             </div>
           
             <div class="dictation-row" id="dcard_2" onclick="clickPlayDictation(2)">
               <div class="sentence-index">#2</div>
-              <div class="sentence-text">古老師吩咐每位同學回家</div>
-              <div class="sentence-pinyin">gǔ lǎo shī fēn fù měi wèi tóng xué huí jiā</div>
+              <div class="sentence-text">又半分鐘過去了，</div>
+              <div class="sentence-pinyin">yòu bàn fēn zhōng guò qù le</div>
             </div>
           
             <div class="dictation-row" id="dcard_3" onclick="clickPlayDictation(3)">
               <div class="sentence-index">#3</div>
-              <div class="sentence-text">找一個感動人心的小故事，</div>
-              <div class="sentence-pinyin">zhǎo yī gè gǎn dòng rén xīn de xiǎo gù shì</div>
+              <div class="sentence-text">教室裏仍然那麼安靜，</div>
+              <div class="sentence-pinyin">jiào shì lǐ réng rán nà mó ān jìng</div>
             </div>
           
             <div class="dictation-row" id="dcard_4" onclick="clickPlayDictation(4)">
               <div class="sentence-index">#4</div>
-              <div class="sentence-text">第二天輪流出來分享。</div>
-              <div class="sentence-pinyin">dì èr tiān lún liú chū lái fēn xiǎng</div>
+              <div class="sentence-text">老師決定「點將」了。</div>
+              <div class="sentence-pinyin">lǎo shī jué dìng diǎn jiāng le</div>
             </div>
           
             <div class="dictation-row" id="dcard_5" onclick="clickPlayDictation(5)">
               <div class="sentence-index">#5</div>
-              <div class="sentence-text">小息的時候，</div>
-              <div class="sentence-pinyin">xiǎo xī de shí hòu</div>
+              <div class="sentence-text">我盼望着老師的「垂青」，</div>
+              <div class="sentence-pinyin">wǒ pàn wàng zhe lǎo shī de chuí qīng</div>
             </div>
           
             <div class="dictation-row" id="dcard_6" onclick="clickPlayDictation(6)">
               <div class="sentence-index">#6</div>
-              <div class="sentence-text">我跟小組的同學約好，</div>
-              <div class="sentence-pinyin">wǒ gēn xiǎo zǔ de tóng xué yuē hǎo</div>
+              <div class="sentence-text">我們的目光相遇了，</div>
+              <div class="sentence-pinyin">wǒ mén de mù guāng xiāng yù le</div>
             </div>
           
             <div class="dictation-row" id="dcard_7" onclick="clickPlayDictation(7)">
               <div class="sentence-index">#7</div>
-              <div class="sentence-text">靜兒第二天講故事時，</div>
-              <div class="sentence-pinyin">jìng ér dì èr tiān jiǎng gù shì shí</div>
+              <div class="sentence-text">我用眼神告訴她：</div>
+              <div class="sentence-pinyin">wǒ yòng yǎn shén gào sù tā</div>
             </div>
           
             <div class="dictation-row" id="dcard_8" onclick="clickPlayDictation(8)">
               <div class="sentence-index">#8</div>
-              <div class="sentence-text">大家要鼓掌，</div>
-              <div class="sentence-pinyin">dà jiā yào gǔ zhǎng</div>
+              <div class="sentence-text">「老師，</div>
+              <div class="sentence-pinyin">lǎo shī</div>
             </div>
           
             <div class="dictation-row" id="dcard_9" onclick="clickPlayDictation(9)">
               <div class="sentence-index">#9</div>
-              <div class="sentence-text">給她一點兒鼓勵。</div>
-              <div class="sentence-pinyin">gěi tā yī diǎn ér gǔ lì</div>
+              <div class="sentence-text">我會。」</div>
+              <div class="sentence-pinyin">wǒ huì</div>
             </div>
           
             <div class="dictation-row" id="dcard_10" onclick="clickPlayDictation(10)">
               <div class="sentence-index">#10</div>
-              <div class="sentence-text">星期二，</div>
-              <div class="sentence-pinyin">xīng qī èr</div>
+              <div class="sentence-text">她似乎看懂了我的「話」，</div>
+              <div class="sentence-pinyin">tā sì hū kàn dǒng le wǒ de huà</div>
             </div>
           
             <div class="dictation-row" id="dcard_11" onclick="clickPlayDictation(11)">
               <div class="sentence-index">#11</div>
-              <div class="sentence-text">大家輪流講故事，</div>
-              <div class="sentence-pinyin">dà jiā lún liú jiǎng gù shì</div>
+              <div class="sentence-text">先向我微微一笑，</div>
+              <div class="sentence-pinyin">xiān xiàng wǒ wēi wēi yī xiào</div>
             </div>
           
             <div class="dictation-row" id="dcard_12" onclick="clickPlayDictation(12)">
               <div class="sentence-index">#12</div>
-              <div class="sentence-text">不久便輪到靜兒了。</div>
-              <div class="sentence-pinyin">bù jiǔ biàn lún dào jìng ér le</div>
+              <div class="sentence-text">像是鼓勵，</div>
+              <div class="sentence-pinyin">xiàng shì gǔ lì</div>
             </div>
           
             <div class="dictation-row" id="dcard_13" onclick="clickPlayDictation(13)">
               <div class="sentence-index">#13</div>
-              <div class="sentence-text">只見她低着頭，</div>
-              <div class="sentence-pinyin">zhī jiàn tā dī zhe tóu</div>
+              <div class="sentence-text">給了我一點信心，</div>
+              <div class="sentence-pinyin">gěi le wǒ yī diǎn xìn xīn</div>
             </div>
           
             <div class="dictation-row" id="dcard_14" onclick="clickPlayDictation(14)">
               <div class="sentence-index">#14</div>
-              <div class="sentence-text">慢吞吞地走出來，</div>
-              <div class="sentence-pinyin">màn tūn tūn dì zǒu chū lái</div>
+              <div class="sentence-text">然後點到我的名字。</div>
+              <div class="sentence-pinyin">rán hòu diǎn dào wǒ de míng zì</div>
             </div>
           
             <div class="dictation-row" id="dcard_15" onclick="clickPlayDictation(15)">
               <div class="sentence-index">#15</div>
-              <div class="sentence-text">一副老不願意地樣子。</div>
-              <div class="sentence-pinyin">yī fù lǎo bù yuàn yì dì yàng zǐ</div>
+              <div class="sentence-text">那一瞬我既</div>
+              <div class="sentence-pinyin">nà yī shùn wǒ jì</div>
             </div>
           
             <div class="dictation-row" id="dcard_16" onclick="clickPlayDictation(16)">
               <div class="sentence-index">#16</div>
-              <div class="sentence-text">靜兒一站定，</div>
-              <div class="sentence-pinyin">jìng ér yī zhàn dìng</div>
+              <div class="sentence-text">高興又緊張。</div>
+              <div class="sentence-pinyin">gāo xīng yòu jǐn zhāng</div>
             </div>
           
             <div class="dictation-row" id="dcard_17" onclick="clickPlayDictation(17)">
               <div class="sentence-index">#17</div>
-              <div class="sentence-text">我就熱烈地拍掌，</div>
-              <div class="sentence-pinyin">wǒ jiù rè liè dì pāi zhǎng</div>
+              <div class="sentence-text">我站起來，</div>
+              <div class="sentence-pinyin">wǒ zhàn qǐ lái</div>
             </div>
           
             <div class="dictation-row" id="dcard_18" onclick="clickPlayDictation(18)">
               <div class="sentence-index">#18</div>
-              <div class="sentence-text">其他同學也跟着拍掌，</div>
-              <div class="sentence-pinyin">qí tā tóng xué yě gēn zhe pāi zhǎng</div>
+              <div class="sentence-text">說出早已</div>
+              <div class="sentence-pinyin">shuō chū zǎo yǐ</div>
             </div>
           
             <div class="dictation-row" id="dcard_19" onclick="clickPlayDictation(19)">
               <div class="sentence-index">#19</div>
-              <div class="sentence-text">那掌聲充滿了</div>
-              <div class="sentence-pinyin">nà zhǎng shēng chōng mǎn le</div>
+              <div class="sentence-text">組織好的內容，</div>
+              <div class="sentence-pinyin">zǔ zhī hǎo de nèi róng</div>
             </div>
           
             <div class="dictation-row" id="dcard_20" onclick="clickPlayDictation(20)">
               <div class="sentence-index">#20</div>
-              <div class="sentence-text">關愛和鼓勵。</div>
-              <div class="sentence-pinyin">guān ài hé gǔ lì</div>
+              <div class="sentence-text">聲音相當響亮，</div>
+              <div class="sentence-pinyin">shēng yīn xiāng dāng xiǎng liàng</div>
             </div>
           
             <div class="dictation-row" id="dcard_21" onclick="clickPlayDictation(21)">
               <div class="sentence-index">#21</div>
-              <div class="sentence-text">在掌聲裏，</div>
-              <div class="sentence-pinyin">zài zhǎng shēng lǐ</div>
+              <div class="sentence-text">答得非常流利。</div>
+              <div class="sentence-pinyin">dá dé fēi cháng liú lì</div>
             </div>
           
             <div class="dictation-row" id="dcard_22" onclick="clickPlayDictation(22)">
               <div class="sentence-index">#22</div>
-              <div class="sentence-text">靜兒慢慢地抬起頭來，</div>
-              <div class="sentence-pinyin">jìng ér màn màn dì tái qǐ tóu lái</div>
+              <div class="sentence-text">說着，</div>
+              <div class="sentence-pinyin">shuō zhe</div>
             </div>
           
             <div class="dictation-row" id="dcard_23" onclick="clickPlayDictation(23)">
               <div class="sentence-index">#23</div>
-              <div class="sentence-text">視線跟我微笑着</div>
-              <div class="sentence-pinyin">shì xiàn gēn wǒ wēi xiào zhe</div>
+              <div class="sentence-text">說着，</div>
+              <div class="sentence-pinyin">shuō zhe</div>
             </div>
           
             <div class="dictation-row" id="dcard_24" onclick="clickPlayDictation(24)">
               <div class="sentence-index">#24</div>
-              <div class="sentence-text">的目光接上了。</div>
-              <div class="sentence-pinyin">de mù guāng jiē shàng le</div>
+              <div class="sentence-text">我只覺得心在跳，</div>
+              <div class="sentence-pinyin">wǒ zhī jué dé xīn zài tiào</div>
             </div>
           
             <div class="dictation-row" id="dcard_25" onclick="clickPlayDictation(25)">
               <div class="sentence-index">#25</div>
-              <div class="sentence-text">掌聲漸漸靜下來，</div>
-              <div class="sentence-pinyin">zhǎng shēng jiàn jiàn jìng xià lái</div>
+              <div class="sentence-text">劇烈地跳，</div>
+              <div class="sentence-pinyin">jù liè dì tiào</div>
             </div>
           
             <div class="dictation-row" id="dcard_26" onclick="clickPlayDictation(26)">
               <div class="sentence-index">#26</div>
-              <div class="sentence-text">靜兒開始講述故事。</div>
-              <div class="sentence-pinyin">jìng ér kāi shǐ jiǎng shù gù shì</div>
+              <div class="sentence-text">興奮到了極點。</div>
+              <div class="sentence-pinyin">xīng fèn dào le jí diǎn</div>
             </div>
           
             <div class="dictation-row" id="dcard_27" onclick="clickPlayDictation(27)">
               <div class="sentence-index">#27</div>
-              <div class="sentence-text">她的普通話說得很好，</div>
-              <div class="sentence-pinyin">tā de pǔ tōng huà shuō dé hěn hǎo</div>
+              <div class="sentence-text">這就是我—</div>
+              <div class="sentence-pinyin">zhè jiù shì wǒ</div>
             </div>
           
             <div class="dictation-row" id="dcard_28" onclick="clickPlayDictation(28)">
               <div class="sentence-index">#28</div>
-              <div class="sentence-text">聲音也十分動聽。</div>
-              <div class="sentence-pinyin">shēng yīn yě shí fēn dòng tīng</div>
+              <div class="sentence-text">一個成績一般的學生—</div>
+              <div class="sentence-pinyin">yī gè chéng jì yī bān de xué shēng</div>
             </div>
           
             <div class="dictation-row" id="dcard_29" onclick="clickPlayDictation(29)">
               <div class="sentence-index">#29</div>
-              <div class="sentence-text">故事講完了，</div>
-              <div class="sentence-pinyin">gù shì jiǎng wán le</div>
+              <div class="sentence-text">今天回答問題</div>
+              <div class="sentence-pinyin">jīn tiān huí dá wèn tí</div>
             </div>
           
             <div class="dictation-row" id="dcard_30" onclick="clickPlayDictation(30)">
               <div class="sentence-index">#30</div>
-              <div class="sentence-text">教室裏響起</div>
-              <div class="sentence-pinyin">jiào shì lǐ xiǎng qǐ</div>
+              <div class="sentence-text">時的瞬間感受。</div>
+              <div class="sentence-pinyin">shí de shùn jiàn gǎn shòu</div>
             </div>
           
             <div class="dictation-row" id="dcard_31" onclick="clickPlayDictation(31)">
               <div class="sentence-index">#31</div>
-              <div class="sentence-text">如雷的掌聲。</div>
-              <div class="sentence-pinyin">rú léi de zhǎng shēng</div>
+              <div class="sentence-text">老師的目光與我的</div>
+              <div class="sentence-pinyin">lǎo shī de mù guāng yǔ wǒ de</div>
             </div>
           
             <div class="dictation-row" id="dcard_32" onclick="clickPlayDictation(32)">
               <div class="sentence-index">#32</div>
-              <div class="sentence-text">靜兒向大家</div>
-              <div class="sentence-pinyin">jìng ér xiàng dà jiā</div>
+              <div class="sentence-text">目光相遇的那一瞬，</div>
+              <div class="sentence-pinyin">mù guāng xiāng yù de nà yī shùn</div>
             </div>
           
             <div class="dictation-row" id="dcard_33" onclick="clickPlayDictation(33)">
               <div class="sentence-index">#33</div>
-              <div class="sentence-text">深深地鞠躬，</div>
-              <div class="sentence-pinyin">shēn shēn dì jū gōng</div>
+              <div class="sentence-text">包含老師給我的信心，</div>
+              <div class="sentence-pinyin">bāo hán lǎo shī gěi wǒ de xìn xīn</div>
             </div>
           
             <div class="dictation-row" id="dcard_34" onclick="clickPlayDictation(34)">
               <div class="sentence-index">#34</div>
-              <div class="sentence-text">然後，</div>
-              <div class="sentence-pinyin">rán hòu</div>
+              <div class="sentence-text">那一瞬讓我衝</div>
+              <div class="sentence-pinyin">nà yī shùn ràng wǒ chōng</div>
             </div>
           
             <div class="dictation-row" id="dcard_35" onclick="clickPlayDictation(35)">
               <div class="sentence-index">#35</div>
-              <div class="sentence-text">在掌聲中低着</div>
-              <div class="sentence-pinyin">zài zhǎng shēng zhōng dī zhe</div>
+              <div class="sentence-text">破緊張的束縛，</div>
+              <div class="sentence-pinyin">pò jǐn zhāng de shù fù</div>
             </div>
           
             <div class="dictation-row" id="dcard_36" onclick="clickPlayDictation(36)">
               <div class="sentence-index">#36</div>
-              <div class="sentence-text">頭走回座位。</div>
-              <div class="sentence-pinyin">tóu zǒu huí zuò wèi</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_37" onclick="clickPlayDictation(37)">
-              <div class="sentence-index">#37</div>
-              <div class="sentence-text">接連的兩天，</div>
-              <div class="sentence-pinyin">jiē lián de liǎng tiān</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_38" onclick="clickPlayDictation(38)">
-              <div class="sentence-index">#38</div>
-              <div class="sentence-text">靜兒就像</div>
-              <div class="sentence-pinyin">jìng ér jiù xiàng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_39" onclick="clickPlayDictation(39)">
-              <div class="sentence-index">#39</div>
-              <div class="sentence-text">脫胎換骨一樣，</div>
-              <div class="sentence-pinyin">tuō tāi huàn gǔ yī yàng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_40" onclick="clickPlayDictation(40)">
-              <div class="sentence-index">#40</div>
-              <div class="sentence-text">不再像以前那麼憂鬱。</div>
-              <div class="sentence-pinyin">bù zài xiàng yǐ qián nà mó yōu yù</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_41" onclick="clickPlayDictation(41)">
-              <div class="sentence-index">#41</div>
-              <div class="sentence-text">她和我們一起遊戲，</div>
-              <div class="sentence-pinyin">tā hé wǒ mén yī qǐ yóu xì</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_42" onclick="clickPlayDictation(42)">
-              <div class="sentence-index">#42</div>
-              <div class="sentence-text">一起說笑，</div>
-              <div class="sentence-pinyin">yī qǐ shuō xiào</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_43" onclick="clickPlayDictation(43)">
-              <div class="sentence-index">#43</div>
-              <div class="sentence-text">昨天還把頭髮束起來，</div>
-              <div class="sentence-pinyin">zuó tiān huán bǎ tóu fà shù qǐ lái</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_44" onclick="clickPlayDictation(44)">
-              <div class="sentence-index">#44</div>
-              <div class="sentence-text">讓大家看清</div>
-              <div class="sentence-pinyin">ràng dà jiā kàn qīng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_45" onclick="clickPlayDictation(45)">
-              <div class="sentence-index">#45</div>
-              <div class="sentence-text">楚她的笑臉。</div>
-              <div class="sentence-pinyin">chǔ tā de xiào liǎn</div>
+              <div class="sentence-text">證明了自己的能力。</div>
+              <div class="sentence-pinyin">zhèng míng le zì jǐ de néng lì</div>
             </div>
           </div></div>
     </main>
@@ -2751,33 +2697,34 @@ function autoInitApp() {
   </script>
 
 
-<div style="display: none;"><textarea id="rawTextEditor" placeholder="在此粘貼全文或點擊選擇檔案上傳...">Title:  開心小學 (26/27)  四年級中默 (1)
+<div style="display: none;"><textarea id="rawTextEditor" placeholder="在此粘貼全文或點擊選擇檔案上傳...">Title:  開心小學 (26/27)  四年級中默 (2)
 
-課文詞語：課《週記一則 ──掌聲》
-1.課文詞語《週記一則 ──掌聲》
-文靜	笑容	散落	關愛
-輪流	慢吞吞	充滿	 脫胎換骨
-遮掩	彷彿	心扉	鞠躬
-接連	吩咐	分享	鼓掌
-視線	講述	害羞	交談
-友善
-介意	友誼	憂鬱
+課文詞語：課《那一瞬》、《大娃娃康弟》
+概括	藏	組織	呼喚
+眼神	方陣	瞬間	相遇
+周圍	垂青	劇烈	證明
+溫柔	盼望	流利	勇敢
+溜冰	祝賀	練習	奔跑
+索性	巷子	氣喘	氈帽
+怒吼	額頭	強烈	騰空
 
 
-漢語拼音: 課 1《週記一則 ──掌聲》詞庫
-遮掩	彷彿	心扉	鞠躬
-接連	脫胎換骨	吩咐	分享
-鼓掌	視線	講述	害羞
-交談	友善	介意	友誼
+漢語拼音: 《大娃娃康弟》詞庫
+氣喘	怒吼 	索性	跪地求饒
+騰空	溜冰	戴	額頭
+道	過街老鼠   奔跑	項
+遍	篇		
 
 挑戰題: 成語:
+朝三暮四	一竅不通	七上八下	兩全其美
+半斤八兩	九牛一毛	約法三章	四分五裂
+八面玲瓏	十拿九穩	六神無主	一波三折
 
 聽寫課文段落:
-課 1《週記一則 ──掌聲》
-
-星期一，古老師吩咐每位同學回家找一個感動人心的小故事，第二天輪流出來分享。小息的時候，我跟小組的同學約好，靜兒第二天講故事時，大家要鼓掌，給她一點兒鼓勵。
-星期二，大家輪流講故事，不久便輪到靜兒了。只見她低着頭，慢吞吞地走出來，一副老不願意地樣子。靜兒一站定，我就熱烈地拍掌，其他同學也跟着拍掌，那掌聲充滿了關愛和鼓勵。在掌聲裏，靜兒慢慢地抬起頭來，視線跟我微笑着的目光接上了。掌聲漸漸靜下來，靜兒開始講述故事。她的普通話說得很好，聲音也十分動聽。故事講完了，教室裏響起如雷的掌聲。靜兒向大家深深地鞠躬，然後，在掌聲中低着頭走回座位。
-接連的兩天，靜兒就像脫胎換骨一樣，不再像以前那麼憂鬱。她和我們一起遊戲，一起說笑，昨天還把頭髮束起來，讓大家看清楚她的笑臉。
+課 2《日記一則 ── 那一瞬》
+老師也在等。又半分鐘過去了，教室裏仍然那麼安靜，老師決定「點將」了。我盼望着老師的「垂青」，我們的目光相遇了，我用眼神告訴她：「老師，我會。」她似乎看懂了我的「話」，先向我微微一笑，像是鼓勵，給了我一點信心，然後點到我的名字。那一瞬我既高興又緊張。
+我站起來，說出早已組織好的內容，聲音相當響亮，答得非常流利。說着，說着，我只覺得心在跳，劇烈地跳，興奮到了極點。
+這就是我——一個成績一般的學生——今天回答問題時的瞬間感受。老師的目光與我的目光相遇的那一瞬，包含老師給我的信心，那一瞬讓我衝破緊張的束縛，證明了自己的能力。
 
 其他詞語:
 地上     母子    巨人
