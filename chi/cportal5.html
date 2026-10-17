@@ -158,7 +158,12 @@
       transition: background-color 0.3s ease;
     }
 
-    /* CSS hover rule removed to allow JS to control hover color when all links are invalid */
+    
+    /* When a valid wheel is hovered, center turns cyan */
+    .wheel-wrapper:not(.disabled-wheel):has(.rainbow-svg:hover) .center-circle {
+      background-color: #49fcfc;
+    }
+
 
     .center-circle .level-text {
       font-family: var(--font-en);
@@ -492,8 +497,11 @@
           const allInvalid = checkResults.every(valid => !valid);
           if (allInvalid) {
             isAllWheelInvalid = true;
+            
+            const wrapper = svg.closest('.wheel-wrapper');
+            if (wrapper) wrapper.classList.add('disabled-wheel');
+
             if (centerCircle) {
-              centerCircle.style.backgroundColor = ''; // Reset background if hovered during check
               const levelText = centerCircle.querySelector('.level-text');
               const subText = centerCircle.querySelector('.sub-text');
               if (levelText) levelText.style.color = '#adb1b8';
