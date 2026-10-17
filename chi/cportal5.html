@@ -482,9 +482,17 @@
       const offsetAngle = -anglePerCell / 2; // Center slice 0 (item "1") exactly at 12 o'clock top
 
       const centerCircle = svg.parentElement.querySelector('.center-circle');
+      let isAllWheelInvalid = false;
+
       if (centerCircle) {
-        svg.onmouseenter = () => { centerCircle.style.backgroundColor = '#49fcfc'; };
-        svg.onmouseleave = () => { centerCircle.style.backgroundColor = ''; };
+        svg.onmouseenter = () => {
+          if (!isAllWheelInvalid) {
+            centerCircle.style.backgroundColor = '#49fcfc';
+          }
+        };
+        svg.onmouseleave = () => {
+          centerCircle.style.backgroundColor = '';
+        };
       }
 
       let checkResults = new Array(numCells).fill(false); // Track validity of each cell link
@@ -494,11 +502,15 @@
         checksCompleted++;
         if (checksCompleted === numCells) {
           const allInvalid = checkResults.every(valid => !valid);
-          if (allInvalid && centerCircle) {
-            const levelText = centerCircle.querySelector('.level-text');
-            const subText = centerCircle.querySelector('.sub-text');
-            if (levelText) levelText.style.color = '#adb1b8';
-            if (subText) subText.style.color = '#adb1b8';
+          if (allInvalid) {
+            isAllWheelInvalid = true;
+            if (centerCircle) {
+              centerCircle.style.backgroundColor = ''; // Reset background if hovered during check
+              const levelText = centerCircle.querySelector('.level-text');
+              const subText = centerCircle.querySelector('.sub-text');
+              if (levelText) levelText.style.color = '#adb1b8';
+              if (subText) subText.style.color = '#adb1b8';
+            }
           }
         }
       }
