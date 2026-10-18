@@ -921,17 +921,18 @@
         <div class="nav-card-title" style="display: flex; align-items: center; justify-content: space-between;">
           <span><span onclick="handleSecretClick()" style="user-select: none; cursor: default;">學</span>習單元選擇</span>
           <button id="pdfViewerBtn" onclick="togglePdfViewer()" title="開啟對應 PDF 檔案" style="display: none; background: none; border: none; cursor: pointer; padding: 0; margin-left: 8px;">
-            <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- Outer Red Container Box with White Outline -->
-              <rect x="4" y="4" width="92" height="92" rx="16" fill="#D30000" stroke="#FFFFFF" stroke-width="4"></rect>
-              <!-- Folded Top-Right Corner -->
-              <path d="M 64 4 Q 64 32 96 32 L 96 4 Z" fill="#FFFFFF"></path>
-              <!-- Sun / Circle -->
-              <circle cx="24" cy="28" r="7" fill="#FFFFFF"></circle>
-              <!-- Mountains Icon -->
-              <path d="M 18 52 L 30 38 L 38 46 L 52 28 L 64 52 Z" fill="#FFFFFF"></path>
+            <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="100" height="100" rx="16" fill="#BA0000"></rect>
+              <!-- Document Base -->
+              <path d="M 18 10 C 13.58 10 10 13.58 10 18 L 10 82 C 10 86.42 13.58 90 18 90 L 82 90 C 86.42 90 90 86.42 90 82 L 90 34 L 66 10 Z" fill="#D30000" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"></path>
+              <!-- Folded Corner -->
+              <path d="M 66 10 L 66 26 C 66 30.42 69.58 34 74 34 L 90 34 Z" fill="#FFFFFF"></path>
+              <!-- Sun -->
+              <circle cx="27" cy="27" r="7.5" fill="#FFFFFF"></circle>
+              <!-- Mountains -->
+              <path d="M 13 56 L 33 36 L 47 51 L 62 36 L 82 56 Z" fill="#FFFFFF"></path>
               <!-- PDF Text -->
-              <text x="50" y="82" text-anchor="middle" fill="#FFFFFF" font-size="28" font-weight="900" font-family="Arial Black, Impact, sans-serif" letter-spacing="1">PDF</text>
+              <text x="50" y="84" text-anchor="middle" fill="#FFFFFF" font-size="28" font-weight="900" font-family="Arial, Helvetica, sans-serif" letter-spacing="1">PDF</text>
             </svg>
           </button>
         </div>
