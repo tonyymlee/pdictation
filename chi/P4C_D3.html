@@ -921,11 +921,17 @@
         <div class="nav-card-title" style="display: flex; align-items: center; justify-content: space-between;">
           <span><span onclick="handleSecretClick()" style="user-select: none; cursor: default;">學</span>習單元選擇</span>
           <button id="pdfViewerBtn" onclick="togglePdfViewer()" title="開啟對應 PDF 檔案" style="display: none; background: none; border: none; cursor: pointer; padding: 0; margin-left: 8px;">
-            <svg width="32" height="38" viewBox="0 0 32 38" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="1" y="1" width="30" height="36" rx="4" fill="#E53935" stroke="#B71C1C" stroke-width="2"></rect>
-              <path d="M20 1H31L20 12V1Z" fill="#FFCDD2"></path>
-              <path d="M6 10H20V14H6V10Z" fill="white"></path>
-              <text x="16" y="30" text-anchor="middle" fill="white" font-size="10" font-weight="bold" font-family="sans-serif">PDF</text>
+            <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Outer Red Container Box with White Outline -->
+              <rect x="4" y="4" width="92" height="92" rx="16" fill="#D30000" stroke="#FFFFFF" stroke-width="4"></rect>
+              <!-- Folded Top-Right Corner -->
+              <path d="M 64 4 Q 64 32 96 32 L 96 4 Z" fill="#FFFFFF"></path>
+              <!-- Sun / Circle -->
+              <circle cx="24" cy="28" r="7" fill="#FFFFFF"></circle>
+              <!-- Mountains Icon -->
+              <path d="M 18 52 L 30 38 L 38 46 L 52 28 L 64 52 Z" fill="#FFFFFF"></path>
+              <!-- PDF Text -->
+              <text x="50" y="82" text-anchor="middle" fill="#FFFFFF" font-size="28" font-weight="900" font-family="Arial Black, Impact, sans-serif" letter-spacing="1">PDF</text>
             </svg>
           </button>
         </div>
@@ -2162,38 +2168,94 @@ ${pinyinBlock}`;
     let resolvedPdfUrl = "";
     let isPdfViewerOpen = false;
 
-    async function checkAndResolveSameNamePdf() {
+                async function checkAndResolveSameNamePdf() {
+      const pdfBtn = document.getElementById('pdfViewerBtn');
+      if (pdfBtn) pdfBtn.style.display = 'none';
+
       try {
+        let candidateNames = [];
         let path = window.location.pathname;
         let filename = path.substring(path.lastIndexOf('/') + 1);
-        if (!filename || filename === "" || filename === "index.html") {
-          // If title exists and gives a hint, or default fallback
-          return;
+
+        if (filename && filename !== "" && filename !== "index.html") {
+          let baseName = decodeURIComponent(filename.replace(/\.[^/.]+$/, ""));
+          if (baseName) candidateNames.push(baseName + ".pdf");
         }
 
-        let baseName = filename.replace(/\.[^/.]+$/, "");
-        if (!baseName) return;
-
-        let pdfName = baseName + ".pdf";
-        
-        // Try resolving the same-name PDF file
-        let response = await fetch(pdfName, { method: 'HEAD' }).catch(() => null);
-        
-        // If HEAD request is not allowed by server or blocked, try GET range 0-0
-        if (!response || (!response.ok && response.status !== 405)) {
-          response = await fetch(pdfName, { method: 'GET', headers: { 'Range': 'bytes=0-0' } }).catch(() => null);
-        }
-
-        if (response && (response.ok || response.status === 206)) {
-          resolvedPdfUrl = pdfName;
-          const pdfBtn = document.getElementById('pdfViewerBtn');
-          if (pdfBtn) {
-            pdfBtn.style.display = 'inline-block';
-            pdfBtn.title = `檢視對應 PDF 檔案 (${pdfName})`;
+        if (lessonTitle) {
+          let t = lessonTitle.trim();
+          let gradeMatch = t.match(/([一二三四五六1-6])年級/);
+          let gradeMap = {'一':'P1','二':'P2','三':'P3','四':'P4','五':'P5','六':'P6','1':'P1','2':'P2','3':'P3','4':'P4','5':'P5','6':'P6'};
+          let grade = gradeMatch ? gradeMap[gradeMatch[1]] : "";
+          let typeCode = t.includes("默") ? "C" : "";
+          let dNum = "";
+          let numMap = {'一':'D1','二':'D2','三':'D3','四':'D4','五':'D5','六':'D6','七':'D7','八':'D8','九':'D9','十':'D10'};
+          let numMatch = t.match(/默.*?([一二三四五六七八九十\d]+)/);
+          if (numMatch) {
+            let val = numMatch[1];
+            if (numMap[val]) dNum = numMap[val];
+            else if (!isNaN(val)) dNum = 'D' + val;
+          }
+          if (grade && typeCode && dNum) {
+            let titlePdf = `${grade}${typeCode}_${dNum}.pdf`;
+            if (!candidateNames.includes(titlePdf)) candidateNames.push(titlePdf);
           }
         }
+
+        if (candidateNames.length === 0) return;
+
+        for (let pdfName of candidateNames) {
+          let exists = await probePdfExistence(pdfName);
+          if (exists) {
+            resolvedPdfUrl = pdfName;
+            showPdfButton(pdfName);
+            return;
+          }
+        }
+
       } catch (err) {
-        console.warn("PDF resolution check skipped or failed:", err);
+        console.warn("PDF check error:", err);
+      }
+    }
+
+    async function probePdfExistence(url) {
+      // 1. Try standard HEAD request (Best for normal web servers)
+      try {
+        let res = await fetch(url, { method: 'HEAD' });
+        if (res.ok) return true;
+        if (res.status === 404) return false;
+      } catch (e) {}
+
+      // 2. Try GET request and abort instantly (Fixes issues where HEAD or Range headers are blocked)
+      try {
+        const controller = new AbortController();
+        let res = await fetch(url, { method: 'GET', signal: controller.signal });
+        if (res.ok) {
+          controller.abort(); // We only care about the headers/status, don't download the file
+          return true;
+        }
+      } catch (e) {}
+      
+      // 3. XHR Fallback
+      return new Promise((resolve) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open('HEAD', url, true);
+        xhr.onload = function() {
+          if (xhr.status >= 200 && xhr.status < 300) resolve(true);
+          else resolve(false);
+        };
+        xhr.onerror = function() {
+          resolve(false);
+        };
+        try { xhr.send(); } catch(err) { resolve(false); }
+      });
+    }
+
+    function showPdfButton(pdfName) {
+      const pdfBtn = document.getElementById('pdfViewerBtn');
+      if (pdfBtn) {
+        pdfBtn.style.display = 'inline-block';
+        pdfBtn.title = `檢視對應 PDF 檔案 (${pdfName})`;
       }
     }
 
