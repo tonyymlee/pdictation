@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-HK"><head>
+<html lang="zh-HK" style="--font-family: &quot;Noto Serif HK&quot;, &quot;Noto Serif TC&quot;, serif;"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>開心小學 中默聽寫系統</title>
@@ -9,6 +9,10 @@
 
   <!-- 📦 載入穩定版 pinyin-pro 拼音庫 -->
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.16.0/dist/index.js"></script>
+  <!-- ☁️ 載入 Google Cloud Fonts 雲端中文字型 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Liu+Jian+Mao+Cao&amp;family=Long+Cang&amp;family=Ma+Shan+Zheng&amp;family=Noto+Sans+TC:wght@400;700&amp;family=Noto+Serif+TC:wght@400;700&amp;family=ZCOOL+KuaiLe&amp;display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -19,8 +23,16 @@
       --active-green: #2d6a4f;
       --main-bg: #1b4332;
       --text-color: #2b2b2b;
-      --font-family: "LXGW WenKai TC", "標楷體", "BiauKai", "DFKai-SB", "KaiTi", serif;
+      --font-family: "DFKai-SB", "BiauKai", "標楷體", "KaiTi", "STKaiti", serif;
       --pinyin-font-family: "Calibri", sans-serif;
+    }
+
+    body, .word-text, .sentence-text, .word-card, .dictation-row, button, input, select, textarea, h1, h2, h3 {
+      font-family: var(--font-family) !important;
+    }
+
+    .pinyin-text, .sentence-pinyin {
+      font-family: var(--pinyin-font-family) !important;
     }
 
     * { 
@@ -874,8 +886,15 @@
     }
 
   </style>
-</head>
-<body class="exported-app">
+<style id="dynamicFontOverride">
+        body, *, .word-text, .sentence-text, .word-card, .dictation-row, button, input, select, textarea, h1, h2, h3, span {
+          font-family: "Noto Serif HK", "Noto Serif TC", serif !important;
+        }
+        .pinyin-text, .sentence-pinyin {
+          font-family: var(--pinyin-font-family) !important;
+        }
+      </style></head>
+<body style="font-family: &quot;Noto Serif HK&quot;, &quot;Noto Serif TC&quot;, serif;" class="exported-app">
 
   <header>
     <!-- 🏠 Home Icon Vector SVG (Top Left 2mm, Enlarged to 46x46px) -->
@@ -964,15 +983,34 @@
         </div>
       </div>
 
-            <!-- 🗣️ Voice Selection Card -->
-      <div class="voice-card" id="voiceCard" style="display: none;">
-        <div class="voice-select-wrapper">
-          <span>🗣️</span>
-          <select id="voiceSelect" onchange="onVoiceChange()"><option value="">預設語音 (系統)</option><option value="Microsoft David - English (United States)">Microsoft David - English (United States) (en-US)</option><option value="Microsoft Mark - English (United States)">Microsoft Mark - English (United States) (en-US)</option><option value="Microsoft Zira - English (United States)">Microsoft Zira - English (United States) (en-US)</option><option value="Google Deutsch">Google Deutsch (de-DE)</option><option value="Google US English">Google US English (en-US)</option><option value="Google UK English Female">Google UK English Female (en-GB)</option><option value="Google UK English Male">Google UK English Male (en-GB)</option><option value="Google español">Google español (es-ES)</option><option value="Google español de Estados Unidos">Google español de Estados Unidos (es-US)</option><option value="Google français">Google français (fr-FR)</option><option value="Google हिन्दी">Google हिन्दी (hi-IN)</option><option value="Google Bahasa Indonesia">Google Bahasa Indonesia (id-ID)</option><option value="Google italiano">Google italiano (it-IT)</option><option value="Google 日本語">Google 日本語 (ja-JP)</option><option value="Google 한국의">Google 한국의 (ko-KR)</option><option value="Google Nederlands">Google Nederlands (nl-NL)</option><option value="Google polski">Google polski (pl-PL)</option><option value="Google português do Brasil">Google português do Brasil (pt-BR)</option><option value="Google русский">Google русский (ru-RU)</option><option value="Google&nbsp;普通话（中国大陆）">Google&nbsp;普通话（中国大陆） (zh-CN)</option><option value="Google&nbsp;粤語（香港）">Google&nbsp;粤語（香港） (zh-HK)</option><option value="Google 國語（臺灣）">Google 國語（臺灣） (zh-TW)</option></select>
+            <!-- 🗣️ Voice & Font Selection Card -->
+      <div class="voice-card" id="voiceCard" style="display: flex; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+          <div class="voice-select-wrapper">
+            <span>🗣️</span>
+            <select id="voiceSelect" onchange="onVoiceChange()"><option value="">預設語音 (系統)</option><option value="Microsoft David - English (United States)">Microsoft David - English (United States) (en-US)</option><option value="Microsoft Mark - English (United States)">Microsoft Mark - English (United States) (en-US)</option><option value="Microsoft Zira - English (United States)">Microsoft Zira - English (United States) (en-US)</option><option value="Google Deutsch">Google Deutsch (de-DE)</option><option value="Google US English">Google US English (en-US)</option><option value="Google UK English Female">Google UK English Female (en-GB)</option><option value="Google UK English Male">Google UK English Male (en-GB)</option><option value="Google español">Google español (es-ES)</option><option value="Google español de Estados Unidos">Google español de Estados Unidos (es-US)</option><option value="Google français">Google français (fr-FR)</option><option value="Google हिन्दी">Google हिन्दी (hi-IN)</option><option value="Google Bahasa Indonesia">Google Bahasa Indonesia (id-ID)</option><option value="Google italiano">Google italiano (it-IT)</option><option value="Google 日本語">Google 日本語 (ja-JP)</option><option value="Google 한국의">Google 한국의 (ko-KR)</option><option value="Google Nederlands">Google Nederlands (nl-NL)</option><option value="Google polski">Google polski (pl-PL)</option><option value="Google português do Brasil">Google português do Brasil (pt-BR)</option><option value="Google русский">Google русский (ru-RU)</option><option value="Google&nbsp;普通话（中国大陆）">Google&nbsp;普通话（中国大陆） (zh-CN)</option><option value="Google&nbsp;粤語（香港）">Google&nbsp;粤語（香港） (zh-HK)</option><option value="Google 國語（臺灣）">Google 國語（臺灣） (zh-TW)</option></select>
+          </div>
+          <label class="chinese-filter-label">
+            <input type="checkbox" id="chineseVoicesOnly" onchange="populateVoices()"> 中文
+          </label>
         </div>
-        <label class="chinese-filter-label">
-          <input type="checkbox" id="chineseVoicesOnly" onchange="populateVoices()"> 中文
-        </label>
+        <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
+          <div class="voice-select-wrapper" style="flex: 1;">
+            <span>🔤</span>
+            <select id="fontSelect" onchange="onFontChange()">
+              <option value="LXGW WenKai TC" selected="">霞鶩文楷 (預設)</option>
+              <option value="Iansui">芫荽體 Iansui (雲端)</option>
+              <option value="Noto Serif HK">思源宋體香港 (雲端)</option>
+              <option value="Noto Sans HK">思源黑體香港 (雲端)</option>
+              <option value="Free HK Kai 4700">Free HK Kai 4700</option>
+              <option value="DFKai-SB">標楷體</option>
+              <option value="SimHei">黑體 (微軟正黑)</option>
+              <option value="SimSun">宋體 / 明體</option>
+              <option value="YouYuan">圓體</option>
+            </select>
+          </div>
+          <button onclick="loadSystemFonts()" title="掃描並載入系統中文字型" style="background:#2d6a4f; color:white; border:none; padding:8px 10px; border-radius:8px; font-size:0.85rem; font-weight:bold; cursor:pointer; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.15);">🔍 掃描字型</button>
+        </div>
       </div>
 
 <div class="editor-box" id="editorSection" style="display: none;">
@@ -990,7 +1028,7 @@
     <main id="mainContent" class="mode-hanPinyin">
       <div class="toolbar-card" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">成語</button>
+          <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">詞語</button>
           <span class="toolbar-options">
                         <label>間：<input type="number" id="vocabDelayInput" value="15" min="1"> 秒</label>
             <label class="speed-control-label"><select id="vocabSpeedSelect" onchange="onSpeedChange()">
@@ -1031,86 +1069,198 @@
       <div id="contentArea"><div class="words-grid">
           <div class="word-card " id="card_0" onclick="clickPlayVocab(0)">
             <div class="word-index">#1</div>
-            <div class="word-text">一髮千<span style="color: #f51d1d;">鈞</span></div>
-            <div class="pinyin-text">yī fà qiān jūn</div>
+            <div class="word-text">寬寬</div>
+            <div class="pinyin-text">kuān kuān</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(0)">▶</button>
           </div>
         
           <div class="word-card " id="card_1" onclick="clickPlayVocab(1)">
             <div class="word-index">#2</div>
-            <div class="word-text">目瞪口呆</div>
-            <div class="pinyin-text">mù dèng kǒu dāi</div>
+            <div class="word-text">強烈</div>
+            <div class="pinyin-text">qiáng liè</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(1)">▶</button>
           </div>
         
           <div class="word-card " id="card_2" onclick="clickPlayVocab(2)">
             <div class="word-index">#3</div>
-            <div class="word-text">人心<span style="color: #f51d1d;">惶</span><span style="color: #f51d1d;">惶</span></div>
-            <div class="pinyin-text">rén xīn huáng huáng</div>
+            <div class="word-text">膽子</div>
+            <div class="pinyin-text">dǎn zǐ</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(2)">▶</button>
           </div>
         
           <div class="word-card " id="card_3" onclick="clickPlayVocab(3)">
             <div class="word-index">#4</div>
-            <div class="word-text"><span style="color: #f51d1d;">挺</span>身而出</div>
-            <div class="pinyin-text">tǐng shēn ér chū</div>
+            <div class="word-text">過街<span style="color: #f51d1d;">老</span>鼠</div>
+            <div class="pinyin-text">guò jiē lǎo shǔ</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(3)">▶</button>
           </div>
         
           <div class="word-card " id="card_4" onclick="clickPlayVocab(4)">
             <div class="word-index">#5</div>
-            <div class="word-text">束手無<span style="color: #f51d1d;">策</span></div>
-            <div class="pinyin-text">shù shǒu wú cè</div>
+            <div class="word-text">跪地求饒</div>
+            <div class="pinyin-text">guì dì qiú ráo</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(4)">▶</button>
           </div>
         
           <div class="word-card " id="card_5" onclick="clickPlayVocab(5)">
             <div class="word-index">#6</div>
-            <div class="word-text"><span style="color: #f51d1d;">胸</span>無點墨</div>
-            <div class="pinyin-text">xiōng wú diǎn mò</div>
+            <div class="word-text">可憐</div>
+            <div class="pinyin-text">kě lián</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(5)">▶</button>
           </div>
         
           <div class="word-card " id="card_6" onclick="clickPlayVocab(6)">
             <div class="word-index">#7</div>
-            <div class="word-text">推心置<span style="color: #f51d1d;">腹</span></div>
-            <div class="pinyin-text">tuī xīn zhì fù</div>
+            <div class="word-text">沾濕</div>
+            <div class="pinyin-text">zhān shī</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(6)">▶</button>
           </div>
         
           <div class="word-card " id="card_7" onclick="clickPlayVocab(7)">
             <div class="word-index">#8</div>
-            <div class="word-text">充耳不聞</div>
-            <div class="pinyin-text">chōng ěr bù wén</div>
+            <div class="word-text">輕微</div>
+            <div class="pinyin-text">qīng wēi</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(7)">▶</button>
           </div>
         
           <div class="word-card " id="card_8" onclick="clickPlayVocab(8)">
             <div class="word-index">#9</div>
-            <div class="word-text">別出心<span style="color: #f51d1d;">裁</span></div>
-            <div class="pinyin-text">bié chū xīn cái</div>
+            <div class="word-text">顫動</div>
+            <div class="pinyin-text">chàn dòng</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(8)">▶</button>
           </div>
         
           <div class="word-card " id="card_9" onclick="clickPlayVocab(9)">
             <div class="word-index">#10</div>
-            <div class="word-text">順手<span style="color: #f51d1d;">牽</span>羊</div>
-            <div class="pinyin-text">shùn shǒu qiān yáng</div>
+            <div class="word-text">奄奄一息</div>
+            <div class="pinyin-text">yǎn yǎn yī xī</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(9)">▶</button>
           </div>
         
           <div class="word-card " id="card_10" onclick="clickPlayVocab(10)">
             <div class="word-index">#11</div>
-            <div class="word-text"><span style="color: #f51d1d;">促膝談</span>心</div>
-            <div class="pinyin-text">cù xī tán xīn</div>
+            <div class="word-text">小心翼翼</div>
+            <div class="pinyin-text">xiǎo xīn yì yì</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(10)">▶</button>
           </div>
         
           <div class="word-card " id="card_11" onclick="clickPlayVocab(11)">
             <div class="word-index">#12</div>
-            <div class="word-text"><span style="color: #f51d1d;">唇齒</span>相依</div>
-            <div class="pinyin-text">chún chǐ xiāng yī</div>
+            <div class="word-text">捏</div>
+            <div class="pinyin-text">niē</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(11)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_12" onclick="clickPlayVocab(12)">
+            <div class="word-index">#13</div>
+            <div class="word-text">凍僵</div>
+            <div class="pinyin-text">dòng jiāng</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(12)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_13" onclick="clickPlayVocab(13)">
+            <div class="word-index">#14</div>
+            <div class="word-text">動彈</div>
+            <div class="pinyin-text">dòng tan</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(13)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_14" onclick="clickPlayVocab(14)">
+            <div class="word-index">#15</div>
+            <div class="word-text">歪倒</div>
+            <div class="pinyin-text">wāi dǎo</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(14)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_15" onclick="clickPlayVocab(15)">
+            <div class="word-index">#16</div>
+            <div class="word-text">蘇醒</div>
+            <div class="pinyin-text">sū xǐng</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(15)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_16" onclick="clickPlayVocab(16)">
+            <div class="word-index">#17</div>
+            <div class="word-text">白茸茸</div>
+            <div class="pinyin-text">bái róng róng</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(16)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_17" onclick="clickPlayVocab(17)">
+            <div class="word-index">#18</div>
+            <div class="word-text">伸展</div>
+            <div class="pinyin-text">shēn zhǎn</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(17)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_18" onclick="clickPlayVocab(18)">
+            <div class="word-index">#19</div>
+            <div class="word-text">黑漆漆</div>
+            <div class="pinyin-text">hēi qī qī</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(18)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_19" onclick="clickPlayVocab(19)">
+            <div class="word-index">#20</div>
+            <div class="word-text">無限</div>
+            <div class="pinyin-text">wú xiàn</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(19)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_20" onclick="clickPlayVocab(20)">
+            <div class="word-index">#21</div>
+            <div class="word-text">喜悅</div>
+            <div class="pinyin-text">xǐ yuè</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(20)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_21" onclick="clickPlayVocab(21)">
+            <div class="word-index">#22</div>
+            <div class="word-text">光輝</div>
+            <div class="pinyin-text">guāng huī</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(21)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_22" onclick="clickPlayVocab(22)">
+            <div class="word-index">#23</div>
+            <div class="word-text">盛滿</div>
+            <div class="pinyin-text"><span style="color: #f51d1d;">chéng</span> mǎn</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(22)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_23" onclick="clickPlayVocab(23)">
+            <div class="word-index">#24</div>
+            <div class="word-text">蠕動</div>
+            <div class="pinyin-text">rú dòng</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(23)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_24" onclick="clickPlayVocab(24)">
+            <div class="word-index">#25</div>
+            <div class="word-text">活潑</div>
+            <div class="pinyin-text">huó pō</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(24)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_25" onclick="clickPlayVocab(25)">
+            <div class="word-index">#26</div>
+            <div class="word-text"><span style="color: #f51d1d;">伶俐</span></div>
+            <div class="pinyin-text">líng lì</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(25)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_26" onclick="clickPlayVocab(26)">
+            <div class="word-index">#27</div>
+            <div class="word-text">一躍而起</div>
+            <div class="pinyin-text">yī yuè ér qǐ</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(26)">▶</button>
+          </div>
+        
+          <div class="word-card " id="card_27" onclick="clickPlayVocab(27)">
+            <div class="word-index">#28</div>
+            <div class="word-text"><span style="color: #f51d1d;">翩翩</span></div>
+            <div class="pinyin-text">piān piān</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(27)">▶</button>
           </div>
         </div></div>
     </main>
@@ -2787,6 +2937,124 @@ ${pinyinBlock}`;
         voiceSelect.value = "";
       }
     }
+
+    
+    
+    async function loadSystemFonts() {
+      const fontSelect = document.getElementById('fontSelect');
+      if (!fontSelect) return;
+
+      if (!('queryLocalFonts' in window)) {
+        alert("您的瀏覽器不支援 Local Font Access API (建議使用最新版 Google Chrome 或 Edge 桌面版)。");
+        return;
+      }
+
+      try {
+        const permissionStatus = await navigator.permissions.query({ name: 'local-fonts' });
+        if (permissionStatus.state === 'denied') {
+          alert("字型存取權限已被拒絕，請在瀏覽器設定中允許。");
+          return;
+        }
+
+        const fonts = await window.queryLocalFonts();
+        const fontFamilies = new Set();
+        
+        fonts.forEach(font => {
+          // Filter or collect Chinese / common fonts or all installed fonts
+          if (font.family) {
+            fontFamilies.add(font.family);
+          }
+        });
+
+        const sortedFamilies = Array.from(fontFamilies).sort();
+        
+        // Keep existing options
+        const currentVal = fontSelect.value;
+        fontSelect.innerHTML = `
+          <option value="LXGW WenKai TC, serif">霞鶩文楷 (預設)</option>
+          <option value="Free HK Kai 4700, DFKai-SB, BiauKai, 標楷體, KaiTi, STKaiti, serif">Free HK Kai 4700</option>
+          <option value="DFKai-SB, BiauKai, 標楷體, KaiTi, STKaiti, serif">標楷體</option>
+          <option value="SimHei, Microsoft JhengHei, sans-serif">黑體 (微軟正黑)</option>
+          <option value="SimSun, MingLiu, serif">宋體 / 明體</option>
+          <option value="YouYuan, Rounded Mplus 1c, sans-serif">圓體</option>
+        `;
+
+        // Add scanned system fonts
+        const optGroup = document.createElement('optgroup');
+        optGroup.label = "🖥️ 本機已安裝字型 (" + sortedFamilies.length + ")";
+        
+        sortedFamilies.forEach(family => {
+          // Avoid duplicates with default ones
+          if (!['霞鶩文楷', 'Free HK Kai 4700', '標楷體', '黑體', '宋體', '圓體'].includes(family)) {
+            const opt = document.createElement('option');
+            opt.value = `"${family}", serif`;
+            opt.textContent = family;
+            optGroup.appendChild(opt);
+          }
+        });
+
+        fontSelect.appendChild(optGroup);
+        if (currentVal) fontSelect.value = currentVal;
+        alert(`成功掃描並載錄 ${sortedFamilies.length} 款本機字型！`);
+      } catch (err) {
+        console.error("Failed to load local fonts:", err);
+        alert("無法讀取本機字型，請確認瀏覽器權限。");
+      }
+    }
+
+    
+    
+    
+    function onFontChange() {
+      const fontSelect = document.getElementById('fontSelect');
+      if (!fontSelect) return;
+      const selectedFont = fontSelect.value;
+      console.log("Font selected:", selectedFont);
+      
+      let fontStack = `"${selectedFont}", sans-serif`;
+      if (selectedFont === 'DFKai-SB') {
+        fontStack = '"DFKai-SB", "BiauKai", "標楷體", "KaiTi", "STKaiti", "Apple LiSung", serif';
+      } else if (selectedFont === 'LXGW WenKai TC') {
+        fontStack = '"LXGW WenKai TC", "LXGW WenKai", "Microsoft JhengHei", sans-serif';
+      } else if (selectedFont === 'Iansui') {
+        fontStack = '"Iansui", cursive, serif';
+      } else if (selectedFont === 'Noto Serif HK') {
+        fontStack = '"Noto Serif HK", "Noto Serif TC", serif';
+      } else if (selectedFont === 'Noto Sans HK') {
+        fontStack = '"Noto Sans HK", "Noto Sans TC", sans-serif';
+      } else if (selectedFont === 'SimHei') {
+        fontStack = '"Microsoft JhengHei", "PingFang HK", "Heiti TC", "SimHei", sans-serif';
+      } else if (selectedFont === 'SimSun') {
+        fontStack = '"SimSun", "PMingLiU", "Apple Myungjo", serif';
+      } else if (selectedFont === 'YouYuan') {
+        fontStack = '"YouYuan", "Rounded Mplus 1c", "Hiragino Maru Gothic Pro", sans-serif';
+      } else if (selectedFont === 'Free HK Kai 4700') {
+        fontStack = '"Free HK Kai 4700", "BiauKai", "DFKai-SB", "標楷體", serif';
+      } else {
+        fontStack = `"${selectedFont}", serif`;
+      }
+
+      document.documentElement.style.setProperty('--font-family', fontStack);
+      document.body.style.fontFamily = fontStack;
+      
+      let dynStyle = document.getElementById('dynamicFontOverride');
+      if (!dynStyle) {
+        dynStyle = document.createElement('style');
+        dynStyle.id = 'dynamicFontOverride';
+        document.head.appendChild(dynStyle);
+      }
+      dynStyle.textContent = `
+        body, *, .word-text, .sentence-text, .word-card, .dictation-row, button, input, select, textarea, h1, h2, h3, span {
+          font-family: ${fontStack} !important;
+        }
+        .pinyin-text, .sentence-pinyin {
+          font-family: var(--pinyin-font-family) !important;
+        }
+      `;
+    }
+
+
+
 
     function onVoiceChange() {
       const voiceSelect = document.getElementById('voiceSelect');
