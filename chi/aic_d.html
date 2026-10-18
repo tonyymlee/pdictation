@@ -869,7 +869,7 @@
 
   <header>
     <!-- 🏠 Home Icon Vector SVG (Top Left 2mm, Enlarged to 46x46px) -->
-    <a href="https://tonyymlee.github.io/pdictation/" class="home-link-icon" title="返回主頁">
+    <a href="https://tonyymlee.github.io/pdictation/chi/" class="home-link-icon" title="返回主頁">
       <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
         <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v6H4a1 1 0 0 1-1-1v-9.5z"/>
       </svg>
@@ -925,7 +925,24 @@
 
     <aside id="sidebar">
       <div class="nav-card">
-        <div class="nav-card-title"><span onclick="handleSecretClick()" style="user-select: none; cursor: default;">學</span>習單元選擇</div>
+        <div class="nav-card-title" style="display: flex; align-items: center; justify-content: space-between;">
+          <span><span onclick="handleSecretClick()" style="user-select: none; cursor: default;">學</span>習單元選擇</span>
+          <button id="pdfViewerBtn" onclick="togglePdfViewer()" title="開啟對應 PDF 檔案" style="display: none; background: none; border: none; cursor: pointer; padding: 0; margin-left: 8px;">
+            <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="100" height="100" rx="16" fill="#BA0000"/>
+              <!-- Document Base -->
+              <path d="M 18 10 C 13.58 10 10 13.58 10 18 L 10 82 C 10 86.42 13.58 90 18 90 L 82 90 C 86.42 90 90 86.42 90 82 L 90 34 L 66 10 Z" fill="#D30000" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
+              <!-- Folded Corner -->
+              <path d="M 66 10 L 66 26 C 66 30.42 69.58 34 74 34 L 90 34 Z" fill="#FFFFFF"/>
+              <!-- Sun -->
+              <circle cx="27" cy="27" r="7.5" fill="#FFFFFF"/>
+              <!-- Mountains -->
+              <path d="M 13 56 L 33 36 L 47 51 L 62 36 L 82 56 Z" fill="#FFFFFF"/>
+              <!-- PDF Text -->
+              <text x="50" y="84" text-anchor="middle" fill="#FFFFFF" font-size="28" font-weight="900" font-family="Arial, Helvetica, sans-serif" letter-spacing="1">PDF</text>
+            </svg>
+          </button>
+        </div>
         <div class="nav-tabs">
           <button class="tab-btn active" id="btn_tab1" onclick="switchTab('tab1', this)">
             <span class="tab-icon">📚</span> 課文詞語
@@ -1053,6 +1070,7 @@
       }, 1200);
     }
 
+    let embeddedPinyinCache = {};
     let lessonTitle = "";
     let vocabWords = [];
     let pinyinVocabWords = [];
@@ -1183,7 +1201,7 @@
       let currentWord = "";
 
       for (let char of convertedText) {
-        if ("。\.，,！？\?；;：:«»“”\"''「」『』《》〈〉<>\(\)（）─—\-…".includes(char)) {
+        if (`。\.，,！？\?；;：:«»“”"''「」『』《》〈〉<>\(\)（）─—\-…`.includes(char)) {
           if (currentWord) {
             result += getDynamicPinyin(currentWord) + " ";
             currentWord = "";
@@ -1422,13 +1440,65 @@ ${pinyinBlock}`;
       if (overlay) overlay.classList.remove('open');
     }
 
-    function getDynamicPinyin(text) {
+    let dynamicCustomPinyinMap = {};
+
+                // 💡 100% 動態拼音引擎：完全移除硬編碼 (No Hardcoding)
+    // 所有多音字或特例修正均由 `dynamicCustomPinyinMap` (用戶在文字編輯器中的「拼音修正」區塊) 或 pinyin-pro 動態庫處理
+        function getDynamicPinyin(text) {
       if (!text) return "";
       const convertedText = autoConvertCharacters(text);
       const cleanText = convertedText.replace(/[。\.，,！？\?；;：:」、「」『』《》〈〉（）\(\)─—\-…\s]/g, '');
+
+      // 1. 完全比對動態自訂拼音表 (phrase or word level)
+      if (dynamicCustomPinyinMap && dynamicCustomPinyinMap[cleanText]) {
+        return dynamicCustomPinyinMap[cleanText];
+      }
+
+      // 2. 檢查是否有部分子字串 (如: 盛滿/動彈) 匹配動態修正表
+      if (dynamicCustomPinyinMap) {
+        for (let key in dynamicCustomPinyinMap) {
+          if (key.length > 1 && cleanText.includes(key)) {
+            let keyPinyin = dynamicCustomPinyinMap[key];
+            let fullPinyin = getDynamicPinyin(cleanText.replace(key, ''));
+            // Return override directly if exact match
+            if (cleanText === key) return keyPinyin;
+          }
+        }
+      }
+
+      // 3. 快取（Cache）查詢
+      if (embeddedPinyinCache && embeddedPinyinCache[cleanText]) {
+        return embeddedPinyinCache[cleanText];
+      }
+
+      // 4. 動態轉簡體後調用 pinyin-pro
       if (window.pinyinPro && typeof window.pinyinPro.pinyin === 'function') {
         try {
-          return window.pinyinPro.pinyin(cleanText, { toneType: 'symbol' });
+          let simpText = cleanText;
+          if (window.pinyinPro.convertToSimplified) {
+            simpText = window.pinyinPro.convertToSimplified(cleanText);
+          }
+
+          let res = window.pinyinPro.pinyin(simpText, { toneType: 'symbol' });
+
+          // 單字層級取代 (若使用者定義了 盛=chéng 或 彈=tán)
+          if (dynamicCustomPinyinMap) {
+            let chars = cleanText.split('');
+            let pinyinArray = res.split(' ');
+            if (chars.length === pinyinArray.length) {
+              let modified = false;
+              for (let i = 0; i < chars.length; i++) {
+                if (dynamicCustomPinyinMap[chars[i]]) {
+                  pinyinArray[i] = dynamicCustomPinyinMap[chars[i]];
+                  modified = true;
+                }
+              }
+              if (modified) res = pinyinArray.join(' ');
+            }
+          }
+
+          if (embeddedPinyinCache) embeddedPinyinCache[cleanText] = res;
+          return res;
         } catch (e) {
           console.error("Pinyin error:", e);
         }
@@ -1474,7 +1544,7 @@ ${pinyinBlock}`;
         let processedLine = trimmedLine.replace(/\s+/g, '');
         let clauses = [];
         let cur = "";
-        let closingPuncts = "」』》〉）)\"''";
+        let closingPuncts = `」』》〉）)"''`;
         let splittingPuncts = "。，.,！？?；;：:─—-…";
 
         for (let i = 0; i < processedLine.length; i++) {
@@ -1604,6 +1674,7 @@ ${pinyinBlock}`;
 
       let currentSection = 'vocab';
       let newVocab = [], newPinyin = [], newIdiom = [], newCustomProtected = [], newDictation = [];
+      dynamicCustomPinyinMap = {};
       lessonTitle = "";
 
       const blacklist = [
@@ -1627,10 +1698,22 @@ ${pinyinBlock}`;
         if (trimmed.includes('漢語拼音')) { currentSection = 'pinyin'; return; }
         if (trimmed.includes('挑戰題')) { currentSection = 'idiom'; return; }
         if (trimmed.includes('其他詞語') || trimmed.includes('保護詞語') || trimmed.includes('保護詞彙')) { currentSection = 'customProtected'; return; }
+        if (trimmed.includes('拼音修正') || trimmed.includes('多音字')) { currentSection = 'pinyinFix'; return; }
         if (trimmed.includes('聽寫課文段落')) { currentSection = 'dictation'; return; }
 
         if (currentSection === 'dictation') {
           newDictation.push(autoConvertCharacters(trimmed));
+        } else if (currentSection === 'pinyinFix') {
+          if (trimmed.includes('=') || trimmed.includes('＝')) {
+            const parts = trimmed.split(/[=＝]/);
+            if (parts.length >= 2) {
+              const word = autoConvertCharacters(parts[0].trim().replace(/\s+/g, ''));
+              const customPy = parts[1].trim();
+              if (word && customPy) {
+                dynamicCustomPinyinMap[word] = customPy;
+              }
+            }
+          }
         } else {
           if (!trimmed) return;
           const words = trimmed.split(/[\s,，	、]+/).filter(Boolean);
@@ -1652,6 +1735,9 @@ ${pinyinBlock}`;
         }
       });
 
+      if (window.pinyinPro && typeof window.pinyinPro.customPinyin === "function" && Object.keys(dynamicCustomPinyinMap).length > 0) {
+        window.pinyinPro.customPinyin(dynamicCustomPinyinMap);
+      }
       vocabWords = newVocab;
       pinyinVocabWords = newPinyin;
       idiomWords = newIdiom;
@@ -1689,6 +1775,26 @@ ${pinyinBlock}`;
           editor.textContent = editor.value;
         }
 
+        // 📌 匯出前將所有詞彙與課文句子的拼音預先生成並快取/嵌入
+        const pinyinMap = {};
+        const allWords = [...vocabWords, ...pinyinVocabWords, ...idiomWords, ...customProtectedWords];
+        allWords.forEach(w => {
+          const clean = autoConvertCharacters(w.replace(/\s+/g, ''));
+          if (clean) {
+            pinyinMap[clean] = getDynamicPinyin(clean);
+          }
+        });
+
+        const dictationQueue = buildDictationQueue();
+        dictationQueue.forEach(item => {
+          if (item.type === 'sentence' && item.text) {
+            const clean = autoConvertCharacters(item.text.replace(/\s+/g, ''));
+            if (clean) {
+              pinyinMap[clean] = getDynamicPinyin(clean);
+            }
+          }
+        });
+
         const clonedHtml = document.documentElement.cloneNode(true);
         const clonedBody = clonedHtml.querySelector('body');
         
@@ -1713,26 +1819,29 @@ ${pinyinBlock}`;
           clonedEditorSec.style.display = 'none';
         }
 
+        // 📌 嵌入拼音快取 JSON 資料腳本
+        const pinyinScriptTag = document.createElement('script');
+        pinyinScriptTag.id = "embeddedPinyinData";
+        pinyinScriptTag.type = "application/json";
+        pinyinScriptTag.textContent = JSON.stringify(pinyinMap);
+        clonedBody.appendChild(pinyinScriptTag);
+
         let htmlContent = "<!DOCTYPE html>\n" + clonedHtml.outerHTML;
 
         let cleanFileName = "dictation";
         if (lessonTitle && lessonTitle.trim().length > 0) {
           let t = lessonTitle.trim();
           
-          // 1. 解析年份 (例如 2627 或 26/27 ➜ 2627)
           let yearMatch = t.match(/20\d{2}|\d{2}\/?\d{2}/);
           let year = yearMatch ? yearMatch[0].replace(/\//g, '') : "";
           if (year.length > 4) year = year.substring(0, 4); 
           
-          // 2. 解析年級 (例如 四年級 ➜ P4)
           let gradeMatch = t.match(/([一二三四五六1-6])年級/);
           let gradeMap = {'一':'P1','二':'P2','三':'P3','四':'P4','五':'P5','六':'P6','1':'P1','2':'P2','3':'P3','4':'P4','5':'P5','6':'P6'};
           let grade = gradeMatch ? gradeMap[gradeMatch[1]] : "";
           
-          // 3. 解析科目 (包含 默 ➜ C)
           let typeCode = t.includes("默") ? "C" : "";
           
-          // 4. 解析次數 (抓取"默"字後的第一個數字/中文數字)
           let dNum = "";
           let numMap = {'一':'D1','二':'D2','三':'D3','四':'D4','五':'D5','六':'D6','七':'D7','八':'D8','九':'D9','十':'D10'};
           
@@ -1743,7 +1852,6 @@ ${pinyinBlock}`;
             else if (!isNaN(val)) dNum = 'D' + val;
           }
           
-          // 判斷是否完整抓到四個元素
           if (year && grade && typeCode && dNum) {
              cleanFileName = `${grade}${typeCode}_${year}${dNum}`;
           } else {
@@ -1866,6 +1974,135 @@ ${pinyinBlock}`;
       html += '</div>';
       container.innerHTML = html;
       updateDisplayModeUI();
+    }
+
+    
+    let resolvedPdfUrl = "";
+    let isPdfViewerOpen = false;
+
+                async function checkAndResolveSameNamePdf() {
+      const pdfBtn = document.getElementById('pdfViewerBtn');
+      if (pdfBtn) pdfBtn.style.display = 'none';
+
+      try {
+        let candidateNames = [];
+        let path = window.location.pathname;
+        let filename = path.substring(path.lastIndexOf('/') + 1);
+
+        if (filename && filename !== "" && filename !== "index.html") {
+          let baseName = decodeURIComponent(filename.replace(/\.[^/.]+$/, ""));
+          if (baseName) candidateNames.push(baseName + ".pdf");
+        }
+
+        if (lessonTitle) {
+          let t = lessonTitle.trim();
+          let gradeMatch = t.match(/([一二三四五六1-6])年級/);
+          let gradeMap = {'一':'P1','二':'P2','三':'P3','四':'P4','五':'P5','六':'P6','1':'P1','2':'P2','3':'P3','4':'P4','5':'P5','6':'P6'};
+          let grade = gradeMatch ? gradeMap[gradeMatch[1]] : "";
+          let typeCode = t.includes("默") ? "C" : "";
+          let dNum = "";
+          let numMap = {'一':'D1','二':'D2','三':'D3','四':'D4','五':'D5','六':'D6','七':'D7','八':'D8','九':'D9','十':'D10'};
+          let numMatch = t.match(/默.*?([一二三四五六七八九十\d]+)/);
+          if (numMatch) {
+            let val = numMatch[1];
+            if (numMap[val]) dNum = numMap[val];
+            else if (!isNaN(val)) dNum = 'D' + val;
+          }
+          if (grade && typeCode && dNum) {
+            let titlePdf = `${grade}${typeCode}_${dNum}.pdf`;
+            if (!candidateNames.includes(titlePdf)) candidateNames.push(titlePdf);
+          }
+        }
+
+        if (candidateNames.length === 0) return;
+
+        for (let pdfName of candidateNames) {
+          let exists = await probePdfExistence(pdfName);
+          if (exists) {
+            resolvedPdfUrl = pdfName;
+            showPdfButton(pdfName);
+            return;
+          }
+        }
+
+      } catch (err) {
+        console.warn("PDF check error:", err);
+      }
+    }
+
+    async function probePdfExistence(url) {
+      // 1. Try standard HEAD request (Best for normal web servers)
+      try {
+        let res = await fetch(url, { method: 'HEAD' });
+        if (res.ok) return true;
+        if (res.status === 404) return false;
+      } catch (e) {}
+
+      // 2. Try GET request and abort instantly (Fixes issues where HEAD or Range headers are blocked)
+      try {
+        const controller = new AbortController();
+        let res = await fetch(url, { method: 'GET', signal: controller.signal });
+        if (res.ok) {
+          controller.abort(); // We only care about the headers/status, don't download the file
+          return true;
+        }
+      } catch (e) {}
+      
+      // 3. XHR Fallback
+      return new Promise((resolve) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open('HEAD', url, true);
+        xhr.onload = function() {
+          if (xhr.status >= 200 && xhr.status < 300) resolve(true);
+          else resolve(false);
+        };
+        xhr.onerror = function() {
+          resolve(false);
+        };
+        try { xhr.send(); } catch(err) { resolve(false); }
+      });
+    }
+
+    function showPdfButton(pdfName) {
+      const pdfBtn = document.getElementById('pdfViewerBtn');
+      if (pdfBtn) {
+        pdfBtn.style.display = 'inline-block';
+        pdfBtn.title = `檢視對應 PDF 檔案 (${pdfName})`;
+      }
+    }
+
+    function togglePdfViewer() {
+      if (!resolvedPdfUrl) return;
+
+      const area = document.getElementById('contentArea');
+      const vocabToolbar = document.getElementById('vocabToolbar');
+      const dictationToolbar = document.getElementById('dictationToolbar');
+
+      if (!isPdfViewerOpen) {
+        isPdfViewerOpen = true;
+        if (vocabToolbar) vocabToolbar.classList.add('hidden');
+        if (dictationToolbar) dictationToolbar.classList.add('hidden');
+
+        area.innerHTML = `
+          <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); width: 100%; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <div style="background: #2e7d32; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-weight: bold; font-size: 1.05rem;">📄 對應 PDF 檔案預覽 (${resolvedPdfUrl})</span>
+              <button onclick="closePdfViewer()" style="background: #ffffff; color: #2e7d32; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ 關閉 PDF 預覽</button>
+            </div>
+            <iframe src="${resolvedPdfUrl}" style="width: 100%; height: 100%; border: none;"></iframe>
+          </div>
+        `;
+        if (window.innerWidth <= 768) {
+          closeSidebarMenu();
+        }
+      } else {
+        closePdfViewer();
+      }
+    }
+
+    function closePdfViewer() {
+      isPdfViewerOpen = false;
+      renderTab();
     }
 
     function switchTab(tabId, element) {
@@ -2419,6 +2656,7 @@ ${pinyinBlock}`;
       if (!voiceSelect) return;
       userSelectedVoiceName = voiceSelect.value;
 
+      
       if (synth) {
         synth.cancel();
       }
@@ -2432,6 +2670,7 @@ ${pinyinBlock}`;
     }
 
     function onSpeedChange() {
+      
       if (synth) {
         synth.cancel();
       }
@@ -2451,6 +2690,16 @@ ${pinyinBlock}`;
     }
 
 function autoInitApp() {
+      const embeddedDataTag = document.getElementById('embeddedPinyinData');
+      if (embeddedDataTag && embeddedDataTag.textContent) {
+        try {
+          embeddedPinyinCache = JSON.parse(embeddedDataTag.textContent);
+        } catch (e) {
+          console.error("Failed to parse embedded pinyin cache:", e);
+        }
+      }
+
+      
       if (synth) {
         initVoiceList();
       }
@@ -2481,6 +2730,7 @@ function autoInitApp() {
       }
 
       switchTab('tab1', document.getElementById('btn_tab1'));
+      checkAndResolveSameNamePdf();
     }
 
     document.addEventListener('DOMContentLoaded', autoInitApp);
