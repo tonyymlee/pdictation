@@ -904,7 +904,7 @@
         </svg>
       </button>
 
-      <button class="btn-hdr-opt btn-lang-opt" id="langSwitchBtn" onclick="toggleLanguage()" title="切換朗讀語言">廣</button>
+      <button class="btn-hdr-opt btn-lang-opt" id="langSwitchBtn" onclick="toggleLanguage()" title="切換朗讀語言">國</button>
       <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="切換顯示模式">拼</button>
       
       <div class="timer-clock-box" title="剩餘時間倒數">
@@ -918,7 +918,23 @@
 
     <aside id="sidebar">
       <div class="nav-card">
-        <div class="nav-card-title"><span onclick="handleSecretClick()" style="user-select: none; cursor: default;">學</span>習單元選擇</div>
+        <div class="nav-card-title" style="display: flex; align-items: center; justify-content: space-between;">
+          <span><span onclick="handleSecretClick()" style="user-select: none; cursor: default;">學</span>習單元選擇</span>
+          <button id="pdfViewerBtn" onclick="togglePdfViewer()" title="開啟對應 PDF 檔案" style="display: none; background: none; border: none; cursor: pointer; padding: 0; margin-left: 8px;">
+            <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <!-- Outer Red Container Box with White Outline -->
+              <rect x="4" y="4" width="92" height="92" rx="16" fill="#D30000" stroke="#FFFFFF" stroke-width="4"></rect>
+              <!-- Folded Top-Right Corner -->
+              <path d="M 64 4 Q 64 32 96 32 L 96 4 Z" fill="#FFFFFF"></path>
+              <!-- Sun / Circle -->
+              <circle cx="24" cy="28" r="7" fill="#FFFFFF"></circle>
+              <!-- Mountains Icon -->
+              <path d="M 18 52 L 30 38 L 38 46 L 52 28 L 64 52 Z" fill="#FFFFFF"></path>
+              <!-- PDF Text -->
+              <text x="50" y="82" text-anchor="middle" fill="#FFFFFF" font-size="28" font-weight="900" font-family="Arial Black, Impact, sans-serif" letter-spacing="1">PDF</text>
+            </svg>
+          </button>
+        </div>
         <div class="nav-tabs">
           <button class="tab-btn active" id="btn_tab1" onclick="switchTab('tab1', this)">
             <span class="tab-icon">📚</span> 課文詞語
@@ -959,7 +975,7 @@
     </aside>
 
     <main id="mainContent" class="mode-pinyin">
-      <div class="toolbar-card hidden is-scrolled" id="vocabToolbar">
+      <div class="toolbar-card" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">詞語</button>
           <span class="toolbar-options">
@@ -979,7 +995,7 @@
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="複製當前顯示文字">抄</button>
       </div>
 
-      <div class="toolbar-card is-scrolled" id="dictationToolbar">
+      <div class="toolbar-card hidden" id="dictationToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" onclick="scrollToTop()" title="返回頁面頂部">課文</button>
           <span class="toolbar-options">
@@ -999,223 +1015,203 @@
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="複製當前顯示文字">抄</button>
       </div>
 
-      <div id="contentArea"><div class="dictation-list" id="dictationList"><h2 style="font-size:1.2rem; color:#ffffff; margin: 8px 0 4px;">課 2《日記一則 ── 那一瞬》</h2>
-            <div class="dictation-row" id="dcard_1" onclick="clickPlayDictation(1)">
-              <div class="sentence-index">#1</div>
-              <div class="sentence-text">老師也在等。</div>
-              <div class="sentence-pinyin">lǎo shī yě zài děng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_2" onclick="clickPlayDictation(2)">
-              <div class="sentence-index">#2</div>
-              <div class="sentence-text">又半分鐘過去了，</div>
-              <div class="sentence-pinyin">yòu bàn fēn zhōng guò qù le</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_3" onclick="clickPlayDictation(3)">
-              <div class="sentence-index">#3</div>
-              <div class="sentence-text">教室裏仍然那麼安靜，</div>
-              <div class="sentence-pinyin">jiào shì lǐ réng rán nà mó ān jìng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_4" onclick="clickPlayDictation(4)">
-              <div class="sentence-index">#4</div>
-              <div class="sentence-text">老師決定「點將」了。</div>
-              <div class="sentence-pinyin">lǎo shī jué dìng diǎn jiāng le</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_5" onclick="clickPlayDictation(5)">
-              <div class="sentence-index">#5</div>
-              <div class="sentence-text">我盼望着老師的「垂青」，</div>
-              <div class="sentence-pinyin">wǒ pàn wàng zhe lǎo shī de chuí qīng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_6" onclick="clickPlayDictation(6)">
-              <div class="sentence-index">#6</div>
-              <div class="sentence-text">我們的目光相遇了，</div>
-              <div class="sentence-pinyin">wǒ mén de mù guāng xiāng yù le</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_7" onclick="clickPlayDictation(7)">
-              <div class="sentence-index">#7</div>
-              <div class="sentence-text">我用眼神告訴她：</div>
-              <div class="sentence-pinyin">wǒ yòng yǎn shén gào sù tā</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_8" onclick="clickPlayDictation(8)">
-              <div class="sentence-index">#8</div>
-              <div class="sentence-text">「老師，</div>
-              <div class="sentence-pinyin">lǎo shī</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_9" onclick="clickPlayDictation(9)">
-              <div class="sentence-index">#9</div>
-              <div class="sentence-text">我會。」</div>
-              <div class="sentence-pinyin">wǒ huì</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_10" onclick="clickPlayDictation(10)">
-              <div class="sentence-index">#10</div>
-              <div class="sentence-text">她似乎看懂了我的「話」，</div>
-              <div class="sentence-pinyin">tā sì hū kàn dǒng le wǒ de huà</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_11" onclick="clickPlayDictation(11)">
-              <div class="sentence-index">#11</div>
-              <div class="sentence-text">先向我微微一笑，</div>
-              <div class="sentence-pinyin">xiān xiàng wǒ wēi wēi yī xiào</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_12" onclick="clickPlayDictation(12)">
-              <div class="sentence-index">#12</div>
-              <div class="sentence-text">像是鼓勵，</div>
-              <div class="sentence-pinyin">xiàng shì gǔ lì</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_13" onclick="clickPlayDictation(13)">
-              <div class="sentence-index">#13</div>
-              <div class="sentence-text">給了我一點信心，</div>
-              <div class="sentence-pinyin">gěi le wǒ yī diǎn xìn xīn</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_14" onclick="clickPlayDictation(14)">
-              <div class="sentence-index">#14</div>
-              <div class="sentence-text">然後點到我的名字。</div>
-              <div class="sentence-pinyin">rán hòu diǎn dào wǒ de míng zì</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_15" onclick="clickPlayDictation(15)">
-              <div class="sentence-index">#15</div>
-              <div class="sentence-text">那一瞬我既</div>
-              <div class="sentence-pinyin">nà yī shùn wǒ jì</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_16" onclick="clickPlayDictation(16)">
-              <div class="sentence-index">#16</div>
-              <div class="sentence-text">高興又緊張。</div>
-              <div class="sentence-pinyin">gāo xīng yòu jǐn zhāng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_17" onclick="clickPlayDictation(17)">
-              <div class="sentence-index">#17</div>
-              <div class="sentence-text">我站起來，</div>
-              <div class="sentence-pinyin">wǒ zhàn qǐ lái</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_18" onclick="clickPlayDictation(18)">
-              <div class="sentence-index">#18</div>
-              <div class="sentence-text">說出早已</div>
-              <div class="sentence-pinyin">shuō chū zǎo yǐ</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_19" onclick="clickPlayDictation(19)">
-              <div class="sentence-index">#19</div>
-              <div class="sentence-text">組織好的內容，</div>
-              <div class="sentence-pinyin">zǔ zhī hǎo de nèi róng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_20" onclick="clickPlayDictation(20)">
-              <div class="sentence-index">#20</div>
-              <div class="sentence-text">聲音相當響亮，</div>
-              <div class="sentence-pinyin">shēng yīn xiāng dāng xiǎng liàng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_21" onclick="clickPlayDictation(21)">
-              <div class="sentence-index">#21</div>
-              <div class="sentence-text">答得非常流利。</div>
-              <div class="sentence-pinyin">dá dé fēi cháng liú lì</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_22" onclick="clickPlayDictation(22)">
-              <div class="sentence-index">#22</div>
-              <div class="sentence-text">說着，</div>
-              <div class="sentence-pinyin">shuō zhe</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_23" onclick="clickPlayDictation(23)">
-              <div class="sentence-index">#23</div>
-              <div class="sentence-text">說着，</div>
-              <div class="sentence-pinyin">shuō zhe</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_24" onclick="clickPlayDictation(24)">
-              <div class="sentence-index">#24</div>
-              <div class="sentence-text">我只覺得心在跳，</div>
-              <div class="sentence-pinyin">wǒ zhī jué dé xīn zài tiào</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_25" onclick="clickPlayDictation(25)">
-              <div class="sentence-index">#25</div>
-              <div class="sentence-text">劇烈地跳，</div>
-              <div class="sentence-pinyin">jù liè dì tiào</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_26" onclick="clickPlayDictation(26)">
-              <div class="sentence-index">#26</div>
-              <div class="sentence-text">興奮到了極點。</div>
-              <div class="sentence-pinyin">xīng fèn dào le jí diǎn</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_27" onclick="clickPlayDictation(27)">
-              <div class="sentence-index">#27</div>
-              <div class="sentence-text">這就是我—</div>
-              <div class="sentence-pinyin">zhè jiù shì wǒ</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_28" onclick="clickPlayDictation(28)">
-              <div class="sentence-index">#28</div>
-              <div class="sentence-text">一個成績一般的學生—</div>
-              <div class="sentence-pinyin">yī gè chéng jì yī bān de xué shēng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_29" onclick="clickPlayDictation(29)">
-              <div class="sentence-index">#29</div>
-              <div class="sentence-text">今天回答問題</div>
-              <div class="sentence-pinyin">jīn tiān huí dá wèn tí</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_30" onclick="clickPlayDictation(30)">
-              <div class="sentence-index">#30</div>
-              <div class="sentence-text">時的瞬間感受。</div>
-              <div class="sentence-pinyin">shí de shùn jiàn gǎn shòu</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_31" onclick="clickPlayDictation(31)">
-              <div class="sentence-index">#31</div>
-              <div class="sentence-text">老師的目光與我的</div>
-              <div class="sentence-pinyin">lǎo shī de mù guāng yǔ wǒ de</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_32" onclick="clickPlayDictation(32)">
-              <div class="sentence-index">#32</div>
-              <div class="sentence-text">目光相遇的那一瞬，</div>
-              <div class="sentence-pinyin">mù guāng xiāng yù de nà yī shùn</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_33" onclick="clickPlayDictation(33)">
-              <div class="sentence-index">#33</div>
-              <div class="sentence-text">包含老師給我的信心，</div>
-              <div class="sentence-pinyin">bāo hán lǎo shī gěi wǒ de xìn xīn</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_34" onclick="clickPlayDictation(34)">
-              <div class="sentence-index">#34</div>
-              <div class="sentence-text">那一瞬讓我衝</div>
-              <div class="sentence-pinyin">nà yī shùn ràng wǒ chōng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_35" onclick="clickPlayDictation(35)">
-              <div class="sentence-index">#35</div>
-              <div class="sentence-text">破緊張的束縛，</div>
-              <div class="sentence-pinyin">pò jǐn zhāng de shù fù</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_36" onclick="clickPlayDictation(36)">
-              <div class="sentence-index">#36</div>
-              <div class="sentence-text">證明了自己的能力。</div>
-              <div class="sentence-pinyin">zhèng míng le zì jǐ de néng lì</div>
-            </div>
-          </div></div>
+      <div id="contentArea"><div class="words-grid">
+          <div class="word-card" id="card_0" onclick="clickPlayVocab(0)">
+            <div class="word-index">#1</div>
+            <div class="word-text">概括</div>
+            <div class="pinyin-text">gài kuò</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(0)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_1" onclick="clickPlayVocab(1)">
+            <div class="word-index">#2</div>
+            <div class="word-text">藏</div>
+            <div class="pinyin-text">cáng</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(1)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_2" onclick="clickPlayVocab(2)">
+            <div class="word-index">#3</div>
+            <div class="word-text">組織</div>
+            <div class="pinyin-text">zǔ zhī</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(2)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_3" onclick="clickPlayVocab(3)">
+            <div class="word-index">#4</div>
+            <div class="word-text">呼喚</div>
+            <div class="pinyin-text">hū huàn</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(3)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_4" onclick="clickPlayVocab(4)">
+            <div class="word-index">#5</div>
+            <div class="word-text">眼神</div>
+            <div class="pinyin-text">yǎn shén</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(4)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_5" onclick="clickPlayVocab(5)">
+            <div class="word-index">#6</div>
+            <div class="word-text">方陣</div>
+            <div class="pinyin-text">fāng zhèn</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(5)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_6" onclick="clickPlayVocab(6)">
+            <div class="word-index">#7</div>
+            <div class="word-text">瞬間</div>
+            <div class="pinyin-text">shùn jiàn</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(6)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_7" onclick="clickPlayVocab(7)">
+            <div class="word-index">#8</div>
+            <div class="word-text">相遇</div>
+            <div class="pinyin-text">xiāng yù</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(7)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_8" onclick="clickPlayVocab(8)">
+            <div class="word-index">#9</div>
+            <div class="word-text">周圍</div>
+            <div class="pinyin-text">zhōu wéi</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(8)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_9" onclick="clickPlayVocab(9)">
+            <div class="word-index">#10</div>
+            <div class="word-text">垂青</div>
+            <div class="pinyin-text">chuí qīng</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(9)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_10" onclick="clickPlayVocab(10)">
+            <div class="word-index">#11</div>
+            <div class="word-text">劇烈</div>
+            <div class="pinyin-text">jù liè</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(10)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_11" onclick="clickPlayVocab(11)">
+            <div class="word-index">#12</div>
+            <div class="word-text">證明</div>
+            <div class="pinyin-text">zhèng míng</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(11)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_12" onclick="clickPlayVocab(12)">
+            <div class="word-index">#13</div>
+            <div class="word-text">溫柔</div>
+            <div class="pinyin-text">wēn róu</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(12)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_13" onclick="clickPlayVocab(13)">
+            <div class="word-index">#14</div>
+            <div class="word-text">盼望</div>
+            <div class="pinyin-text">pàn wàng</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(13)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_14" onclick="clickPlayVocab(14)">
+            <div class="word-index">#15</div>
+            <div class="word-text">流利</div>
+            <div class="pinyin-text">liú lì</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(14)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_15" onclick="clickPlayVocab(15)">
+            <div class="word-index">#16</div>
+            <div class="word-text">勇敢</div>
+            <div class="pinyin-text">yǒng gǎn</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(15)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_16" onclick="clickPlayVocab(16)">
+            <div class="word-index">#17</div>
+            <div class="word-text">溜冰</div>
+            <div class="pinyin-text">liū bīng</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(16)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_17" onclick="clickPlayVocab(17)">
+            <div class="word-index">#18</div>
+            <div class="word-text">祝賀</div>
+            <div class="pinyin-text">zhù hè</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(17)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_18" onclick="clickPlayVocab(18)">
+            <div class="word-index">#19</div>
+            <div class="word-text">練習</div>
+            <div class="pinyin-text">liàn xí</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(18)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_19" onclick="clickPlayVocab(19)">
+            <div class="word-index">#20</div>
+            <div class="word-text">奔跑</div>
+            <div class="pinyin-text">bēn pǎo</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(19)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_20" onclick="clickPlayVocab(20)">
+            <div class="word-index">#21</div>
+            <div class="word-text">索性</div>
+            <div class="pinyin-text">suǒ xìng</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(20)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_21" onclick="clickPlayVocab(21)">
+            <div class="word-index">#22</div>
+            <div class="word-text">巷子</div>
+            <div class="pinyin-text">xiàng zi</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(21)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_22" onclick="clickPlayVocab(22)">
+            <div class="word-index">#23</div>
+            <div class="word-text">氣喘</div>
+            <div class="pinyin-text">qì chuǎn</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(22)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_23" onclick="clickPlayVocab(23)">
+            <div class="word-index">#24</div>
+            <div class="word-text">氈帽</div>
+            <div class="pinyin-text">zhān mào</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(23)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_24" onclick="clickPlayVocab(24)">
+            <div class="word-index">#25</div>
+            <div class="word-text">怒吼</div>
+            <div class="pinyin-text">nù hǒu</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(24)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_25" onclick="clickPlayVocab(25)">
+            <div class="word-index">#26</div>
+            <div class="word-text">額頭</div>
+            <div class="pinyin-text">é tóu</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(25)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_26" onclick="clickPlayVocab(26)">
+            <div class="word-index">#27</div>
+            <div class="word-text">強烈</div>
+            <div class="pinyin-text">qiáng liè</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(26)">▶</button>
+          </div>
+        
+          <div class="word-card" id="card_27" onclick="clickPlayVocab(27)">
+            <div class="word-index">#28</div>
+            <div class="word-text">騰空</div>
+            <div class="pinyin-text">téng kōng</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(27)">▶</button>
+          </div>
+        </div></div>
     </main>
   </div>
 
@@ -1262,6 +1258,7 @@
       }, 1200);
     }
 
+    let embeddedPinyinCache = {};
     let lessonTitle = "";
     let vocabWords = [];
     let pinyinVocabWords = [];
@@ -1631,13 +1628,65 @@ ${pinyinBlock}`;
       if (overlay) overlay.classList.remove('open');
     }
 
-    function getDynamicPinyin(text) {
+    let dynamicCustomPinyinMap = {};
+
+                // 💡 100% 動態拼音引擎：完全移除硬編碼 (No Hardcoding)
+    // 所有多音字或特例修正均由 `dynamicCustomPinyinMap` (用戶在文字編輯器中的「拼音修正」區塊) 或 pinyin-pro 動態庫處理
+        function getDynamicPinyin(text) {
       if (!text) return "";
       const convertedText = autoConvertCharacters(text);
       const cleanText = convertedText.replace(/[。\.，,！？\?；;：:」、「」『』《》〈〉（）\(\)─—\-…\s]/g, '');
+
+      // 1. 完全比對動態自訂拼音表 (phrase or word level)
+      if (dynamicCustomPinyinMap && dynamicCustomPinyinMap[cleanText]) {
+        return dynamicCustomPinyinMap[cleanText];
+      }
+
+      // 2. 檢查是否有部分子字串 (如: 盛滿/動彈) 匹配動態修正表
+      if (dynamicCustomPinyinMap) {
+        for (let key in dynamicCustomPinyinMap) {
+          if (key.length > 1 && cleanText.includes(key)) {
+            let keyPinyin = dynamicCustomPinyinMap[key];
+            let fullPinyin = getDynamicPinyin(cleanText.replace(key, ''));
+            // Return override directly if exact match
+            if (cleanText === key) return keyPinyin;
+          }
+        }
+      }
+
+      // 3. 快取（Cache）查詢
+      if (embeddedPinyinCache && embeddedPinyinCache[cleanText]) {
+        return embeddedPinyinCache[cleanText];
+      }
+
+      // 4. 動態轉簡體後調用 pinyin-pro
       if (window.pinyinPro && typeof window.pinyinPro.pinyin === 'function') {
         try {
-          return window.pinyinPro.pinyin(cleanText, { toneType: 'symbol' });
+          let simpText = cleanText;
+          if (window.pinyinPro.convertToSimplified) {
+            simpText = window.pinyinPro.convertToSimplified(cleanText);
+          }
+
+          let res = window.pinyinPro.pinyin(simpText, { toneType: 'symbol' });
+
+          // 單字層級取代 (若使用者定義了 盛=chéng 或 彈=tán)
+          if (dynamicCustomPinyinMap) {
+            let chars = cleanText.split('');
+            let pinyinArray = res.split(' ');
+            if (chars.length === pinyinArray.length) {
+              let modified = false;
+              for (let i = 0; i < chars.length; i++) {
+                if (dynamicCustomPinyinMap[chars[i]]) {
+                  pinyinArray[i] = dynamicCustomPinyinMap[chars[i]];
+                  modified = true;
+                }
+              }
+              if (modified) res = pinyinArray.join(' ');
+            }
+          }
+
+          if (embeddedPinyinCache) embeddedPinyinCache[cleanText] = res;
+          return res;
         } catch (e) {
           console.error("Pinyin error:", e);
         }
@@ -1813,6 +1862,7 @@ ${pinyinBlock}`;
 
       let currentSection = 'vocab';
       let newVocab = [], newPinyin = [], newIdiom = [], newCustomProtected = [], newDictation = [];
+      dynamicCustomPinyinMap = {};
       lessonTitle = "";
 
       const blacklist = [
@@ -1836,10 +1886,22 @@ ${pinyinBlock}`;
         if (trimmed.includes('漢語拼音')) { currentSection = 'pinyin'; return; }
         if (trimmed.includes('挑戰題')) { currentSection = 'idiom'; return; }
         if (trimmed.includes('其他詞語') || trimmed.includes('保護詞語') || trimmed.includes('保護詞彙')) { currentSection = 'customProtected'; return; }
+        if (trimmed.includes('拼音修正') || trimmed.includes('多音字')) { currentSection = 'pinyinFix'; return; }
         if (trimmed.includes('聽寫課文段落')) { currentSection = 'dictation'; return; }
 
         if (currentSection === 'dictation') {
           newDictation.push(autoConvertCharacters(trimmed));
+        } else if (currentSection === 'pinyinFix') {
+          if (trimmed.includes('=') || trimmed.includes('＝')) {
+            const parts = trimmed.split(/[=＝]/);
+            if (parts.length >= 2) {
+              const word = autoConvertCharacters(parts[0].trim().replace(/\s+/g, ''));
+              const customPy = parts[1].trim();
+              if (word && customPy) {
+                dynamicCustomPinyinMap[word] = customPy;
+              }
+            }
+          }
         } else {
           if (!trimmed) return;
           const words = trimmed.split(/[\s,，	、]+/).filter(Boolean);
@@ -1861,6 +1923,9 @@ ${pinyinBlock}`;
         }
       });
 
+      if (window.pinyinPro && typeof window.pinyinPro.customPinyin === "function" && Object.keys(dynamicCustomPinyinMap).length > 0) {
+        window.pinyinPro.customPinyin(dynamicCustomPinyinMap);
+      }
       vocabWords = newVocab;
       pinyinVocabWords = newPinyin;
       idiomWords = newIdiom;
@@ -1898,6 +1963,26 @@ ${pinyinBlock}`;
           editor.textContent = editor.value;
         }
 
+        // 📌 匯出前將所有詞彙與課文句子的拼音預先生成並快取/嵌入
+        const pinyinMap = {};
+        const allWords = [...vocabWords, ...pinyinVocabWords, ...idiomWords, ...customProtectedWords];
+        allWords.forEach(w => {
+          const clean = autoConvertCharacters(w.replace(/\s+/g, ''));
+          if (clean) {
+            pinyinMap[clean] = getDynamicPinyin(clean);
+          }
+        });
+
+        const dictationQueue = buildDictationQueue();
+        dictationQueue.forEach(item => {
+          if (item.type === 'sentence' && item.text) {
+            const clean = autoConvertCharacters(item.text.replace(/\s+/g, ''));
+            if (clean) {
+              pinyinMap[clean] = getDynamicPinyin(clean);
+            }
+          }
+        });
+
         const clonedHtml = document.documentElement.cloneNode(true);
         const clonedBody = clonedHtml.querySelector('body');
         
@@ -1922,26 +2007,29 @@ ${pinyinBlock}`;
           clonedEditorSec.style.display = 'none';
         }
 
+        // 📌 嵌入拼音快取 JSON 資料腳本
+        const pinyinScriptTag = document.createElement('script');
+        pinyinScriptTag.id = "embeddedPinyinData";
+        pinyinScriptTag.type = "application/json";
+        pinyinScriptTag.textContent = JSON.stringify(pinyinMap);
+        clonedBody.appendChild(pinyinScriptTag);
+
         let htmlContent = "<!DOCTYPE html>\n" + clonedHtml.outerHTML;
 
         let cleanFileName = "dictation";
         if (lessonTitle && lessonTitle.trim().length > 0) {
           let t = lessonTitle.trim();
           
-          // 1. 解析年份 (例如 2627 或 26/27 ➜ 2627)
           let yearMatch = t.match(/20\d{2}|\d{2}\/?\d{2}/);
           let year = yearMatch ? yearMatch[0].replace(/\//g, '') : "";
           if (year.length > 4) year = year.substring(0, 4); 
           
-          // 2. 解析年級 (例如 四年級 ➜ P4)
           let gradeMatch = t.match(/([一二三四五六1-6])年級/);
           let gradeMap = {'一':'P1','二':'P2','三':'P3','四':'P4','五':'P5','六':'P6','1':'P1','2':'P2','3':'P3','4':'P4','5':'P5','6':'P6'};
           let grade = gradeMatch ? gradeMap[gradeMatch[1]] : "";
           
-          // 3. 解析科目 (包含 默 ➜ C)
           let typeCode = t.includes("默") ? "C" : "";
           
-          // 4. 解析次數 (抓取"默"字後的第一個數字/中文數字)
           let dNum = "";
           let numMap = {'一':'D1','二':'D2','三':'D3','四':'D4','五':'D5','六':'D6','七':'D7','八':'D8','九':'D9','十':'D10'};
           
@@ -1952,7 +2040,6 @@ ${pinyinBlock}`;
             else if (!isNaN(val)) dNum = 'D' + val;
           }
           
-          // 判斷是否完整抓到四個元素
           if (year && grade && typeCode && dNum) {
              cleanFileName = `${grade}${typeCode}_${year}${dNum}`;
           } else {
@@ -2075,6 +2162,135 @@ ${pinyinBlock}`;
       html += '</div>';
       container.innerHTML = html;
       updateDisplayModeUI();
+    }
+
+    
+    let resolvedPdfUrl = "";
+    let isPdfViewerOpen = false;
+
+                async function checkAndResolveSameNamePdf() {
+      const pdfBtn = document.getElementById('pdfViewerBtn');
+      if (pdfBtn) pdfBtn.style.display = 'none';
+
+      try {
+        let candidateNames = [];
+        let path = window.location.pathname;
+        let filename = path.substring(path.lastIndexOf('/') + 1);
+
+        if (filename && filename !== "" && filename !== "index.html") {
+          let baseName = decodeURIComponent(filename.replace(/\.[^/.]+$/, ""));
+          if (baseName) candidateNames.push(baseName + ".pdf");
+        }
+
+        if (lessonTitle) {
+          let t = lessonTitle.trim();
+          let gradeMatch = t.match(/([一二三四五六1-6])年級/);
+          let gradeMap = {'一':'P1','二':'P2','三':'P3','四':'P4','五':'P5','六':'P6','1':'P1','2':'P2','3':'P3','4':'P4','5':'P5','6':'P6'};
+          let grade = gradeMatch ? gradeMap[gradeMatch[1]] : "";
+          let typeCode = t.includes("默") ? "C" : "";
+          let dNum = "";
+          let numMap = {'一':'D1','二':'D2','三':'D3','四':'D4','五':'D5','六':'D6','七':'D7','八':'D8','九':'D9','十':'D10'};
+          let numMatch = t.match(/默.*?([一二三四五六七八九十\d]+)/);
+          if (numMatch) {
+            let val = numMatch[1];
+            if (numMap[val]) dNum = numMap[val];
+            else if (!isNaN(val)) dNum = 'D' + val;
+          }
+          if (grade && typeCode && dNum) {
+            let titlePdf = `${grade}${typeCode}_${dNum}.pdf`;
+            if (!candidateNames.includes(titlePdf)) candidateNames.push(titlePdf);
+          }
+        }
+
+        if (candidateNames.length === 0) return;
+
+        for (let pdfName of candidateNames) {
+          let exists = await probePdfExistence(pdfName);
+          if (exists) {
+            resolvedPdfUrl = pdfName;
+            showPdfButton(pdfName);
+            return;
+          }
+        }
+
+      } catch (err) {
+        console.warn("PDF check error:", err);
+      }
+    }
+
+    async function probePdfExistence(url) {
+      // 1. Try standard HEAD request (Best for normal web servers)
+      try {
+        let res = await fetch(url, { method: 'HEAD' });
+        if (res.ok) return true;
+        if (res.status === 404) return false;
+      } catch (e) {}
+
+      // 2. Try GET request and abort instantly (Fixes issues where HEAD or Range headers are blocked)
+      try {
+        const controller = new AbortController();
+        let res = await fetch(url, { method: 'GET', signal: controller.signal });
+        if (res.ok) {
+          controller.abort(); // We only care about the headers/status, don't download the file
+          return true;
+        }
+      } catch (e) {}
+      
+      // 3. XHR Fallback
+      return new Promise((resolve) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open('HEAD', url, true);
+        xhr.onload = function() {
+          if (xhr.status >= 200 && xhr.status < 300) resolve(true);
+          else resolve(false);
+        };
+        xhr.onerror = function() {
+          resolve(false);
+        };
+        try { xhr.send(); } catch(err) { resolve(false); }
+      });
+    }
+
+    function showPdfButton(pdfName) {
+      const pdfBtn = document.getElementById('pdfViewerBtn');
+      if (pdfBtn) {
+        pdfBtn.style.display = 'inline-block';
+        pdfBtn.title = `檢視對應 PDF 檔案 (${pdfName})`;
+      }
+    }
+
+    function togglePdfViewer() {
+      if (!resolvedPdfUrl) return;
+
+      const area = document.getElementById('contentArea');
+      const vocabToolbar = document.getElementById('vocabToolbar');
+      const dictationToolbar = document.getElementById('dictationToolbar');
+
+      if (!isPdfViewerOpen) {
+        isPdfViewerOpen = true;
+        if (vocabToolbar) vocabToolbar.classList.add('hidden');
+        if (dictationToolbar) dictationToolbar.classList.add('hidden');
+
+        area.innerHTML = `
+          <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); width: 100%; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <div style="background: #2e7d32; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;">
+              <span style="font-weight: bold; font-size: 1.05rem;">📄 對應 PDF 檔案預覽 (${resolvedPdfUrl})</span>
+              <button onclick="closePdfViewer()" style="background: #ffffff; color: #2e7d32; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ 關閉 PDF 預覽</button>
+            </div>
+            <iframe src="${resolvedPdfUrl}" style="width: 100%; height: 100%; border: none;"></iframe>
+          </div>
+        `;
+        if (window.innerWidth <= 768) {
+          closeSidebarMenu();
+        }
+      } else {
+        closePdfViewer();
+      }
+    }
+
+    function closePdfViewer() {
+      isPdfViewerOpen = false;
+      renderTab();
     }
 
     function switchTab(tabId, element) {
@@ -2628,6 +2844,7 @@ ${pinyinBlock}`;
       if (!voiceSelect) return;
       userSelectedVoiceName = voiceSelect.value;
 
+      
       if (synth) {
         synth.cancel();
       }
@@ -2641,6 +2858,7 @@ ${pinyinBlock}`;
     }
 
     function onSpeedChange() {
+      
       if (synth) {
         synth.cancel();
       }
@@ -2660,6 +2878,16 @@ ${pinyinBlock}`;
     }
 
 function autoInitApp() {
+      const embeddedDataTag = document.getElementById('embeddedPinyinData');
+      if (embeddedDataTag && embeddedDataTag.textContent) {
+        try {
+          embeddedPinyinCache = JSON.parse(embeddedDataTag.textContent);
+        } catch (e) {
+          console.error("Failed to parse embedded pinyin cache:", e);
+        }
+      }
+
+      
       if (synth) {
         initVoiceList();
       }
@@ -2690,6 +2918,7 @@ function autoInitApp() {
       }
 
       switchTab('tab1', document.getElementById('btn_tab1'));
+      checkAndResolveSameNamePdf();
     }
 
     document.addEventListener('DOMContentLoaded', autoInitApp);
@@ -2728,4 +2957,4 @@ function autoInitApp() {
 
 其他詞語:
 地上     母子    巨人
-</textarea></div></body></html>
+</textarea></div><script id="embeddedPinyinData" type="application/json">{"概括":"gài kuò","藏":"cáng","組織":"zǔ zhī","呼喚":"hū huàn","眼神":"yǎn shén","方陣":"fāng zhèn","瞬間":"shùn jiàn","相遇":"xiāng yù","周圍":"zhōu wéi","垂青":"chuí qīng","劇烈":"jù liè","證明":"zhèng míng","溫柔":"wēn róu","盼望":"pàn wàng","流利":"liú lì","勇敢":"yǒng gǎn","溜冰":"liū bīng","祝賀":"zhù hè","練習":"liàn xí","奔跑":"bēn pǎo","索性":"suǒ xìng","巷子":"xiàng zi","氣喘":"qì chuǎn","氈帽":"zhān mào","怒吼":"nù hǒu","額頭":"é tóu","強烈":"qiáng liè","騰空":"téng kōng","跪地求饒":"guì dì qiú ráo","戴":"dài","道":"dào","過街老鼠":"guò jiē lǎo shǔ","項":"xiàng","遍":"biàn","篇":"piān","朝三暮四":"cháo sān mù sì","一竅不通":"yī qiào bù tōng","七上八下":"qī shàng bā xià","兩全其美":"liǎng quán qí měi","半斤八兩":"bàn jīn bā liǎng","九牛一毛":"jiǔ niú yī máo","約法三章":"yuē fǎ sān zhāng","四分五裂":"sì fēn wǔ liè","八面玲瓏":"bā miàn líng lóng","十拿九穩":"shí ná jiǔ wěn","六神無主":"liù shén wú zhǔ","一波三折":"yī bō sān zhé","地上":"dì shàng","母子":"mǔ zǐ","巨人":"jù rén","老師也在等。":"lǎo shī yě zài děng","又半分鐘過去了，":"yòu bàn fēn zhōng guò qù le","教室裏仍然那麼安靜，":"jiào shì lǐ réng rán nà mó ān jìng","老師決定「點將」了。":"lǎo shī jué dìng diǎn jiāng le","我盼望着老師的「垂青」，":"wǒ pàn wàng zhe lǎo shī de chuí qīng","我們的目光相遇了，":"wǒ mén de mù guāng xiāng yù le","我用眼神告訴她：":"wǒ yòng yǎn shén gào sù tā","「老師，":"lǎo shī","我會。」":"wǒ huì","她似乎看懂了我的「話」，":"tā sì hū kàn dǒng le wǒ de huà","先向我微微一笑，":"xiān xiàng wǒ wēi wēi yī xiào","像是鼓勵，":"xiàng shì gǔ lì","給了我一點信心，":"gěi le wǒ yī diǎn xìn xīn","然後點到我的名字。":"rán hòu diǎn dào wǒ de míng zì","那一瞬我既":"nà yī shùn wǒ jì","高興又緊張。":"gāo xīng yòu jǐn zhāng","我站起來，":"wǒ zhàn qǐ lái","說出早已":"shuō chū zǎo yǐ","組織好的內容，":"zǔ zhī hǎo de nèi róng","聲音相當響亮，":"shēng yīn xiāng dāng xiǎng liàng","答得非常流利。":"dá dé fēi cháng liú lì","說着，":"shuō zhe","我只覺得心在跳，":"wǒ zhī jué dé xīn zài tiào","劇烈地跳，":"jù liè dì tiào","興奮到了極點。":"xīng fèn dào le jí diǎn","這就是我—":"zhè jiù shì wǒ","一個成績一般的學生—":"yī gè chéng jì yī bān de xué shēng","今天回答問題":"jīn tiān huí dá wèn tí","時的瞬間感受。":"shí de shùn jiàn gǎn shòu","老師的目光與我的":"lǎo shī de mù guāng yǔ wǒ de","目光相遇的那一瞬，":"mù guāng xiāng yù de nà yī shùn","包含老師給我的信心，":"bāo hán lǎo shī gěi wǒ de xìn xīn","那一瞬讓我衝":"nà yī shùn ràng wǒ chōng","破緊張的束縛，":"pò jǐn zhāng de shù fù","證明了自己的能力。":"zhèng míng le zì jǐ de néng lì"}</script></body></html>
