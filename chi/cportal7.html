@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <link rel="icon" type="image/avif" href="data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUEAAAFGbWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAsaWxvYwAAAABEAAACAAEAAAABAAACrgAAR4AAAgAAAAEAAAFuAAABQAAAAFRpaW5mAAAAAAACAAAAGmluZmUCAAAAAAEAAGF2MDFDb2xvcgAAAAAsaW5mZQIAAAAAAgAAbWltZVhNUABhcHBsaWNhdGlvbi9yZGYreG1sAAAAABppcmVmAAAAAAAAAA5jZHNjAAIAAQABAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAA+gAAAP9AAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgSUAAAAAABNjb2xybmNseAABAA0ABoAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAASMhtZGF0PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNC40LjAiPjxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+PHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiI+PGRjOmNyZWF0b3I+PHJkZjpTZXE+PHJkZjpsaT5WZWN0b3JTdG9jay5jb20vMjI3MzE1MzQ8L3JkZjpsaT48L3JkZjpsaT48L2RjOmNyZWF0b3I+PC9yZGY6RGVzY3JpcHRpb24+PC9yZGY6UkRGPjwveDp4bXBtZXRhPg0KAAAAG2lkYXQAAAAAAAAAAAAAAAACAE30AYAAAAAM/vP4GBAQGAAAAB9mZn4A=">
+  <link rel="shortcut icon" type="image/avif" href="data:image/avif;base64,AAAAIGZ0eXBhdmlmAAAAAGF2aWZtaWYxbWlhZk1BMUEAAAFGbWV0YQAAAAAAAAAoaGRscgAAAAAAAAAAcGljdAAAAAAAAAAAAAAAAGxpYmF2aWYAAAAADnBpdG0AAAAAAAEAAAAsaWxvYwAAAABEAAACAAEAAAABAAACrgAAR4AAAgAAAAEAAAFuAAABQAAAAFRpaW5mAAAAAAACAAAAGmluZmUCAAAAAAEAAGF2MDFDb2xvcgAAAAAsaW5mZQIAAAAAAgAAbWltZVhNUABhcHBsaWNhdGlvbi9yZGYreG1sAAAAABppcmVmAAAAAAAAAA5jZHNjAAIAAQABAAAAamlwcnAAAABLaXBjbwAAABRpc3BlAAAAAAAAA+gAAAP9AAAAEHBpeGkAAAAAAwgICAAAAAxhdjFDgSUAAAAAABNjb2xybmNseAABAA0ABoAAAAAXaXBtYQAAAAAAAAABAAEEAQKDBAAASMhtZGF0PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNC40LjAiPjxyZGY6UkRGIHhtbG5zOnJkZj0iaHR0cDovL3d3dy53My5vcmcvMTk5OS8wMi8yMi1yZGYtc3ludGF4LW5zIyI+PHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiI+PGRjOmNyZWF0b3I+PHJkZjpTZXE+PHJkZjpsaT5WZWN0b3JTdG9jay5jb20vMjI3MzE1MzQ8L3JkZjpsaT48L3JkZjpsaT48L2RjOmNyZWF0b3I+PC9yZGY6RGVzY3JpcHRpb24+PC9yZGY6UkRGPjwveDp4bXBtZXRhPg0KAAAAG2lkYXQAAAAAAAAAAAAAAAACAE30AYAAAAAM/vP4GBAQGAAAAB9mZn4A=">
+
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>開心小學 - 中國語文科 默書自主學習平台</title>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <!-- Google Fonts: Inter, Noto Sans TC -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Noto+Sans+TC:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-color: #f8fafc;
+      --text-dark: #0f172a;
+      --text-muted: #475569;
+      --dark-green-bg: #143e26; /* Forest dark green matching the banner */
+      --bright-lime-green: #76ea16; /* Bright lime green accent text */
+      
+      --font-sans: "Noto Sans TC", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang TC", "Microsoft JhengHei", sans-serif;
+      --font-en: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      font-family: var(--font-sans);
+      color: var(--text-dark);
+      min-height: 100vh;
+      padding-top: 135px; /* Exact height spacing so content flows right under header without white gap */
+      padding-bottom: 45px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* Green Header Styling - Fixed Position Flush Top */
+    header.dark-green-header {
+      background-color: var(--dark-green-bg);
+      text-align: center;
+      padding: 16px 20px;
+      width: 100%;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      margin: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-main-title {
+      color: #ffffff;
+      font-size: 1.3rem;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      margin-bottom: 12px;
+      font-family: var(--font-sans);
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    .header-sub-title {
+      color: var(--bright-lime-green);
+      font-size: 0.78rem;
+      font-weight: 800;
+      letter-spacing: 0.8px;
+      font-family: var(--font-sans);
+      text-shadow: 0 1px 3px rgba(0,0,0,0.4);
+      line-height: 1.5;
+    }
+
+    /* Rainbow Wheels Layout Container */
+    .rainbow-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 50px;
+      max-width: 1100px;
+      margin: 9mm auto 60px;
+      padding: 0 20px;
+    }
+
+    /* Rainbow Donut Chart Wheel Card - Completely hidden initially */
+    .rainbow-card {
+      background: transparent;
+      border-radius: 0;
+      padding: 0;
+      box-shadow: none;
+      border: none;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s ease, opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      position: relative;
+      opacity: 0; /* Keep completely invisible until link checks finish */
+      visibility: hidden;
+    }
+
+    .rainbow-card.visible {
+      opacity: 1; /* Fade in cleanly after verification */
+      visibility: visible;
+    }
+
+    .rainbow-card:hover {
+      transform: translateY(-6px);
+    }
+
+    .wheel-wrapper {
+      position: relative;
+      width: 270px;
+      height: 270px;
+    }
+
+    /* SVG Donut Slices */
+    .rainbow-svg {
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    .cell-slice {
+      cursor: pointer;
+      transition: opacity 0.25s ease, fill 0.3s ease, filter 0.25s ease;
+      stroke: #ffffff;
+      stroke-width: 2.5px;
+    }
+
+    .cell-slice:hover {
+      opacity: 0.88;
+      filter: drop-shadow(0px 0px 6px rgba(0,0,0,0.25));
+    }
+
+    /* Center Badge (P4, P5, P6) Typography */
+    .center-circle {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 110px;
+      height: 110px;
+      background: white;
+      border-radius: 50%;
+      box-shadow: inset 0 2px 5px rgba(0,0,0,0.06), 0 4px 12px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 10;
+      transition: background-color 0.3s ease;
+    }
+
+    /* When a valid wheel is hovered, center turns cyan */
+    .wheel-wrapper:not(.disabled-wheel):has(.rainbow-svg:hover) .center-circle {
+      background-color: #49fcfc;
+    }
+
+    .center-circle .level-text {
+      font-family: var(--font-en);
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #15803d; /* Professional Deep Green */
+      line-height: 1;
+      letter-spacing: -0.5px;
+    }
+
+    .center-circle .sub-text {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #475569;
+      margin-top: 4px;
+      letter-spacing: 1px;
+    }
+
+    /* Typography Inside Rainbow Slices */
+    .cell-text {
+      font-family: var(--font-en);
+      font-size: 15px;
+      font-weight: 800;
+      fill: #ffffff;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    .eval-text {
+      font-family: var(--font-sans);
+      font-size: 12px;
+      font-weight: 900;
+      fill: #ffffff;
+      text-anchor: middle;
+      dominant-baseline: central;
+      pointer-events: none;
+      user-select: none;
+      letter-spacing: 0.5px;
+    }
+
+    footer {
+      text-align: center;
+      color: #94a3b8;
+      font-family: var(--font-sans);
+      font-size: 0.85rem;
+      padding-top: 24px;
+      border-top: 1px solid #e2e8f0;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+  
+    /* Home Button Positioning and Purple Rounded Icon Style */
+    .home-btn {
+      position: absolute;
+      top: 3mm;
+      left: 12px;
+      color: #ffffff;
+      font-size: 1.4rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: #8570ed;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.18);
+      transition: all 0.2s ease;
+      z-index: 20;
+    }
+
+    .home-btn:hover {
+      background: #725be5;
+      transform: scale(1.06);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+    }
+
+    .home-btn i {
+      font-size: 1.35rem;
+      color: #ffffff;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header Banner -->
+  <header class="dark-green-header">
+    <a href="https://tonyymlee.github.io/pdictation/" class="home-btn" title="返回首頁">
+      <i class="fa-solid fa-house"></i>
+    </a>
+    <div class="header-main-title">開心小學 中國語文科<br>默書自主學習平台</div>
+    <div class="header-sub-title">請點選相應的單元或評估環形區域，<br>即可進入專屬線上默書自主溫習網頁。</div>
+  </header>
+
+  <!-- Rainbow Wheels Container -->
+  <div class="rainbow-container">
+    
+    <!-- P4 Rainbow Wheel -->
+    <div class="rainbow-card">
+      <div class="wheel-wrapper">
+        <svg class="rainbow-svg" viewBox="0 0 200 200" id="svg-p4"></svg>
+        <div class="center-circle">
+          <span class="level-text">P4</span>
+          <span class="sub-text">四年級</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- P5 Rainbow Wheel -->
+    <div class="rainbow-card">
+      <div class="wheel-wrapper">
+        <svg class="rainbow-svg" viewBox="0 0 200 200" id="svg-p5"></svg>
+        <div class="center-circle">
+          <span class="level-text">P5</span>
+          <span class="sub-text">五年級</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- P6 Rainbow Wheel -->
+    <div class="rainbow-card">
+      <div class="wheel-wrapper">
+        <svg class="rainbow-svg" viewBox="0 0 200 200" id="svg-p6"></svg>
+        <div class="center-circle">
+          <span class="level-text">P6</span>
+          <span class="sub-text">六年級</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>
+    <p>© 開心小學 中國語文科網頁 | Primary Chinese Language Dictation Learning Portal</p>
+  </footer>
+
+  <script>
+    const cellData = [
+      { id: "1", name: "單元一", desc: "第一單元：核心詞組特訓與語境詞義運用", isEval: false },
+      { id: "2", name: "單元二", desc: "第二單元：語段默寫與常用句型結構鞏固", isEval: false },
+      { id: "3", name: "單元三", desc: "第三單元：精選篇章默寫與語感提昇特訓", isEval: false },
+      { id: "評1", name: "階段評估一", desc: "第一學期 第一次階段性默書綜合評估", isEval: true },
+      { id: "4", name: "單元四", desc: "第四單元：高頻錯字診斷與進階詞組積累", isEval: false },
+      { id: "5", name: "單元五", desc: "第五單元：成語典故默寫與寫作詞彙拓展", isEval: false },
+      { id: "6", name: "單元六", desc: "第六單元：修辭手法句式與語文基礎特訓", isEval: false },
+      { id: "評2", name: "階段評估二", desc: "第一學期 總結性默書學業評估", isEval: true },
+      { id: "7", name: "單元七", desc: "第七單元：古詩文名句默寫與文言字詞理解", isEval: false },
+      { id: "8", name: "單元八", desc: "第八單元：課外高階詞彙拓展與閱讀延伸", isEval: false },
+      { id: "9", name: "單元九", desc: "第九單元：綜合錯別字校正與篇章演練", isEval: false },
+      { id: "評3", name: "階段評估三", desc: "第二學期 呈分試總複習學業評估", isEval: true }
+    ];
+
+    const rainbowColors = [
+      "#EAB308", // 1 - Yellow (Top)
+      "#F97316", // 2 - Light Orange
+      "#EA580C", // 3 - Dark Orange
+      "#E65100", // 評1 - Orange-Red
+      "#DC2626", // 4 - Red
+      "#7E22CE", // 5 - Purple
+      "#4338CA", // 6 - Indigo
+      "#1D4ED8", // 評2 - Deep Blue
+      "#0284C7", // 7 - Light Blue
+      "#059669", // 8 - Teal
+      "#15803D", // 9 - Dark Green
+      "#84CC16"  // 評3 - Lime Green
+    ];
+
+    function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
+      const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
+      return {
+        x: centerX + (radius * Math.cos(angleInRadians)),
+        y: centerY + (radius * Math.sin(angleInRadians))
+      };
+    }
+
+    function describeArc(x, y, innerRadius, outerRadius, startAngle, endAngle) {
+      const startOuter = polarToCartesian(x, y, outerRadius, endAngle);
+      const endOuter = polarToCartesian(x, y, outerRadius, startAngle);
+      const startInner = polarToCartesian(x, y, innerRadius, endAngle);
+      const endInner = polarToCartesian(x, y, innerRadius, startAngle);
+
+      const largeArcFlag = endAngle - startAngle <= 180 ? "0" : "1";
+
+      return [
+        "M", startOuter.x, startOuter.y,
+        "A", outerRadius, outerRadius, 0, largeArcFlag, 0, endOuter.x, endOuter.y,
+        "L", endInner.x, endInner.y,
+        "A", innerRadius, innerRadius, 0, largeArcFlag, 1, startInner.x, startInner.y,
+        "Z"
+      ].join(" ");
+    }
+
+    async function buildRainbowWheel(svgId, grade) {
+      const svg = document.getElementById(svgId);
+      const centerX = 100;
+      const centerY = 100;
+      const innerR = 45;
+      const outerR = 95;
+      const numCells = 12;
+      const anglePerCell = 360 / numCells;
+      const offsetAngle = -anglePerCell / 2;
+
+      const centerCircle = svg.parentElement.querySelector('.center-circle');
+      let checkPromises = [];
+
+      for (let i = 0; i < numCells; i++) {
+        const startAngle = i * anglePerCell + offsetAngle;
+        const endAngle = (i + 1) * anglePerCell + offsetAngle;
+        const midAngle = startAngle + (anglePerCell / 2);
+
+        const pathData = describeArc(centerX, centerY, innerR, outerR, startAngle, endAngle);
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", pathData);
+        path.setAttribute("fill", rainbowColors[i]);
+        path.setAttribute("class", "cell-slice");
+
+        const item = cellData[i];
+        const fileCode = item.isEval ? `E${item.id.replace('評', '')}` : `D${item.id}`;
+        const fileName = `${grade}C_${fileCode}.html`;
+
+        let isLinkValid = true;
+
+        path.onclick = (e) => {
+          if (!isLinkValid) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+          }
+          window.location.href = fileName;
+        };
+
+        // Asynchronously check link status BEFORE wheel is shown
+        const checkPromise = fetch(fileName, { method: 'HEAD' })
+          .then(response => {
+            if (!response.ok) {
+              isLinkValid = false;
+              path.setAttribute("fill", "#9CA3AF");
+              path.setAttribute("opacity", "0.6");
+              path.style.cursor = "not-allowed";
+              path.title = "網頁暫未開放 (Link Invalid / Pending)";
+              path.onclick = (e) => { e.preventDefault(); e.stopPropagation(); return false; };
+              return false;
+            }
+            return true;
+          })
+          .catch(() => {
+            isLinkValid = false;
+            path.setAttribute("fill", "#9CA3AF");
+            path.setAttribute("opacity", "0.6");
+            path.style.cursor = "not-allowed";
+            path.title = "網頁暫未開放 (Link Invalid / Pending)";
+            path.onclick = (e) => { e.preventDefault(); e.stopPropagation(); return false; };
+            return false;
+          });
+
+        checkPromises.push(checkPromise);
+
+        svg.appendChild(path);
+
+        const textRadius = (innerR + outerR) / 2;
+        const textPos = polarToCartesian(centerX, centerY, textRadius, midAngle);
+
+        const text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+        text.setAttribute("x", textPos.x);
+        text.setAttribute("y", textPos.y);
+        text.setAttribute("class", item.isEval ? "eval-text" : "cell-text");
+        text.textContent = item.id;
+
+        svg.appendChild(text);
+      }
+
+      const results = await Promise.all(checkPromises);
+      const allInvalid = results.every(valid => !valid);
+
+      if (allInvalid) {
+        const wrapper = svg.closest('.wheel-wrapper');
+        if (wrapper) wrapper.classList.add('disabled-wheel');
+
+        if (centerCircle) {
+          const levelText = centerCircle.querySelector('.level-text');
+          const subText = centerCircle.querySelector('.sub-text');
+          if (levelText) levelText.style.color = '#adb1b8';
+          if (subText) subText.style.color = '#adb1b8';
+        }
+      }
+    }
+
+    window.onload = () => {
+      // 1. Build wheels & check all links while remaining completely hidden
+      const wheelsPromise = Promise.all([
+        buildRainbowWheel('svg-p4', 'P4'),
+        buildRainbowWheel('svg-p5', 'P5'),
+        buildRainbowWheel('svg-p6', 'P6')
+      ]);
+
+      // 2. Minimum 1.0 second delay timer
+      const delayPromise = new Promise(resolve => setTimeout(resolve, 800));
+
+      // 3. Reveal rainbow wheels only after link verification AND 1-second delay finish
+      Promise.all([wheelsPromise, delayPromise]).then(() => {
+        const cards = document.querySelectorAll('.rainbow-card');
+        cards.forEach((card, index) => {
+          setTimeout(() => {
+            card.classList.add('visible');
+          }, index * 100);
+        });
+      });
+    };
+  </script>
+</body>
+</html>
