@@ -466,7 +466,7 @@
       ]);
 
       // 2. Minimum 1.0 second delay timer
-      const delayPromise = new Promise(resolve => setTimeout(resolve, 1000));
+      const delayPromise = new Promise(resolve => setTimeout(resolve, 800));
 
       // 3. Reveal rainbow wheels only after link verification AND 1-second delay finish
       Promise.all([wheelsPromise, delayPromise]).then(() => {
