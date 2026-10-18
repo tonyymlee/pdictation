@@ -1643,13 +1643,21 @@ ${pinyinBlock}`;
       if (overlay) overlay.classList.remove('open');
     }
 
+    let embeddedPinyinCache = {};
+
     function getDynamicPinyin(text) {
       if (!text) return "";
       const convertedText = autoConvertCharacters(text);
       const cleanText = convertedText.replace(/[。\.，,！？\?；;：:」、「」『』《》〈〉（）\(\)─—\-…\s]/g, '');
+
+      if (embeddedPinyinCache && embeddedPinyinCache[cleanText]) {
+        return embeddedPinyinCache[cleanText];
+      }
       if (window.pinyinPro && typeof window.pinyinPro.pinyin === 'function') {
         try {
-          return window.pinyinPro.pinyin(cleanText, { toneType: 'symbol' });
+          const res = window.pinyinPro.pinyin(cleanText, { toneType: 'symbol' });
+          if (embeddedPinyinCache) embeddedPinyinCache[cleanText] = res;
+          return res;
         } catch (e) {
           console.error("Pinyin error:", e);
         }
@@ -1910,6 +1918,26 @@ ${pinyinBlock}`;
           editor.textContent = editor.value;
         }
 
+        // 📌 匯出前將所有詞彙與課文句子的拼音預先生成並快取/嵌入
+        const pinyinMap = {};
+        const allWords = [...vocabWords, ...pinyinVocabWords, ...idiomWords, ...customProtectedWords];
+        allWords.forEach(w => {
+          const clean = autoConvertCharacters(w.replace(/\s+/g, ''));
+          if (clean) {
+            pinyinMap[clean] = getDynamicPinyin(clean);
+          }
+        });
+
+        const dictationQueue = buildDictationQueue();
+        dictationQueue.forEach(item => {
+          if (item.type === 'sentence' && item.text) {
+            const clean = autoConvertCharacters(item.text.replace(/\s+/g, ''));
+            if (clean) {
+              pinyinMap[clean] = getDynamicPinyin(clean);
+            }
+          }
+        });
+
         const clonedHtml = document.documentElement.cloneNode(true);
         const clonedBody = clonedHtml.querySelector('body');
         
@@ -1934,26 +1962,29 @@ ${pinyinBlock}`;
           clonedEditorSec.style.display = 'none';
         }
 
+        // 📌 嵌入拼音快取 JSON 資料腳本
+        const pinyinScriptTag = document.createElement('script');
+        pinyinScriptTag.id = "embeddedPinyinData";
+        pinyinScriptTag.type = "application/json";
+        pinyinScriptTag.textContent = JSON.stringify(pinyinMap);
+        clonedBody.appendChild(pinyinScriptTag);
+
         let htmlContent = "<!DOCTYPE html>\n" + clonedHtml.outerHTML;
 
         let cleanFileName = "dictation";
         if (lessonTitle && lessonTitle.trim().length > 0) {
           let t = lessonTitle.trim();
           
-          // 1. 解析年份 (例如 2627 或 26/27 ➜ 2627)
           let yearMatch = t.match(/20\d{2}|\d{2}\/?\d{2}/);
           let year = yearMatch ? yearMatch[0].replace(/\//g, '') : "";
           if (year.length > 4) year = year.substring(0, 4); 
           
-          // 2. 解析年級 (例如 四年級 ➜ P4)
           let gradeMatch = t.match(/([一二三四五六1-6])年級/);
           let gradeMap = {'一':'P1','二':'P2','三':'P3','四':'P4','五':'P5','六':'P6','1':'P1','2':'P2','3':'P3','4':'P4','5':'P5','6':'P6'};
           let grade = gradeMatch ? gradeMap[gradeMatch[1]] : "";
           
-          // 3. 解析科目 (包含 默 ➜ C)
           let typeCode = t.includes("默") ? "C" : "";
           
-          // 4. 解析次數 (抓取"默"字後的第一個數字/中文數字)
           let dNum = "";
           let numMap = {'一':'D1','二':'D2','三':'D3','四':'D4','五':'D5','六':'D6','七':'D7','八':'D8','九':'D9','十':'D10'};
           
@@ -1964,7 +1995,6 @@ ${pinyinBlock}`;
             else if (!isNaN(val)) dNum = 'D' + val;
           }
           
-          // 判斷是否完整抓到四個元素
           if (year && grade && typeCode && dNum) {
              cleanFileName = `${grade}${typeCode}_${year}${dNum}`;
           } else {
@@ -2672,6 +2702,15 @@ ${pinyinBlock}`;
     }
 
 function autoInitApp() {
+      const embeddedDataTag = document.getElementById('embeddedPinyinData');
+      if (embeddedDataTag && embeddedDataTag.textContent) {
+        try {
+          embeddedPinyinCache = JSON.parse(embeddedDataTag.textContent);
+        } catch (e) {
+          console.error("Failed to parse embedded pinyin cache:", e);
+        }
+      }
+
       if (synth) {
         initVoiceList();
       }
@@ -2741,4 +2780,4 @@ function autoInitApp() {
 
 其他詞語:
 地上     母子    巨人
-</textarea></div></body></html>
+</textarea></div><script id="embeddedPinyinData" type="application/json">{"寬寬":"kuān kuān","強烈":"qiáng liè","膽子":"dǎn zǐ","過街老鼠":"guò jiē lǎo shǔ","跪地求饒":"guì dì qiú ráo","可憐":"kě lián","沾濕":"zhān shī","輕微":"qīng wēi","顫動":"chàn dòng","奄奄一息":"yǎn yǎn yī xī","小心翼翼":"xiǎo xīn yì yì","捏":"niē","凍僵":"dòng jiāng","動彈":"dòng dàn","歪倒":"wāi dǎo","蘇醒":"sū xǐng","白茸茸":"bái róng róng","伸展":"shēn zhǎn","黑漆漆":"hēi qī qī","無限":"wú xiàn","喜悅":"xǐ yuè","光輝":"guāng huī","盛滿":"chèng mǎn","蠕動":"rú dòng","活潑":"huó pō","伶俐":"líng lì","一躍而起":"yī yuè ér qǐ","翩翩":"piān piān","飛翔":"fēi xiáng","一髮千鈞":"yī fà qiān jūn","目瞪口呆":"mù dèng kǒu dāi","人心惶惶":"rén xīn huáng huáng","挺身而出":"tǐng shēn ér chū","束手無策":"shù shǒu wú cè","胸無點墨":"xiōng wú diǎn mò","推心置腹":"tuī xīn zhì fù","充耳不聞":"chōng ěr bù wén","別出心裁":"bié chū xīn cái","順手牽羊":"shùn shǒu qiān yáng","促膝談心":"cù xī tán xīn","唇齒相依":"chún chǐ xiāng yī","地上":"dì shàng","母子":"mǔ zǐ","巨人":"jù rén","康弟的耳朵很大，":"kāng dì de ěr duǒ hěn dà","向下垂着，":"xiàng xià chuí zhe","像步兵在寒冬戴的":"xiàng bù bīng zài hán dōng dài de","氈帽兩旁的護耳。":"zhān mào liǎng páng de hù ěr","牠的白臉很長，":"tā de bái liǎn hěn cháng","在雙目之間，":"zài shuāng mù zhī jiàn","從額頭到鼻尖，":"cóng é tóu dào bí jiān","有一道寬寬的黑毛，":"yǒu yī dào kuān kuān de hēi máo","跟白臉形成":"gēn bái liǎn xíng chéng","強烈的對照。":"qiáng liè de duì zhào","康弟全身白毛，":"kāng dì quán shēn bái máo","身材像一隻鹿，":"shēn cái xiàng yī zhī lù","四條腿很長，":"sì tiáo tuǐ hěn cháng","卻有一條細細的":"què yǒu yī tiáo xì xì de","像豬一樣的尾巴。":"xiàng zhū yī yàng de wěi ba","康弟身材高大，":"kāng dì shēn cái gāo dà","膽子卻很小。":"dǎn zǐ què hěn xiǎo","有一回，":"yǒu yī huí","我們試着帶牠上街。":"wǒ mén shì zhe dài tā shàng jiē","在門前的巷子裏，":"zài mén qián de xiàng zi lǐ","牠走得還有點信心。":"tā zǒu dé huán yǒu diǎn xìn xīn","走出巷子，":"zǒu chū xiàng zi","穿過馬路，":"chuān guò mǎ lù","牠走得像一隻":"tā zǒu dé xiàng yī zhī","「過街老鼠」。":"guò jiē lǎo shǔ","到了十字路口，":"dào le shí zì lù kǒu","牠害怕氣喘的公車":"tā hài pà qì chuǎn de gōng chē","和怒吼的摩托車，":"hé nù hǒu de mó tuō chē","索性賴在":"suǒ xìng lài zài","地上不肯走了。":"dì shàng bù kěn zǒu le","一對路過的":"yī duì lù guò de","母子看得大笑—":"mǔ zǐ kàn dé dà xiào","像是看到了":"xiàng shì kàn dào le","巨人跪地求饒。":"jù rén guì dì qiú ráo","他們鼓勵":"tā mén gǔ lì","可憐的康弟說：":"kě lián de kāng dì shuō","「不要怕，":"bù yào pà","起來走！」":"qǐ lái zǒu"}</script></body></html>
