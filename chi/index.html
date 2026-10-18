@@ -94,7 +94,7 @@
       padding: 0 20px;
     }
 
-    /* Rainbow Donut Chart Wheel Card */
+    /* Rainbow Donut Chart Wheel Card - Completely hidden initially */
     .rainbow-card {
       background: transparent;
       border-radius: 0;
@@ -104,13 +104,15 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: transform 0.3s ease, opacity 0.5s ease;
+      transition: transform 0.3s ease, opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
-      opacity: 0; /* Hidden initially until delay triggers */
+      opacity: 0; /* Keep completely invisible until link checks finish */
+      visibility: hidden;
     }
 
     .rainbow-card.visible {
-      opacity: 1; /* Smooth fade-in animation */
+      opacity: 1; /* Fade in cleanly after verification */
+      visibility: visible;
     }
 
     .rainbow-card:hover {
@@ -360,7 +362,7 @@
       ].join(" ");
     }
 
-    function buildRainbowWheel(svgId, grade) {
+    async function buildRainbowWheel(svgId, grade) {
       const svg = document.getElementById(svgId);
       const centerX = 100;
       const centerY = 100;
@@ -371,26 +373,7 @@
       const offsetAngle = -anglePerCell / 2;
 
       const centerCircle = svg.parentElement.querySelector('.center-circle');
-      let checkResults = new Array(numCells).fill(false);
-      let checksCompleted = 0;
-
-      function updateCenterTextIfAllInvalid() {
-        checksCompleted++;
-        if (checksCompleted === numCells) {
-          const allInvalid = checkResults.every(valid => !valid);
-          if (allInvalid) {
-            const wrapper = svg.closest('.wheel-wrapper');
-            if (wrapper) wrapper.classList.add('disabled-wheel');
-
-            if (centerCircle) {
-              const levelText = centerCircle.querySelector('.level-text');
-              const subText = centerCircle.querySelector('.sub-text');
-              if (levelText) levelText.style.color = '#adb1b8';
-              if (subText) subText.style.color = '#adb1b8';
-            }
-          }
-        }
-      }
+      let checkPromises = [];
 
       for (let i = 0; i < numCells; i++) {
         const startAngle = i * anglePerCell + offsetAngle;
@@ -418,33 +401,31 @@
           window.location.href = fileName;
         };
 
-        const cellIndex = i;
-
-        fetch(fileName, { method: 'HEAD' })
+        // Asynchronously check link status BEFORE wheel is shown
+        const checkPromise = fetch(fileName, { method: 'HEAD' })
           .then(response => {
             if (!response.ok) {
               isLinkValid = false;
-              checkResults[cellIndex] = false;
               path.setAttribute("fill", "#9CA3AF");
               path.setAttribute("opacity", "0.6");
               path.style.cursor = "not-allowed";
               path.title = "網頁暫未開放 (Link Invalid / Pending)";
               path.onclick = (e) => { e.preventDefault(); e.stopPropagation(); return false; };
-            } else {
-              checkResults[cellIndex] = true;
+              return false;
             }
-            updateCenterTextIfAllInvalid();
+            return true;
           })
-          .catch(error => {
+          .catch(() => {
             isLinkValid = false;
-            checkResults[cellIndex] = false;
             path.setAttribute("fill", "#9CA3AF");
             path.setAttribute("opacity", "0.6");
             path.style.cursor = "not-allowed";
             path.title = "網頁暫未開放 (Link Invalid / Pending)";
             path.onclick = (e) => { e.preventDefault(); e.stopPropagation(); return false; };
-            updateCenterTextIfAllInvalid();
+            return false;
           });
+
+        checkPromises.push(checkPromise);
 
         svg.appendChild(path);
 
@@ -459,23 +440,43 @@
 
         svg.appendChild(text);
       }
+
+      const results = await Promise.all(checkPromises);
+      const allInvalid = results.every(valid => !valid);
+
+      if (allInvalid) {
+        const wrapper = svg.closest('.wheel-wrapper');
+        if (wrapper) wrapper.classList.add('disabled-wheel');
+
+        if (centerCircle) {
+          const levelText = centerCircle.querySelector('.level-text');
+          const subText = centerCircle.querySelector('.sub-text');
+          if (levelText) levelText.style.color = '#adb1b8';
+          if (subText) subText.style.color = '#adb1b8';
+        }
+      }
     }
 
     window.onload = () => {
-      // 1.0 second (1000ms) delay before rendering wheels
-      setTimeout(() => {
-        buildRainbowWheel('svg-p4', 'P4');
-        buildRainbowWheel('svg-p5', 'P5');
-        buildRainbowWheel('svg-p6', 'P6');
+      // 1. Build wheels & check all links while remaining completely hidden
+      const wheelsPromise = Promise.all([
+        buildRainbowWheel('svg-p4', 'P4'),
+        buildRainbowWheel('svg-p5', 'P5'),
+        buildRainbowWheel('svg-p6', 'P6')
+      ]);
 
-        // Smoothly fade in all rainbow cards
+      // 2. Minimum 1.0 second delay timer
+      const delayPromise = new Promise(resolve => setTimeout(resolve, 1000));
+
+      // 3. Reveal rainbow wheels only after link verification AND 1-second delay finish
+      Promise.all([wheelsPromise, delayPromise]).then(() => {
         const cards = document.querySelectorAll('.rainbow-card');
         cards.forEach((card, index) => {
           setTimeout(() => {
             card.classList.add('visible');
-          }, index * 80);
+          }, index * 100);
         });
-      }, 1000);
+      });
     };
   </script>
 </body>
