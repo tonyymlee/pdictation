@@ -106,11 +106,11 @@
       align-items: center;
       transition: transform 0.3s ease, opacity 0.5s ease;
       position: relative;
-      opacity: 0; /* Hidden initially for smooth fade-in */
+      opacity: 0; /* Hidden initially until delay triggers */
     }
 
     .rainbow-card.visible {
-      opacity: 1; /* Smooth transition to fully visible */
+      opacity: 1; /* Smooth fade-in animation */
     }
 
     .rainbow-card:hover {
@@ -420,7 +420,6 @@
 
         const cellIndex = i;
 
-        // Auto-check link validity in background
         fetch(fileName, { method: 'HEAD' })
           .then(response => {
             if (!response.ok) {
@@ -463,7 +462,7 @@
     }
 
     window.onload = () => {
-      // Delay 0.9 sec (900ms) before rendering and smoothly displaying the rainbow wheels
+      // 1.0 second (1000ms) delay before rendering wheels
       setTimeout(() => {
         buildRainbowWheel('svg-p4', 'P4');
         buildRainbowWheel('svg-p5', 'P5');
@@ -476,7 +475,7 @@
             card.classList.add('visible');
           }, index * 80);
         });
-      }, 1200);
+      }, 1000);
     };
   </script>
 </body>
