@@ -1,4 +1,3 @@
-<!-- code-generated-file-da2d80d2-df66-4ed0-b747-d5ab702e866a -->
 <!DOCTYPE html>
 <html lang="zh-HK">
 <head>
@@ -11,6 +10,10 @@
 
   <!-- 📦 載入穩定版 pinyin-pro 拼音庫 -->
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.16.0/dist/index.js"></script>
+  <!-- ☁️ 載入 Google Cloud Fonts 雲端中文字型 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chiron+Sung+HK&family=Iansui&family=Liu+Jian+Mao+Cao&family=Long+Cang&family=Ma+Shan+Zheng&family=Noto+Sans+HK:wght@400;700&family=Noto+Sans+TC:wght@400;700&family=Noto+Serif+HK:wght@400;700&family=Noto+Serif+TC:wght@400;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -21,8 +24,16 @@
       --active-green: #2d6a4f;
       --main-bg: #1b4332;
       --text-color: #2b2b2b;
-      --font-family: "LXGW WenKai TC", "標楷體", "BiauKai", "DFKai-SB", "KaiTi", serif;
+      --font-family: "DFKai-SB", "BiauKai", "標楷體", "KaiTi", "STKaiti", serif;
       --pinyin-font-family: "Calibri", sans-serif;
+    }
+
+    body, .word-text, .sentence-text, .word-card, .dictation-row, button, input, select, textarea, h1, h2, h3 {
+      font-family: var(--font-family) !important;
+    }
+
+    .pinyin-text, .sentence-pinyin {
+      font-family: var(--pinyin-font-family) !important;
     }
 
     * { 
@@ -588,6 +599,18 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
+    
+    .word-card.highlight-card {
+      background-color: #f0f70c !important;
+      border-color: #d4d909 !important;
+    }
+    .dictation-highlight {
+      background-color: #f0f70c;
+      border-radius: 4px;
+      padding: 0 2px;
+      display: inline-block;
+    }
+
     .word-card.active-reading {
       border: 2px solid #2e7d32;
       background-color: #f1f8e9;
@@ -911,7 +934,7 @@
         </svg>
       </button>
 
-      <button class="btn-hdr-opt btn-lang-opt" id="langSwitchBtn" onclick="toggleLanguage()" title="切換朗讀語言">國</button>
+      <button class="btn-hdr-opt btn-lang-opt" id="langSwitchBtn" onclick="toggleLanguage()" title="切換朗讀語言">普</button>
       <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="切換顯示模式">拼</button>
       
       <div class="timer-clock-box" title="剩餘時間倒數">
@@ -959,15 +982,34 @@
         </div>
       </div>
 
-            <!-- 🗣️ Voice Selection Card -->
-      <div class="voice-card" id="voiceCard" style="display: none;">
-        <div class="voice-select-wrapper">
-          <span>🗣️</span>
-          <select id="voiceSelect" onchange="onVoiceChange()"></select>
+            <!-- 🗣️ Voice & Font Selection Card -->
+      <div class="voice-card" id="voiceCard" style="display: none; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+          <div class="voice-select-wrapper">
+            <span>🗣️</span>
+            <select id="voiceSelect" onchange="onVoiceChange()"></select>
+          </div>
+          <label class="chinese-filter-label">
+            <input type="checkbox" id="chineseVoicesOnly" onchange="populateVoices()"> 中文
+          </label>
         </div>
-        <label class="chinese-filter-label">
-          <input type="checkbox" id="chineseVoicesOnly" onchange="populateVoices()"> 中文
-        </label>
+        <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
+          <div class="voice-select-wrapper" style="flex: 1;">
+            <span>🔤</span>
+            <select id="fontSelect" onchange="onFontChange()">
+              <option value="LXGW WenKai TC" selected>霞鶩文楷 (預設)</option>
+              <option value="Iansui">芫荽體 Iansui (雲端)</option>
+              <option value="Noto Serif HK">思源宋體香港 (雲端)</option>
+              <option value="Noto Sans HK">思源黑體香港 (雲端)</option>
+              <option value="Free HK Kai 4700">Free HK Kai 4700</option>
+              <option value="DFKai-SB">標楷體</option>
+              <option value="SimHei">黑體 (微軟正黑)</option>
+              <option value="SimSun">宋體 / 明體</option>
+              <option value="YouYuan">圓體</option>
+            </select>
+          </div>
+          <button onclick="loadSystemFonts()" title="掃描並載入系統中文字型" style="background:#2d6a4f; color:white; border:none; padding:8px 10px; border-radius:8px; font-size:0.85rem; font-weight:bold; cursor:pointer; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.15);">🔍 掃描字型</button>
+        </div>
       </div>
 
 <div class="editor-box" id="editorSection">
@@ -1075,7 +1117,8 @@
     let vocabWords = [];
     let pinyinVocabWords = [];
     let idiomWords = [];
-    let customProtectedWords = []; 
+    let customProtectedWords = [];
+    let highlightedWords = []; 
     let rawDictationText = "";
 
     // ⬆️ 點擊標籤按鈕返回頂部
@@ -1176,7 +1219,7 @@
     let totalTimerSeconds = 0;
     let remainingSeconds = 0;
     let wakeUpTimeout = null; 
-    let currentLang = 'zh-TW'; 
+    let currentLang = 'zh-CN'; 
     let displayMode = 'pinyin'; 
     let wakeLock = null; 
 
@@ -1673,7 +1716,7 @@ ${pinyinBlock}`;
       const sanitizedText = convertedFullText.replace(/<[^>]*>/g, '');
 
       let currentSection = 'vocab';
-      let newVocab = [], newPinyin = [], newIdiom = [], newCustomProtected = [], newDictation = [];
+      let newVocab = [], newPinyin = [], newIdiom = [], newCustomProtected = [], newDictation = [], newHighlight = [];
       dynamicCustomPinyinMap = {};
       lessonTitle = "";
 
@@ -1700,6 +1743,7 @@ ${pinyinBlock}`;
         if (trimmed.includes('其他詞語') || trimmed.includes('保護詞語') || trimmed.includes('保護詞彙')) { currentSection = 'customProtected'; return; }
         if (trimmed.includes('拼音修正') || trimmed.includes('多音字')) { currentSection = 'pinyinFix'; return; }
         if (trimmed.includes('聽寫課文段落')) { currentSection = 'dictation'; return; }
+        if (trimmed.includes('高亮詞語') || trimmed.includes('重點詞語')) { currentSection = 'highlight'; return; }
 
         if (currentSection === 'dictation') {
           newDictation.push(autoConvertCharacters(trimmed));
@@ -1716,20 +1760,24 @@ ${pinyinBlock}`;
           }
         } else {
           if (!trimmed) return;
-          const words = trimmed.split(/[\s,，	、]+/).filter(Boolean);
+          const words = trimmed.split(/[\s,$,\t、]+/).filter(Boolean);
           words.forEach(w => {
-            const cleanWord = autoConvertCharacters(w.replace(/[《》〈〉\(\)（）:：Title「」『』─—\-。\.，,！？\?；;、…\s]/gi, '').trim());
+            const cleanWord = autoConvertCharacters(w.replace(/[《》〈〉\(\)（）:：「」『』─—\-。\..,！？\?；;、…\s]/gi, '').trim());
             
             const isChinese = /[一-龥]/.test(cleanWord);
             const isNotEnglishOnly = !/^[a-zA-Z0-9\s-]+$/.test(cleanWord);
             const isValidLength = cleanWord.length >= 1 && cleanWord.length <= 6;
             const isNotBlacklisted = !blacklist.some(b => cleanWord.includes(b));
 
-            if (cleanWord && isChinese && isNotEnglishOnly && isValidLength && isNotBlacklisted) {
-              if (currentSection === 'vocab') newVocab.push(cleanWord);
-              if (currentSection === 'pinyin') newPinyin.push(cleanWord);
-              if (currentSection === 'idiom') newIdiom.push(cleanWord);
-              if (currentSection === 'customProtected') newCustomProtected.push(cleanWord);
+            if (cleanWord && isNotBlacklisted) {
+              if (currentSection === 'highlight') {
+                newHighlight.push(cleanWord);
+              } else if (isChinese && isNotEnglishOnly && isValidLength) {
+                if (currentSection === 'vocab') newVocab.push(cleanWord);
+                if (currentSection === 'pinyin') newPinyin.push(cleanWord);
+                if (currentSection === 'idiom') newIdiom.push(cleanWord);
+                if (currentSection === 'customProtected') newCustomProtected.push(cleanWord);
+              }
             }
           });
         }
@@ -1742,6 +1790,7 @@ ${pinyinBlock}`;
       pinyinVocabWords = newPinyin;
       idiomWords = newIdiom;
       customProtectedWords = newCustomProtected;
+      highlightedWords = newHighlight;
       rawDictationText = newDictation.join('\n');
 
       updateHeaderSubtitle();
@@ -1817,6 +1866,12 @@ ${pinyinBlock}`;
         const clonedEditorSec = clonedHtml.querySelector('#editorSection');
         if (clonedEditorSec) {
           clonedEditorSec.style.display = 'none';
+        }
+
+        const clonedVoiceCard = clonedHtml.querySelector('#voiceCard');
+        if (clonedVoiceCard) {
+          // Keep its current hidden/visible state during export
+          // clonedVoiceCard.style.display is already set
         }
 
         // 📌 嵌入拼音快取 JSON 資料腳本
@@ -1930,10 +1985,68 @@ ${pinyinBlock}`;
         const cleanWord = autoConvertCharacters(word.replace(/\s+/g, ''));
         const dynamicPinyin = getDynamicPinyin(cleanWord);
         html += `
-          <div class="word-card" id="card_${idx}" onclick="clickPlayVocab(${idx})">
+          <div class="word-card " id="card_${idx}" onclick="clickPlayVocab(${idx})">
             <div class="word-index">#${idx + 1}</div>
-            <div class="word-text">${cleanWord}</div>
-            <div class="pinyin-text">${dynamicPinyin}</div>
+            <div class="word-text">${(function(){
+                            let dw = cleanWord;
+              if (typeof highlightedWords !== 'undefined' && highlightedWords.length > 0) {
+                const sortedHw = [...highlightedWords].sort((a,b) => b.length - a.length);
+                sortedHw.forEach(hw => {
+                  if (hw && /[一-龥]/.test(hw.trim())) {
+                    dw = dw.split(hw).join(`<span style="color: #f71942;">${hw}</span>`);
+                  }
+                });
+              }
+              return dw;
+            })()}</div>
+                        <div class="pinyin-text">${(function(){
+              let dp = dynamicPinyin;
+              if (typeof highlightedWords !== 'undefined' && highlightedWords.length > 0) {
+                                let pyParts = dp.split(/\s+/);
+                let charList = cleanWord.split('');
+
+                function stripTones(str) {
+                  let s = str.replace(/[üǖǘǚǜÜǕǗǙǛ]/g, "v");
+                  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                }
+
+                pyParts = pyParts.map((origP, i) => {
+                  let plainP = stripTones(origP.replace(/<[^>]*>/g, ''));
+                  let char = charList[i] || '';
+
+                  // 1. 檢查該字對應的中文字是否在高亮名單中
+                  let hasChineseHw = char && highlightedWords.some(hw => {
+                    if (!hw) return false;
+                    let clean = hw.trim().normalize("NFC");
+                    return /[一-龥]/.test(clean) && clean.includes(char);
+                  });
+
+                  // 2. 檢查該字的拼音是否在高亮名單中
+                  let hasPinyinHw = highlightedWords.some(hw => {
+                    if (!hw) return false;
+                    let clean = hw.trim().normalize("NFC");
+                    return !/[一-龥]/.test(clean) && (stripTones(clean) === plainP);
+                  });
+
+                  let targetColor = null;
+                  if (hasChineseHw && hasPinyinHw) {
+                    targetColor = "#4ef5ef"; // 同時有中文與拼音高亮 -> 亮青色
+                  } else if (hasChineseHw) {
+                    targetColor = "#0cb318"; // 僅有中文字高亮 -> 綠色
+                  } else if (hasPinyinHw) {
+                    targetColor = "#f71942"; // 直接輸入拼音高亮 -> 紅色
+                  }
+
+                  if (targetColor) {
+                    return `<span style="color: ${targetColor};">${origP}</span>`;
+                  }
+                  return origP;
+                });
+
+                dp = pyParts.join(' ');
+              }
+              return dp;
+            })()}</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(${idx})">▶</button>
           </div>
         `;
@@ -1964,8 +2077,66 @@ ${pinyinBlock}`;
           html += `
             <div class="dictation-row" id="dcard_${item.index}" onclick="clickPlayDictation(${item.index})">
               <div class="sentence-index">#${item.index}</div>
-              <div class="sentence-text">${cleanText}</div>
-              <div class="sentence-pinyin">${dynamicPinyin}</div>
+              <div class="sentence-text">${(function(){
+                                let dt = cleanText;
+                if (typeof highlightedWords !== 'undefined' && highlightedWords.length > 0) {
+                  const sortedHw = [...highlightedWords].sort((a,b) => b.length - a.length);
+                  sortedHw.forEach(hw => {
+                    if (hw && /[一-龥]/.test(hw.trim())) {
+                      dt = dt.split(hw).join(`<span style="color: #f71942;">${hw}</span>`);
+                    }
+                  });
+                }
+                return dt;
+              })()}</div>
+                            <div class="sentence-pinyin">${(function(){
+                let dp = dynamicPinyin;
+                if (typeof highlightedWords !== 'undefined' && highlightedWords.length > 0) {
+                                  let pyParts = dp.split(/\s+/);
+                let charList = cleanText.split('');
+
+                function stripTones(str) {
+                  let s = str.replace(/[üǖǘǚǜÜǕǗǙǛ]/g, "v");
+                  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+                }
+
+                pyParts = pyParts.map((origP, i) => {
+                  let plainP = stripTones(origP.replace(/<[^>]*>/g, ''));
+                  let char = charList[i] || '';
+
+                  // 1. 檢查該字對應的中文字是否在高亮名單中
+                  let hasChineseHw = char && highlightedWords.some(hw => {
+                    if (!hw) return false;
+                    let clean = hw.trim().normalize("NFC");
+                    return /[一-龥]/.test(clean) && clean.includes(char);
+                  });
+
+                  // 2. 檢查該字的拼音是否在高亮名單中
+                  let hasPinyinHw = highlightedWords.some(hw => {
+                    if (!hw) return false;
+                    let clean = hw.trim().normalize("NFC");
+                    return !/[一-龥]/.test(clean) && (stripTones(clean) === plainP);
+                  });
+
+                  let targetColor = null;
+                  if (hasChineseHw && hasPinyinHw) {
+                    targetColor = "#4ef5ef"; // 同時有中文與拼音高亮 -> 亮青色
+                  } else if (hasChineseHw) {
+                    targetColor = "#0cb318"; // 僅有中文字高亮 -> 綠色
+                  } else if (hasPinyinHw) {
+                    targetColor = "#f71942"; // 直接輸入拼音高亮 -> 紅色
+                  }
+
+                  if (targetColor) {
+                    return `<span style="color: ${targetColor};">${origP}</span>`;
+                  }
+                  return origP;
+                });
+
+                dp = pyParts.join(' ');
+                }
+                return dp;
+              })()}</div>
             </div>
           `;
         }
@@ -2083,13 +2254,48 @@ ${pinyinBlock}`;
         if (vocabToolbar) vocabToolbar.classList.add('hidden');
         if (dictationToolbar) dictationToolbar.classList.add('hidden');
 
+        const absolutePdfUrl = new URL(resolvedPdfUrl, window.location.href).href;
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        let viewerBodyHtml = '';
+        if (isAndroid) {
+          // Android browser iframe PDF workaround: prominent interactive card with direct open button
+          viewerBodyHtml = `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; background: #f9fafb; padding: 30px; text-align: center; gap: 20px;">
+              <div style="font-size: 4rem;">📄</div>
+              <div style="font-size: 1.2rem; font-weight: bold; color: #1f2937;">${resolvedPdfUrl}</div>
+              <p style="color: #4b5563; font-size: 1rem; max-width: 400px; line-height: 1.5;">
+                Android 裝置的瀏覽器不支援在網頁框架內直接預覽 PDF。請點擊下方按鈕以完整畫質開啟或下載此 PDF 檔案：
+              </p>
+              <a href="${absolutePdfUrl}" target="_blank" rel="noopener" style="background: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(37,99,235,0.3);">
+                🔗 在新視窗中開啟 PDF 檔案
+              </a>
+            </div>
+          `;
+        } else {
+          // iPad, iPhone, Mac, Windows, Linux: use <object> with iframe fallback for rock-solid iOS/iPadOS rendering
+          viewerBodyHtml = `
+            <object data="${absolutePdfUrl}" type="application/pdf" style="width: 100%; height: 100%; display: block;">
+              <iframe src="${absolutePdfUrl}" style="width: 100%; height: 100%; border: none; display: block;" allowfullscreen>
+                <p>您的瀏覽器不支援內嵌 PDF，請點擊上方「在新視窗中開啟」按鈕檢視。</p>
+              </iframe>
+            </object>
+          `;
+        }
+
         area.innerHTML = `
           <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); width: 100%; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-            <div style="background: #2e7d32; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="background: #2e7d32; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
               <span style="font-weight: bold; font-size: 1.05rem;">📄 對應 PDF 檔案預覽 (${resolvedPdfUrl})</span>
-              <button onclick="closePdfViewer()" style="background: #ffffff; color: #2e7d32; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ 關閉 PDF 預覽</button>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="${absolutePdfUrl}" target="_blank" rel="noopener" style="background: #ffeb3b; color: #1b4332; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">🔗 在新視窗中開啟</a>
+                <button onclick="closePdfViewer()" style="background: #ffffff; color: #2e7d32; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ 關閉</button>
+              </div>
             </div>
-            <iframe src="${resolvedPdfUrl}" style="width: 100%; height: 100%; border: none;"></iframe>
+            <div style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; position: relative; background: #525659; display: flex; flex-direction: column;">
+              ${viewerBodyHtml}
+            </div>
           </div>
         `;
         if (window.innerWidth <= 768) {
@@ -2650,6 +2856,124 @@ ${pinyinBlock}`;
         voiceSelect.value = "";
       }
     }
+
+    
+    
+    async function loadSystemFonts() {
+      const fontSelect = document.getElementById('fontSelect');
+      if (!fontSelect) return;
+
+      if (!('queryLocalFonts' in window)) {
+        alert("您的瀏覽器不支援 Local Font Access API (建議使用最新版 Google Chrome 或 Edge 桌面版)。");
+        return;
+      }
+
+      try {
+        const permissionStatus = await navigator.permissions.query({ name: 'local-fonts' });
+        if (permissionStatus.state === 'denied') {
+          alert("字型存取權限已被拒絕，請在瀏覽器設定中允許。");
+          return;
+        }
+
+        const fonts = await window.queryLocalFonts();
+        const fontFamilies = new Set();
+        
+        fonts.forEach(font => {
+          // Filter or collect Chinese / common fonts or all installed fonts
+          if (font.family) {
+            fontFamilies.add(font.family);
+          }
+        });
+
+        const sortedFamilies = Array.from(fontFamilies).sort();
+        
+        // Keep existing options
+        const currentVal = fontSelect.value;
+        fontSelect.innerHTML = `
+          <option value="LXGW WenKai TC, serif">霞鶩文楷 (預設)</option>
+          <option value="Free HK Kai 4700, DFKai-SB, BiauKai, 標楷體, KaiTi, STKaiti, serif">Free HK Kai 4700</option>
+          <option value="DFKai-SB, BiauKai, 標楷體, KaiTi, STKaiti, serif">標楷體</option>
+          <option value="SimHei, Microsoft JhengHei, sans-serif">黑體 (微軟正黑)</option>
+          <option value="SimSun, MingLiu, serif">宋體 / 明體</option>
+          <option value="YouYuan, Rounded Mplus 1c, sans-serif">圓體</option>
+        `;
+
+        // Add scanned system fonts
+        const optGroup = document.createElement('optgroup');
+        optGroup.label = "🖥️ 本機已安裝字型 (" + sortedFamilies.length + ")";
+        
+        sortedFamilies.forEach(family => {
+          // Avoid duplicates with default ones
+          if (!['霞鶩文楷', 'Free HK Kai 4700', '標楷體', '黑體', '宋體', '圓體'].includes(family)) {
+            const opt = document.createElement('option');
+            opt.value = `"${family}", serif`;
+            opt.textContent = family;
+            optGroup.appendChild(opt);
+          }
+        });
+
+        fontSelect.appendChild(optGroup);
+        if (currentVal) fontSelect.value = currentVal;
+        alert(`成功掃描並載錄 ${sortedFamilies.length} 款本機字型！`);
+      } catch (err) {
+        console.error("Failed to load local fonts:", err);
+        alert("無法讀取本機字型，請確認瀏覽器權限。");
+      }
+    }
+
+    
+    
+    
+    function onFontChange() {
+      const fontSelect = document.getElementById('fontSelect');
+      if (!fontSelect) return;
+      const selectedFont = fontSelect.value;
+      console.log("Font selected:", selectedFont);
+      
+      let fontStack = `"${selectedFont}", sans-serif`;
+      if (selectedFont === 'DFKai-SB') {
+        fontStack = '"DFKai-SB", "BiauKai", "標楷體", "KaiTi", "STKaiti", "Apple LiSung", serif';
+      } else if (selectedFont === 'LXGW WenKai TC') {
+        fontStack = '"LXGW WenKai TC", "LXGW WenKai", "Microsoft JhengHei", sans-serif';
+      } else if (selectedFont === 'Iansui') {
+        fontStack = '"Iansui", cursive, serif';
+      } else if (selectedFont === 'Noto Serif HK') {
+        fontStack = '"Noto Serif HK", "Noto Serif TC", serif';
+      } else if (selectedFont === 'Noto Sans HK') {
+        fontStack = '"Noto Sans HK", "Noto Sans TC", sans-serif';
+      } else if (selectedFont === 'SimHei') {
+        fontStack = '"Microsoft JhengHei", "PingFang HK", "Heiti TC", "SimHei", sans-serif';
+      } else if (selectedFont === 'SimSun') {
+        fontStack = '"SimSun", "PMingLiU", "Apple Myungjo", serif';
+      } else if (selectedFont === 'YouYuan') {
+        fontStack = '"YouYuan", "Rounded Mplus 1c", "Hiragino Maru Gothic Pro", sans-serif';
+      } else if (selectedFont === 'Free HK Kai 4700') {
+        fontStack = '"Free HK Kai 4700", "BiauKai", "DFKai-SB", "標楷體", serif';
+      } else {
+        fontStack = `"${selectedFont}", serif`;
+      }
+
+      document.documentElement.style.setProperty('--font-family', fontStack);
+      document.body.style.fontFamily = fontStack;
+      
+      let dynStyle = document.getElementById('dynamicFontOverride');
+      if (!dynStyle) {
+        dynStyle = document.createElement('style');
+        dynStyle.id = 'dynamicFontOverride';
+        document.head.appendChild(dynStyle);
+      }
+      dynStyle.textContent = `
+        body, *, .word-text, .sentence-text, .word-card, .dictation-row, button, input, select, textarea, h1, h2, h3, span {
+          font-family: ${fontStack} !important;
+        }
+        .pinyin-text, .sentence-pinyin {
+          font-family: var(--pinyin-font-family) !important;
+        }
+      `;
+    }
+
+
+
 
     function onVoiceChange() {
       const voiceSelect = document.getElementById('voiceSelect');

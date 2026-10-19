@@ -2444,17 +2444,47 @@ ${pinyinBlock}`;
         if (vocabToolbar) vocabToolbar.classList.add('hidden');
         if (dictationToolbar) dictationToolbar.classList.add('hidden');
 
+        const absolutePdfUrl = new URL(resolvedPdfUrl, window.location.href).href;
+        const isAndroid = /Android/i.test(navigator.userAgent);
+        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+        let viewerBodyHtml = '';
+        if (isAndroid) {
+          // Android browser iframe PDF workaround: prominent interactive card with direct open button
+          viewerBodyHtml = `
+            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; background: #f9fafb; padding: 30px; text-align: center; gap: 20px;">
+              <div style="font-size: 4rem;">📄</div>
+              <div style="font-size: 1.2rem; font-weight: bold; color: #1f2937;">${resolvedPdfUrl}</div>
+              <p style="color: #4b5563; font-size: 1rem; max-width: 400px; line-height: 1.5;">
+                Android 裝置的瀏覽器不支援在網頁框架內直接預覽 PDF。請點擊下方按鈕以完整畫質開啟或下載此 PDF 檔案：
+              </p>
+              <a href="${absolutePdfUrl}" target="_blank" rel="noopener" style="background: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(37,99,235,0.3);">
+                🔗 在新視窗中開啟 PDF 檔案
+              </a>
+            </div>
+          `;
+        } else {
+          // iPad, iPhone, Mac, Windows, Linux: use <object> with iframe fallback for rock-solid iOS/iPadOS rendering
+          viewerBodyHtml = `
+            <object data="${absolutePdfUrl}" type="application/pdf" style="width: 100%; height: 100%; display: block;">
+              <iframe src="${absolutePdfUrl}" style="width: 100%; height: 100%; border: none; display: block;" allowfullscreen>
+                <p>您的瀏覽器不支援內嵌 PDF，請點擊上方「在新視窗中開啟」按鈕檢視。</p>
+              </iframe>
+            </object>
+          `;
+        }
+
         area.innerHTML = `
           <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); width: 100%; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
             <div style="background: #2e7d32; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
               <span style="font-weight: bold; font-size: 1.05rem;">📄 對應 PDF 檔案預覽 (${resolvedPdfUrl})</span>
               <div style="display: flex; gap: 8px; align-items: center;">
-                <a href="${resolvedPdfUrl}" target="_blank" rel="noopener" style="background: #ffeb3b; color: #1b4332; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">🔗 在新視窗/iPad中開啟全部頁面</a>
+                <a href="${absolutePdfUrl}" target="_blank" rel="noopener" style="background: #ffeb3b; color: #1b4332; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">🔗 在新視窗中開啟</a>
                 <button onclick="closePdfViewer()" style="background: #ffffff; color: #2e7d32; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ 關閉</button>
               </div>
             </div>
-            <div style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; position: relative;">
-              <iframe src="${resolvedPdfUrl}" style="width: 100%; height: 100%; border: none; display: block;"></iframe>
+            <div style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; position: relative; background: #525659; display: flex; flex-direction: column;">
+              ${viewerBodyHtml}
             </div>
           </div>
         `;
