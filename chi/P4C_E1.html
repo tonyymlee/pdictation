@@ -977,7 +977,7 @@
       </div>
 
             <!-- 🗣️ Voice & Font Selection Card -->
-      <div class="voice-card" id="voiceCard" style="display: flex; flex-direction: column; gap: 8px;">
+      <div class="voice-card" id="voiceCard" style="display: none; flex-direction: column; gap: 8px;">
         <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
           <div class="voice-select-wrapper">
             <span>🗣️</span>
@@ -2104,9 +2104,9 @@ ${pinyinBlock}`;
           }
         } else {
           if (!trimmed) return;
-          const words = trimmed.split(/[\s,，	、]+/).filter(Boolean);
+          const words = trimmed.split(/[\s,$,\t、]+/).filter(Boolean);
           words.forEach(w => {
-            const cleanWord = autoConvertCharacters(w.replace(/[《》〈〉\(\)（）:：「」『』─—\-。\.，,！？\?；;、…\s]/gi, '').trim());
+            const cleanWord = autoConvertCharacters(w.replace(/[《》〈〉\(\)（）:：「」『』─—\-。\..,！？\?；;、…\s]/gi, '').trim());
             
             const isChinese = /[一-龥]/.test(cleanWord);
             const isNotEnglishOnly = !/^[a-zA-Z0-9\s-]+$/.test(cleanWord);
@@ -2214,7 +2214,8 @@ ${pinyinBlock}`;
 
         const clonedVoiceCard = clonedHtml.querySelector('#voiceCard');
         if (clonedVoiceCard) {
-          clonedVoiceCard.style.display = 'flex';
+          // Keep its current hidden/visible state during export
+          // clonedVoiceCard.style.display is already set
         }
 
         // 📌 嵌入拼音快取 JSON 資料腳本
@@ -2599,11 +2600,16 @@ ${pinyinBlock}`;
 
         area.innerHTML = `
           <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); width: 100%; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-            <div style="background: #2e7d32; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;">
+            <div style="background: #2e7d32; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
               <span style="font-weight: bold; font-size: 1.05rem;">📄 對應 PDF 檔案預覽 (${resolvedPdfUrl})</span>
-              <button onclick="closePdfViewer()" style="background: #ffffff; color: #2e7d32; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ 關閉 PDF 預覽</button>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="${resolvedPdfUrl}" target="_blank" rel="noopener" style="background: #ffeb3b; color: #1b4332; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">🔗 在新視窗/iPad中開啟全部頁面</a>
+                <button onclick="closePdfViewer()" style="background: #ffffff; color: #2e7d32; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ 關閉</button>
+              </div>
             </div>
-            <iframe src="${resolvedPdfUrl}" style="width: 100%; height: 100%; border: none;"></iframe>
+            <div style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; position: relative;">
+              <iframe src="${resolvedPdfUrl}" style="width: 100%; height: 100%; border: none; display: block;"></iframe>
+            </div>
           </div>
         `;
         if (window.innerWidth <= 768) {
