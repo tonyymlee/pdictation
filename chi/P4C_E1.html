@@ -1019,7 +1019,7 @@
     </aside>
 
     <main id="mainContent" class="mode-pinyin">
-      <div class="toolbar-card" id="vocabToolbar">
+      <div class="toolbar-card is-scrolled" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">詞語</button>
           <span class="toolbar-options">
@@ -1039,7 +1039,7 @@
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="複製當前顯示文字">抄</button>
       </div>
 
-      <div class="toolbar-card hidden" id="dictationToolbar">
+      <div class="toolbar-card hidden is-scrolled" id="dictationToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" onclick="scrollToTop()" title="返回頁面頂部">課文</button>
           <span class="toolbar-options">
@@ -1315,7 +1315,7 @@
           <div class="word-card " id="card_36" onclick="clickPlayVocab(36)">
             <div class="word-index">#37</div>
             <div class="word-text"><span style="color: #f71942;">翩翩</span></div>
-                        <div class="pinyin-text"><span style="color: #4ef5ef;">piān</span> <span style="color: #4ef5ef;">piān</span></div>
+                        <div class="pinyin-text"><span style="color: #a811bf;">piān</span> <span style="color: #a811bf;">piān</span></div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(36)">▶</button>
           </div>
         
@@ -2374,7 +2374,7 @@ ${pinyinBlock}`;
 
                   let targetColor = null;
                   if (hasChineseHw && hasPinyinHw) {
-                    targetColor = "#4ef5ef"; // 同時有中文與拼音高亮 -> 亮青色
+                    targetColor = "#a811bf"; // 同時有中文與拼音高亮 -> 亮青色
                   } else if (hasChineseHw) {
                     targetColor = "#0cb318"; // 僅有中文字高亮 -> 綠色
                   } else if (hasPinyinHw) {
@@ -2464,7 +2464,7 @@ ${pinyinBlock}`;
 
                   let targetColor = null;
                   if (hasChineseHw && hasPinyinHw) {
-                    targetColor = "#4ef5ef"; // 同時有中文與拼音高亮 -> 亮青色
+                    targetColor = "#a811bf"; // 同時有中文與拼音高亮 -> 亮青色
                   } else if (hasChineseHw) {
                     targetColor = "#0cb318"; // 僅有中文字高亮 -> 綠色
                   } else if (hasPinyinHw) {

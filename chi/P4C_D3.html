@@ -1252,7 +1252,7 @@
           <div class="word-card " id="card_27" onclick="clickPlayVocab(27)">
             <div class="word-index">#28</div>
             <div class="word-text"><span style="color: #f71942;">翩翩</span></div>
-                        <div class="pinyin-text"><span style="color: #4ef5ef;">piān</span> <span style="color: #4ef5ef;">piān</span></div>
+                        <div class="pinyin-text"><span style="color: #a811bf;">piān</span> <span style="color: #a811bf;">piān</span></div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(27)">▶</button>
           </div>
         </div></div>
@@ -2220,7 +2220,7 @@ ${pinyinBlock}`;
 
                   let targetColor = null;
                   if (hasChineseHw && hasPinyinHw) {
-                    targetColor = "#4ef5ef"; // 同時有中文與拼音高亮 -> 亮青色
+                    targetColor = "#a811bf"; // 同時有中文與拼音高亮 -> 亮青色
                   } else if (hasChineseHw) {
                     targetColor = "#0cb318"; // 僅有中文字高亮 -> 綠色
                   } else if (hasPinyinHw) {
@@ -2310,7 +2310,7 @@ ${pinyinBlock}`;
 
                   let targetColor = null;
                   if (hasChineseHw && hasPinyinHw) {
-                    targetColor = "#4ef5ef"; // 同時有中文與拼音高亮 -> 亮青色
+                    targetColor = "#a811bf"; // 同時有中文與拼音高亮 -> 亮青色
                   } else if (hasChineseHw) {
                     targetColor = "#0cb318"; // 僅有中文字高亮 -> 綠色
                   } else if (hasPinyinHw) {
@@ -2432,7 +2432,7 @@ ${pinyinBlock}`;
       }
     }
 
-    function togglePdfViewer() {
+                            function togglePdfViewer() {
       if (!resolvedPdfUrl) return;
 
       const area = document.getElementById('contentArea');
@@ -2445,41 +2445,29 @@ ${pinyinBlock}`;
         if (dictationToolbar) dictationToolbar.classList.add('hidden');
 
         const absolutePdfUrl = new URL(resolvedPdfUrl, window.location.href).href;
-        const isAndroid = /Android/i.test(navigator.userAgent);
-        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+        const encodedPdfUrl = encodeURIComponent(absolutePdfUrl);
+        
+        // 使用 Mozilla PDF.js 檢視器，完美支援 iPad、iPhone、Android 及電腦端的多頁連續上下捲動與縮放
+        const pdfJsViewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodedPdfUrl}`;
+        const docsViewerUrl = `https://docs.google.com/gview?url=${encodedPdfUrl}&embedded=true`;
 
-        let viewerBodyHtml = '';
-        if (isAndroid) {
-          // Android browser iframe PDF workaround: prominent interactive card with direct open button
-          viewerBodyHtml = `
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; background: #f9fafb; padding: 30px; text-align: center; gap: 20px;">
-              <div style="font-size: 4rem;">📄</div>
-              <div style="font-size: 1.2rem; font-weight: bold; color: #1f2937;">${resolvedPdfUrl}</div>
-              <p style="color: #4b5563; font-size: 1rem; max-width: 400px; line-height: 1.5;">
-                Android 裝置的瀏覽器不支援在網頁框架內直接預覽 PDF。請點擊下方按鈕以完整畫質開啟或下載此 PDF 檔案：
-              </p>
-              <a href="${absolutePdfUrl}" target="_blank" rel="noopener" style="background: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(37,99,235,0.3);">
-                🔗 在新視窗中開啟 PDF 檔案
-              </a>
-            </div>
-          `;
-        } else {
-          // iPad, iPhone, Mac, Windows, Linux: use <object> with iframe fallback for rock-solid iOS/iPadOS rendering
-          viewerBodyHtml = `
-            <object data="${absolutePdfUrl}" type="application/pdf" style="width: 100%; height: 100%; display: block;">
-              <iframe src="${absolutePdfUrl}" style="width: 100%; height: 100%; border: none; display: block;" allowfullscreen>
-                <p>您的瀏覽器不支援內嵌 PDF，請點擊上方「在新視窗中開啟」按鈕檢視。</p>
+        const viewerBodyHtml = `
+          <div style="display: flex; flex-direction: column; height: 100%; width: 100%; background: #525659; position: relative; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+            <iframe src="${pdfJsViewerUrl}" style="width: 100%; height: 100%; min-height: 85vh; border: none; display: block;" allowfullscreen>
+              <iframe src="${docsViewerUrl}" style="width: 100%; height: 100%; min-height: 85vh; border: none; display: block;" allowfullscreen>
+                <object data="${absolutePdfUrl}" type="application/pdf" style="width: 100%; height: 100%; min-height: 85vh; border: none; display: block;">
+                  <embed src="${absolutePdfUrl}" type="application/pdf" style="width: 100%; height: 100%; min-height: 85vh; border: none; display: block;" />
+                </object>
               </iframe>
-            </object>
-          `;
-        }
+            </iframe>
+          </div>
+        `;
 
         area.innerHTML = `
           <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); width: 100%; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
             <div style="background: #2e7d32; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-              <span style="font-weight: bold; font-size: 1.05rem;">📄 對應 PDF 檔案預覽 (${resolvedPdfUrl})</span>
+              <span style="font-weight: bold; font-size: 1.05rem;">📄 對應 PDF 檔案內嵌預覽 (${resolvedPdfUrl})</span>
               <div style="display: flex; gap: 8px; align-items: center;">
-                <a href="${absolutePdfUrl}" target="_blank" rel="noopener" style="background: #ffeb3b; color: #1b4332; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">🔗 在新視窗中開啟</a>
                 <button onclick="closePdfViewer()" style="background: #ffffff; color: #2e7d32; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ 關閉</button>
               </div>
             </div>
