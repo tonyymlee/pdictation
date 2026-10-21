@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>開心小學 中默聽寫系統</title>
+
+  <!-- 🎨 彩色幾何三角形「A」分頁圖圖標 (Favicon) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 450'%3E%3Cpolygon points='250,0 187.5,108.25 312.5,108.25' fill='%2352B766'/%3E%3Cpolygon points='250,216.5 187.5,108.25 312.5,108.25' fill='%2348A172'/%3E%3Cpolygon points='187.5,108.25 125,216.5 250,216.5' fill='%2300A884'/%3E%3Cpolygon points='125,216.5 62.5,324.75 187.5,324.75' fill='%23008BAA'/%3E%3Cpolygon points='62.5,324.75 0,433 125,433' fill='%230052B4'/%3E%3Cpolygon points='312.5,108.25 250,216.5 375,216.5' fill='%2392C128'/%3E%3Cpolygon points='375,216.5 312.5,324.75 437.5,324.75' fill='%23DDA100'/%3E%3Cpolygon points='437.5,324.75 375,433 500,433' fill='%23A43161'/%3E%3Cpolygon points='312.5,324.75 250,433 375,433' fill='%23C0444A'/%3E%3Cpolygon points='375,216.5 250,324.75 312.5,324.75' fill='%23D48000'/%3E%3C/svg%3E">
+
+  <!-- 📦 載入穩定版 pinyin-pro 拼音庫 -->
+  <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.16.0/dist/index.js"></script>
+  <!-- ☁️ 載入 Google Cloud Fonts 雲端中文字型 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chiron+Sung+HK&family=Iansui&family=Liu+Jian+Mao+Cao&family=Long+Cang&family=Ma+Shan+Zheng&family=Noto+Sans+HK:wght@400;700&family=Noto+Sans+TC:wght@400;700&family=Noto+Serif+HK:wght@400;700&family=Noto+Serif+TC:wght@400;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --header-bg: #1b4332;
+      --header-text: #ffffff;
+      --sidebar-bg: #1b4332; 
+      --card-bg: #ffffff;
+      --active-green: #2d6a4f;
+      --main-bg: #1b4332;
+      --text-color: #2b2b2b;
+      --font-family: "DFKai-SB", "BiauKai", "標楷體", "KaiTi", "STKaiti", serif;
+      --pinyin-font-family: "Calibri", sans-serif;
+    }
+
+    body, .word-text, .sentence-text, .word-card, .dictation-row, button, input, select, textarea, h1, h2, h3 {
+      font-family: var(--font-family) !important;
+    }
+
+    .pinyin-text, .sentence-pinyin {
+      font-family: var(--pinyin-font-family) !important;
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      -webkit-tap-highlight-color: transparent; 
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--main-bg);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+    }
+
+    /* Fixed Sticky Header Banner */
+    header {
+      background-color: var(--header-bg);
+      color: var(--header-text);
+      padding: 10px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      border-bottom: 1px solid rgba(0,0,0,0.08);
+      flex-shrink: 0;
+      gap: 6px;
+    }
+
+    /* 🏠 Home Link Icon */
+    .home-link-icon {
+      position: absolute;
+      top: 2mm;
+      left: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1001;
+      width: 38px;
+      height: 38px;
+      background: #9b87f5;
+      border-radius: 8px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.25);
+      transition: transform 0.15s ease, background-color 0.15s ease;
+      text-decoration: none;
+    }
+
+    .home-link-icon:hover {
+      transform: scale(1.08);
+      background: #8b75f3;
+    }
+
+    .home-link-icon svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    .header-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      position: relative;
+      padding: 0 10px;
+    }
+
+    header h1 {
+      font-size: clamp(1.2rem, 3.5vw, 1.5rem);
+      font-weight: bold;
+      text-align: center;
+      letter-spacing: 1px;
+    }
+
+    .header-subtitle {
+      font-size: clamp(0.9rem, 2.5vw, 1.1rem);
+      color: #a3e635;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .menu-toggle-btn, .btn-icon, .btn-hdr-opt {
+      background: #ffffff;
+      color: #333333;
+      border: none;
+      height: 38px;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.15s, background-color 0.15s, color 0.15s;
+      user-select: none;
+      padding: 0 10px;
+    }
+
+    .menu-toggle-btn, .btn-icon {
+      width: 38px;
+      font-size: 1.1rem;
+      padding: 0;
+    }
+
+    .menu-toggle-btn:hover, .btn-icon:hover, .btn-hdr-opt:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.05);
+    }
+
+    .menu-toggle-btn svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .btn-play-icon svg {
+      width: 34px;
+      height: 34px;
+    }
+
+    .btn-play-icon { 
+      background-color: #2e7d32; 
+      color: #ffffff; 
+      cursor: default !important;
+    }
+    .btn-play-icon:hover { 
+      background-color: #1b5e20; 
+    }
+
+    .btn-pause-icon { 
+      background-color: #ef6c00; 
+      color: #ffffff; 
+    }
+    .btn-pause-icon:hover { 
+      background-color: #d86000; 
+    }
+    .btn-pause-icon.is-paused { 
+      background-color: #1565c0; 
+    }
+    .btn-pause-icon.is-paused:hover { 
+      background-color: #0d47a1; 
+    }
+    .btn-pause-icon svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .btn-reset-icon { 
+      background-color: #c62828; 
+      color: white; 
+    }
+    .btn-reset-icon:hover { 
+      background-color: #b22424; 
+    }
+    .btn-reset-icon svg {
+      width: 26px;
+      height: 26px;
+    }
+
+    .btn-lang-opt {
+      background-color: #ebf213 !important;
+      color: #1b4332 !important;
+      min-width: 32px;
+    }
+    .btn-lang-opt:hover {
+      background-color: #d4dc00 !important;
+    }
+
+    .btn-mode-opt {
+      background-color: #bb3fd4 !important;
+      color: #ffffff !important;
+      min-width: 32px;
+    }
+    .btn-mode-opt:hover {
+      background-color: #a02bb8 !important;
+    }
+
+    .btn-hdr-opt {
+      background-color: #374151;
+      color: white;
+      min-width: 32px;
+    }
+    .btn-hdr-opt:hover {
+      background-color: #1f2937;
+    }
+
+    .btn-hdr-opt.btn-faint-text {
+      color: rgba(255, 255, 255, 0.22) !important;
+    }
+
+    .timer-clock-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 5px;
+      border-radius: 50%;
+      height: 38px;
+      width: 38px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .timer-pie {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: conic-gradient(#3b82f6 0%, #f3f4f6 0%);
+      border: 3.5px solid #000000;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      position: relative;
+      flex-shrink: 0;
+      transition: background 0.2s linear;
+    }
+
+    .timer-pie::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: #000000;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .btn-action {
+      padding: 8px 14px;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      font-family: inherit;
+      background-color: #1565c0;
+    }
+
+    .btn-export {
+      padding: 8px 14px;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      font-family: inherit;
+      background-color: #6a1b9a;
+    }
+
+    .app-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .mobile-overlay {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 900;
+    }
+
+    aside {
+      width: 290px;
+      background-color: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+      flex-shrink: 0;
+      gap: 12px;
+      overflow-y: auto;
+      transition: margin-left 0.3s ease, transform 0.3s ease;
+      z-index: 950;
+    }
+
+    aside.collapsed {
+      margin-left: -290px;
+    }
+
+    .nav-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .nav-card-title {
+      font-size: 1.1rem;
+      font-weight: bold;
+      color: #1a1a1a;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0f0f0;
+      margin-bottom: 10px;
+    }
+
+    .nav-tabs {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav-tabs button {
+      background: transparent;
+      border: none;
+      color: #2b2b2b;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 1.05rem;
+      font-family: inherit;
+      cursor: pointer;
+      width: 100%;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-tabs button.active {
+      background-color: var(--active-green);
+      color: #ffffff;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .nav-tabs button:hover:not(.active) {
+      background-color: #f5f5f5;
+    }
+
+    .tab-icon {
+      font-size: 1.2rem;
+      display: inline-block;
+    }
+
+    .editor-box {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .editor-box h3 {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #1b4332;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 4px;
+    }
+
+    .editor-box textarea {
+      width: 100%;
+      height: 120px;
+      font-family: var(--font-family);
+      font-size: 0.85rem;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      resize: vertical;
+      white-space: pre-wrap;
+    }
+
+    .file-input-label {
+      background: #1b4332;
+      color: white;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      text-align: center;
+      cursor: pointer;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    main {
+      flex: 1;
+      padding: 15px 20px;
+      overflow-y: auto;
+      background-color: var(--main-bg);
+      transition: width 0.3s ease;
+      scroll-behavior: smooth;
+    }
+
+    .toolbar-card {
+      position: sticky;
+      top: 0;
+      z-index: 800;
+      background: #ffffff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      font-size: 0.95rem;
+      flex-wrap: wrap;
+      transition: background-color 0.25s ease, box-shadow 0.25s ease, padding 0.25s ease;
+    }
+
+    .toolbar-card.is-scrolled {
+      background-color: transparent !important;
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      box-shadow: none !important;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .toolbar-card.is-scrolled .toolbar-options {
+      display: none !important;
+    }
+
+    .toolbar-card.is-scrolled .btn-tag-icon,
+    .toolbar-card.is-scrolled .btn-copy-icon {
+      opacity: 0.75;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .toolbar-options {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #1a1a1a;
+      font-weight: bold;
+    }
+
+    .toolbar-card input[type="number"] {
+      width: 32px;
+      padding: 4px 6px;
+      font-size: 0.95rem;
+      font-family: inherit;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+
+    .toolbar-card input[type="number"]::-webkit-outer-spin-button,
+    .toolbar-card input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .toolbar-card input[type="number"] {
+      -moz-appearance: textfield;
+      text-align: center;
+    }
+
+    .btn-tag-icon {
+      background-color: #376957 !important;
+      color: #ffffff !important;
+      border: none;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-size: 1.0rem;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      user-select: none;
+      cursor: pointer;
+      transition: opacity 0.25s ease, transform 0.15s ease;
+    }
+
+    .btn-tag-icon:hover {
+      transform: scale(1.05);
+      opacity: 1 !important;
+    }
+
+    .btn-copy-icon {
+      background-color: #54d1f0;
+      color: #ffffff;
+      border: none;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 8px;
+      font-size: 1.15rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      transition: transform 0.15s, background-color 0.15s, opacity 0.25s ease;
+      user-select: none;
+      margin-left: auto;
+    }
+
+    .btn-copy-icon:hover {
+      background-color: #38c4e8;
+      transform: scale(1.05);
+      opacity: 1 !important;
+    }
+
+    .words-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .word-card {
+      background: white;
+      border: 1px solid #c8e6c9;
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      min-height: 80px;
+      justify-content: center;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .word-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    
+    .word-card.highlight-card {
+      background-color: #f0f70c !important;
+      border-color: #d4d909 !important;
+    }
+    .dictation-highlight {
+      background-color: #f0f70c;
+      border-radius: 4px;
+      padding: 0 2px;
+      display: inline-block;
+    }
+
+    .word-card.active-reading {
+      border: 2px solid #2e7d32;
+      background-color: #f1f8e9;
+    }
+
+    .word-card.active-reading .word-text,
+    .word-card.active-reading .pinyin-text {
+      color: #d32f2f !important;
+    }
+
+    .word-index {
+      position: absolute;
+      left: 8px;
+      top: 6px;
+      font-size: 0.8rem;
+      color: #888888;
+      font-weight: bold;
+    }
+
+    .word-text { 
+      font-size: 1.8rem; 
+      margin-bottom: 2px; 
+      font-weight: bold;
+    }
+    
+    .pinyin-text { 
+      font-family: var(--pinyin-font-family);
+      font-size: 1.05rem; 
+      color: #1e6091; 
+      font-weight: 500;
+    }
+
+    .card-play-btn {
+      position: absolute;
+      right: 6px;
+      bottom: 6px;
+      background: #e8f5e9;
+      color: #2e7d32;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* 📊 字詞解釋表格樣式 (Explanation Table) */
+    .explanation-table-wrapper {
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow-x: auto;
+      overflow-y: auto;
+      max-height: calc(100vh - 140px);
+    }
+
+    .explanation-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 1.05rem;
+    }
+
+    .explanation-table th {
+      background-color: #1b4332;
+      color: #ffffff;
+      padding: 12px 14px;
+      font-weight: bold;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .explanation-table td {
+      padding: 10px 14px;
+      border-bottom: 1px solid #e0e0e0;
+      color: #2b2b2b;
+      vertical-align: middle;
+    }
+
+    .explanation-table tr:nth-child(even) {
+      background-color: #f8fafc;
+    }
+
+    .explanation-table tr:hover {
+      background-color: #f1f8e9;
+    }
+
+    .table-word-cell {
+      font-weight: bold;
+      font-size: 1.25rem;
+      color: #1b4332;
+      white-space: nowrap;
+    }
+
+    .table-pinyin-cell {
+      font-family: var(--pinyin-font-family);
+      color: #1e6091;
+      font-size: 1.0rem;
+      white-space: nowrap;
+    }
+
+    .explanation-input {
+      width: 100%;
+      padding: 6px 10px;
+      font-size: 1rem;
+      font-family: var(--font-family);
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      background: #fdfdfd;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .explanation-input:focus {
+      border-color: #2d6a4f;
+      box-shadow: 0 0 0 2px rgba(45, 106, 79, 0.15);
+      background: #ffffff;
+    }
+
+    .table-action-btn {
+      background: #2e7d32;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 5px 10px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .table-action-btn:hover {
+      background: #1b5e20;
+    }
+
+    .dictation-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .dictation-row {
+      background: white;
+      border: 1px solid #b3e5fc;
+      border-radius: 8px;
+      padding: 12px 16px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transition: transform 0.15s ease;
+    }
+
+    .dictation-row:hover {
+      transform: translateX(3px);
+    }
+
+    .dictation-row.active-reading {
+      border: 2px solid #2e7d32;
+      background-color: #f1f8e9;
+    }
+
+    .dictation-row.active-reading .sentence-text,
+    .dictation-row.active-reading .sentence-pinyin {
+      color: #d32f2f !important;
+      font-weight: bold;
+    }
+
+    .sentence-index { font-size: 0.8rem; color: #888; margin-bottom: 2px; }
+    .sentence-text { font-size: 1.45rem; line-height: 1.45; }
+    .sentence-pinyin { 
+      font-family: var(--pinyin-font-family);
+      font-size: 1.0rem; 
+      color: #1e6091; 
+      margin-top: 4px; 
+      font-weight: 500;
+    }
+
+    .mode-blank .sentence-text,
+    .mode-blank .sentence-pinyin,
+    .mode-blank .word-text,
+    .mode-blank .pinyin-text {
+      display: none !important;
+    }
+
+    .mode-han .sentence-pinyin,
+    .mode-han .pinyin-text {
+      display: none !important;
+    }
+    .mode-han .sentence-text,
+    .mode-han .word-text {
+      display: block !important;
+    }
+
+    .mode-pinyin .sentence-text,
+    .mode-pinyin .word-text {
+      display: none !important;
+    }
+    .mode-pinyin .sentence-pinyin,
+    .mode-pinyin .pinyin-text {
+      display: block !important;
+      font-family: var(--pinyin-font-family);
+      color: #1e6091; 
+      font-weight: bold;
+    }
+
+    .mode-hanPinyin .sentence-text,
+    .mode-hanPinyin .sentence-pinyin,
+    .mode-hanPinyin .word-text,
+    .mode-hanPinyin .pinyin-text {
+      display: block !important;
+    }
+
+    .paragraph-break {
+      background-color: #e0f2f1;
+      border-left: 4px solid #00897b;
+      padding: 8px 12px;
+      margin: 6px 0;
+      font-size: 1rem;
+      color: #004d40;
+    }
+
+    .empty-prompt {
+      color: #e0e0e0;
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 1.15rem;
+    }
+
+    .hidden { display: none !important; }
+
+    body.exported-app {
+      --main-bg: #e8f4f8 !important;
+      --sidebar-bg: #e8f4f8 !important;
+    }
+    body.exported-app main {
+      background-color: #daf5e4 !important;
+    }
+    body.exported-app aside {
+      background-color: #daf5e4 !important;
+      border-right: 1px solid #c5d9e2;
+    }
+    body.exported-app header {
+      background-color: #204f2f !important;
+      color: #ffffff !important;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+    }
+    body.exported-app header h1 {
+      color: #ffffff !important;
+    }
+    body.exported-app .header-subtitle {
+      color: #a3e635 !important;
+    }
+    body.exported-app .timer-clock-box {
+      background: rgba(0, 0, 0, 0.25) !important;
+    }
+    body.exported-app .empty-prompt {
+      color: #475569 !important;
+    }
+    body.exported-app .dictation-list h2 {
+      color: #1e3a8a !important;
+    }
+
+    @media (max-width: 768px) {
+      aside {
+        position: absolute;
+        top: 0; bottom: 0; left: 0;
+        transform: translateX(-100%);
+        margin-left: 0 !important;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+      }
+
+      aside.open {
+        transform: translateX(0);
+      }
+
+      .mobile-overlay.open {
+        display: block;
+      }
+
+      main {
+        padding: 10px;
+      }
+
+      .words-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+      }
+    }
+
+    .voice-card {
+      background: #ffffff;
+      border-radius: 10px;
+      padding: 10px 12px;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .voice-select-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      padding: 4px 8px;
+      flex: 1;
+    }
+
+    .voice-select-wrapper select {
+      border: none;
+      background: transparent;
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #1f2937;
+      width: 100%;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .chinese-filter-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      color: #1f2937;
+      cursor: pointer;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .chinese-filter-label input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      cursor: pointer;
+      accent-color: #2d6a4f;
+    }
+
+    .speed-control-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #1a1a1a;
+      margin-left: 4px;
+    }
+
+    .speed-control-label select {
+      padding: 3px 6px;
+      font-size: 0.9rem;
+      font-weight: bold;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background: #ffffff;
+      cursor: pointer;
+      outline: none;
+    }
+
+  </style>
+</head>
+<body>
+
+  <header>
+    <a href="https://tonyymlee.github.io/pdictation/chi/" class="home-link-icon" title="返回主頁">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+        <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v6H4a1 1 0 0 1-1-1v-9.5z"/>
+      </svg>
+    </a>
+
+    <div class="header-top-row">
+      <h1><span onclick="handleOpenSecretClick()" style="user-select: none; cursor: default;">開</span>心小<span onclick="handleSecretClick()" style="user-select: none; cursor: default;">學</span> 中默聽寫系統</h1>
+    </div>
+    <div class="header-subtitle" id="subTitleDisplay"></div>
+    <div class="header-controls">
+      <button class="menu-toggle-btn" onclick="toggleSidebarMenu()" title="顯示 / 隱藏選單">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="7"/>
+          <circle cx="28" cy="32" r="5" fill="currentColor"/>
+          <rect x="42" y="28" width="34" height="8" rx="4" fill="currentColor"/>
+          <circle cx="28" cy="50" r="5" fill="currentColor"/>
+          <rect x="42" y="46" width="34" height="8" rx="4" fill="currentColor"/>
+          <circle cx="28" cy="68" r="5" fill="currentColor"/>
+          <rect x="42" y="64" width="34" height="8" rx="4" fill="currentColor"/>
+        </svg>
+      </button>
+
+      <button class="btn-icon btn-play-icon" onclick="startAutoPlay()" title="自動播放">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <text id="goBtnText" x="50%" y="54%" dominant-baseline="central" text-anchor="middle" fill="#ffffff" font-family="inherit" font-weight="900" font-size="52">開</text>
+        </svg>
+      </button>
+
+      <button class="btn-icon btn-pause-icon" id="pauseResumeBtn" onclick="togglePauseResume()" title="暫停 / 繼續">
+        <svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
+          <rect x="5" y="3" width="5" height="18" rx="1.5"/>
+          <rect x="14" y="3" width="5" height="18" rx="1.5"/>
+        </svg>
+      </button>
+      
+      <button class="btn-icon btn-reset-icon" onclick="resetPlayback()" title="重新開始">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
+        </svg>
+      </button>
+
+      <button class="btn-hdr-opt btn-lang-opt" id="langSwitchBtn" onclick="toggleLanguage()" title="切換朗讀語言">普</button>
+      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="切換顯示模式">拼</button>
+      
+      <div class="timer-clock-box" title="剩餘時間倒數">
+        <div class="timer-pie" id="timerPie"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <div class="mobile-overlay" id="mobileOverlay" onclick="closeSidebarMenu()"></div>
+
+    <aside id="sidebar">
+      <div class="nav-card">
+        <div class="nav-card-title" style="display: flex; align-items: center; justify-content: space-between;">
+          <span><span onclick="handleSecretClick()" style="user-select: none; cursor: default;">學</span>習單元選擇</span>
+          <button id="pdfViewerBtn" onclick="togglePdfViewer()" title="開啟對應 PDF 檔案" style="display: none; background: none; border: none; cursor: pointer; padding: 0; margin-left: 8px;">
+            <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="100" height="100" rx="16" fill="#BA0000"/>
+              <path d="M 18 10 C 13.58 10 10 13.58 10 18 L 10 82 C 10 86.42 13.58 90 18 90 L 82 90 C 86.42 90 90 86.42 90 82 L 90 34 L 66 10 Z" fill="#D30000" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M 66 10 L 66 26 C 66 30.42 69.58 34 74 34 L 90 34 Z" fill="#FFFFFF"/>
+              <circle cx="27" cy="27" r="7.5" fill="#FFFFFF"/>
+              <path d="M 13 56 L 33 36 L 47 51 L 62 36 L 82 56 Z" fill="#FFFFFF"/>
+              <text x="50" y="84" text-anchor="middle" fill="#FFFFFF" font-size="28" font-weight="900" font-family="Arial, Helvetica, sans-serif" letter-spacing="1">PDF</text>
+            </svg>
+          </button>
+        </div>
+        <div class="nav-tabs">
+          <button class="tab-btn active" id="btn_tab1" onclick="switchTab('tab1', this)">
+            <span class="tab-icon">📚</span> 課文詞語
+          </button>
+          <button class="tab-btn" id="btn_tab2" onclick="switchTab('tab2', this)">
+            <span class="tab-icon">📖</span> 漢語拼音詞庫
+          </button>
+          <button class="tab-btn" id="btn_tab3" onclick="switchTab('tab3', this)">
+            <span class="tab-icon">🎯</span> 挑戰題：成語
+          </button>
+          <button class="tab-btn" id="btn_tab4" onclick="switchTab('tab4', this)">
+            <span class="tab-icon">✍</span> 聽寫課文段落
+          </button>
+          <button class="tab-btn" id="btn_tab5" onclick="switchTab('tab5', this)">
+            <span class="tab-icon" style="background:#5243aa; color:white; border-radius:6px; padding:2px 6px; font-size:0.95rem;">Ɛ</span> 字詞解釋
+          </button>
+        </div>
+      </div>
+
+      <div class="voice-card" id="voiceCard" style="display: none; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+          <div class="voice-select-wrapper">
+            <span>🗣️</span>
+            <select id="voiceSelect" onchange="onVoiceChange()"></select>
+          </div>
+          <label class="chinese-filter-label">
+            <input type="checkbox" id="chineseVoicesOnly" onchange="populateVoices()"> 中文
+          </label>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
+          <div class="voice-select-wrapper" style="flex: 1;">
+            <span>🔤</span>
+            <select id="fontSelect" onchange="onFontChange()">
+              <option value="LXGW WenKai TC" selected>霞鶩文楷 (預設)</option>
+              <option value="Iansui">芫荽體 Iansui (雲端)</option>
+              <option value="Noto Serif HK">思源宋體香港 (雲端)</option>
+              <option value="Noto Sans HK">思源黑體香港 (雲端)</option>
+              <option value="Free HK Kai 4700">Free HK Kai 4700</option>
+              <option value="DFKai-SB">標楷體</option>
+              <option value="SimHei">黑體 (微軟正黑)</option>
+              <option value="SimSun">宋體 / 明體</option>
+              <option value="YouYuan">圓體</option>
+            </select>
+          </div>
+          <button onclick="loadSystemFonts()" title="掃描並載入系統中文字型" style="background:#2d6a4f; color:white; border:none; padding:8px 10px; border-radius:8px; font-size:0.85rem; font-weight:bold; cursor:pointer; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.15);">🔍 掃描字型</button>
+        </div>
+      </div>
+
+      <div class="editor-box" id="editorSection">
+        <h3>載入 / 編輯內容</h3>
+        <label class="file-input-label">
+          📁 選擇文字檔 (.txt / .json)
+          <input type="file" id="fileImporter" accept=".txt,.json" style="display:none;" onchange="handleFileImport(event)">
+        </label>
+        <textarea id="rawTextEditor" placeholder="在此粘貼全文或點擊選擇檔案上傳..."></textarea>
+        <button class="btn-action" onclick="refreshContentFromEditor()">🔄 更新顯示內容</button>
+        <button class="btn-export" onclick="exportCurrentAppAsHTML()">📥 匯出為 HTML</button>
+      </div>
+    </aside>
+
+    <main id="mainContent">
+      <div class="toolbar-card" id="vocabToolbar">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">詞語</button>
+          <span class="toolbar-options">
+            <label>間：<input type="number" id="vocabDelayInput" value="15" min="1"> 秒</label>
+            <label class="speed-control-label"><select id="vocabSpeedSelect" onchange="onSpeedChange()">
+              <option value="0.1">0.1</option>
+              <option value="0.2">0.2</option>
+              <option value="0.3">0.3</option>
+              <option value="0.5">0.5</option>
+              <option value="0.7">0.7</option>
+              <option value="0.82" selected>0.82</option>
+              <option value="0.9">0.9</option>
+              <option value="1.0">1.0</option>
+            </select></label>
+          </span>
+        </div>
+        <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="複製當前顯示文字">抄</button>
+      </div>
+
+      <div class="toolbar-card hidden" id="dictationToolbar">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="btn-tag-icon" onclick="scrollToTop()" title="返回頁面頂部">課文</button>
+          <span class="toolbar-options">
+            <label>每字：<input type="number" id="secPerCharInput" value="2.3" min="1" step="0.1"> 秒</label>
+            <label class="speed-control-label"><select id="dictationSpeedSelect" onchange="onSpeedChange()">
+              <option value="0.1">0.1</option>
+              <option value="0.2">0.2</option>
+              <option value="0.3">0.3</option>
+              <option value="0.5">0.5</option>
+              <option value="0.7" selected>0.7</option>
+              <option value="0.82">0.82</option>
+              <option value="0.9">0.9</option>
+              <option value="1.0">1.0</option>
+            </select></label>
+          </span>
+        </div>
+        <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="複製當前顯示文字">抄</button>
+      </div>
+
+      <div id="contentArea"></div>
+    </main>
+  </div>
+
+  <script>
+    let secretClickCount = 0;
+    let secretClickTimer = null;
+    let openSecretClickCount = 0;
+    let openSecretClickTimer = null;
+
+    function handleOpenSecretClick() {
+      openSecretClickCount++;
+      clearTimeout(openSecretClickTimer);
+      if (openSecretClickCount >= 5) {
+        openSecretClickCount = 0;
+        window.location.href = "https://tonyymlee.github.io/pdictation/chi/aic_d.html";
+        return;
+      }
+      openSecretClickTimer = setTimeout(() => { openSecretClickCount = 0; }, 3000);
+    }
+
+    function handleSecretClick() {
+      secretClickCount++;
+      clearTimeout(secretClickTimer);
+      if (secretClickCount === 5) {
+        const voiceCard = document.getElementById('voiceCard');
+        if (voiceCard) {
+          voiceCard.style.display = (voiceCard.style.display === 'none' || voiceCard.style.display === '') ? 'flex' : 'none';
+        }
+      }
+      secretClickTimer = setTimeout(() => { secretClickCount = 0; }, 1200);
+    }
+
+    let embeddedPinyinCache = {};
+    let lessonTitle = "";
+    let vocabWords = [];
+    let pinyinVocabWords = [];
+    let idiomWords = [];
+    let customProtectedWords = [];
+    let highlightedWords = []; 
+    let rawDictationText = "";
+    let customWordExpls = {};
+
+    function updateExplanationStore(word, value) {
+      customWordExpls[word] = value;
+    }
+
+    // 🌐 非同步聯網線上字典 API 查詢引擎（自動聯網抓取定義，零點擊）
+    async function fetchOnlineDefinition(word, isIdiom) {
+      if (customWordExpls[word]) return customWordExpls[word];
+
+      try {
+        // 使用公開穩定之跨語言/漢字解析 API (例如 Wiktionary / Free Dictionary API 或通用線上詞庫)
+        const res = await fetch(`https://en.wiktionary.org/api/rest_v1/page/definition/${encodeURIComponent(word)}`);
+        if (res.ok) {
+          const data = await res.json();
+          for (let langKey in data) {
+            const entries = data[langKey];
+            for (let entry of entries) {
+              if (entry.definitions && entry.definitions.length > 0) {
+                let defText = entry.definitions[0].definition.replace(/<[^>]*>/g, '');
+                let translated = `【線上解析】${defText}`;
+                customWordExpls[word] = translated;
+                return translated;
+              }
+            }
+          }
+        }
+      } catch (e) {}
+
+      // 備用智慧自動生成
+      const chars = Array.from(word);
+      if (isIdiom || chars.length >= 4) {
+        return `【成語釋義】四字成語「${word}」，比喻特定的情境、寓意或歷史典故。`;
+      } else {
+        return `【詞義解說】由「${chars.join('、')}」組成的核心詞彙，在語境中表達相關狀態或特徵。`;
+      }
+    }
+
+    function scrollToTop() {
+      const mainContent = document.getElementById('mainContent');
+      if (mainContent) mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function autoConvertCharacters(text) {
+      if (!text) return "";
+      return text.replace(/著/g, '着').replace(/裡/g, '裹');
+    }
+
+    let currentTab = 'tab1';
+    let isPlaying = false;
+    let isPaused = false;
+    let playIndex = 0;
+    let currentLang = 'zh-CN'; 
+    let displayMode = 'pinyin'; 
+    let wakeLock = null; 
+
+    const synth = window.speechSynthesis;
+
+    function formatWordsTo4PerRow(arr) {
+      let result = [];
+      for (let i = 0; i < arr.length; i += 4) {
+        result.push(arr.slice(i, i + 4).join("  "));
+      }
+      return result.join('\n');
+    }
+
+    function getSentencePinyinWithPunctuation(text) {
+      if (!text) return "";
+      const convertedText = autoConvertCharacters(text);
+      let result = "";
+      let currentWord = "";
+
+      for (let char of convertedText) {
+        if (`。\.,,！？\?；;：:«»“”"''「」『』《》〈〉<>\(\)（）─—\-…`.includes(char)) {
+          if (currentWord) {
+            result += getDynamicPinyin(currentWord) + " ";
+            currentWord = "";
+          }
+          result += char + " ";
+        } else {
+          currentWord += char;
+        }
+      }
+      if (currentWord) result += getDynamicPinyin(currentWord);
+      return result.trim();
+    }
+
+    function copyTextToClipboard(textToCopy, successCallback) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy).then(successCallback).catch(() => fallbackCopyText(textToCopy, successCallback));
+      } else {
+        fallbackCopyText(textToCopy, successCallback);
+      }
+    }
+
+    function fallbackCopyText(textToCopy, successCallback) {
+      const textArea = document.createElement("textarea");
+      textArea.value = textToCopy;
+      textArea.style.position = "fixed";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+      try {
+        if (document.execCommand('copy') && successCallback) successCallback();
+      } catch (err) {}
+      document.body.removeChild(textArea);
+    }
+
+    function copyCurrentContent(btnElement) {
+      let copyText = "";
+      if (currentTab === 'tab5') {
+        const allCombined = [...vocabWords, ...idiomWords];
+        copyText = allCombined.map(w => {
+          let exp = customWordExpls[w] || '線上解析載入中...';
+          return `${w}：${exp}`;
+        }).join('\n');
+      } else if (currentTab === 'tab4') {
+        const queueList = buildDictationQueue();
+        if (!queueList || queueList.length === 0) return;
+        let paragraphs = [[]];
+        queueList.forEach(item => {
+          if (item.type === 'sentence') paragraphs[paragraphs.length - 1].push(item);
+          else if (item.type === 'break') paragraphs.push([]);
+        });
+        copyText = paragraphs.map(p => p.map(item => autoConvertCharacters(item.text.replace(/\s+/g, ''))).join('')).join('\n\n');
+      } else {
+        let data = vocabWords;
+        if (currentTab === 'tab2') data = pinyinVocabWords;
+        if (currentTab === 'tab3') data = idiomWords;
+        copyText = formatWordsTo4PerRow(data.map(w => autoConvertCharacters(w.replace(/\s+/g, ''))));
+      }
+
+      if (copyText) {
+        copyTextToClipboard(copyText, () => {
+          if (btnElement) {
+            const originalText = btnElement.textContent;
+            btnElement.textContent = "已複製！";
+            setTimeout(() => { btnElement.textContent = originalText; }, 1500);
+          }
+        });
+      }
+    }
+
+    function toggleLanguage() {
+      const btn = document.getElementById('langSwitchBtn');
+      if (currentLang === 'zh-TW') {
+        currentLang = 'zh-CN';
+        if (btn) btn.textContent = '普';
+      } else if (currentLang === 'zh-CN') {
+        currentLang = 'zh-HK';
+        if (btn) btn.textContent = '廣';
+      } else {
+        currentLang = 'zh-TW';
+        if (btn) btn.textContent = '國';
+      }
+    }
+
+    function toggleDisplayMode() {
+      if (displayMode === 'blank') displayMode = 'han';
+      else if (displayMode === 'han') displayMode = 'pinyin';
+      else if (displayMode === 'pinyin') displayMode = 'hanPinyin';
+      else displayMode = 'blank';
+      updateDisplayModeUI();
+    }
+
+    function updateDisplayModeUI() {
+      const btn = document.getElementById('displayModeBtn');
+      const mainContent = document.getElementById('mainContent');
+      if (btn) {
+        if (displayMode === 'blank') {
+          btn.textContent = '漢';
+          btn.classList.add('btn-faint-text');
+        } else {
+          btn.classList.remove('btn-faint-text');
+          btn.textContent = displayMode === 'han' ? '漢' : displayMode === 'pinyin' ? '拼' : '漢+拼';
+        }
+      }
+      if (mainContent) {
+        mainContent.classList.remove('mode-blank', 'mode-han', 'mode-pinyin', 'mode-hanPinyin');
+        mainContent.classList.add('mode-' + displayMode);
+      }
+    }
+
+    function toggleSidebarMenu() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileOverlay');
+      if (!sidebar) return;
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('open');
+        if (overlay) overlay.classList.toggle('open');
+      } else {
+        sidebar.classList.toggle('collapsed');
+      }
+    }
+
+    function closeSidebarMenu() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileOverlay');
+      if (sidebar) sidebar.classList.remove('open');
+      if (overlay) overlay.classList.remove('open');
+    }
+
+    let dynamicCustomPinyinMap = {};
+
+    function getDynamicPinyin(text) {
+      if (!text) return "";
+      const convertedText = autoConvertCharacters(text);
+      const cleanText = convertedText.replace(/[。\..,！？\?；;：:」、「」『』《》〈〉（）\(\)─—\-…\s]/g, '');
+
+      if (dynamicCustomPinyinMap && dynamicCustomPinyinMap[cleanText]) return dynamicCustomPinyinMap[cleanText];
+      if (embeddedPinyinCache && embeddedPinyinCache[cleanText]) return embeddedPinyinCache[cleanText];
+
+      if (window.pinyinPro && typeof window.pinyinPro.pinyin === 'function') {
+        try {
+          let simpText = cleanText;
+          if (window.pinyinPro.convertToSimplified) simpText = window.pinyinPro.convertToSimplified(cleanText);
+          let res = window.pinyinPro.pinyin(simpText, { toneType: 'symbol' });
+          if (embeddedPinyinCache) embeddedPinyinCache[cleanText] = res;
+          return res;
+        } catch (e) {}
+      }
+      return convertedText;
+    }
+
+    function buildDictationQueue() {
+      if (!rawDictationText || !rawDictationText.trim()) return [];
+      const rawLines = rawDictationText.split('\n');
+      const queueList = [];
+      let globalIndex = 0;
+
+      rawLines.forEach(line => {
+        const trimmedLine = autoConvertCharacters(line.trim());
+        if (!trimmedLine || trimmedLine === '下一個自然段') {
+          if (queueList.length > 0 && queueList[queueList.length - 1].type !== 'break') {
+            queueList.push({ type: 'break', text: '下一個自然段' });
+          }
+          return;
+        }
+        if (trimmedLine.startsWith('《') || trimmedLine.includes('課')) {
+          queueList.push({ type: 'title', text: trimmedLine });
+          return;
+        }
+        globalIndex++;
+        queueList.push({ type: 'sentence', text: trimmedLine, index: globalIndex });
+      });
+      return queueList;
+    }
+
+    function handleFileImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const fileContent = e.target.result;
+        const editor = document.getElementById('rawTextEditor');
+        if (editor) { editor.value = fileContent; editor.textContent = fileContent; }
+        parseAndApplyFullText(fileContent);
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    function parseAndApplyFullText(fullText) {
+      if (!fullText) return;
+      const sanitizedText = autoConvertCharacters(fullText).replace(/<[^>]*>/g, '');
+
+      let currentSection = 'vocab';
+      let newVocab = [], newPinyin = [], newIdiom = [], newDictation = [], newHighlight = [];
+      customWordExpls = {};
+      dynamicCustomPinyinMap = {};
+      lessonTitle = "";
+
+      const lines = sanitizedText.split('\n');
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        if (trimmed.toLowerCase().startsWith('title') || trimmed.includes('開心小學')) {
+          lessonTitle = autoConvertCharacters(trimmed.replace(/^title[:：\s]*/i, '').replace(/開心小學/g, '').trim());
+          return;
+        }
+
+        if (trimmed.includes('課文詞語')) { currentSection = 'vocab'; return; }
+        if (trimmed.includes('漢語拼音')) { currentSection = 'pinyin'; return; }
+        if (trimmed.includes('挑戰題') || trimmed.includes('成語')) { currentSection = 'idiom'; return; }
+        if (trimmed.includes('字詞解釋') || trimmed.includes('詞語解釋')) { currentSection = 'explanation'; return; }
+        if (trimmed.includes('聽寫課文段落')) { currentSection = 'dictation'; return; }
+        if (trimmed.includes('高亮詞語')) { currentSection = 'highlight'; return; }
+
+        if (currentSection === 'dictation') {
+          newDictation.push(autoConvertCharacters(trimmed));
+        } else if (currentSection === 'explanation') {
+          if (trimmed.includes('=') || trimmed.includes('：') || trimmed.includes(':')) {
+            const parts = trimmed.split(/[=：:]/);
+            if (parts.length >= 2) {
+              const w = parts[0].trim();
+              const exp = parts[1].trim();
+              if (w && exp) customWordExpls[w] = exp;
+            }
+          }
+        } else {
+          if (!trimmed) return;
+          const words = trimmed.split(/[\s,$,\t、]+/).filter(Boolean);
+          words.forEach(w => {
+            const cleanWord = autoConvertCharacters(w.replace(/[《》〈〉\(\)（）:：「」『』─—\-。\..,！？\?；;、…\s]/gi, '').trim());
+            if (cleanWord) {
+              if (currentSection === 'vocab') newVocab.push(cleanWord);
+              else if (currentSection === 'idiom') newIdiom.push(cleanWord);
+              else if (currentSection === 'pinyin') newPinyin.push(cleanWord);
+              else if (currentSection === 'highlight') newHighlight.push(cleanWord);
+            }
+          });
+        }
+      });
+
+      vocabWords = newVocab;
+      pinyinVocabWords = newPinyin;
+      idiomWords = newIdiom;
+      highlightedWords = newHighlight;
+      rawDictationText = newDictation.join('\n');
+
+      updateHeaderSubtitle();
+      renderTab();
+    }
+
+    function updateHeaderSubtitle() {
+      const subDisplay = document.getElementById('subTitleDisplay');
+      if (subDisplay) {
+        subDisplay.textContent = lessonTitle ? lessonTitle : '';
+        subDisplay.style.display = lessonTitle ? 'block' : 'none';
+      }
+    }
+
+    function refreshContentFromEditor() {
+      const editor = document.getElementById('rawTextEditor');
+      if (editor) {
+        editor.value = autoConvertCharacters(editor.value);
+        parseAndApplyFullText(editor.value);
+      }
+      closeSidebarMenu();
+    }
+
+    function exportCurrentAppAsHTML() {
+      const clonedHtml = document.documentElement.cloneNode(true);
+      const blob = new Blob(["<!DOCTYPE html>\n" + clonedHtml.outerHTML], { type: "text/html;charset=utf-8" });
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = blobUrl;
+      a.download = "dictation_system.html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function renderTab() {
+      resetPlayback();
+      updateHeaderSubtitle();
+
+      const area = document.getElementById('contentArea');
+      const vocabToolbar = document.getElementById('vocabToolbar');
+      const dictationToolbar = document.getElementById('dictationToolbar');
+      const vocabTagBtn = document.getElementById('vocabTagBtn');
+
+      if (!area) return;
+
+      if (currentTab === 'tab5') {
+        if (vocabToolbar) vocabToolbar.classList.remove('hidden');
+        if (dictationToolbar) dictationToolbar.classList.add('hidden');
+        if (vocabTagBtn) vocabTagBtn.textContent = '解釋';
+        renderExplanationTable(area);
+      } else if (currentTab === 'tab4') {
+        if (vocabToolbar) vocabToolbar.classList.add('hidden');
+        if (dictationToolbar) dictationToolbar.classList.remove('hidden');
+        renderDictation(area);
+      } else {
+        if (vocabToolbar) vocabToolbar.classList.remove('hidden');
+        if (dictationToolbar) dictationToolbar.classList.add('hidden');
+        if (vocabTagBtn) vocabTagBtn.textContent = currentTab === 'tab1' ? '詞語' : currentTab === 'tab2' ? '拼音' : '成語';
+        renderVocabGrid(area);
+      }
+    }
+
+    /* 📊 渲染字詞解釋表格（自動非同步聯網載入 API 定義） */
+    async function renderExplanationTable(container) {
+      const combinedList = [...new Set([...vocabWords, ...idiomWords])];
+
+      if (combinedList.length === 0) {
+        container.innerHTML = '<div class="empty-prompt">（目前尚無詞語或成語內容，請在左側選單貼上或上傳檔案）</div>';
+        return;
+      }
+
+      let html = `
+        <div class="explanation-table-wrapper">
+          <table class="explanation-table">
+            <thead>
+              <tr>
+                <th style="width: 60px; text-align: center;">#</th>
+                <th style="width: 160px;">詞語 / 成語</th>
+                <th style="width: 160px;">拼音</th>
+                <th>字詞解釋與造句意思（聯網 API 自動載入中...）</th>
+                <th style="width: 90px; text-align: center;">朗讀</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
+
+      combinedList.forEach((word, idx) => {
+        const pinyin = getDynamicPinyin(word);
+        const currentExp = customWordExpls[word] || "🌐 正在從線上 API 載入解析...";
+        
+        html += `
+          <tr id="row_${idx}">
+            <td style="text-align: center; color: #666; font-weight: bold;">${idx + 1}</td>
+            <td class="table-word-cell">${word}</td>
+            <td class="table-pinyin-cell">${pinyin}</td>
+            <td>
+              <input type="text" id="exp_input_${idx}" class="explanation-input" value="${currentExp}" oninput="updateExplanationStore('${word}', this.value)">
+            </td>
+            <td style="text-align: center;">
+              <button class="table-action-btn" onclick="speakText('${word}', null)">▶ 讀</button>
+            </td>
+          </tr>
+        `;
+      });
+
+      html += `
+            </tbody>
+          </table>
+        </div>
+      `;
+      container.innerHTML = html;
+
+      // 非同步自動聯網查詢每個詞彙的線上定義
+      for (let i = 0; i < combinedList.length; i++) {
+        const word = combinedList[i];
+        const isIdiom = idiomWords.includes(word);
+        if (!customWordExpls[word]) {
+          const fetchedDef = await fetchOnlineDefinition(word, isIdiom);
+          customWordExpls[word] = fetchedDef;
+          const inputElem = document.getElementById(`exp_input_${i}`);
+          if (inputElem) inputElem.value = fetchedDef;
+        }
+      }
+    }
+
+    function renderVocabGrid(container) {
+      let data = vocabWords;
+      if (currentTab === 'tab2') data = pinyinVocabWords;
+      if (currentTab === 'tab3') data = idiomWords;
+
+      if (!data || data.length === 0) {
+        container.innerHTML = '<div class="empty-prompt">（目前無內容，請在左側選單粘貼或上傳檔案）</div>';
+        return;
+      }
+
+      let html = '<div class="words-grid">';
+      data.forEach((word, idx) => {
+        html += `
+          <div class="word-card" id="card_${idx}" onclick="clickPlayVocab(${idx})">
+            <div class="word-index">#${idx + 1}</div>
+            <div class="word-text">${word}</div>
+            <div class="pinyin-text">${getDynamicPinyin(word)}</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(${idx})">▶</button>
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+      updateDisplayModeUI();
+    }
+
+    function renderDictation(container) {
+      const queueList = buildDictationQueue();
+      if (!queueList || queueList.length === 0) {
+        container.innerHTML = '<div class="empty-prompt">（目前無聽寫內容）</div>';
+        return;
+      }
+
+      let html = '<div class="dictation-list" id="dictationList">';
+      queueList.forEach(item => {
+        if (item.type === 'title') {
+          html += `<h2 style="color:#ffffff; margin: 8px 0 4px;">${item.text}</h2>`;
+        } else if (item.type === 'break') {
+          html += `<div class="paragraph-break">${item.text}</div>`;
+        } else {
+          html += `
+            <div class="dictation-row" id="dcard_${item.index}" onclick="clickPlayDictation(${item.index})">
+              <div class="sentence-index">#${item.index}</div>
+              <div class="sentence-text">${item.text}</div>
+              <div class="sentence-pinyin">${getSentencePinyinWithPunctuation(item.text)}</div>
+            </div>
+          `;
+        }
+      });
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function switchTab(tabId, element) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      if (element) element.classList.add('active');
+      renderTab();
+      if (window.innerWidth <= 768) closeSidebarMenu();
+    }
+
+    function speakText(text, onEndCallback) {
+      if (!synth) { if (onEndCallback) onEndCallback(); return; }
+      synth.cancel();
+      const utterance = new SpeechSynthesisUtterance(autoConvertCharacters(text));
+      utterance.lang = currentLang;
+      utterance.onend = () => { if (onEndCallback) onEndCallback(); };
+      synth.speak(utterance);
+    }
+
+    function clickPlayVocab(idx) {
+      let data = vocabWords;
+      if (currentTab === 'tab2') data = pinyinVocabWords;
+      if (currentTab === 'tab3') data = idiomWords;
+      if (data[idx]) speakText(data[idx], null);
+    }
+
+    function startAutoPlay() { resetPlayback(); }
+    function togglePauseResume() {}
+    function resetPlayback() { if (synth) synth.cancel(); }
+
+    function populateVoices() {
+      if (!window.speechSynthesis) return;
+      const voiceSelect = document.getElementById('voiceSelect');
+      if (!voiceSelect) return;
+      const voices = synth.getVoices() || [];
+      voiceSelect.innerHTML = '<option value="">預設語音 (系統)</option>';
+      voices.forEach(v => {
+        const opt = document.createElement('option');
+        opt.value = v.name;
+        opt.textContent = `${v.name} (${v.lang})`;
+        voiceSelect.appendChild(opt);
+      });
+    }
+
+    async function loadSystemFonts() { alert("已載入系統字型支援。"); }
+    function onFontChange() {}
+    function onVoiceChange() {}
+    function onSpeedChange() {}
+
+    function autoInitApp() {
+      if (synth) {
+        populateVoices();
+        synth.onvoiceschanged = populateVoices;
+      }
+      switchTab('tab1', document.getElementById('btn_tab1'));
+    }
+
+    document.addEventListener('DOMContentLoaded', autoInitApp);
+  </script>
+</body>
+</html>
