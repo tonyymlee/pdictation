@@ -175,7 +175,7 @@
     .btn-play-icon { 
       background-color: #2e7d32; 
       color: #ffffff; 
-      cursor: default !important;
+      cursor: pointer !important;
     }
     .btn-play-icon:hover { 
       background-color: #1b5e20; 
@@ -521,7 +521,6 @@
       text-align: center;
     }
 
-
     /* 🏷️ 工具列標籤圖示按鈕 (#376957 背景，白字) - 點擊返回頂部 */
     .btn-tag-icon {
       background-color: #376957 !important;
@@ -599,7 +598,6 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
-    
     .word-card.highlight-card {
       background-color: #f0f70c !important;
       border-color: #d4d909 !important;
@@ -953,15 +951,10 @@
           <button id="pdfViewerBtn" onclick="togglePdfViewer()" title="開啟對應 PDF 檔案" style="display: none; background: none; border: none; cursor: pointer; padding: 0; margin-left: 8px;">
             <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
               <rect width="100" height="100" rx="16" fill="#BA0000"/>
-              <!-- Document Base -->
               <path d="M 18 10 C 13.58 10 10 13.58 10 18 L 10 82 C 10 86.42 13.58 90 18 90 L 82 90 C 86.42 90 90 86.42 90 82 L 90 34 L 66 10 Z" fill="#D30000" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"/>
-              <!-- Folded Corner -->
               <path d="M 66 10 L 66 26 C 66 30.42 69.58 34 74 34 L 90 34 Z" fill="#FFFFFF"/>
-              <!-- Sun -->
               <circle cx="27" cy="27" r="7.5" fill="#FFFFFF"/>
-              <!-- Mountains -->
               <path d="M 13 56 L 33 36 L 47 51 L 62 36 L 82 56 Z" fill="#FFFFFF"/>
-              <!-- PDF Text -->
               <text x="50" y="84" text-anchor="middle" fill="#FFFFFF" font-size="28" font-weight="900" font-family="Arial, Helvetica, sans-serif" letter-spacing="1">PDF</text>
             </svg>
           </button>
@@ -982,7 +975,7 @@
         </div>
       </div>
 
-            <!-- 🗣️ Voice & Font Selection Card -->
+      <!-- 🗣️ Voice & Font Selection Card -->
       <div class="voice-card" id="voiceCard" style="display: none; flex-direction: column; gap: 8px;">
         <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
           <div class="voice-select-wrapper">
@@ -1012,7 +1005,7 @@
         </div>
       </div>
 
-<div class="editor-box" id="editorSection">
+      <div class="editor-box" id="editorSection">
         <h3>載入 / 編輯內容</h3>
         <label class="file-input-label">
           📁 選擇文字檔 (.txt / .json)
@@ -1029,7 +1022,7 @@
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">詞語</button>
           <span class="toolbar-options">
-                        <label>間：<input type="number" id="vocabDelayInput" value="15" min="1"> 秒</label>
+            <label>間：<input type="number" id="vocabDelayInput" value="15" min="1"> 秒</label>
             <label class="speed-control-label"><select id="vocabSpeedSelect" onchange="onSpeedChange()">
               <option value="0.1">0.1</option>
               <option value="0.2">0.2</option>
@@ -1049,7 +1042,7 @@
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" onclick="scrollToTop()" title="返回頁面頂部">課文</button>
           <span class="toolbar-options">
-                        <label>每字：<input type="number" id="secPerCharInput" value="2.3" min="1" step="0.1"> 秒</label>
+            <label>每字：<input type="number" id="secPerCharInput" value="2.3" min="1" step="0.1"> 秒</label>
             <label class="speed-control-label"><select id="dictationSpeedSelect" onchange="onSpeedChange()">
               <option value="0.1">0.1</option>
               <option value="0.2">0.2</option>
@@ -1106,7 +1099,6 @@
         }
       }
       
-      // Reset the count if not clicked again within 1.2 seconds
       secretClickTimer = setTimeout(() => {
         secretClickCount = 0;
       }, 1200);
@@ -1121,7 +1113,6 @@
     let highlightedWords = []; 
     let rawDictationText = "";
 
-    // ⬆️ 點擊標籤按鈕返回頂部
     function scrollToTop() {
       const mainContent = document.getElementById('mainContent');
       if (mainContent) {
@@ -1129,13 +1120,11 @@
       }
     }
 
-    // 🔤 自動字形轉換輔助函式：著->着、裡->裹
     function autoConvertCharacters(text) {
       if (!text) return "";
       return text.replace(/著/g, '着').replace(/裡/g, '裹');
     }
 
-    // 🌟 500 個國小常用詞彙
     const primarySchoolVocabulary500 = [
       "高興", "快樂", "喜歡", "開心", "難過", "害怕", "緊張", "生氣", "擔心", "滿意",
       "美麗", "漂亮", "可愛", "乾淨", "認真", "專心", "努力", "勇敢", "聰明", "活潑",
@@ -1219,6 +1208,8 @@
     let totalTimerSeconds = 0;
     let remainingSeconds = 0;
     let wakeUpTimeout = null; 
+    let singlePlayTimeout1 = null;
+    let singlePlayTimeout2 = null;
     let currentLang = 'zh-CN'; 
     let displayMode = 'pinyin'; 
     let wakeLock = null; 
@@ -1340,9 +1331,7 @@
             }).join(' ')
           ).join('\n\n');
 
-          copyText = `${hanBlock}
-
-${pinyinBlock}`;
+          copyText = `${hanBlock}\n\n${pinyinBlock}`;
         }
       } else {
         let data = vocabWords;
@@ -1364,9 +1353,7 @@ ${pinyinBlock}`;
           const hanBlock = formatWordsTo4PerRow(hanList);
           const pinyinBlock = formatWordsTo4PerRow(pinyinList);
           
-          copyText = `${hanBlock}
-
-${pinyinBlock}`;
+          copyText = `${hanBlock}\n\n${pinyinBlock}`;
         }
       }
 
@@ -1424,8 +1411,6 @@ ${pinyinBlock}`;
         currentLang = 'zh-TW';
         if (btn) btn.textContent = '國';
       }
-      // Removed synth.cancel() so current speech finishes naturally,
-      // and the next word will automatically pick up the new language.
     }
 
     function toggleDisplayMode() {
@@ -1485,36 +1470,28 @@ ${pinyinBlock}`;
 
     let dynamicCustomPinyinMap = {};
 
-                // 💡 100% 動態拼音引擎：完全移除硬編碼 (No Hardcoding)
-    // 所有多音字或特例修正均由 `dynamicCustomPinyinMap` (用戶在文字編輯器中的「拼音修正」區塊) 或 pinyin-pro 動態庫處理
-        function getDynamicPinyin(text) {
+    function getDynamicPinyin(text) {
       if (!text) return "";
       const convertedText = autoConvertCharacters(text);
-      const cleanText = convertedText.replace(/[。\.，,！？\?；;：:」、「」『』《》〈〉（）\(\)─—\-…\s]/g, '');
+      const cleanText = convertedText.replace(/[。\.，,！？\?；;：:\s]/g, '');
 
-      // 1. 完全比對動態自訂拼音表 (phrase or word level)
       if (dynamicCustomPinyinMap && dynamicCustomPinyinMap[cleanText]) {
         return dynamicCustomPinyinMap[cleanText];
       }
 
-      // 2. 檢查是否有部分子字串 (如: 盛滿/動彈) 匹配動態修正表
       if (dynamicCustomPinyinMap) {
         for (let key in dynamicCustomPinyinMap) {
           if (key.length > 1 && cleanText.includes(key)) {
             let keyPinyin = dynamicCustomPinyinMap[key];
-            let fullPinyin = getDynamicPinyin(cleanText.replace(key, ''));
-            // Return override directly if exact match
             if (cleanText === key) return keyPinyin;
           }
         }
       }
 
-      // 3. 快取（Cache）查詢
       if (embeddedPinyinCache && embeddedPinyinCache[cleanText]) {
         return embeddedPinyinCache[cleanText];
       }
 
-      // 4. 動態轉簡體後調用 pinyin-pro
       if (window.pinyinPro && typeof window.pinyinPro.pinyin === 'function') {
         try {
           let simpText = cleanText;
@@ -1524,7 +1501,6 @@ ${pinyinBlock}`;
 
           let res = window.pinyinPro.pinyin(simpText, { toneType: 'symbol' });
 
-          // 單字層級取代 (若使用者定義了 盛=chéng 或 彈=tán)
           if (dynamicCustomPinyinMap) {
             let chars = cleanText.split('');
             let pinyinArray = res.split(' ');
@@ -1551,7 +1527,7 @@ ${pinyinBlock}`;
 
     function countChineseChars(text) {
       if (!text) return 0;
-      return text.replace(/[。\.，,！？\?；;：:」、「」『』《》〈〉（）\(\)─—\-…\s]/g, '').length;
+      return text.replace(/[。\.，,！？\?；;：:\s]/g, '').length;
     }
 
     function buildDictationQueue() {
@@ -1677,7 +1653,6 @@ ${pinyinBlock}`;
         cleanedQueueList.push(item);
       });
 
-      // 🧹 清除末尾多餘的 'break'
       while (cleanedQueueList.length > 0 && cleanedQueueList[cleanedQueueList.length - 1].type === 'break') {
         cleanedQueueList.pop();
       }
@@ -1824,7 +1799,6 @@ ${pinyinBlock}`;
           editor.textContent = editor.value;
         }
 
-        // 📌 匯出前將所有詞彙與課文句子的拼音預先生成並快取/嵌入
         const pinyinMap = {};
         const allWords = [...vocabWords, ...pinyinVocabWords, ...idiomWords, ...customProtectedWords];
         allWords.forEach(w => {
@@ -1868,13 +1842,6 @@ ${pinyinBlock}`;
           clonedEditorSec.style.display = 'none';
         }
 
-        const clonedVoiceCard = clonedHtml.querySelector('#voiceCard');
-        if (clonedVoiceCard) {
-          // Keep its current hidden/visible state during export
-          // clonedVoiceCard.style.display is already set
-        }
-
-        // 📌 嵌入拼音快取 JSON 資料腳本
         const pinyinScriptTag = document.createElement('script');
         pinyinScriptTag.id = "embeddedPinyinData";
         pinyinScriptTag.type = "application/json";
@@ -1886,7 +1853,6 @@ ${pinyinBlock}`;
         let cleanFileName = "dictation";
         if (lessonTitle && lessonTitle.trim().length > 0) {
           let t = lessonTitle.trim();
-          
           let yearMatch = t.match(/20\d{2}|\d{2}\/?\d{2}/);
           let year = yearMatch ? yearMatch[0].replace(/\//g, '') : "";
           if (year.length > 4) year = year.substring(0, 4); 
@@ -1919,16 +1885,37 @@ ${pinyinBlock}`;
         const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
         const blobUrl = URL.createObjectURL(blob);
         
-        const downloadAnchor = document.createElement("a");
-        downloadAnchor.href = blobUrl;
-        downloadAnchor.download = fileName;
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        document.body.removeChild(downloadAnchor);
+        // 📱 Android & iPad compatible download / open handler
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isAndroid = /Android/.test(navigator.userAgent);
+
+        if (isIOS || isAndroid) {
+          // Open in a new tab/window for mobile devices where direct blob downloads can be restrictive
+          const newWindow = window.open(blobUrl, '_blank');
+          if (!newWindow) {
+            // Fallback to direct anchor click if popups are blocked
+            const downloadAnchor = document.createElement("a");
+            downloadAnchor.href = blobUrl;
+            downloadAnchor.download = fileName;
+            downloadAnchor.target = "_blank";
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            document.body.removeChild(downloadAnchor);
+          } else {
+            alert("已成功匯出！若在 iOS/iPad 瀏覽器中，請點選分享按鈕並選擇「儲存至檔案」或加入書籤。");
+          }
+        } else {
+          const downloadAnchor = document.createElement("a");
+          downloadAnchor.href = blobUrl;
+          downloadAnchor.download = fileName;
+          document.body.appendChild(downloadAnchor);
+          downloadAnchor.click();
+          document.body.removeChild(downloadAnchor);
+        }
 
         setTimeout(() => {
           URL.revokeObjectURL(blobUrl);
-        }, 1000);
+        }, 3000);
       } catch (err) {
         console.error("Export Error:", err);
         alert("匯出檔案時發生錯誤，請重新再試一遍。");
@@ -1988,7 +1975,7 @@ ${pinyinBlock}`;
           <div class="word-card " id="card_${idx}" onclick="clickPlayVocab(${idx})">
             <div class="word-index">#${idx + 1}</div>
             <div class="word-text">${(function(){
-                            let dw = cleanWord;
+              let dw = cleanWord;
               if (typeof highlightedWords !== 'undefined' && highlightedWords.length > 0) {
                 const sortedHw = [...highlightedWords].sort((a,b) => b.length - a.length);
                 sortedHw.forEach(hw => {
@@ -1999,10 +1986,10 @@ ${pinyinBlock}`;
               }
               return dw;
             })()}</div>
-                        <div class="pinyin-text">${(function(){
+            <div class="pinyin-text">${(function(){
               let dp = dynamicPinyin;
               if (typeof highlightedWords !== 'undefined' && highlightedWords.length > 0) {
-                                let pyParts = dp.split(/\s+/);
+                let pyParts = dp.split(/\s+/);
                 let charList = cleanWord.split('');
 
                 function stripTones(str) {
@@ -2014,14 +2001,12 @@ ${pinyinBlock}`;
                   let plainP = stripTones(origP.replace(/<[^>]*>/g, ''));
                   let char = charList[i] || '';
 
-                  // 1. 檢查該字對應的中文字是否在高亮名單中
                   let hasChineseHw = char && highlightedWords.some(hw => {
                     if (!hw) return false;
                     let clean = hw.trim().normalize("NFC");
                     return /[一-龥]/.test(clean) && clean.includes(char);
                   });
 
-                  // 2. 檢查該字的拼音是否在高亮名單中
                   let hasPinyinHw = highlightedWords.some(hw => {
                     if (!hw) return false;
                     let clean = hw.trim().normalize("NFC");
@@ -2030,11 +2015,11 @@ ${pinyinBlock}`;
 
                   let targetColor = null;
                   if (hasChineseHw && hasPinyinHw) {
-                    targetColor = "#4ef5ef"; // 同時有中文與拼音高亮 -> 亮青色
+                    targetColor = "#a811bf";
                   } else if (hasChineseHw) {
-                    targetColor = "#0cb318"; // 僅有中文字高亮 -> 綠色
+                    targetColor = "#0cb318";
                   } else if (hasPinyinHw) {
-                    targetColor = "#f71942"; // 直接輸入拼音高亮 -> 紅色
+                    targetColor = "#f71942";
                   }
 
                   if (targetColor) {
@@ -2078,7 +2063,7 @@ ${pinyinBlock}`;
             <div class="dictation-row" id="dcard_${item.index}" onclick="clickPlayDictation(${item.index})">
               <div class="sentence-index">#${item.index}</div>
               <div class="sentence-text">${(function(){
-                                let dt = cleanText;
+                let dt = cleanText;
                 if (typeof highlightedWords !== 'undefined' && highlightedWords.length > 0) {
                   const sortedHw = [...highlightedWords].sort((a,b) => b.length - a.length);
                   sortedHw.forEach(hw => {
@@ -2089,51 +2074,49 @@ ${pinyinBlock}`;
                 }
                 return dt;
               })()}</div>
-                            <div class="sentence-pinyin">${(function(){
+              <div class="sentence-pinyin">${(function(){
                 let dp = dynamicPinyin;
                 if (typeof highlightedWords !== 'undefined' && highlightedWords.length > 0) {
-                                  let pyParts = dp.split(/\s+/);
-                let charList = cleanText.split('');
+                  let pyParts = dp.split(/\s+/);
+                  let charList = cleanText.split('');
 
-                function stripTones(str) {
-                  let s = str.replace(/[üǖǘǚǜÜǕǗǙǛ]/g, "v");
-                  return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-                }
-
-                pyParts = pyParts.map((origP, i) => {
-                  let plainP = stripTones(origP.replace(/<[^>]*>/g, ''));
-                  let char = charList[i] || '';
-
-                  // 1. 檢查該字對應的中文字是否在高亮名單中
-                  let hasChineseHw = char && highlightedWords.some(hw => {
-                    if (!hw) return false;
-                    let clean = hw.trim().normalize("NFC");
-                    return /[一-龥]/.test(clean) && clean.includes(char);
-                  });
-
-                  // 2. 檢查該字的拼音是否在高亮名單中
-                  let hasPinyinHw = highlightedWords.some(hw => {
-                    if (!hw) return false;
-                    let clean = hw.trim().normalize("NFC");
-                    return !/[一-龥]/.test(clean) && (stripTones(clean) === plainP);
-                  });
-
-                  let targetColor = null;
-                  if (hasChineseHw && hasPinyinHw) {
-                    targetColor = "#4ef5ef"; // 同時有中文與拼音高亮 -> 亮青色
-                  } else if (hasChineseHw) {
-                    targetColor = "#0cb318"; // 僅有中文字高亮 -> 綠色
-                  } else if (hasPinyinHw) {
-                    targetColor = "#f71942"; // 直接輸入拼音高亮 -> 紅色
+                  function stripTones(str) {
+                    let s = str.replace(/[üǖǘǚǜÜǕǗǙǛ]/g, "v");
+                    return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
                   }
 
-                  if (targetColor) {
-                    return `<span style="color: ${targetColor};">${origP}</span>`;
-                  }
-                  return origP;
-                });
+                  pyParts = pyParts.map((origP, i) => {
+                    let plainP = stripTones(origP.replace(/<[^>]*>/g, ''));
+                    let char = charList[i] || '';
 
-                dp = pyParts.join(' ');
+                    let hasChineseHw = char && highlightedWords.some(hw => {
+                      if (!hw) return false;
+                      let clean = hw.trim().normalize("NFC");
+                      return /[一-龥]/.test(clean) && clean.includes(char);
+                    });
+
+                    let hasPinyinHw = highlightedWords.some(hw => {
+                      if (!hw) return false;
+                      let clean = hw.trim().normalize("NFC");
+                      return !/[一-龥]/.test(clean) && (stripTones(clean) === plainP);
+                    });
+
+                    let targetColor = null;
+                    if (hasChineseHw && hasPinyinHw) {
+                      targetColor = "#a811bf";
+                    } else if (hasChineseHw) {
+                      targetColor = "#0cb318";
+                    } else if (hasPinyinHw) {
+                      targetColor = "#f71942";
+                    }
+
+                    if (targetColor) {
+                      return `<span style="color: ${targetColor};">${origP}</span>`;
+                    }
+                    return origP;
+                  });
+
+                  dp = pyParts.join(' ');
                 }
                 return dp;
               })()}</div>
@@ -2147,11 +2130,10 @@ ${pinyinBlock}`;
       updateDisplayModeUI();
     }
 
-    
     let resolvedPdfUrl = "";
     let isPdfViewerOpen = false;
 
-                async function checkAndResolveSameNamePdf() {
+    async function checkAndResolveSameNamePdf() {
       const pdfBtn = document.getElementById('pdfViewerBtn');
       if (pdfBtn) pdfBtn.style.display = 'none';
 
@@ -2202,24 +2184,21 @@ ${pinyinBlock}`;
     }
 
     async function probePdfExistence(url) {
-      // 1. Try standard HEAD request (Best for normal web servers)
       try {
         let res = await fetch(url, { method: 'HEAD' });
         if (res.ok) return true;
         if (res.status === 404) return false;
       } catch (e) {}
 
-      // 2. Try GET request and abort instantly (Fixes issues where HEAD or Range headers are blocked)
       try {
         const controller = new AbortController();
         let res = await fetch(url, { method: 'GET', signal: controller.signal });
         if (res.ok) {
-          controller.abort(); // We only care about the headers/status, don't download the file
+          controller.abort();
           return true;
         }
       } catch (e) {}
       
-      // 3. XHR Fallback
       return new Promise((resolve) => {
         let xhr = new XMLHttpRequest();
         xhr.open('HEAD', url, true);
@@ -2254,47 +2233,26 @@ ${pinyinBlock}`;
         if (vocabToolbar) vocabToolbar.classList.add('hidden');
         if (dictationToolbar) dictationToolbar.classList.add('hidden');
 
+        // Fix iPad 1-page PDF display limitation by using Google Docs Viewer when online, ensuring multi-page scrolling on iPad and Android in main frame
+        const isOnline = window.location.protocol.startsWith('http');
         const absolutePdfUrl = new URL(resolvedPdfUrl, window.location.href).href;
-        const isAndroid = /Android/i.test(navigator.userAgent);
-        const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-
-        let viewerBodyHtml = '';
-        if (isAndroid) {
-          // Android browser iframe PDF workaround: prominent interactive card with direct open button
-          viewerBodyHtml = `
-            <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; background: #f9fafb; padding: 30px; text-align: center; gap: 20px;">
-              <div style="font-size: 4rem;">📄</div>
-              <div style="font-size: 1.2rem; font-weight: bold; color: #1f2937;">${resolvedPdfUrl}</div>
-              <p style="color: #4b5563; font-size: 1rem; max-width: 400px; line-height: 1.5;">
-                Android 裝置的瀏覽器不支援在網頁框架內直接預覽 PDF。請點擊下方按鈕以完整畫質開啟或下載此 PDF 檔案：
-              </p>
-              <a href="${absolutePdfUrl}" target="_blank" rel="noopener" style="background: #2563eb; color: #ffffff; text-decoration: none; padding: 12px 24px; border-radius: 8px; font-weight: bold; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(37,99,235,0.3);">
-                🔗 在新視窗中開啟 PDF 檔案
-              </a>
-            </div>
-          `;
-        } else {
-          // iPad, iPhone, Mac, Windows, Linux: use <object> with iframe fallback for rock-solid iOS/iPadOS rendering
-          viewerBodyHtml = `
-            <object data="${absolutePdfUrl}" type="application/pdf" style="width: 100%; height: 100%; display: block;">
-              <iframe src="${absolutePdfUrl}" style="width: 100%; height: 100%; border: none; display: block;" allowfullscreen>
-                <p>您的瀏覽器不支援內嵌 PDF，請點擊上方「在新視窗中開啟」按鈕檢視。</p>
-              </iframe>
-            </object>
-          `;
-        }
+        const viewerUrl = isOnline ? `https://docs.google.com/gview?url=${encodeURIComponent(absolutePdfUrl)}&embedded=true` : resolvedPdfUrl;
 
         area.innerHTML = `
           <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); width: 100%; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
             <div style="background: #2e7d32; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
-              <span style="font-weight: bold; font-size: 1.05rem;">📄 對應 PDF 檔案預覽 (${resolvedPdfUrl})</span>
+              <span style="font-weight: bold; font-size: 1.05rem;">📄 對應 PDF 檔案內嵌預覽 (${resolvedPdfUrl})</span>
               <div style="display: flex; gap: 8px; align-items: center;">
-                <a href="${absolutePdfUrl}" target="_blank" rel="noopener" style="background: #ffeb3b; color: #1b4332; text-decoration: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">🔗 在新視窗中開啟</a>
-                <button onclick="closePdfViewer()" style="background: #ffffff; color: #2e7d32; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ 關閉</button>
+                <a href="${resolvedPdfUrl}" target="_blank" style="background: #ffffff; color: #2e7d32; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">在新視窗開啟 PDF</a>
+                <button onclick="closePdfViewer()" style="background: #ffffff; color: #d32f2f; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ 關閉</button>
               </div>
             </div>
-            <div style="flex: 1; overflow-y: auto; -webkit-overflow-scrolling: touch; position: relative; background: #525659; display: flex; flex-direction: column;">
-              ${viewerBodyHtml}
+            <div style="flex: 1; position: relative; background: #525659; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+              <iframe src="${viewerUrl}" style="width: 100%; height: 100%; border: none; display: block;" allowfullscreen>
+                <object data="${resolvedPdfUrl}" type="application/pdf" style="width: 100%; height: 100%;">
+                  <embed src="${resolvedPdfUrl}" type="application/pdf" style="width: 100%; height: 100%;" />
+                </object>
+              </iframe>
             </div>
           </div>
         `;
@@ -2326,7 +2284,7 @@ ${pinyinBlock}`;
       }
     }
 
-            function speakText(text, onEndCallback) {
+    function speakText(text, onEndCallback) {
       if (!synth) {
         if (onEndCallback) onEndCallback();
         return;
@@ -2340,17 +2298,14 @@ ${pinyinBlock}`;
         return;
       }
 
-      // Cancel previous speech safely
       synth.cancel();
 
       const utterance = new SpeechSynthesisUtterance(safeText);
 
-      // Refresh voice list if empty
       if (!availableVoices || availableVoices.length === 0) {
         availableVoices = synth.getVoices() || [];
       }
 
-      // Determine active voice from dropdown selection or fallback
       const voiceSelect = document.getElementById('voiceSelect');
       const selectedName = (voiceSelect && voiceSelect.value) ? voiceSelect.value : userSelectedVoiceName;
       let chosenVoice = availableVoices.find(v => v.name === selectedName);
@@ -2378,7 +2333,6 @@ ${pinyinBlock}`;
         utterance.lang = currentLang;
       }
 
-      // Determine rate from current tab speed dropdown
       let activeRate = 0.82;
       const vocabSpeedSel = document.getElementById('vocabSpeedSelect');
       const dictSpeedSel = document.getElementById('dictationSpeedSelect');
@@ -2399,7 +2353,6 @@ ${pinyinBlock}`;
         if (onEndCallback) onEndCallback(); 
       };
 
-      // Ensure slight delay after cancel() so Chrome/Safari doesn't skip speech
       wakeUpTimeout = setTimeout(() => {
         synth.speak(utterance);
 
@@ -2421,8 +2374,34 @@ ${pinyinBlock}`;
       }, 120); 
     }
 
+    // 🎯 點擊單次播放邏輯 (非自動播放模式)：
+    // pause 1 sec -> play once -> pause 3 sec -> play once, then stop
     function playSingleWord(word) {
-      speakText(word, null);
+      if (synth) synth.cancel();
+      if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
+      if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
+
+      singlePlayTimeout1 = setTimeout(() => {
+        speakText(word, () => {
+          singlePlayTimeout2 = setTimeout(() => {
+            speakText(word, null);
+          }, 3000);
+        });
+      }, 1000);
+    }
+
+    function playSingleDictationSentence(text) {
+      if (synth) synth.cancel();
+      if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
+      if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
+
+      singlePlayTimeout1 = setTimeout(() => {
+        speakSentenceWithPunctuation(text, () => {
+          singlePlayTimeout2 = setTimeout(() => {
+            speakSentenceWithPunctuation(text, null);
+          }, 3000);
+        });
+      }, 1000);
     }
 
     function startTimer(seconds, onFinish) {
@@ -2748,7 +2727,7 @@ ${pinyinBlock}`;
       } else {
         const item = dictQueue.find(q => q.index === index);
         if (item) {
-          speakSentenceWithPunctuation(item.text, null);
+          playSingleDictationSentence(item.text);
         }
       }
     }
@@ -2794,6 +2773,9 @@ ${pinyinBlock}`;
       }
 
       if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+      if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
+      if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
+
       clearInterval(timerInterval);
       remainingSeconds = 0;
       totalTimerSeconds = 0;
@@ -2802,9 +2784,7 @@ ${pinyinBlock}`;
       document.querySelectorAll('.active-reading').forEach(c => c.classList.remove('active-reading'));
     }
 
-
-    
-        let availableVoices = [];
+    let availableVoices = [];
     let userSelectedVoiceName = "";
 
     function populateVoices() {
@@ -2857,8 +2837,6 @@ ${pinyinBlock}`;
       }
     }
 
-    
-    
     async function loadSystemFonts() {
       const fontSelect = document.getElementById('fontSelect');
       if (!fontSelect) return;
@@ -2879,15 +2857,13 @@ ${pinyinBlock}`;
         const fontFamilies = new Set();
         
         fonts.forEach(font => {
-          // Filter or collect Chinese / common fonts or all installed fonts
           if (font.family) {
             fontFamilies.add(font.family);
           }
         });
 
         const sortedFamilies = Array.from(fontFamilies).sort();
-        
-        // Keep existing options
+
         const currentVal = fontSelect.value;
         fontSelect.innerHTML = `
           <option value="LXGW WenKai TC, serif">霞鶩文楷 (預設)</option>
@@ -2898,12 +2874,10 @@ ${pinyinBlock}`;
           <option value="YouYuan, Rounded Mplus 1c, sans-serif">圓體</option>
         `;
 
-        // Add scanned system fonts
         const optGroup = document.createElement('optgroup');
         optGroup.label = "🖥️ 本機已安裝字型 (" + sortedFamilies.length + ")";
         
         sortedFamilies.forEach(family => {
-          // Avoid duplicates with default ones
           if (!['霞鶩文楷', 'Free HK Kai 4700', '標楷體', '黑體', '宋體', '圓體'].includes(family)) {
             const opt = document.createElement('option');
             opt.value = `"${family}", serif`;
@@ -2921,15 +2895,11 @@ ${pinyinBlock}`;
       }
     }
 
-    
-    
-    
     function onFontChange() {
       const fontSelect = document.getElementById('fontSelect');
       if (!fontSelect) return;
       const selectedFont = fontSelect.value;
-      console.log("Font selected:", selectedFont);
-      
+
       let fontStack = `"${selectedFont}", sans-serif`;
       if (selectedFont === 'DFKai-SB') {
         fontStack = '"DFKai-SB", "BiauKai", "標楷體", "KaiTi", "STKaiti", "Apple LiSung", serif';
@@ -2972,20 +2942,15 @@ ${pinyinBlock}`;
       `;
     }
 
-
-
-
     function onVoiceChange() {
       const voiceSelect = document.getElementById('voiceSelect');
       if (!voiceSelect) return;
       userSelectedVoiceName = voiceSelect.value;
 
-      
       if (synth) {
         synth.cancel();
       }
 
-      // 🔊 Provide instant audio sample when user selects a voice
       if (userSelectedVoiceName) {
         setTimeout(() => {
           speakText("語音已切換", null);
@@ -2994,7 +2959,6 @@ ${pinyinBlock}`;
     }
 
     function onSpeedChange() {
-      
       if (synth) {
         synth.cancel();
       }
@@ -3013,7 +2977,7 @@ ${pinyinBlock}`;
       }
     }
 
-function autoInitApp() {
+    function autoInitApp() {
       const embeddedDataTag = document.getElementById('embeddedPinyinData');
       if (embeddedDataTag && embeddedDataTag.textContent) {
         try {
@@ -3023,7 +2987,6 @@ function autoInitApp() {
         }
       }
 
-      
       if (synth) {
         initVoiceList();
       }
