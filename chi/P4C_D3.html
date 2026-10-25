@@ -2423,7 +2423,11 @@
         if (vocabToolbar) vocabToolbar.classList.add('hidden');
         if (dictationToolbar) dictationToolbar.classList.add('hidden');
 
-        // 直連嵌入 PDF 避免線上 PDF.js 被瀏覽器跨域 (CORS) 阻擋導致黑屏
+        // Fix iPad 1-page PDF display limitation by using Google Docs Viewer when online, ensuring multi-page scrolling on iPad and Android in main frame
+        const isOnline = window.location.protocol.startsWith('http');
+        const absolutePdfUrl = new URL(resolvedPdfUrl, window.location.href).href;
+        const viewerUrl = isOnline ? `https://docs.google.com/gview?url=${encodeURIComponent(absolutePdfUrl)}&embedded=true` : resolvedPdfUrl;
+
         area.innerHTML = `
           <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); width: 100%; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
             <div style="background: #2e7d32; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
@@ -2433,8 +2437,8 @@
                 <button onclick="closePdfViewer()" style="background: #ffffff; color: #d32f2f; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ 關閉</button>
               </div>
             </div>
-            <div style="flex: 1; position: relative; background: #525659;">
-              <iframe src="${resolvedPdfUrl}" style="width: 100%; height: 100%; border: none; display: block;">
+            <div style="flex: 1; position: relative; background: #525659; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+              <iframe src="${viewerUrl}" style="width: 100%; height: 100%; border: none; display: block;" allowfullscreen>
                 <object data="${resolvedPdfUrl}" type="application/pdf" style="width: 100%; height: 100%;">
                   <embed src="${resolvedPdfUrl}" type="application/pdf" style="width: 100%; height: 100%;" />
                 </object>
