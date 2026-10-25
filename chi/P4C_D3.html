@@ -2075,16 +2075,37 @@
         const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
         const blobUrl = URL.createObjectURL(blob);
         
-        const downloadAnchor = document.createElement("a");
-        downloadAnchor.href = blobUrl;
-        downloadAnchor.download = fileName;
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        document.body.removeChild(downloadAnchor);
+        // 📱 Android & iPad compatible download / open handler
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isAndroid = /Android/.test(navigator.userAgent);
+
+        if (isIOS || isAndroid) {
+          // Open in a new tab/window for mobile devices where direct blob downloads can be restrictive
+          const newWindow = window.open(blobUrl, '_blank');
+          if (!newWindow) {
+            // Fallback to direct anchor click if popups are blocked
+            const downloadAnchor = document.createElement("a");
+            downloadAnchor.href = blobUrl;
+            downloadAnchor.download = fileName;
+            downloadAnchor.target = "_blank";
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            document.body.removeChild(downloadAnchor);
+          } else {
+            alert("已成功匯出！若在 iOS/iPad 瀏覽器中，請點選分享按鈕並選擇「儲存至檔案」或加入書籤。");
+          }
+        } else {
+          const downloadAnchor = document.createElement("a");
+          downloadAnchor.href = blobUrl;
+          downloadAnchor.download = fileName;
+          document.body.appendChild(downloadAnchor);
+          downloadAnchor.click();
+          document.body.removeChild(downloadAnchor);
+        }
 
         setTimeout(() => {
           URL.revokeObjectURL(blobUrl);
-        }, 1000);
+        }, 3000);
       } catch (err) {
         console.error("Export Error:", err);
         alert("匯出檔案時發生錯誤，請重新再試一遍。");
@@ -3188,7 +3209,6 @@
     document.addEventListener('DOMContentLoaded', autoInitApp);
     window.onload = autoInitApp;
   </script>
-
 
 <div style="display: none;"><textarea id="rawTextEditor" placeholder="在此粘貼全文或點擊選擇檔案上傳...">Title:  開心小學 (26/27)  四年級中默 (三)
 
