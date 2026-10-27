@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-HK"><head>
+<html lang="zh-HK" style="--font-family: &quot;Noto Sans HK&quot;, &quot;Noto Sans TC&quot;, sans-serif;"><head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>開心小學 中默聽寫系統</title>
@@ -884,8 +884,15 @@
     }
 
   </style>
-</head>
-<body class="exported-app">
+<style id="dynamicFontOverride">
+        body, *, .word-text, .sentence-text, .word-card, .dictation-row, button, input, select, textarea, h1, h2, h3, span {
+          font-family: "Noto Sans HK", "Noto Sans TC", sans-serif !important;
+        }
+        .pinyin-text, .sentence-pinyin {
+          font-family: var(--pinyin-font-family) !important;
+        }
+      </style></head>
+<body style="font-family: &quot;Noto Sans HK&quot;, &quot;Noto Sans TC&quot;, sans-serif;" class="exported-app">
 
   <header>
     <!-- 🏠 Home Icon Vector SVG (Top Left 2mm, Enlarged to 46x46px) -->
@@ -927,7 +934,7 @@
       </button>
 
       <button class="btn-hdr-opt btn-lang-opt" id="langSwitchBtn" onclick="toggleLanguage()" title="切換朗讀語言">普</button>
-      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="切換顯示模式">拼</button>
+      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="切換顯示模式">漢</button>
       
       <div class="timer-clock-box" title="剩餘時間倒數">
         <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 0%, rgb(229, 231, 235) 0%);"></div>
@@ -970,7 +977,7 @@
       </div>
 
       <!-- 🗣️ Voice & Font Selection Card -->
-      <div class="voice-card" id="voiceCard" style="display: none; flex-direction: column; gap: 8px;">
+      <div class="voice-card" id="voiceCard" style="display: flex; flex-direction: column; gap: 8px;">
         <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
           <div class="voice-select-wrapper">
             <span>🗣️</span>
@@ -1011,7 +1018,7 @@
       </div>
     </aside>
 
-    <main id="mainContent" class="mode-pinyin">
+    <main id="mainContent" class="mode-han">
       <div class="toolbar-card" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">詞語</button>
@@ -1160,8 +1167,8 @@
         
           <div class="word-card " id="card_15" onclick="clickPlayVocab(15)">
             <div class="word-index">#16</div>
-            <div class="word-text">沈默</div>
-            <div class="pinyin-text">shěn mò</div>
+            <div class="word-text">沉默</div>
+            <div class="pinyin-text">chén mò</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(15)">▶</button>
           </div>
         
@@ -3374,7 +3381,7 @@
 遮掩	吩咐	輪流	慢吞吞
 分享	講述	害羞	脫胎換骨
 友善	感動	萌芽	憂鬱
-介意	心扉	概括	沈默
+介意	心扉	概括	沉默
 盼望	呼喚	劇烈	衝破
 束縛	證明	組織	相遇
 周圍	緊張	勇敢	瞬間
@@ -3410,4 +3417,4 @@
 高亮詞語:
 翩翩 老 伶俐 鈞 惶 挺 策 胸 腹 裁 牽 促膝談 唇齒
 摩 托 索 賴 鼓 鹿
-chéng xī tan xiàn huī xiáng piān</textarea></div><script id="embeddedPinyinData" type="application/json">{"遮掩":"zhē yǎn","吩咐":"fēn fù","輪流":"lún liú","慢吞吞":"màn tūn tūn","分享":"fēn xiǎng","講述":"jiǎng shù","害羞":"hài xiū","脫胎換骨":"tuō tāi huàn gǔ","友善":"yǒu shàn","感動":"gǎn dòng","萌芽":"méng yá","憂鬱":"yōu yù","介意":"jiè yì","心扉":"xīn fēi","概括":"gài kuò","沈默":"shěn mò","盼望":"pàn wàng","呼喚":"hū huàn","劇烈":"jù liè","衝破":"chōng pò","束縛":"shù fù","證明":"zhèng míng","組織":"zǔ zhī","相遇":"xiāng yù","周圍":"zhōu wéi","緊張":"jǐn zhāng","勇敢":"yǒng gǎn","瞬間":"shùn jiàn","響亮":"xiǎng liàng","怒吼":"nù hǒu","索性":"suǒ xìng","跪地求饒":"guì dì qiú ráo","騰空":"téng kōng","可憐":"kě lián","氣喘":"qì chuǎn","白茸茸":"bái róng róng","翩翩":"piān piān","伸展":"shēn zhǎn","伶俐":"líng lì","奄奄一息":"yǎn yǎn yī xī","顫動":"chàn dòng","蠕動":"rú dòng","動彈":"dòng tan","小心翼翼":"xiǎo xīn yì yì","歪倒":"wāi dǎo","無限":"wú xiàn","盛滿":"chéng mǎn","黑漆漆":"hēi qī qī","蘇醒":"sū xǐng","喜悅":"xǐ yuè","朝三暮四":"cháo sān mù sì","一竅不通":"yī qiào bù tōng","七上八下":"qī shàng bā xià","兩全其美":"liǎng quán qí měi","半斤八兩":"bàn jīn bā liǎng","九牛一毛":"jiǔ niú yī máo","約法三章":"yuē fǎ sān zhāng","四分五裂":"sì fēn wǔ liè","八面玲瓏":"bā miàn líng lóng","十拿九穩":"shí ná jiǔ wěn","六神無主":"liù shén wú zhǔ","一波三折":"yī bō sān zhé","一髮千鈞":"yī fà qiān jūn","目瞪口呆":"mù dèng kǒu dāi","人心惶惶":"rén xīn huáng huáng","挺身而出":"tǐng shēn ér chū","束手無策":"shù shǒu wú cè","胸無點墨":"xiōng wú diǎn mò","推心置腹":"tuī xīn zhì fù","充耳不聞":"chōng ěr bù wén","別出心裁":"bié chū xīn cái","順手牽羊":"shùn shǒu qiān yáng","促膝談心":"cù xī tán xīn","唇齒相依":"chún chǐ xiāng yī","地上":"dì shàng","母子":"mǔ zǐ","巨人":"jù rén"}</script></body></html>
+chéng xī tan xiàn huī xiáng piān</textarea></div><script id="embeddedPinyinData" type="application/json">{"遮掩":"zhē yǎn","吩咐":"fēn fù","輪流":"lún liú","慢吞吞":"màn tūn tūn","分享":"fēn xiǎng","講述":"jiǎng shù","害羞":"hài xiū","脫胎換骨":"tuō tāi huàn gǔ","友善":"yǒu shàn","感動":"gǎn dòng","萌芽":"méng yá","憂鬱":"yōu yù","介意":"jiè yì","心扉":"xīn fēi","概括":"gài kuò","沉默":"chén mò","盼望":"pàn wàng","呼喚":"hū huàn","劇烈":"jù liè","衝破":"chōng pò","束縛":"shù fù","證明":"zhèng míng","組織":"zǔ zhī","相遇":"xiāng yù","周圍":"zhōu wéi","緊張":"jǐn zhāng","勇敢":"yǒng gǎn","瞬間":"shùn jiàn","響亮":"xiǎng liàng","怒吼":"nù hǒu","索性":"suǒ xìng","跪地求饒":"guì dì qiú ráo","騰空":"téng kōng","可憐":"kě lián","氣喘":"qì chuǎn","白茸茸":"bái róng róng","翩翩":"piān piān","伸展":"shēn zhǎn","伶俐":"líng lì","奄奄一息":"yǎn yǎn yī xī","顫動":"chàn dòng","蠕動":"rú dòng","動彈":"dòng tan","小心翼翼":"xiǎo xīn yì yì","歪倒":"wāi dǎo","無限":"wú xiàn","盛滿":"chéng mǎn","黑漆漆":"hēi qī qī","蘇醒":"sū xǐng","喜悅":"xǐ yuè","朝三暮四":"cháo sān mù sì","一竅不通":"yī qiào bù tōng","七上八下":"qī shàng bā xià","兩全其美":"liǎng quán qí měi","半斤八兩":"bàn jīn bā liǎng","九牛一毛":"jiǔ niú yī máo","約法三章":"yuē fǎ sān zhāng","四分五裂":"sì fēn wǔ liè","八面玲瓏":"bā miàn líng lóng","十拿九穩":"shí ná jiǔ wěn","六神無主":"liù shén wú zhǔ","一波三折":"yī bō sān zhé","一髮千鈞":"yī fà qiān jūn","目瞪口呆":"mù dèng kǒu dāi","人心惶惶":"rén xīn huáng huáng","挺身而出":"tǐng shēn ér chū","束手無策":"shù shǒu wú cè","胸無點墨":"xiōng wú diǎn mò","推心置腹":"tuī xīn zhì fù","充耳不聞":"chōng ěr bù wén","別出心裁":"bié chū xīn cái","順手牽羊":"shùn shǒu qiān yáng","促膝談心":"cù xī tán xīn","唇齒相依":"chún chǐ xiāng yī","地上":"dì shàng","母子":"mǔ zǐ","巨人":"jù rén"}</script></body></html>
