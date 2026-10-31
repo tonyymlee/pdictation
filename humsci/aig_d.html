@@ -181,6 +181,16 @@
       background-color: #104ba3; 
     }
 
+    /* 🔴 錯詞專用播放按鈕樣式 */
+    .btn-highlight-play-icon {
+      background-color: #d32f2f;
+      color: #ffffff;
+      cursor: pointer !important;
+    }
+    .btn-highlight-play-icon:hover {
+      background-color: #b71c1c;
+    }
+
     /* ⏸ 暫停/繼續按鈕樣式 */
     .btn-pause-icon { 
       background-color: #ef6c00; 
@@ -196,19 +206,6 @@
       background-color: #0d47a1; 
     }
     .btn-pause-icon svg {
-      width: 26px;
-      height: 26px;
-    }
-
-    /* 🔄 重置按鈕圖示樣式 */
-    .btn-reset-icon { 
-      background-color: #c62828; 
-      color: white; 
-    }
-    .btn-reset-icon:hover { 
-      background-color: #b22424; 
-    }
-    .btn-reset-icon svg {
       width: 26px;
       height: 26px;
     }
@@ -913,9 +910,15 @@
         </svg>
       </button>
 
-      <button class="btn-icon btn-play-icon" onclick="startAutoPlay()" title="自動播放">
+      <button class="btn-icon btn-play-icon" onclick="startAutoPlay(false)" title="自動播放">
         <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
           <text id="goBtnText" x="50%" y="54%" dominant-baseline="central" text-anchor="middle" fill="#ffffff" font-family="inherit" font-weight="900" font-size="52">開</text>
+        </svg>
+      </button>
+
+      <button class="btn-icon btn-highlight-play-icon" onclick="startAutoPlay(true)" title="播放高亮/重點詞語">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <text id="wrongGoBtnText" x="50%" y="54%" dominant-baseline="central" text-anchor="middle" fill="#ffffff" font-family="inherit" font-weight="900" font-size="52">錯</text>
         </svg>
       </button>
 
@@ -923,12 +926,6 @@
         <svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg">
           <rect x="5" y="3" width="5" height="18" rx="1.5"/>
           <rect x="14" y="3" width="5" height="18" rx="1.5"/>
-        </svg>
-      </button>
-      
-      <button class="btn-icon btn-reset-icon" onclick="resetPlayback()" title="重新開始">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"/>
         </svg>
       </button>
 
@@ -1209,6 +1206,7 @@
     let currentLang = 'zh-HK'; 
     let displayMode = 'pinyin'; 
     let wakeLock = null; 
+    let isOnlyHighlighted = false;
 
     const synth = window.speechSynthesis;
 
@@ -2014,7 +2012,7 @@
         let charList = cleanWord.split('');
 
         function stripTones(str) {
-          let s = str.replace(/[üǖǘǚǜÜǕǗǙǛ]/g, "v");
+          let s = str.replace(/[üǖǘǚǜÜǕǗǙ游]/g, "v");
           return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
         }
 
@@ -2440,14 +2438,21 @@
       return '課文詞語';
     }
 
-    function startAutoPlay() {
+    function startAutoPlay(onlyHighlighted = false) {
       resetPlayback();
       isPlaying = true;
       isPaused = false;
       isReviewPhase = false;
+      isOnlyHighlighted = onlyHighlighted;
       
       const goText = document.getElementById('goBtnText');
-      if (goText) goText.textContent = '自';
+      const wrongGoText = document.getElementById('wrongGoBtnText');
+
+      if (onlyHighlighted) {
+        if (wrongGoText) wrongGoText.textContent = '自';
+      } else {
+        if (goText) goText.textContent = '自';
+      }
 
       requestWakeLock();
 
@@ -2458,6 +2463,19 @@
         if (currentTab === 'tab2') data = pinyinVocabWords;
         if (currentTab === 'tab3') data = idiomWords;
         queue = data.filter(it => !it || typeof it !== 'object' || it.type !== 'subtitle');
+      }
+
+      if (onlyHighlighted) {
+        if (!highlightedWords || highlightedWords.length === 0) {
+          alert("沒有找到高亮/重點詞語。");
+          resetPlayback();
+          return;
+        }
+        queue = queue.filter(item => {
+          const text = getItemText(item);
+          if (!text) return false;
+          return highlightedWords.some(hw => text.includes(hw));
+        });
       }
 
       playIndex = 0;
@@ -2578,10 +2596,39 @@
       if (isPlaying) {
         if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
         clearInterval(timerInterval);
+        
+        // Rebuild queue
         queue = data.filter(it => !it || typeof it !== 'object' || it.type !== 'subtitle');
+        
+        // Retain highlight filter if currently in "錯" mode
+        if (isOnlyHighlighted) {
+          queue = queue.filter(qItem => {
+            const text = getItemText(qItem);
+            return text && highlightedWords.some(hw => text.includes(hw));
+          });
+        }
+        
         // find corresponding index in filtered queue
         playIndex = queue.indexOf(item);
-        if (playIndex === -1) playIndex = 0;
+        
+        if (playIndex === -1) {
+          // If the clicked word is NOT highlighted, find the next highlighted word down the list
+          let allItems = data.filter(it => !it || typeof it !== 'object' || it.type !== 'subtitle');
+          let clickedOriginalIndex = allItems.indexOf(item);
+          playIndex = queue.findIndex(qItem => allItems.indexOf(qItem) > clickedOriginalIndex);
+          if (playIndex === -1) playIndex = queue.length; // End if no more highlighted words
+          
+          // Play the manually clicked word, then resume the highlighted queue
+          speakText(wordText, () => {
+            if (!isPlaying) return;
+            startTimer(3, () => {
+              if (!isPlaying) return;
+              playNextVocabStep();
+            });
+          });
+          return;
+        }
+        
         playNextVocabStep();
       } else {
         playSingleWord(wordText);
@@ -2723,18 +2770,49 @@
 
     function clickPlayDictation(index) {
       highlightDictationCard(`dcard_${index}`);
-      const dictQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
+      let dictQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
 
       if (isPlaying) {
         if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
         clearInterval(timerInterval);
+        
+        // Retain highlight filter if currently in "錯" mode
+        if (isOnlyHighlighted) {
+          dictQueue = dictQueue.filter(item => {
+            const text = getItemText(item);
+            return text && highlightedWords.some(hw => text.includes(hw));
+          });
+        }
+        
         queue = dictQueue;
         playIndex = dictQueue.findIndex(q => q.index === index);
+        
+        if (playIndex === -1) {
+          // If clicked sentence is not highlighted, find the next highlighted one
+          let allQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
+          let clickedItem = allQueue.find(q => q.index === index);
+          let originalQIndex = allQueue.indexOf(clickedItem);
+          playIndex = dictQueue.findIndex(qItem => allQueue.indexOf(qItem) > originalQIndex);
+          if (playIndex === -1) playIndex = dictQueue.length;
+          
+          if (clickedItem) {
+            speakSentenceWithPunctuation(clickedItem.text, () => {
+              if (!isPlaying) return;
+              startTimer(3, () => {
+                if (!isPlaying) return;
+                playNextDictationStep();
+              });
+            });
+            return;
+          }
+        }
+        
         if (playIndex !== -1) {
           playNextDictationStep();
         }
       } else {
-        const item = dictQueue.find(q => q.index === index);
+        const allQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
+        const item = allQueue.find(q => q.index === index);
         if (item) {
           playSingleDictationSentence(item.text);
         }
@@ -2767,10 +2845,14 @@
       isPlaying = false;
       isPaused = false;
       isReviewPhase = false;
+      isOnlyHighlighted = false;
       playIndex = 0;
 
       const goText = document.getElementById('goBtnText');
       if (goText) goText.textContent = '開';
+
+      const wrongGoText = document.getElementById('wrongGoBtnText');
+      if (wrongGoText) wrongGoText.textContent = '錯';
 
       releaseWakeLock();
 
