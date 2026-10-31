@@ -166,15 +166,11 @@
     }
 
     /* 💚 GO 播放按鈕圖示樣式 */
-    .btn-play-icon svg {
-      width: 34px;
-      height: 34px;
-    }
-
     .btn-play-icon { 
       background-color: #104ba3; 
       color: #ffffff; 
       cursor: pointer !important;
+      font-size: 1.35rem !important;
     }
     .btn-play-icon:hover { 
       background-color: #104ba3; 
@@ -185,6 +181,7 @@
       background-color: #d32f2f;
       color: #ffffff;
       cursor: pointer !important;
+      font-size: 1.35rem !important;
     }
     .btn-highlight-play-icon:hover {
       background-color: #b71c1c;
@@ -909,25 +906,23 @@
         </svg>
       </button>
 
+      <!-- ✨ BUTTON UPDATE: Replaced <svg><text> with pure HTML <span> for reliable iPad rendering -->
       <button class="btn-icon btn-play-icon" onclick="startAutoPlay(false)" title="自動播放">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <text id="goBtnText" x="50%" y="54%" dominant-baseline="central" text-anchor="middle" fill="#ffffff" font-family="inherit" font-weight="900" font-size="52">自</text>
-        </svg>
+        <span id="goBtnText">開</span>
       </button>
 
+      <!-- ✨ BUTTON UPDATE: Replaced <svg><text> with pure HTML <span> for reliable iPad rendering -->
       <button class="btn-icon btn-highlight-play-icon" onclick="startAutoPlay(true)" title="播放高亮/重點詞語">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <text id="wrongGoBtnText" x="50%" y="54%" dominant-baseline="central" text-anchor="middle" fill="#ffffff" font-family="inherit" font-weight="900" font-size="52">錯</text>
-        </svg>
+        <span id="wrongGoBtnText">錯</span>
       </button>
 
       <button class="btn-icon btn-pause-icon" id="pauseResumeBtn" onclick="togglePauseResume()" title="暫停播放"><svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="3" width="5" height="18" rx="1.5"></rect><rect x="14" y="3" width="5" height="18" rx="1.5"></rect></svg></button>
 
       <button class="btn-hdr-opt btn-lang-opt" id="langSwitchBtn" onclick="toggleLanguage()" title="切換朗讀語言">廣</button>
-      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="切換顯示模式">漢+拼</button>
+      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="切換顯示模式">拼</button>
       
       <div class="timer-clock-box" title="剩餘時間倒數">
-        <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 80%, rgb(229, 231, 235) 80%);"></div>
+        <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 0%, rgb(229, 231, 235) 0%);"></div>
       </div>
     </div>
   </header>
@@ -1002,7 +997,7 @@
       </div>
     </aside>
 
-    <main id="mainContent" class="mode-hanPinyin">
+    <main id="mainContent" class="mode-pinyin">
       <div class="toolbar-card" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">詞語</button>
@@ -1048,56 +1043,56 @@
               <span>4上人文 第3課 香港的氣候</span>
             </div>
           
-            <div class="word-card" id="card_1" onclick="clickPlayVocab(1)">
+            <div class="word-card " id="card_1" onclick="clickPlayVocab(1)">
               <div class="word-index">#1</div>
               <div class="word-text">熱帶氣<span style="color: #f71942;">旋</span></div>
               <div class="pinyin-text">rè dài qì <span style="color: #0cb318;">xuán</span></div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(1)">▶</button>
             </div>
           
-            <div class="word-card active-reading" id="card_2" onclick="clickPlayVocab(2)">
+            <div class="word-card " id="card_2" onclick="clickPlayVocab(2)">
               <div class="word-index">#2</div>
               <div class="word-text">山泥傾瀉</div>
               <div class="pinyin-text">shān ní qīng xiè</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(2)">▶</button>
             </div>
           
-            <div class="word-card" id="card_3" onclick="clickPlayVocab(3)">
+            <div class="word-card " id="card_3" onclick="clickPlayVocab(3)">
               <div class="word-index">#3</div>
               <div class="word-text">乾燥</div>
               <div class="pinyin-text">qián zào</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(3)">▶</button>
             </div>
           
-            <div class="word-card" id="card_4" onclick="clickPlayVocab(4)">
+            <div class="word-card " id="card_4" onclick="clickPlayVocab(4)">
               <div class="word-index">#4</div>
               <div class="word-text">華南</div>
               <div class="pinyin-text">huá nán</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(4)">▶</button>
             </div>
           
-            <div class="word-card" id="card_5" onclick="clickPlayVocab(5)">
+            <div class="word-card " id="card_5" onclick="clickPlayVocab(5)">
               <div class="word-index">#5</div>
               <div class="word-text">惡<span style="color: #f71942;">劣</span></div>
               <div class="pinyin-text">è <span style="color: #0cb318;">liè</span></div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(5)">▶</button>
             </div>
           
-            <div class="word-card" id="card_6" onclick="clickPlayVocab(6)">
+            <div class="word-card " id="card_6" onclick="clickPlayVocab(6)">
               <div class="word-index">#6</div>
               <div class="word-text">潮濕</div>
               <div class="pinyin-text">cháo shī</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(6)">▶</button>
             </div>
           
-            <div class="word-card" id="card_7" onclick="clickPlayVocab(7)">
+            <div class="word-card " id="card_7" onclick="clickPlayVocab(7)">
               <div class="word-index">#7</div>
               <div class="word-text">發<span style="color: #f71942;">霉</span></div>
               <div class="pinyin-text">fā <span style="color: #0cb318;">méi</span></div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(7)">▶</button>
             </div>
           
-            <div class="word-card" id="card_8" onclick="clickPlayVocab(8)">
+            <div class="word-card " id="card_8" onclick="clickPlayVocab(8)">
               <div class="word-index">#8</div>
               <div class="word-text">戶外活動</div>
               <div class="pinyin-text">hù wài huó dòng</div>
@@ -1108,63 +1103,63 @@
               <span>4上人文 第4課 發現地球</span>
             </div>
           
-            <div class="word-card" id="card_10" onclick="clickPlayVocab(10)">
+            <div class="word-card " id="card_10" onclick="clickPlayVocab(10)">
               <div class="word-index">#9</div>
               <div class="word-text">南<span style="color: #f71942;">極</span>洲</div>
               <div class="pinyin-text">nán <span style="color: #0cb318;">jí</span> zhōu</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(10)">▶</button>
             </div>
           
-            <div class="word-card" id="card_11" onclick="clickPlayVocab(11)">
+            <div class="word-card " id="card_11" onclick="clickPlayVocab(11)">
               <div class="word-index">#10</div>
               <div class="word-text">木筏</div>
               <div class="pinyin-text">mù fá</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(11)">▶</button>
             </div>
           
-            <div class="word-card" id="card_12" onclick="clickPlayVocab(12)">
+            <div class="word-card " id="card_12" onclick="clickPlayVocab(12)">
               <div class="word-index">#11</div>
               <div class="word-text">空曠</div>
               <div class="pinyin-text">kōng kuàng</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(12)">▶</button>
             </div>
           
-            <div class="word-card" id="card_13" onclick="clickPlayVocab(13)">
+            <div class="word-card " id="card_13" onclick="clickPlayVocab(13)">
               <div class="word-index">#12</div>
               <div class="word-text">大西洋</div>
               <div class="pinyin-text">dà xī yáng</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(13)">▶</button>
             </div>
           
-            <div class="word-card" id="card_14" onclick="clickPlayVocab(14)">
+            <div class="word-card " id="card_14" onclick="clickPlayVocab(14)">
               <div class="word-index">#13</div>
               <div class="word-text"><span style="color: #f71942;">灼傷</span></div>
               <div class="pinyin-text"><span style="color: #0cb318;">zhuó</span> <span style="color: #0cb318;">shāng</span></div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(14)">▶</button>
             </div>
           
-            <div class="word-card" id="card_15" onclick="clickPlayVocab(15)">
+            <div class="word-card " id="card_15" onclick="clickPlayVocab(15)">
               <div class="word-index">#14</div>
               <div class="word-text">氾濫</div>
               <div class="pinyin-text">fán làn</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(15)">▶</button>
             </div>
           
-            <div class="word-card" id="card_16" onclick="clickPlayVocab(16)">
+            <div class="word-card " id="card_16" onclick="clickPlayVocab(16)">
               <div class="word-index">#15</div>
               <div class="word-text">房屋倒<span style="color: #f71942;">塌</span></div>
               <div class="pinyin-text">fáng wū dǎo <span style="color: #0cb318;">tā</span></div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(16)">▶</button>
             </div>
           
-            <div class="word-card" id="card_17" onclick="clickPlayVocab(17)">
+            <div class="word-card " id="card_17" onclick="clickPlayVocab(17)">
               <div class="word-index">#16</div>
               <div class="word-text">駱駝</div>
               <div class="pinyin-text">luò tuó</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(17)">▶</button>
             </div>
           
-            <div class="word-card" id="card_18" onclick="clickPlayVocab(18)">
+            <div class="word-card " id="card_18" onclick="clickPlayVocab(18)">
               <div class="word-index">#17</div>
               <div class="word-text">防災演習</div>
               <div class="pinyin-text">fáng zāi yǎn xí</div>
@@ -1175,70 +1170,70 @@
               <span>4上科學 第1課 地球的結構</span>
             </div>
           
-            <div class="word-card" id="card_20" onclick="clickPlayVocab(20)">
+            <div class="word-card " id="card_20" onclick="clickPlayVocab(20)">
               <div class="word-index">#18</div>
               <div class="word-text">地殼</div>
               <div class="pinyin-text">dì ké</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(20)">▶</button>
             </div>
           
-            <div class="word-card" id="card_21" onclick="clickPlayVocab(21)">
+            <div class="word-card " id="card_21" onclick="clickPlayVocab(21)">
               <div class="word-index">#19</div>
               <div class="word-text">地幔</div>
               <div class="pinyin-text">dì màn</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(21)">▶</button>
             </div>
           
-            <div class="word-card" id="card_22" onclick="clickPlayVocab(22)">
+            <div class="word-card " id="card_22" onclick="clickPlayVocab(22)">
               <div class="word-index">#20</div>
               <div class="word-text">地核</div>
               <div class="pinyin-text">dì hé</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(22)">▶</button>
             </div>
           
-            <div class="word-card" id="card_23" onclick="clickPlayVocab(23)">
+            <div class="word-card " id="card_23" onclick="clickPlayVocab(23)">
               <div class="word-index">#21</div>
               <div class="word-text">化石</div>
               <div class="pinyin-text">huà shí</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(23)">▶</button>
             </div>
           
-            <div class="word-card" id="card_24" onclick="clickPlayVocab(24)">
+            <div class="word-card " id="card_24" onclick="clickPlayVocab(24)">
               <div class="word-index">#22</div>
               <div class="word-text">火成岩</div>
               <div class="pinyin-text">huǒ chéng yán</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(24)">▶</button>
             </div>
           
-            <div class="word-card" id="card_25" onclick="clickPlayVocab(25)">
+            <div class="word-card " id="card_25" onclick="clickPlayVocab(25)">
               <div class="word-index">#23</div>
               <div class="word-text">沉積岩</div>
               <div class="pinyin-text">chén jī yán</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(25)">▶</button>
             </div>
           
-            <div class="word-card" id="card_26" onclick="clickPlayVocab(26)">
+            <div class="word-card " id="card_26" onclick="clickPlayVocab(26)">
               <div class="word-index">#24</div>
               <div class="word-text">變質岩</div>
               <div class="pinyin-text">biàn zhì yán</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(26)">▶</button>
             </div>
           
-            <div class="word-card" id="card_27" onclick="clickPlayVocab(27)">
+            <div class="word-card " id="card_27" onclick="clickPlayVocab(27)">
               <div class="word-index">#25</div>
               <div class="word-text"><span style="color: #f71942;">黏</span>土</div>
               <div class="pinyin-text"><span style="color: #0cb318;">nián</span> tǔ</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(27)">▶</button>
             </div>
           
-            <div class="word-card" id="card_28" onclick="clickPlayVocab(28)">
+            <div class="word-card " id="card_28" onclick="clickPlayVocab(28)">
               <div class="word-index">#26</div>
               <div class="word-text">壤土</div>
               <div class="pinyin-text">rǎng tǔ</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(28)">▶</button>
             </div>
           
-            <div class="word-card" id="card_29" onclick="clickPlayVocab(29)">
+            <div class="word-card " id="card_29" onclick="clickPlayVocab(29)">
               <div class="word-index">#27</div>
               <div class="word-text"><span style="color: #f71942;">沙</span>土</div>
               <div class="pinyin-text"><span style="color: #0cb318;">shā</span> tǔ</div>
@@ -1249,70 +1244,70 @@
               <span>4上科學 第4課 動植物與環境</span>
             </div>
           
-            <div class="word-card" id="card_31" onclick="clickPlayVocab(31)">
+            <div class="word-card " id="card_31" onclick="clickPlayVocab(31)">
               <div class="word-index">#28</div>
               <div class="word-text">胎生苗</div>
               <div class="pinyin-text">tāi shēng miáo</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(31)">▶</button>
             </div>
           
-            <div class="word-card" id="card_32" onclick="clickPlayVocab(32)">
+            <div class="word-card " id="card_32" onclick="clickPlayVocab(32)">
               <div class="word-index">#29</div>
               <div class="word-text"><span style="color: #f71942;">極</span>地</div>
               <div class="pinyin-text"><span style="color: #0cb318;">jí</span> dì</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(32)">▶</button>
             </div>
           
-            <div class="word-card" id="card_33" onclick="clickPlayVocab(33)">
+            <div class="word-card " id="card_33" onclick="clickPlayVocab(33)">
               <div class="word-index">#30</div>
               <div class="word-text">熱帶雨林</div>
               <div class="pinyin-text">rè dài yǔ lín</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(33)">▶</button>
             </div>
           
-            <div class="word-card" id="card_34" onclick="clickPlayVocab(34)">
+            <div class="word-card " id="card_34" onclick="clickPlayVocab(34)">
               <div class="word-index">#31</div>
               <div class="word-text">溫帶草<span style="color: #f71942;">原</span></div>
               <div class="pinyin-text">wēn dài cǎo <span style="color: #0cb318;">yuán</span></div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(34)">▶</button>
             </div>
           
-            <div class="word-card" id="card_35" onclick="clickPlayVocab(35)">
+            <div class="word-card " id="card_35" onclick="clickPlayVocab(35)">
               <div class="word-index">#32</div>
               <div class="word-text"><span style="color: #f71942;">沙</span>漠</div>
               <div class="pinyin-text"><span style="color: #0cb318;">shā</span> mò</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(35)">▶</button>
             </div>
           
-            <div class="word-card" id="card_36" onclick="clickPlayVocab(36)">
+            <div class="word-card " id="card_36" onclick="clickPlayVocab(36)">
               <div class="word-index">#33</div>
               <div class="word-text">濕地</div>
               <div class="pinyin-text">shī dì</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(36)">▶</button>
             </div>
           
-            <div class="word-card" id="card_37" onclick="clickPlayVocab(37)">
+            <div class="word-card " id="card_37" onclick="clickPlayVocab(37)">
               <div class="word-index">#34</div>
               <div class="word-text">皮下<span style="color: #f71942;">脂肪</span></div>
               <div class="pinyin-text">pí xià <span style="color: #0cb318;">zhī</span> <span style="color: #0cb318;">fáng</span></div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(37)">▶</button>
             </div>
           
-            <div class="word-card" id="card_38" onclick="clickPlayVocab(38)">
+            <div class="word-card " id="card_38" onclick="clickPlayVocab(38)">
               <div class="word-index">#35</div>
               <div class="word-text">冬眠</div>
               <div class="pinyin-text">dōng mián</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(38)">▶</button>
             </div>
           
-            <div class="word-card" id="card_39" onclick="clickPlayVocab(39)">
+            <div class="word-card " id="card_39" onclick="clickPlayVocab(39)">
               <div class="word-index">#36</div>
               <div class="word-text"><span style="color: #f71942;">睫</span>毛</div>
               <div class="pinyin-text"><span style="color: #0cb318;">jié</span> máo</div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(39)">▶</button>
             </div>
           
-            <div class="word-card" id="card_40" onclick="clickPlayVocab(40)">
+            <div class="word-card " id="card_40" onclick="clickPlayVocab(40)">
               <div class="word-index">#37</div>
               <div class="word-text"><span style="color: #f71942;">遷徙</span></div>
               <div class="pinyin-text"><span style="color: #0cb318;">qiān</span> <span style="color: #0cb318;">xǐ</span></div>
@@ -2575,24 +2570,32 @@
 
       const voiceSelect = document.getElementById('voiceSelect');
       const selectedName = (voiceSelect && voiceSelect.value) ? voiceSelect.value : userSelectedVoiceName;
-      let chosenVoice = availableVoices.find(v => v.name === selectedName);
+      let chosenVoice = null;
+      
+      if (selectedName) {
+        chosenVoice = availableVoices.find(v => v.name === selectedName);
+      }
 
+      // ✨ UPDATED: iOS/iPadOS Cantonese Fallback Logic Fix
       if (!chosenVoice) {
         if (currentLang === 'zh-TW') {
           chosenVoice = availableVoices.find(v => 
-            v.lang === 'zh-TW' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-tw')) || v.name.includes('國語') || v.name.includes('Taiwan') || v.name.includes('Mei-Jia')
-          ) || availableVoices.find(v => v.lang && v.lang.startsWith('zh-TW'));
+            v.lang === 'zh-TW' || v.lang === 'zh_TW' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-tw')) || v.name.includes('國語') || v.name.includes('Taiwan') || v.name.includes('Mei-Jia')
+          );
         } else if (currentLang === 'zh-CN') {
           chosenVoice = availableVoices.find(v => 
-            v.lang === 'zh-CN' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-cn')) || v.name.includes('普通話') || v.name.includes('Mandarin') || v.name.includes('Ting-Ting')
-          ) || availableVoices.find(v => v.lang && (v.lang.startsWith('zh-CN') || v.lang.startsWith('zh-TW')));
+            v.lang === 'zh-CN' || v.lang === 'zh_CN' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-cn')) || v.name.includes('普通話') || v.name.includes('Mandarin') || v.name.includes('Ting-Ting')
+          );
         } else {
+          // zh-HK
           chosenVoice = availableVoices.find(v => 
-            v.lang === 'zh-HK' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-hk')) || v.name.includes('廣東話') || v.name.includes('Cantonese') || v.name.includes('Sin-Ji')
-          ) || availableVoices.find(v => v.lang && v.lang.startsWith('zh'));
+            v.lang === 'zh-HK' || v.lang === 'zh_HK' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-hk')) || v.name.includes('廣東話') || v.name.includes('Cantonese') || v.name.includes('Sin-Ji') || (v.name && v.name.toLowerCase().includes('hong kong'))
+          );
         }
       }
 
+      // If a specific matching voice is found, assign it.
+      // If NOT found, rely strictly on utterance.lang so the iPad OS automatically selects its default Cantonese engine.
       if (chosenVoice) {
         utterance.voice = chosenVoice;
         if (chosenVoice.lang) utterance.lang = chosenVoice.lang;
