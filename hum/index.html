@@ -309,20 +309,14 @@
   <script>
                                 const cellData = [
       { id: "評1", fileCode: "E1", name: "評1", desc: "第一學期 階段評估一", isEval: true },
-      { id: "評1其他", fileCode: "E1O", name: "評1其他", desc: "第一學期 階段評估一其他補充", isEval: true },
       { id: "評2", fileCode: "E2", name: "評2", desc: "第二學期 階段評估二", isEval: true },
-      { id: "評2其他", fileCode: "E2O", name: "評2其他", desc: "第二學期 階段評估二其他補充", isEval: true },
-      { id: "評3", fileCode: "E3", name: "評3", desc: "第三學期 階段評估三", isEval: true },
-      { id: "評3其他", fileCode: "E3O", name: "評3其他", desc: "第三學期 階段評估三其他補充", isEval: true }
+      { id: "評3", fileCode: "E3", name: "評3", desc: "第三學期 階段評估三", isEval: true }
     ];
 
         const rainbowColors = [
-      "#EAB308", // 1 - Yellow
-      "#F97316", // 2 - Orange
-      "#DC2626", // 3 - Red
       "#1D4ED8", // 評1 - Blue
-      "#059669", // 4 - Teal/Green
-      "#84CC16"  // 評2 - Lime Green
+      "#84CC16", // 評2 - Lime Green
+      "#DC2626"  // 評3 - Red
     ];
 
     function polarToCartesian(centerX, centerY, radius, angleInDegrees) {
@@ -356,7 +350,7 @@
       const centerY = 100;
       const innerR = 45;
       const outerR = 95;
-      const numCells = 6;
+      const numCells = 3;
       const anglePerCell = 360 / numCells;
       const offsetAngle = -anglePerCell / 2;
 
