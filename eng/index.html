@@ -63,12 +63,10 @@
       padding: 0 10px;
     }
 
+    /* 🏠 Home Button Styling in Header Controls Toolbar */
     .home-link-btn {
-      position: absolute;
-      left: 0;
-      top: 6px;
-      background: #928ff2;
-      color: #ffffff;
+      background: #928ff2 !important;
+      color: #ffffff !important;
       border: none;
       height: 38px;
       width: 38px;
@@ -80,10 +78,11 @@
       transition: transform 0.15s, background-color 0.15s;
       text-decoration: none;
       cursor: pointer;
+      padding: 0;
     }
 
     .home-link-btn:hover {
-      background-color: #7d7ae6;
+      background-color: #7d7ae6 !important;
       transform: scale(1.05);
     }
 
@@ -145,9 +144,25 @@
 
     .menu-toggle-btn svg { width: 26px; height: 26px; }
 
-    .btn-play-icon svg { width: 34px; height: 34px; }
-    .btn-play-icon { background-color: #2e7d32; color: #ffffff; }
+    /* 💚 GO Play Button */
+    .btn-play-icon { 
+      background-color: #2e7d32; 
+      color: #ffffff; 
+      cursor: pointer !important;
+      font-size: 1.3rem !important;
+    }
     .btn-play-icon:hover { background-color: #1b5e20; }
+
+    /* 🔴 W / Mistake Play Button */
+    .btn-highlight-play-icon {
+      background-color: #d32f2f;
+      color: #ffffff;
+      cursor: pointer !important;
+      font-size: 1.3rem !important;
+    }
+    .btn-highlight-play-icon:hover {
+      background-color: #b71c1c;
+    }
 
     .btn-pause-icon { background-color: #ef6c00; color: #ffffff; }
     .btn-pause-icon:hover { background-color: #d86000; }
@@ -582,17 +597,14 @@
       min-height: 1.2em;
     }
 
-    /* Left-align Chinese text in passage rows */
     .dictation-row .zh-text {
       text-align: left !important;
     }
 
-    /* Keep Chinese text centered in grid cards */
     .word-card .zh-text {
       text-align: center !important;
     }
 
-    /* Shared Play Button for Vocab & Dictation */
     .card-play-btn {
       position: absolute;
       background: #fff3e0;
@@ -613,11 +625,9 @@
     
     .card-play-btn:hover { background: #ffe0b2; }
 
-    /* Word card specific position */
     .word-card .card-play-btn { right: 6px; bottom: 6px; }
     .word-card .card-play-btn:hover { transform: scale(1.1); }
 
-    /* Dictation list structure */
     .dictation-list { display: flex; flex-direction: column; gap: 10px; }
 
     .dictation-row {
@@ -643,7 +653,6 @@
       font-weight: bold;
     }
 
-    /* Dictation row specific button position */
     .dictation-row .card-play-btn {
       top: 50%;
       transform: translateY(-50%);
@@ -667,7 +676,6 @@
       display: inline-block !important;
     }
 
-    /* Display Mode Control Styles */
     .mode-E .sentence-text, .mode-E .word-text { display: block !important; }
     .mode-E .zh-text { display: none !important; }
 
@@ -698,7 +706,6 @@
 
     .hidden { display: none !important; }
 
-    /* Exported HTML Background Theme */
     body.exported-app { --main-bg: #f7dec8 !important; --sidebar-bg: #f7dec8 !important; }
     body.exported-app main { background-color: #f7dec8 !important; }
     body.exported-app .app-container { background-color: #f7dec8 !important; }
@@ -725,15 +732,16 @@
 
   <header>
     <div class="header-top-row">
-      <a href="https://tonyymlee.github.io/pdictation/" class="home-link-btn" title="Home">
-        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-          <polyline points="9 22 9 12 15 12 15 22"></polyline>
-        </svg>
-      </a>
       <h1 id="appMainTitle"><span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School<br>(26/27 Division 1)<br>Primary 4 Dictation 3 scope</h1>
     </div>
     <div class="header-controls">
+      <!-- 🏠 Home Button Moved to Header Controls Toolbar -->
+      <a href="https://tonyymlee.github.io/pdictation/" class="home-link-btn" title="Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v6H4a1 1 0 0 1-1-1v-9.5z"></path>
+        </svg>
+      </a>
+
       <button class="menu-toggle-btn" onclick="toggleSidebarMenu()" title="Show/Hide Menu">
         <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="7"></circle>
@@ -746,10 +754,14 @@
         </svg>
       </button>
 
-      <button class="btn-icon btn-play-icon" onclick="startAutoPlay()" title="Start Auto-Play">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <text x="50%" y="54%" dominant-baseline="central" text-anchor="middle" fill="#ffffff" font-family="Arial, sans-serif" font-weight="900" font-size="52">GO</text>
-        </svg>
+      <!-- 💚 GO Play Button (Toggles to A when running) -->
+      <button class="btn-icon btn-play-icon" onclick="startAutoPlay(false)" title="Start Auto-Play">
+        <span id="goBtnText">GO</span>
+      </button>
+
+      <!-- 🔴 W Mistake/Wrong Play Button -->
+      <button class="btn-icon btn-highlight-play-icon" onclick="startAutoPlay(true)" title="Play Highlighted / Mistake Words">
+        <span id="wrongGoBtnText">W</span>
       </button>
 
       <button class="btn-icon btn-pause-icon" id="pauseResumeBtn" onclick="togglePauseResume()" title="Pause"><svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="3" width="5" height="18" rx="1.5"></rect><rect x="14" y="3" width="5" height="18" rx="1.5"></rect></svg></button>
@@ -979,6 +991,7 @@ Students with these good qualities usually grow up to become good people. It is 
     let partAVocab = []; 
     let partBText = "";
     let partCText = "";
+    let highlightedWords = []; // Array to store highlighted/wrong words for W mode
 
     let currentTab = 'tab1';
     let isPlaying = false;
@@ -990,6 +1003,7 @@ Students with these good qualities usually grow up to become good people. It is 
     let totalTimerSeconds = 0;
     let remainingSeconds = 0;
     let wakeUpTimeout = null; 
+    let isOnlyHighlighted = false;
     
     // Cycle modes matching exact user labels: 'Chi' -> 'Eng' -> 'C+E' -> 'Blank'
     const displayModes = [
@@ -998,7 +1012,7 @@ Students with these good qualities usually grow up to become good people. It is 
       { id: 'EC', label: 'C+E' },
       { id: 'Blank', label: 'Blank' }
     ];
-    let displayModeIndex = 0; // Default to Chi
+    let displayModeIndex = 0;
 
     let wakeLock = null; 
     let currentSpeechId = 0; 
@@ -1007,9 +1021,7 @@ Students with these good qualities usually grow up to become good people. It is 
     let availableVoices = [];
     let selectedVoiceURI = localStorage.getItem('fixedDictationVoiceURI') || '';
 
-    // Global in-memory cache for loaded translations
     const translationCache = {};
-
     const synth = window.speechSynthesis;
 
     const pauseIconSvg = `<svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="3" width="5" height="18" rx="1.5"/><rect x="14" y="3" width="5" height="18" rx="1.5"/></svg>`;
@@ -1235,7 +1247,7 @@ Students with these good qualities usually grow up to become good people. It is 
 
     function copyCurrentContent(btnElement) {
       let copyText = "";
-      const currentMode = displayModes[displayModeIndex].id; // 'C', 'E', 'EC', or 'Blank'
+      const currentMode = displayModes[displayModeIndex].id;
 
       const shouldIncludeEn = (currentMode === 'E' || currentMode === 'EC' || currentMode === 'Blank');
       const shouldIncludeZh = (currentMode === 'C' || currentMode === 'EC' || currentMode === 'Blank');
@@ -1452,7 +1464,6 @@ Students with these good qualities usually grow up to become good people. It is 
       rawLines.forEach(line => {
         const trimmedLine = line.trim();
         
-        // Empty lines indicate paragraph breaks
         if (!trimmedLine) {
           if (hasAddedContent) {
             breakCount++;
@@ -1557,12 +1568,13 @@ Students with these good qualities usually grow up to become good people. It is 
     }
 
     function parseAndApplyFullText(fullText) {
-      displayModeIndex = 0; // Default to Chi
+      displayModeIndex = 0;
 
       if (!fullText || !fullText.trim()) {
         partAVocab = [];
         partBText = "";
         partCText = "";
+        highlightedWords = [];
         document.getElementById('appMainTitle').innerHTML = '<span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School English Dictation';
         document.getElementById('browserWindowTitle').textContent = "Happy Primary School English Dictation";
         renderTab();
@@ -1577,7 +1589,8 @@ Students with these good qualities usually grow up to become good people. It is 
                          lowerFullText.includes('part c') || 
                          lowerFullText.includes('vocabulary') || 
                          lowerFullText.includes('passage') || 
-                         lowerFullText.includes('unseen');
+                         lowerFullText.includes('unseen') ||
+                         lowerFullText.includes('highlight');
 
       let currentSection = hasHeaders ? 'header' : 'partA';
       
@@ -1585,6 +1598,7 @@ Students with these good qualities usually grow up to become good people. It is 
       let parsedPartA = [];
       let parsedPartB = [];
       let parsedPartC = [];
+      let parsedHighlight = [];
 
       lines.forEach(line => {
         const trimmed = line.trim();
@@ -1606,6 +1620,10 @@ Students with these good qualities usually grow up to become good people. It is 
           currentSection = 'partC';
           return;
         }
+        if (lower.includes('highlight') || lower.includes('重點詞語') || lower.includes('高亮詞語')) {
+          currentSection = 'highlight';
+          return;
+        }
 
         if (currentSection === 'header') {
           if (trimmed) headerLines.push(trimmed);
@@ -1619,13 +1637,17 @@ Students with these good qualities usually grow up to become good people. It is 
           if (trimmed) parsedPartB.push(trimmed);
         } else if (currentSection === 'partC') {
           if (trimmed) parsedPartC.push(trimmed);
+        } else if (currentSection === 'highlight') {
+          if (trimmed) {
+            let items = trimmed.split(/[\t,]+/).map(w => w.trim()).filter(Boolean);
+            items.forEach(w => parsedHighlight.push(w));
+          }
         }
       });
 
       if (headerLines.length > 0) {
         headerLines[0] = headerLines[0].replace(/^.*?School/i, 'Happy Primary School');
         
-        // Format line 1 so that year & division e.g. "(26/27 Division 1)" moves to the next line
         if (/\([^\)]*\d+[/\-]\d+[^\)]*\)/.test(headerLines[0])) {
           headerLines[0] = headerLines[0].replace(/\s*(\([^\)]*\d+[/\-]\d+[^\)]*\))/, '<br>$1');
         } else if (/\([^\)]*Division[^\)]*\)/i.test(headerLines[0])) {
@@ -1648,6 +1670,7 @@ Students with these good qualities usually grow up to become good people. It is 
       partAVocab = parsedPartA;
       partBText = parsedPartB.join('\n\n');
       partCText = parsedPartC.join('\n\n');
+      highlightedWords = parsedHighlight;
 
       renderTab();
       preloadAllTranslations();
@@ -1691,7 +1714,6 @@ Students with these good qualities usually grow up to become good people. It is 
         const secPerWordVal = document.getElementById('secPerWordInput')?.value || "2.8";
         const passageSpeedVal = document.getElementById('voiceSpeedSelect')?.value || "0.3";
 
-        // Sync values into cloned DOM attributes so they persist directly in HTML inputs/selects
         const clonedVDelay = clonedHtml.querySelector('#vocabDelayInput');
         if (clonedVDelay) clonedVDelay.setAttribute('value', vocabDelayVal);
 
@@ -1977,11 +1999,21 @@ Students with these good qualities usually grow up to become good people. It is 
       return 'Dictation';
     }
 
-    function startAutoPlay() {
+    function startAutoPlay(onlyHighlighted = false) {
       resetPlayback();
       isPlaying = true;
       isPaused = false;
       isReviewPhase = false;
+      isOnlyHighlighted = onlyHighlighted;
+
+      const goText = document.getElementById('goBtnText');
+      const wrongGoText = document.getElementById('wrongGoBtnText');
+
+      if (onlyHighlighted) {
+        if (wrongGoText) wrongGoText.textContent = 'A';
+      } else {
+        if (goText) goText.textContent = 'A';
+      }
 
       requestWakeLock();
 
@@ -1990,6 +2022,19 @@ Students with these good qualities usually grow up to become good people. It is 
       } else {
         let rawText = (currentTab === 'tab2') ? partBText : partCText;
         queue = buildDictationQueue(rawText).filter(q => q.type === 'sentence' || q.type === 'break');
+      }
+
+      if (onlyHighlighted) {
+        if (!highlightedWords || highlightedWords.length === 0) {
+          alert("No highlighted/mistake words found.");
+          resetPlayback();
+          return;
+        }
+        queue = queue.filter(item => {
+          const text = (currentTab === 'tab1') ? item : item.text;
+          if (!text) return false;
+          return highlightedWords.some(hw => text.toLowerCase().includes(hw.toLowerCase()));
+        });
       }
 
       playIndex = 0;
@@ -2038,11 +2083,12 @@ Students with these good qualities usually grow up to become good people. It is 
         return;
       }
 
-      highlightVocabCard(playIndex);
-      const word = queue[playIndex];
+      const currentWord = queue[playIndex];
+      const originalIdx = partAVocab.indexOf(currentWord);
+      highlightVocabCard(originalIdx !== -1 ? originalIdx : playIndex);
 
       if (isReviewPhase) {
-        speakText(word, false, () => {
+        speakText(currentWord, false, () => {
           if (!isPlaying) return;
           startTimer(2, () => {
             if (!isPlaying) return;
@@ -2054,11 +2100,11 @@ Students with these good qualities usually grow up to become good people. It is 
         const vocabDelayInput = document.getElementById('vocabDelayInput');
         const customDelay = vocabDelayInput ? (parseFloat(vocabDelayInput.value) || 10) : 10;
 
-        speakText(word, false, () => {
+        speakText(currentWord, false, () => {
           if (!isPlaying) return;
           startTimer(5, () => {
             if (!isPlaying) return;
-            speakText(word, false, () => {
+            speakText(currentWord, false, () => {
               if (!isPlaying) return;
               startTimer(customDelay, () => {
                 if (!isPlaying) return;
@@ -2083,12 +2129,14 @@ Students with these good qualities usually grow up to become good people. It is 
     function clickPlayVocab(idx) {
       highlightVocabCard(idx);
       if (!partAVocab || !partAVocab[idx]) return;
+      const wordItem = partAVocab[idx];
 
       if (isPlaying) {
         if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
         clearInterval(timerInterval);
-        queue = partAVocab;
-        playIndex = idx;
+        queue = isOnlyHighlighted ? partAVocab.filter(w => highlightedWords.some(hw => w.toLowerCase().includes(hw.toLowerCase()))) : partAVocab;
+        playIndex = queue.indexOf(wordItem);
+        if (playIndex === -1) playIndex = 0;
         playNextVocabStep();
       } else {
         if (synth) {
@@ -2096,7 +2144,7 @@ Students with these good qualities usually grow up to become good people. It is 
           const emptyUtter = new SpeechSynthesisUtterance('');
           synth.speak(emptyUtter);
         }
-        speakText(partAVocab[idx], false, null);
+        speakText(wordItem, false, null);
       }
     }
 
@@ -2191,11 +2239,14 @@ Students with these good qualities usually grow up to become good people. It is 
     function clickPlayDictation(index) {
       highlightDictationCard(`dcard_${index}`);
       let rawText = (currentTab === 'tab2') ? partBText : partCText;
-      const dictQueue = buildDictationQueue(rawText).filter(q => q.type === 'sentence' || q.type === 'break');
+      let dictQueue = buildDictationQueue(rawText).filter(q => q.type === 'sentence' || q.type === 'break');
 
       if (isPlaying) {
         if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
         clearInterval(timerInterval);
+        if (isOnlyHighlighted) {
+          dictQueue = dictQueue.filter(item => item.type === 'sentence' && highlightedWords.some(hw => item.text.toLowerCase().includes(hw.toLowerCase())));
+        }
         queue = dictQueue;
         playIndex = dictQueue.findIndex(q => q.index === index);
         if (playIndex !== -1) {
@@ -2240,8 +2291,15 @@ Students with these good qualities usually grow up to become good people. It is 
       isPlaying = false;
       isPaused = false;
       isReviewPhase = false;
+      isOnlyHighlighted = false;
       playIndex = 0;
       currentSpeechId++;
+
+      const goText = document.getElementById('goBtnText');
+      if (goText) goText.textContent = 'GO';
+
+      const wrongGoText = document.getElementById('wrongGoBtnText');
+      if (wrongGoText) wrongGoText.textContent = 'W';
 
       releaseWakeLock();
 
@@ -2261,7 +2319,6 @@ Students with these good qualities usually grow up to become good people. It is 
       document.querySelectorAll('.active-reading').forEach(c => c.classList.remove('active-reading'));
     }
 
-    
     let secretHClickCount = 0;
     let secretHClickTimer = null;
 
@@ -2308,7 +2365,6 @@ Students with these good qualities usually grow up to become good people. It is 
       }
 
       updateDisplayModeUI();
-
       switchTab('tab1', document.getElementById('btn_tab1'));
     }
 
