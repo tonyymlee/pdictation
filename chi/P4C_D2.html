@@ -9,6 +9,10 @@
 
   <!-- 📦 載入穩定版 pinyin-pro 拼音庫 -->
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.16.0/dist/index.js"></script>
+  <!-- ☁️ 載入 Google Cloud Fonts 雲端中文字型 -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+  <link href="https://fonts.googleapis.com/css2?family=Chiron+Sung+HK&amp;family=Iansui&amp;family=Liu+Jian+Mao+Cao&amp;family=Long+Cang&amp;family=Ma+Shan+Zheng&amp;family=Noto+Sans+HK:wght@400;700&amp;family=Noto+Sans+TC:wght@400;700&amp;family=Noto+Serif+HK:wght@400;700&amp;family=Noto+Serif+TC:wght@400;700&amp;family=ZCOOL+KuaiLe&amp;display=swap" rel="stylesheet">
 
   <style>
     :root {
@@ -19,8 +23,16 @@
       --active-green: #2d6a4f;
       --main-bg: #1b4332;
       --text-color: #2b2b2b;
-      --font-family: "LXGW WenKai TC", "標楷體", "BiauKai", "DFKai-SB", "KaiTi", serif;
+      --font-family: "DFKai-SB", "BiauKai", "標楷體", "KaiTi", "STKaiti", serif;
       --pinyin-font-family: "Calibri", sans-serif;
+    }
+
+    body, .word-text, .sentence-text, .word-card, .dictation-row, button, input, select, textarea, h1, h2, h3 {
+      font-family: var(--font-family) !important;
+    }
+
+    .pinyin-text, .sentence-pinyin {
+      font-family: var(--pinyin-font-family) !important;
     }
 
     * { 
@@ -58,34 +70,6 @@
       gap: 6px;
     }
 
-    /* 🏠 Home Link Icon (Enlarged & Prominent, Top-Left 2mm) */
-    .home-link-icon {
-      position: absolute;
-      top: 2mm;
-      left: 10px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      z-index: 1001;
-      width: 38px;
-      height: 38px;
-      background: #9b87f5;
-      border-radius: 8px;
-      box-shadow: 0 3px 8px rgba(0,0,0,0.25);
-      transition: transform 0.15s ease, background-color 0.15s ease;
-      text-decoration: none;
-    }
-
-    .home-link-icon:hover {
-      transform: scale(1.08);
-      background: #8b75f3;
-    }
-
-    .home-link-icon svg {
-      width: 24px;
-      height: 24px;
-    }
-
     .header-top-row {
       display: flex;
       align-items: center;
@@ -119,7 +103,7 @@
     }
 
     /* Icon-Only Control Buttons */
-    .menu-toggle-btn, .btn-icon, .btn-hdr-opt {
+    .menu-toggle-btn, .btn-icon, .btn-hdr-opt, .home-link-btn {
       background: #ffffff;
       color: #333333;
       border: none;
@@ -135,37 +119,54 @@
       transition: transform 0.15s, background-color 0.15s, color 0.15s;
       user-select: none;
       padding: 0 10px;
+      text-decoration: none;
     }
 
-    .menu-toggle-btn, .btn-icon {
+    .menu-toggle-btn, .btn-icon, .home-link-btn {
       width: 38px;
       font-size: 1.1rem;
       padding: 0;
     }
 
-    .menu-toggle-btn:hover, .btn-icon:hover, .btn-hdr-opt:hover {
+    .menu-toggle-btn:hover, .btn-icon:hover, .btn-hdr-opt:hover, .home-link-btn:hover {
       background-color: #f0f0f0;
       transform: scale(1.05);
     }
 
-    .menu-toggle-btn svg {
-      width: 26px;
-      height: 26px;
+    .menu-toggle-btn svg, .home-link-btn svg {
+      width: 24px;
+      height: 24px;
+    }
+
+    /* 🏠 Home Button Specific Styling (#9b87f5 background, white icon) */
+    .home-link-btn {
+      background: #9b87f5 !important;
+      color: #ffffff !important;
+    }
+    .home-link-btn:hover {
+      background: #8b75f3 !important;
     }
 
     /* 💚 GO 播放按鈕圖示樣式 */
-    .btn-play-icon svg {
-      width: 34px;
-      height: 34px;
-    }
-
     .btn-play-icon { 
       background-color: #2e7d32; 
       color: #ffffff; 
-      cursor: default !important;
+      cursor: pointer !important;
+      font-size: 1.35rem !important;
     }
     .btn-play-icon:hover { 
       background-color: #1b5e20; 
+    }
+
+    /* 🔴 錯詞專用播放按鈕樣式 */
+    .btn-highlight-play-icon {
+      background-color: #d32f2f;
+      color: #ffffff;
+      cursor: pointer !important;
+      font-size: 1.35rem !important;
+    }
+    .btn-highlight-play-icon:hover {
+      background-color: #b71c1c;
     }
 
     /* ⏸ 暫停/繼續按鈕樣式 */
@@ -187,17 +188,18 @@
       height: 26px;
     }
 
-    /* 🔄 重置按鈕圖示樣式 */
-    .btn-reset-icon { 
-      background-color: #c62828; 
-      color: white; 
+    /* 🔄 重新載入/重設按鈕樣式 (#c62828 背景, 白字) */
+    .btn-reload-icon {
+      background-color: #c62828 !important;
+      color: #ffffff !important;
+      cursor: pointer !important;
     }
-    .btn-reset-icon:hover { 
-      background-color: #b22424; 
+    .btn-reload-icon:hover {
+      background-color: #b22424 !important;
     }
-    .btn-reset-icon svg {
-      width: 26px;
-      height: 26px;
+    .btn-reload-icon svg {
+      width: 22px;
+      height: 22px;
     }
 
     /* 🟡 朗讀語言切換按鈕 (#ebf213) */
@@ -508,7 +510,6 @@
       text-align: center;
     }
 
-
     /* 🏷️ 工具列標籤圖示按鈕 (#376957 背景，白字) - 點擊返回頂部 */
     .btn-tag-icon {
       background-color: #376957 !important;
@@ -584,6 +585,17 @@
     .word-card:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .word-card.highlight-card {
+      background-color: #f0f70c !important;
+      border-color: #d4d909 !important;
+    }
+    .dictation-highlight {
+      background-color: #f0f70c;
+      border-radius: 4px;
+      padding: 0 2px;
+      display: inline-block;
     }
 
     .word-card.active-reading {
@@ -866,18 +878,18 @@
 <body class="exported-app">
 
   <header>
-    <!-- 🏠 Home Icon Vector SVG (Top Left 2mm, Enlarged to 46x46px) -->
-    <a href="https://tonyymlee.github.io/pdictation/chi/" class="home-link-icon" title="返回主頁">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v6H4a1 1 0 0 1-1-1v-9.5z"></path>
-      </svg>
-    </a>
-
     <div class="header-top-row">
       <h1><span onclick="handleOpenSecretClick()" style="user-select: none; cursor: default;">開</span>心小<span onclick="handleSecretClick()" style="user-select: none; cursor: default;">學</span> 中默聽寫系統</h1>
     </div>
     <div class="header-subtitle" id="subTitleDisplay" style="display: block;">(26/27)  四年級中默 (2)</div>
     <div class="header-controls">
+      <!-- 🏠 Home Button Moved to Header Controls Toolbar -->
+      <a href="https://tonyymlee.github.io/pdictation/chi/" class="home-link-btn" title="返回主頁">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v6H4a1 1 0 0 1-1-1v-9.5z"></path>
+        </svg>
+      </a>
+
       <button class="menu-toggle-btn" onclick="toggleSidebarMenu()" title="顯示 / 隱藏選單">
         <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
           <circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="7"></circle>
@@ -890,21 +902,26 @@
         </svg>
       </button>
 
-      <button class="btn-icon btn-play-icon" onclick="startAutoPlay()" title="自動播放">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <text id="goBtnText" x="50%" y="54%" dominant-baseline="central" text-anchor="middle" fill="#ffffff" font-family="inherit" font-weight="900" font-size="52">開</text>
-        </svg>
+      <!-- 💚 GO 播放按鈕 -->
+      <button class="btn-icon btn-play-icon" onclick="startAutoPlay(false)" title="自動播放">
+        <span id="goBtnText">開</span>
+      </button>
+
+      <!-- 🔴 錯詞專用播放按鈕 -->
+      <button class="btn-icon btn-highlight-play-icon" onclick="startAutoPlay(true)" title="播放高亮/重點詞語">
+        <span id="wrongGoBtnText">錯</span>
       </button>
 
       <button class="btn-icon btn-pause-icon" id="pauseResumeBtn" onclick="togglePauseResume()" title="暫停播放"><svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="3" width="5" height="18" rx="1.5"></rect><rect x="14" y="3" width="5" height="18" rx="1.5"></rect></svg></button>
       
-      <button class="btn-icon btn-reset-icon" onclick="resetPlayback()" title="重新開始">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
-          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"></path>
+      <!-- 🔄 重新開始按鈕 -->
+      <button class="btn-icon btn-reload-icon" onclick="resetPlayback()" title="重新開始 / 重設播放">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.73-5.73"></path>
         </svg>
       </button>
 
-      <button class="btn-hdr-opt btn-lang-opt" id="langSwitchBtn" onclick="toggleLanguage()" title="切換朗讀語言">國</button>
+      <button class="btn-hdr-opt btn-lang-opt" id="langSwitchBtn" onclick="toggleLanguage()" title="切換朗讀語言">普</button>
       <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="切換顯示模式">拼</button>
       
       <div class="timer-clock-box" title="剩餘時間倒數">
@@ -921,17 +938,13 @@
         <div class="nav-card-title" style="display: flex; align-items: center; justify-content: space-between;">
           <span><span onclick="handleSecretClick()" style="user-select: none; cursor: default;">學</span>習單元選擇</span>
           <button id="pdfViewerBtn" onclick="togglePdfViewer()" title="開啟對應 PDF 檔案" style="display: none; background: none; border: none; cursor: pointer; padding: 0; margin-left: 8px;">
-            <svg width="36" height="36" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <!-- Outer Red Container Box with White Outline -->
-              <rect x="4" y="4" width="92" height="92" rx="16" fill="#D30000" stroke="#FFFFFF" stroke-width="4"></rect>
-              <!-- Folded Top-Right Corner -->
-              <path d="M 64 4 Q 64 32 96 32 L 96 4 Z" fill="#FFFFFF"></path>
-              <!-- Sun / Circle -->
-              <circle cx="24" cy="28" r="7" fill="#FFFFFF"></circle>
-              <!-- Mountains Icon -->
-              <path d="M 18 52 L 30 38 L 38 46 L 52 28 L 64 52 Z" fill="#FFFFFF"></path>
-              <!-- PDF Text -->
-              <text x="50" y="82" text-anchor="middle" fill="#FFFFFF" font-size="28" font-weight="900" font-family="Arial Black, Impact, sans-serif" letter-spacing="1">PDF</text>
+            <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="100" height="100" rx="16" fill="#BA0000"></rect>
+              <path d="M 18 10 C 13.58 10 10 13.58 10 18 L 10 82 C 10 86.42 13.58 90 18 90 L 82 90 C 86.42 90 90 86.42 90 82 L 90 34 L 66 10 Z" fill="#D30000" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"></path>
+              <path d="M 66 10 L 66 26 C 66 30.42 69.58 34 74 34 L 90 34 Z" fill="#FFFFFF"></path>
+              <circle cx="27" cy="27" r="7.5" fill="#FFFFFF"></circle>
+              <path d="M 13 56 L 33 36 L 47 51 L 62 36 L 82 56 Z" fill="#FFFFFF"></path>
+              <text x="50" y="84" text-anchor="middle" fill="#FFFFFF" font-size="28" font-weight="900" font-family="Arial, Helvetica, sans-serif" letter-spacing="1">PDF</text>
             </svg>
           </button>
         </div>
@@ -951,18 +964,37 @@
         </div>
       </div>
 
-            <!-- 🗣️ Voice Selection Card -->
-      <div class="voice-card" id="voiceCard" style="display: none;">
-        <div class="voice-select-wrapper">
-          <span>🗣️</span>
-          <select id="voiceSelect" onchange="onVoiceChange()"><option value="">預設語音 (系統)</option><option value="Microsoft David - English (United States)">Microsoft David - English (United States) (en-US)</option><option value="Microsoft Mark - English (United States)">Microsoft Mark - English (United States) (en-US)</option><option value="Microsoft Zira - English (United States)">Microsoft Zira - English (United States) (en-US)</option><option value="Google Deutsch">Google Deutsch (de-DE)</option><option value="Google US English">Google US English (en-US)</option><option value="Google UK English Female">Google UK English Female (en-GB)</option><option value="Google UK English Male">Google UK English Male (en-GB)</option><option value="Google español">Google español (es-ES)</option><option value="Google español de Estados Unidos">Google español de Estados Unidos (es-US)</option><option value="Google français">Google français (fr-FR)</option><option value="Google हिन्दी">Google हिन्दी (hi-IN)</option><option value="Google Bahasa Indonesia">Google Bahasa Indonesia (id-ID)</option><option value="Google italiano">Google italiano (it-IT)</option><option value="Google 日本語">Google 日本語 (ja-JP)</option><option value="Google 한국의">Google 한국의 (ko-KR)</option><option value="Google Nederlands">Google Nederlands (nl-NL)</option><option value="Google polski">Google polski (pl-PL)</option><option value="Google português do Brasil">Google português do Brasil (pt-BR)</option><option value="Google русский">Google русский (ru-RU)</option><option value="Google&nbsp;普通话（中国大陆）">Google&nbsp;普通话（中国大陆） (zh-CN)</option><option value="Google&nbsp;粤語（香港）">Google&nbsp;粤語（香港） (zh-HK)</option><option value="Google 國語（臺灣）">Google 國語（臺灣） (zh-TW)</option></select>
+      <!-- 🗣️ Voice & Font Selection Card -->
+      <div class="voice-card" id="voiceCard" style="display: none; flex-direction: column; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 10px; width: 100%;">
+          <div class="voice-select-wrapper">
+            <span>🗣️</span>
+            <select id="voiceSelect" onchange="onVoiceChange()"><option value="">預設語音 (系統)</option><option value="Microsoft David - English (United States)">Microsoft David - English (United States) (en-US)</option><option value="Microsoft Mark - English (United States)">Microsoft Mark - English (United States) (en-US)</option><option value="Microsoft Zira - English (United States)">Microsoft Zira - English (United States) (en-US)</option><option value="Google Deutsch">Google Deutsch (de-DE)</option><option value="Google US English">Google US English (en-US)</option><option value="Google UK English Female">Google UK English Female (en-GB)</option><option value="Google UK English Male">Google UK English Male (en-GB)</option><option value="Google español">Google español (es-ES)</option><option value="Google español de Estados Unidos">Google español de Estados Unidos (es-US)</option><option value="Google français">Google français (fr-FR)</option><option value="Google हिन्दी">Google हिन्दी (hi-IN)</option><option value="Google Bahasa Indonesia">Google Bahasa Indonesia (id-ID)</option><option value="Google italiano">Google italiano (it-IT)</option><option value="Google 日本語">Google 日本語 (ja-JP)</option><option value="Google 한국의">Google 한국의 (ko-KR)</option><option value="Google Nederlands">Google Nederlands (nl-NL)</option><option value="Google polski">Google polski (pl-PL)</option><option value="Google português do Brasil">Google português do Brasil (pt-BR)</option><option value="Google русский">Google русский (ru-RU)</option><option value="Google&nbsp;普通话（中国大陆）">Google&nbsp;普通话（中国大陆） (zh-CN)</option><option value="Google&nbsp;粤語（香港）">Google&nbsp;粤語（香港） (zh-HK)</option><option value="Google 國語（臺灣）">Google 國語（臺灣） (zh-TW)</option></select>
+          </div>
+          <label class="chinese-filter-label">
+            <input type="checkbox" id="chineseVoicesOnly" onchange="populateVoices()"> 中文
+          </label>
         </div>
-        <label class="chinese-filter-label">
-          <input type="checkbox" id="chineseVoicesOnly" onchange="populateVoices()"> 中文
-        </label>
+        <div style="display: flex; align-items: center; gap: 8px; width: 100%;">
+          <div class="voice-select-wrapper" style="flex: 1;">
+            <span>🔤</span>
+            <select id="fontSelect" onchange="onFontChange()">
+              <option value="LXGW WenKai TC" selected="">霞鶩文楷 (預設)</option>
+              <option value="Iansui">芫荽體 Iansui (雲端)</option>
+              <option value="Noto Serif HK">思源宋體香港 (雲端)</option>
+              <option value="Noto Sans HK">思源黑體香港 (雲端)</option>
+              <option value="Free HK Kai 4700">Free HK Kai 4700</option>
+              <option value="DFKai-SB">標楷體</option>
+              <option value="SimHei">黑體 (微軟正黑)</option>
+              <option value="SimSun">宋體 / 明體</option>
+              <option value="YouYuan">圓體</option>
+            </select>
+          </div>
+          <button onclick="loadSystemFonts()" title="掃描並載入系統中文字型" style="background:#2d6a4f; color:white; border:none; padding:8px 10px; border-radius:8px; font-size:0.85rem; font-weight:bold; cursor:pointer; white-space:nowrap; box-shadow:0 2px 5px rgba(0,0,0,0.15);">🔍 掃描字型</button>
+        </div>
       </div>
 
-<div class="editor-box" id="editorSection" style="display: none;">
+      <div class="editor-box" id="editorSection" style="display: none;">
         <h3>載入 / 編輯內容</h3>
         <label class="file-input-label">
           📁 選擇文字檔 (.txt / .json)
@@ -979,7 +1011,7 @@
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">詞語</button>
           <span class="toolbar-options">
-                        <label>間：<input type="number" id="vocabDelayInput" value="15" min="1"> 秒</label>
+            <label>間：<input type="number" id="vocabDelayInput" value="15" min="1"> 秒</label>
             <label class="speed-control-label"><select id="vocabSpeedSelect" onchange="onSpeedChange()">
               <option value="0.1">0.1</option>
               <option value="0.2">0.2</option>
@@ -999,7 +1031,7 @@
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" onclick="scrollToTop()" title="返回頁面頂部">課文</button>
           <span class="toolbar-options">
-                        <label>每字：<input type="number" id="secPerCharInput" value="2.3" min="1" step="0.1"> 秒</label>
+            <label>每字：<input type="number" id="secPerCharInput" value="2.3" min="1" step="0.1"> 秒</label>
             <label class="speed-control-label"><select id="dictationSpeedSelect" onchange="onSpeedChange()">
               <option value="0.1">0.1</option>
               <option value="0.2">0.2</option>
@@ -1016,202 +1048,202 @@
       </div>
 
       <div id="contentArea"><div class="words-grid">
-          <div class="word-card" id="card_0" onclick="clickPlayVocab(0)">
-            <div class="word-index">#1</div>
-            <div class="word-text">概括</div>
-            <div class="pinyin-text">gài kuò</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(0)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_1" onclick="clickPlayVocab(1)">
-            <div class="word-index">#2</div>
-            <div class="word-text">藏</div>
-            <div class="pinyin-text">cáng</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(1)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_2" onclick="clickPlayVocab(2)">
-            <div class="word-index">#3</div>
-            <div class="word-text">組織</div>
-            <div class="pinyin-text">zǔ zhī</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(2)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_3" onclick="clickPlayVocab(3)">
-            <div class="word-index">#4</div>
-            <div class="word-text">呼喚</div>
-            <div class="pinyin-text">hū huàn</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(3)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_4" onclick="clickPlayVocab(4)">
-            <div class="word-index">#5</div>
-            <div class="word-text">眼神</div>
-            <div class="pinyin-text">yǎn shén</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(4)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_5" onclick="clickPlayVocab(5)">
-            <div class="word-index">#6</div>
-            <div class="word-text">方陣</div>
-            <div class="pinyin-text">fāng zhèn</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(5)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_6" onclick="clickPlayVocab(6)">
-            <div class="word-index">#7</div>
-            <div class="word-text">瞬間</div>
-            <div class="pinyin-text">shùn jiàn</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(6)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_7" onclick="clickPlayVocab(7)">
-            <div class="word-index">#8</div>
-            <div class="word-text">相遇</div>
-            <div class="pinyin-text">xiāng yù</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(7)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_8" onclick="clickPlayVocab(8)">
-            <div class="word-index">#9</div>
-            <div class="word-text">周圍</div>
-            <div class="pinyin-text">zhōu wéi</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(8)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_9" onclick="clickPlayVocab(9)">
-            <div class="word-index">#10</div>
-            <div class="word-text">垂青</div>
-            <div class="pinyin-text">chuí qīng</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(9)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_10" onclick="clickPlayVocab(10)">
-            <div class="word-index">#11</div>
-            <div class="word-text">劇烈</div>
-            <div class="pinyin-text">jù liè</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(10)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_11" onclick="clickPlayVocab(11)">
-            <div class="word-index">#12</div>
-            <div class="word-text">證明</div>
-            <div class="pinyin-text">zhèng míng</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(11)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_12" onclick="clickPlayVocab(12)">
-            <div class="word-index">#13</div>
-            <div class="word-text">溫柔</div>
-            <div class="pinyin-text">wēn róu</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(12)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_13" onclick="clickPlayVocab(13)">
-            <div class="word-index">#14</div>
-            <div class="word-text">盼望</div>
-            <div class="pinyin-text">pàn wàng</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(13)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_14" onclick="clickPlayVocab(14)">
-            <div class="word-index">#15</div>
-            <div class="word-text">流利</div>
-            <div class="pinyin-text">liú lì</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(14)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_15" onclick="clickPlayVocab(15)">
-            <div class="word-index">#16</div>
-            <div class="word-text">勇敢</div>
-            <div class="pinyin-text">yǒng gǎn</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(15)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_16" onclick="clickPlayVocab(16)">
-            <div class="word-index">#17</div>
-            <div class="word-text">溜冰</div>
-            <div class="pinyin-text">liū bīng</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(16)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_17" onclick="clickPlayVocab(17)">
-            <div class="word-index">#18</div>
-            <div class="word-text">祝賀</div>
-            <div class="pinyin-text">zhù hè</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(17)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_18" onclick="clickPlayVocab(18)">
-            <div class="word-index">#19</div>
-            <div class="word-text">練習</div>
-            <div class="pinyin-text">liàn xí</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(18)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_19" onclick="clickPlayVocab(19)">
-            <div class="word-index">#20</div>
-            <div class="word-text">奔跑</div>
-            <div class="pinyin-text">bēn pǎo</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(19)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_20" onclick="clickPlayVocab(20)">
-            <div class="word-index">#21</div>
-            <div class="word-text">索性</div>
-            <div class="pinyin-text">suǒ xìng</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(20)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_21" onclick="clickPlayVocab(21)">
-            <div class="word-index">#22</div>
-            <div class="word-text">巷子</div>
-            <div class="pinyin-text">xiàng zi</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(21)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_22" onclick="clickPlayVocab(22)">
-            <div class="word-index">#23</div>
-            <div class="word-text">氣喘</div>
-            <div class="pinyin-text">qì chuǎn</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(22)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_23" onclick="clickPlayVocab(23)">
-            <div class="word-index">#24</div>
-            <div class="word-text">氈帽</div>
-            <div class="pinyin-text">zhān mào</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(23)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_24" onclick="clickPlayVocab(24)">
-            <div class="word-index">#25</div>
-            <div class="word-text">怒吼</div>
-            <div class="pinyin-text">nù hǒu</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(24)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_25" onclick="clickPlayVocab(25)">
-            <div class="word-index">#26</div>
-            <div class="word-text">額頭</div>
-            <div class="pinyin-text">é tóu</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(25)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_26" onclick="clickPlayVocab(26)">
-            <div class="word-index">#27</div>
-            <div class="word-text">強烈</div>
-            <div class="pinyin-text">qiáng liè</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(26)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_27" onclick="clickPlayVocab(27)">
-            <div class="word-index">#28</div>
-            <div class="word-text">騰空</div>
-            <div class="pinyin-text">téng kōng</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(27)">▶</button>
-          </div>
-        </div></div>
+            <div class="word-card " id="card_0" onclick="clickPlayVocab(0)">
+              <div class="word-index">#1</div>
+              <div class="word-text">概括</div>
+              <div class="pinyin-text">gài kuò</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(0)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_1" onclick="clickPlayVocab(1)">
+              <div class="word-index">#2</div>
+              <div class="word-text">藏</div>
+              <div class="pinyin-text">cáng</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(1)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_2" onclick="clickPlayVocab(2)">
+              <div class="word-index">#3</div>
+              <div class="word-text">組織</div>
+              <div class="pinyin-text">zǔ zhī</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(2)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_3" onclick="clickPlayVocab(3)">
+              <div class="word-index">#4</div>
+              <div class="word-text">呼喚</div>
+              <div class="pinyin-text">hū huàn</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(3)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_4" onclick="clickPlayVocab(4)">
+              <div class="word-index">#5</div>
+              <div class="word-text">眼神</div>
+              <div class="pinyin-text">yǎn shén</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(4)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_5" onclick="clickPlayVocab(5)">
+              <div class="word-index">#6</div>
+              <div class="word-text">方陣</div>
+              <div class="pinyin-text">fāng zhèn</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(5)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_6" onclick="clickPlayVocab(6)">
+              <div class="word-index">#7</div>
+              <div class="word-text">瞬間</div>
+              <div class="pinyin-text">shùn jiàn</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(6)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_7" onclick="clickPlayVocab(7)">
+              <div class="word-index">#8</div>
+              <div class="word-text">相遇</div>
+              <div class="pinyin-text">xiāng yù</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(7)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_8" onclick="clickPlayVocab(8)">
+              <div class="word-index">#9</div>
+              <div class="word-text">周圍</div>
+              <div class="pinyin-text">zhōu wéi</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(8)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_9" onclick="clickPlayVocab(9)">
+              <div class="word-index">#10</div>
+              <div class="word-text">垂青</div>
+              <div class="pinyin-text">chuí qīng</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(9)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_10" onclick="clickPlayVocab(10)">
+              <div class="word-index">#11</div>
+              <div class="word-text">劇烈</div>
+              <div class="pinyin-text">jù liè</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(10)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_11" onclick="clickPlayVocab(11)">
+              <div class="word-index">#12</div>
+              <div class="word-text">證明</div>
+              <div class="pinyin-text">zhèng míng</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(11)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_12" onclick="clickPlayVocab(12)">
+              <div class="word-index">#13</div>
+              <div class="word-text">溫柔</div>
+              <div class="pinyin-text">wēn róu</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(12)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_13" onclick="clickPlayVocab(13)">
+              <div class="word-index">#14</div>
+              <div class="word-text">盼望</div>
+              <div class="pinyin-text">pàn wàng</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(13)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_14" onclick="clickPlayVocab(14)">
+              <div class="word-index">#15</div>
+              <div class="word-text">流利</div>
+              <div class="pinyin-text">liú lì</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(14)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_15" onclick="clickPlayVocab(15)">
+              <div class="word-index">#16</div>
+              <div class="word-text">勇敢</div>
+              <div class="pinyin-text">yǒng gǎn</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(15)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_16" onclick="clickPlayVocab(16)">
+              <div class="word-index">#17</div>
+              <div class="word-text">溜冰</div>
+              <div class="pinyin-text">liū bīng</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(16)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_17" onclick="clickPlayVocab(17)">
+              <div class="word-index">#18</div>
+              <div class="word-text">祝賀</div>
+              <div class="pinyin-text">zhù hè</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(17)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_18" onclick="clickPlayVocab(18)">
+              <div class="word-index">#19</div>
+              <div class="word-text">練習</div>
+              <div class="pinyin-text">liàn xí</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(18)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_19" onclick="clickPlayVocab(19)">
+              <div class="word-index">#20</div>
+              <div class="word-text">奔跑</div>
+              <div class="pinyin-text">bēn pǎo</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(19)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_20" onclick="clickPlayVocab(20)">
+              <div class="word-index">#21</div>
+              <div class="word-text">索性</div>
+              <div class="pinyin-text">suǒ xìng</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(20)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_21" onclick="clickPlayVocab(21)">
+              <div class="word-index">#22</div>
+              <div class="word-text">巷子</div>
+              <div class="pinyin-text">xiàng zi</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(21)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_22" onclick="clickPlayVocab(22)">
+              <div class="word-index">#23</div>
+              <div class="word-text">氣喘</div>
+              <div class="pinyin-text">qì chuǎn</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(22)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_23" onclick="clickPlayVocab(23)">
+              <div class="word-index">#24</div>
+              <div class="word-text">氈帽</div>
+              <div class="pinyin-text">zhān mào</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(23)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_24" onclick="clickPlayVocab(24)">
+              <div class="word-index">#25</div>
+              <div class="word-text">怒吼</div>
+              <div class="pinyin-text">nù hǒu</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(24)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_25" onclick="clickPlayVocab(25)">
+              <div class="word-index">#26</div>
+              <div class="word-text">額頭</div>
+              <div class="pinyin-text">é tóu</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(25)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_26" onclick="clickPlayVocab(26)">
+              <div class="word-index">#27</div>
+              <div class="word-text">強烈</div>
+              <div class="pinyin-text">qiáng liè</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(26)">▶</button>
+            </div>
+          
+            <div class="word-card " id="card_27" onclick="clickPlayVocab(27)">
+              <div class="word-index">#28</div>
+              <div class="word-text">騰空</div>
+              <div class="pinyin-text">téng kōng</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(27)">▶</button>
+            </div>
+          </div></div>
     </main>
   </div>
 
@@ -1252,7 +1284,6 @@
         }
       }
       
-      // Reset the count if not clicked again within 1.2 seconds
       secretClickTimer = setTimeout(() => {
         secretClickCount = 0;
       }, 1200);
@@ -1263,10 +1294,12 @@
     let vocabWords = [];
     let pinyinVocabWords = [];
     let idiomWords = [];
-    let customProtectedWords = []; 
+    let customProtectedWords = [];
+    let highlightedWords = []; 
     let rawDictationText = "";
 
-    // ⬆️ 點擊標籤按鈕返回頂部
+    function getItemText(it) { return typeof it === 'object' && it !== null ? it.text : it; }
+
     function scrollToTop() {
       const mainContent = document.getElementById('mainContent');
       if (mainContent) {
@@ -1274,13 +1307,11 @@
       }
     }
 
-    // 🔤 自動字形轉換輔助函式：著->着、裡->裹
     function autoConvertCharacters(text) {
       if (!text) return "";
       return text.replace(/著/g, '着').replace(/裡/g, '裹');
     }
 
-    // 🌟 500 個國小常用詞彙
     const primarySchoolVocabulary500 = [
       "高興", "快樂", "喜歡", "開心", "難過", "害怕", "緊張", "生氣", "擔心", "滿意",
       "美麗", "漂亮", "可愛", "乾淨", "認真", "專心", "努力", "勇敢", "聰明", "活潑",
@@ -1364,9 +1395,12 @@
     let totalTimerSeconds = 0;
     let remainingSeconds = 0;
     let wakeUpTimeout = null; 
-    let currentLang = 'zh-TW'; 
+    let singlePlayTimeout1 = null;
+    let singlePlayTimeout2 = null;
+    let currentLang = 'zh-CN'; 
     let displayMode = 'pinyin'; 
     let wakeLock = null; 
+    let isOnlyHighlighted = false;
 
     const synth = window.speechSynthesis;
 
@@ -1389,7 +1423,7 @@
       let currentWord = "";
 
       for (let char of convertedText) {
-        if (`。\.，,！？\?；;：:«»“”"''「」『』《》〈〉<>\(\)（）─—\-…`.includes(char)) {
+        if (`。\..,！？\?；;：:«»“”"''「」『』《》〈〉<>\(\)（）─—\-…`.includes(char)) {
           if (currentWord) {
             result += getDynamicPinyin(currentWord) + " ";
             currentWord = "";
@@ -1452,42 +1486,46 @@
         const queueList = buildDictationQueue();
         if (!queueList || queueList.length === 0) return;
 
-        let paragraphs = [[]];
+        let hanLines = [];
+        let pinyinLines = [];
+        let curParagraphHan = [];
+        let curParagraphPinyin = [];
+
+        function flushDictationParagraph() {
+          if (curParagraphHan.length > 0) {
+            hanLines.push(curParagraphHan.join(''));
+            pinyinLines.push(curParagraphPinyin.join(' '));
+            curParagraphHan = [];
+            curParagraphPinyin = [];
+          }
+        }
 
         queueList.forEach(item => {
-          if (item.type === 'sentence') {
-            paragraphs[paragraphs.length - 1].push(item);
+          if (item.type === 'title') {
+            flushDictationParagraph();
+            const titleText = autoConvertCharacters(item.text);
+            hanLines.push(titleText);
+            pinyinLines.push(titleText);
           } else if (item.type === 'break') {
-            paragraphs.push([]);
+            flushDictationParagraph();
+            if (hanLines.length > 0 && hanLines[hanLines.length-1] !== "") {
+              hanLines.push(""); 
+              pinyinLines.push("");
+            }
+          } else if (item.type === 'sentence') {
+            const cleanHan = autoConvertCharacters(item.text.replace(/\s+/g, ''));
+            curParagraphHan.push(cleanHan);
+            curParagraphPinyin.push(getSentencePinyinWithPunctuation(cleanHan));
           }
         });
+        flushDictationParagraph();
 
         if (displayMode === 'han' || displayMode === 'blank') {
-          copyText = paragraphs.map(p => 
-            p.map(item => autoConvertCharacters(item.text.replace(/\s+/g, ''))).join('')
-          ).join('\n\n');
+          copyText = hanLines.join('\n');
         } else if (displayMode === 'pinyin') {
-          copyText = paragraphs.map(p => 
-            p.map(item => {
-              const han = autoConvertCharacters(item.text.replace(/\s+/g, ''));
-              return getSentencePinyinWithPunctuation(han);
-            }).join(' ')
-          ).join('\n\n');
+          copyText = pinyinLines.join('\n');
         } else if (displayMode === 'hanPinyin') {
-          const hanBlock = paragraphs.map(p => 
-            p.map(item => autoConvertCharacters(item.text.replace(/\s+/g, ''))).join('')
-          ).join('\n\n');
-
-          const pinyinBlock = paragraphs.map(p => 
-            p.map(item => {
-              const han = autoConvertCharacters(item.text.replace(/\s+/g, ''));
-              return getSentencePinyinWithPunctuation(han);
-            }).join(' ')
-          ).join('\n\n');
-
-          copyText = `${hanBlock}
-
-${pinyinBlock}`;
+          copyText = hanLines.join('\n') + '\n\n' + pinyinLines.join('\n');
         }
       } else {
         let data = vocabWords;
@@ -1496,22 +1534,44 @@ ${pinyinBlock}`;
 
         if (!data || data.length === 0) return;
 
-        if (displayMode === 'han' || displayMode === 'blank') {
-          const hanList = data.map(w => autoConvertCharacters(w.replace(/\s+/g, '')));
-          copyText = formatWordsTo4PerRow(hanList);
-        } else if (displayMode === 'pinyin') {
-          const pinyinList = data.map(w => getDynamicPinyin(autoConvertCharacters(w.replace(/\s+/g, ''))));
-          copyText = formatWordsTo4PerRow(pinyinList);
-        } else if (displayMode === 'hanPinyin') {
-          const hanList = data.map(w => autoConvertCharacters(w.replace(/\s+/g, '')));
-          const pinyinList = data.map(w => getDynamicPinyin(autoConvertCharacters(w.replace(/\s+/g, ''))));
-          
-          const hanBlock = formatWordsTo4PerRow(hanList);
-          const pinyinBlock = formatWordsTo4PerRow(pinyinList);
-          
-          copyText = `${hanBlock}
+        let hanLines = [];
+        let pinyinLines = [];
+        
+        let curHanWords = [];
+        let curPinyinWords = [];
 
-${pinyinBlock}`;
+        function flushCurrent() {
+          if (curHanWords.length > 0) {
+            hanLines.push(formatWordsTo4PerRow(curHanWords));
+            pinyinLines.push(formatWordsTo4PerRow(curPinyinWords));
+            curHanWords = [];
+            curPinyinWords = [];
+          }
+        }
+
+        data.forEach(item => {
+          if (item && typeof item === 'object' && item.type === 'subtitle') {
+            flushCurrent();
+            const subText = autoConvertCharacters(item.text).replace(/^S:/i, '').trim();
+            hanLines.push(subText);
+            pinyinLines.push(subText);
+          } else {
+            const word = getItemText(item);
+            if (word) {
+              const cleanHan = autoConvertCharacters(word.replace(/\s+/g, ''));
+              curHanWords.push(cleanHan);
+              curPinyinWords.push(getDynamicPinyin(cleanHan));
+            }
+          }
+        });
+        flushCurrent();
+
+        if (displayMode === 'han' || displayMode === 'blank') {
+          copyText = hanLines.join('\n');
+        } else if (displayMode === 'pinyin') {
+          copyText = pinyinLines.join('\n');
+        } else if (displayMode === 'hanPinyin') {
+          copyText = hanLines.join('\n') + '\n\n' + pinyinLines.join('\n');
         }
       }
 
@@ -1569,8 +1629,6 @@ ${pinyinBlock}`;
         currentLang = 'zh-TW';
         if (btn) btn.textContent = '國';
       }
-      // Removed synth.cancel() so current speech finishes naturally,
-      // and the next word will automatically pick up the new language.
     }
 
     function toggleDisplayMode() {
@@ -1630,36 +1688,28 @@ ${pinyinBlock}`;
 
     let dynamicCustomPinyinMap = {};
 
-                // 💡 100% 動態拼音引擎：完全移除硬編碼 (No Hardcoding)
-    // 所有多音字或特例修正均由 `dynamicCustomPinyinMap` (用戶在文字編輯器中的「拼音修正」區塊) 或 pinyin-pro 動態庫處理
-        function getDynamicPinyin(text) {
+    function getDynamicPinyin(text) {
       if (!text) return "";
       const convertedText = autoConvertCharacters(text);
-      const cleanText = convertedText.replace(/[。\.，,！？\?；;：:」、「」『』《》〈〉（）\(\)─—\-…\s]/g, '');
+      const cleanText = convertedText.replace(/[。\.，,！？\?；;：:\s]/g, '');
 
-      // 1. 完全比對動態自訂拼音表 (phrase or word level)
       if (dynamicCustomPinyinMap && dynamicCustomPinyinMap[cleanText]) {
         return dynamicCustomPinyinMap[cleanText];
       }
 
-      // 2. 檢查是否有部分子字串 (如: 盛滿/動彈) 匹配動態修正表
       if (dynamicCustomPinyinMap) {
         for (let key in dynamicCustomPinyinMap) {
           if (key.length > 1 && cleanText.includes(key)) {
             let keyPinyin = dynamicCustomPinyinMap[key];
-            let fullPinyin = getDynamicPinyin(cleanText.replace(key, ''));
-            // Return override directly if exact match
             if (cleanText === key) return keyPinyin;
           }
         }
       }
 
-      // 3. 快取（Cache）查詢
       if (embeddedPinyinCache && embeddedPinyinCache[cleanText]) {
         return embeddedPinyinCache[cleanText];
       }
 
-      // 4. 動態轉簡體後調用 pinyin-pro
       if (window.pinyinPro && typeof window.pinyinPro.pinyin === 'function') {
         try {
           let simpText = cleanText;
@@ -1669,7 +1719,6 @@ ${pinyinBlock}`;
 
           let res = window.pinyinPro.pinyin(simpText, { toneType: 'symbol' });
 
-          // 單字層級取代 (若使用者定義了 盛=chéng 或 彈=tán)
           if (dynamicCustomPinyinMap) {
             let chars = cleanText.split('');
             let pinyinArray = res.split(' ');
@@ -1696,7 +1745,7 @@ ${pinyinBlock}`;
 
     function countChineseChars(text) {
       if (!text) return 0;
-      return text.replace(/[。\.，,！？\?；;：:」、「」『』《》〈〉（）\(\)─—\-…\s]/g, '').length;
+      return text.replace(/[。\.，,！？\?；;：:\s]/g, '').length;
     }
 
     function buildDictationQueue() {
@@ -1708,9 +1757,9 @@ ${pinyinBlock}`;
       
       const allVocabWords = Array.from(new Set([
         ...primarySchoolVocabulary500, 
-        ...vocabWords, 
-        ...pinyinVocabWords, 
-        ...idiomWords,
+        ...vocabWords.map(getItemText), 
+        ...pinyinVocabWords.map(getItemText), 
+        ...idiomWords.map(getItemText),
         ...customProtectedWords
       ])).sort((a, b) => b.length - a.length);
 
@@ -1822,7 +1871,6 @@ ${pinyinBlock}`;
         cleanedQueueList.push(item);
       });
 
-      // 🧹 清除末尾多餘的 'break'
       while (cleanedQueueList.length > 0 && cleanedQueueList[cleanedQueueList.length - 1].type === 'break') {
         cleanedQueueList.pop();
       }
@@ -1861,7 +1909,7 @@ ${pinyinBlock}`;
       const sanitizedText = convertedFullText.replace(/<[^>]*>/g, '');
 
       let currentSection = 'vocab';
-      let newVocab = [], newPinyin = [], newIdiom = [], newCustomProtected = [], newDictation = [];
+      let newVocab = [], newPinyin = [], newIdiom = [], newCustomProtected = [], newDictation = [], newHighlight = [];
       dynamicCustomPinyinMap = {};
       lessonTitle = "";
 
@@ -1873,7 +1921,7 @@ ${pinyinBlock}`;
 
       const lines = sanitizedText.split('\n');
       lines.forEach(line => {
-        const trimmed = line.trim();
+        let trimmed = line.trim();
 
         if (trimmed.toLowerCase().startsWith('title') || trimmed.includes('開心小學') || trimmed.includes('四年級中默')) {
           let cleanedTitle = trimmed.replace(/^title[:：\s]*/i, '');
@@ -1888,6 +1936,7 @@ ${pinyinBlock}`;
         if (trimmed.includes('其他詞語') || trimmed.includes('保護詞語') || trimmed.includes('保護詞彙')) { currentSection = 'customProtected'; return; }
         if (trimmed.includes('拼音修正') || trimmed.includes('多音字')) { currentSection = 'pinyinFix'; return; }
         if (trimmed.includes('聽寫課文段落')) { currentSection = 'dictation'; return; }
+        if (trimmed.includes('高亮詞語') || trimmed.includes('重點詞語')) { currentSection = 'highlight'; return; }
 
         if (currentSection === 'dictation') {
           newDictation.push(autoConvertCharacters(trimmed));
@@ -1904,22 +1953,36 @@ ${pinyinBlock}`;
           }
         } else {
           if (!trimmed) return;
-          const words = trimmed.split(/[\s,，	、]+/).filter(Boolean);
-          words.forEach(w => {
-            const cleanWord = autoConvertCharacters(w.replace(/[《》〈〉\(\)（）:：Title「」『』─—\-。\.，,！？\?；;、…\s]/gi, '').trim());
-            
-            const isChinese = /[一-龥]/.test(cleanWord);
-            const isNotEnglishOnly = !/^[a-zA-Z0-9\s-]+$/.test(cleanWord);
-            const isValidLength = cleanWord.length >= 1 && cleanWord.length <= 6;
-            const isNotBlacklisted = !blacklist.some(b => cleanWord.includes(b));
+          const isSubtitle = (trimmed.includes('課') || trimmed.includes('單元')) || 
+                             ((trimmed.includes('人文') || trimmed.includes('科學') || trimmed.includes('年級')) && trimmed.length > 5 && !trimmed.includes('、') && trimmed.split(/\s+/).length <= 4 && !/[一-龥]{5,}/.test(trimmed));
+          
+          if (isSubtitle && (currentSection === 'vocab' || currentSection === 'pinyin' || currentSection === 'idiom')) {
+            const subText = autoConvertCharacters(trimmed);
+            if (currentSection === 'vocab') newVocab.push({ type: 'subtitle', text: subText });
+            if (currentSection === 'pinyin') newPinyin.push({ type: 'subtitle', text: subText });
+            if (currentSection === 'idiom') newIdiom.push({ type: 'subtitle', text: subText });
+          } else {
+            const words = trimmed.split(/[\s,$,\t、]+/).filter(Boolean);
+            words.forEach(w => {
+              const cleanWord = autoConvertCharacters(w.replace(/[《》〈〉\(\)（）:：「」『』─—\-。\..,！？\?；;、…\s]/gi, '').trim());
+              
+              const isChinese = /[一-龥]/.test(cleanWord);
+              const isNotEnglishOnly = !/^[a-zA-Z0-9\s-]+$/.test(cleanWord);
+              const isValidLength = cleanWord.length >= 1 && cleanWord.length <= 6;
+              const isNotBlacklisted = !blacklist.some(b => cleanWord.includes(b));
 
-            if (cleanWord && isChinese && isNotEnglishOnly && isValidLength && isNotBlacklisted) {
-              if (currentSection === 'vocab') newVocab.push(cleanWord);
-              if (currentSection === 'pinyin') newPinyin.push(cleanWord);
-              if (currentSection === 'idiom') newIdiom.push(cleanWord);
-              if (currentSection === 'customProtected') newCustomProtected.push(cleanWord);
-            }
-          });
+              if (cleanWord && isNotBlacklisted) {
+                if (currentSection === 'highlight') {
+                  newHighlight.push(cleanWord);
+                } else if (isChinese && isNotEnglishOnly && isValidLength) {
+                  if (currentSection === 'vocab') newVocab.push({ type: 'word', text: cleanWord });
+                  if (currentSection === 'pinyin') newPinyin.push({ type: 'word', text: cleanWord });
+                  if (currentSection === 'idiom') newIdiom.push({ type: 'word', text: cleanWord });
+                  if (currentSection === 'customProtected') newCustomProtected.push(cleanWord);
+                }
+              }
+            });
+          }
         }
       });
 
@@ -1930,6 +1993,7 @@ ${pinyinBlock}`;
       pinyinVocabWords = newPinyin;
       idiomWords = newIdiom;
       customProtectedWords = newCustomProtected;
+      highlightedWords = newHighlight;
       rawDictationText = newDictation.join('\n');
 
       updateHeaderSubtitle();
@@ -1963,9 +2027,8 @@ ${pinyinBlock}`;
           editor.textContent = editor.value;
         }
 
-        // 📌 匯出前將所有詞彙與課文句子的拼音預先生成並快取/嵌入
         const pinyinMap = {};
-        const allWords = [...vocabWords, ...pinyinVocabWords, ...idiomWords, ...customProtectedWords];
+        const allWords = [...vocabWords.map(getItemText), ...pinyinVocabWords.map(getItemText), ...idiomWords.map(getItemText), ...customProtectedWords];
         allWords.forEach(w => {
           const clean = autoConvertCharacters(w.replace(/\s+/g, ''));
           if (clean) {
@@ -2007,7 +2070,6 @@ ${pinyinBlock}`;
           clonedEditorSec.style.display = 'none';
         }
 
-        // 📌 嵌入拼音快取 JSON 資料腳本
         const pinyinScriptTag = document.createElement('script');
         pinyinScriptTag.id = "embeddedPinyinData";
         pinyinScriptTag.type = "application/json";
@@ -2019,7 +2081,6 @@ ${pinyinBlock}`;
         let cleanFileName = "dictation";
         if (lessonTitle && lessonTitle.trim().length > 0) {
           let t = lessonTitle.trim();
-          
           let yearMatch = t.match(/20\d{2}|\d{2}\/?\d{2}/);
           let year = yearMatch ? yearMatch[0].replace(/\//g, '') : "";
           if (year.length > 4) year = year.substring(0, 4); 
@@ -2052,16 +2113,34 @@ ${pinyinBlock}`;
         const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
         const blobUrl = URL.createObjectURL(blob);
         
-        const downloadAnchor = document.createElement("a");
-        downloadAnchor.href = blobUrl;
-        downloadAnchor.download = fileName;
-        document.body.appendChild(downloadAnchor);
-        downloadAnchor.click();
-        document.body.removeChild(downloadAnchor);
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+        const isAndroid = /Android/.test(navigator.userAgent);
+
+        if (isIOS || isAndroid) {
+          const newWindow = window.open(blobUrl, '_blank');
+          if (!newWindow) {
+            const downloadAnchor = document.createElement("a");
+            downloadAnchor.href = blobUrl;
+            downloadAnchor.download = fileName;
+            downloadAnchor.target = "_blank";
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            document.body.removeChild(downloadAnchor);
+          } else {
+            alert("已成功匯出！若在 iOS/iPad 瀏覽器中，請點選分享按鈕並選擇「儲存至檔案」或加入書籤。");
+          }
+        } else {
+          const downloadAnchor = document.createElement("a");
+          downloadAnchor.href = blobUrl;
+          downloadAnchor.download = fileName;
+          document.body.appendChild(downloadAnchor);
+          downloadAnchor.click();
+          document.body.removeChild(downloadAnchor);
+        }
 
         setTimeout(() => {
           URL.revokeObjectURL(blobUrl);
-        }, 1000);
+        }, 3000);
       } catch (err) {
         console.error("Export Error:", err);
         alert("匯出檔案時發生錯誤，請重新再試一遍。");
@@ -2096,11 +2175,71 @@ ${pinyinBlock}`;
         if (vocabTagBtn) {
           if (currentTab === 'tab1') vocabTagBtn.textContent = '詞語';
           else if (currentTab === 'tab2') vocabTagBtn.textContent = '拼音';
-          else if (currentTab === 'tab3') vocabTagBtn.textContent = '成語';
+          else if (currentTab === 'tab3') vocabTagBtn.textContent = '挑戰題';
         }
 
         renderVocabGrid(area);
       }
+    }
+
+    function getHighlightedWordHtml(cleanWord) {
+      let dw = cleanWord;
+      if (typeof highlightedWords !== 'undefined' && highlightedWords.length > 0) {
+        const sortedHw = [...highlightedWords].sort((a,b) => b.length - a.length);
+        sortedHw.forEach(hw => {
+          if (hw && /[一-龥]/.test(hw.trim())) {
+            dw = dw.split(hw).join(`<span style="color: #f71942;">${hw}</span>`);
+          }
+        });
+      }
+      return dw;
+    }
+
+    function getHighlightedPinyinHtml(cleanWord, dynamicPinyin) {
+      let dp = dynamicPinyin;
+      if (typeof highlightedWords !== 'undefined' && highlightedWords.length > 0) {
+        let pyParts = dp.split(/\s+/);
+        let charList = cleanWord.split('');
+
+        function stripTones(str) {
+          let s = str.replace(/[üǖǘǚǜÜǕǗǙǛ]/g, "v");
+          return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+        }
+
+        pyParts = pyParts.map((origP, i) => {
+          let plainP = stripTones(origP.replace(/<[^>]*>/g, ''));
+          let char = charList[i] || '';
+
+          let hasChineseHw = char && highlightedWords.some(hw => {
+            if (!hw) return false;
+            let clean = hw.trim().normalize("NFC");
+            return /[一-龥]/.test(clean) && clean.includes(char);
+          });
+
+          let hasPinyinHw = highlightedWords.some(hw => {
+            if (!hw) return false;
+            let clean = hw.trim().normalize("NFC");
+            return !/[一-龥]/.test(clean) && (stripTones(clean) === plainP);
+          });
+
+          let targetColor = null;
+          if (hasChineseHw && hasPinyinHw) {
+            targetColor = "#a811bf";
+          } else if (hasChineseHw) {
+            targetColor = "#0cb318";
+          } else if (hasPinyinHw) {
+            targetColor = "#f71942";
+          }
+
+          if (targetColor) {
+            return `<span style="color: ${targetColor};">${origP}</span>`;
+          }
+          return origP;
+        });
+
+        dp = pyParts.join(' ');
+      }
+      return dp;
     }
 
     function renderVocabGrid(container) {
@@ -2114,17 +2253,30 @@ ${pinyinBlock}`;
       }
 
       let html = '<div class="words-grid">';
-      data.forEach((word, idx) => {
-        const cleanWord = autoConvertCharacters(word.replace(/\s+/g, ''));
-        const dynamicPinyin = getDynamicPinyin(cleanWord);
-        html += `
-          <div class="word-card" id="card_${idx}" onclick="clickPlayVocab(${idx})">
-            <div class="word-index">#${idx + 1}</div>
-            <div class="word-text">${cleanWord}</div>
-            <div class="pinyin-text">${dynamicPinyin}</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(${idx})">▶</button>
-          </div>
-        `;
+      let wordSeq = 0;
+      data.forEach((item, idx) => {
+        if (typeof item === 'object' && item !== null && item.type === 'subtitle') {
+          html += `
+            <div style="grid-column: 1 / -1; background: #e0f2f1; border-left: 4px solid #00897b; padding: 10px 14px; margin: 12px 0 6px; font-size: 1.1rem; font-weight: bold; color: #004d40; border-radius: 6px; display: flex; align-items: center; gap: 8px;">
+              <span>${autoConvertCharacters(item.text).replace(/^S:/i, '').trim()}</span>
+            </div>
+          `;
+        } else {
+          wordSeq++;
+          const word = getItemText(item);
+          const cleanWord = autoConvertCharacters(word.replace(/\s+/g, ''));
+          const dynamicPinyin = getDynamicPinyin(cleanWord);
+          const wordHtml = getHighlightedWordHtml(cleanWord);
+          const pinyinHtml = getHighlightedPinyinHtml(cleanWord, dynamicPinyin);
+          html += `
+            <div class="word-card " id="card_${idx}" onclick="clickPlayVocab(${idx})">
+              <div class="word-index">#${wordSeq}</div>
+              <div class="word-text">${wordHtml}</div>
+              <div class="pinyin-text">${pinyinHtml}</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(${idx})">▶</button>
+            </div>
+          `;
+        }
       });
       html += '</div>';
       container.innerHTML = html;
@@ -2148,12 +2300,14 @@ ${pinyinBlock}`;
         } else if (item.type === 'sentence') {
           const cleanText = autoConvertCharacters(item.text.replace(/\s+/g, ''));
           const dynamicPinyin = getDynamicPinyin(cleanText);
+          const sentenceHtml = getHighlightedWordHtml(cleanText);
+          const sentencePinyinHtml = getHighlightedPinyinHtml(cleanText, dynamicPinyin);
 
           html += `
             <div class="dictation-row" id="dcard_${item.index}" onclick="clickPlayDictation(${item.index})">
               <div class="sentence-index">#${item.index}</div>
-              <div class="sentence-text">${cleanText}</div>
-              <div class="sentence-pinyin">${dynamicPinyin}</div>
+              <div class="sentence-text">${sentenceHtml}</div>
+              <div class="sentence-pinyin">${sentencePinyinHtml}</div>
             </div>
           `;
         }
@@ -2164,11 +2318,10 @@ ${pinyinBlock}`;
       updateDisplayModeUI();
     }
 
-    
     let resolvedPdfUrl = "";
     let isPdfViewerOpen = false;
 
-                async function checkAndResolveSameNamePdf() {
+    async function checkAndResolveSameNamePdf() {
       const pdfBtn = document.getElementById('pdfViewerBtn');
       if (pdfBtn) pdfBtn.style.display = 'none';
 
@@ -2219,24 +2372,21 @@ ${pinyinBlock}`;
     }
 
     async function probePdfExistence(url) {
-      // 1. Try standard HEAD request (Best for normal web servers)
       try {
         let res = await fetch(url, { method: 'HEAD' });
         if (res.ok) return true;
         if (res.status === 404) return false;
       } catch (e) {}
 
-      // 2. Try GET request and abort instantly (Fixes issues where HEAD or Range headers are blocked)
       try {
         const controller = new AbortController();
         let res = await fetch(url, { method: 'GET', signal: controller.signal });
         if (res.ok) {
-          controller.abort(); // We only care about the headers/status, don't download the file
+          controller.abort();
           return true;
         }
       } catch (e) {}
       
-      // 3. XHR Fallback
       return new Promise((resolve) => {
         let xhr = new XMLHttpRequest();
         xhr.open('HEAD', url, true);
@@ -2271,13 +2421,26 @@ ${pinyinBlock}`;
         if (vocabToolbar) vocabToolbar.classList.add('hidden');
         if (dictationToolbar) dictationToolbar.classList.add('hidden');
 
+        const isOnline = window.location.protocol.startsWith('http');
+        const absolutePdfUrl = new URL(resolvedPdfUrl, window.location.href).href;
+        const viewerUrl = isOnline ? `https://docs.google.com/gview?url=${encodeURIComponent(absolutePdfUrl)}&embedded=true` : resolvedPdfUrl;
+
         area.innerHTML = `
           <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); width: 100%; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
-            <div style="background: #2e7d32; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between;">
-              <span style="font-weight: bold; font-size: 1.05rem;">📄 對應 PDF 檔案預覽 (${resolvedPdfUrl})</span>
-              <button onclick="closePdfViewer()" style="background: #ffffff; color: #2e7d32; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ 關閉 PDF 預覽</button>
+            <div style="background: #2e7d32; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+              <span style="font-weight: bold; font-size: 1.05rem;">📄 對應 PDF 檔案內嵌預覽 (${resolvedPdfUrl})</span>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="${resolvedPdfUrl}" target="_blank" style="background: #ffffff; color: #2e7d32; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">在新視窗開啟 PDF</a>
+                <button onclick="closePdfViewer()" style="background: #ffffff; color: #d32f2f; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ 關閉</button>
+              </div>
             </div>
-            <iframe src="${resolvedPdfUrl}" style="width: 100%; height: 100%; border: none;"></iframe>
+            <div style="flex: 1; position: relative; background: #525659; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+              <iframe src="${viewerUrl}" style="width: 100%; height: 100%; border: none; display: block;" allowfullscreen>
+                <object data="${resolvedPdfUrl}" type="application/pdf" style="width: 100%; height: 100%;">
+                  <embed src="${resolvedPdfUrl}" type="application/pdf" style="width: 100%; height: 100%;" />
+                </object>
+              </iframe>
+            </div>
           </div>
         `;
         if (window.innerWidth <= 768) {
@@ -2308,7 +2471,7 @@ ${pinyinBlock}`;
       }
     }
 
-            function speakText(text, onEndCallback) {
+    function speakText(text, onEndCallback) {
       if (!synth) {
         if (onEndCallback) onEndCallback();
         return;
@@ -2322,34 +2485,35 @@ ${pinyinBlock}`;
         return;
       }
 
-      // Cancel previous speech safely
       synth.cancel();
 
       const utterance = new SpeechSynthesisUtterance(safeText);
 
-      // Refresh voice list if empty
       if (!availableVoices || availableVoices.length === 0) {
         availableVoices = synth.getVoices() || [];
       }
 
-      // Determine active voice from dropdown selection or fallback
       const voiceSelect = document.getElementById('voiceSelect');
       const selectedName = (voiceSelect && voiceSelect.value) ? voiceSelect.value : userSelectedVoiceName;
-      let chosenVoice = availableVoices.find(v => v.name === selectedName);
+      let chosenVoice = null;
+      
+      if (selectedName) {
+        chosenVoice = availableVoices.find(v => v.name === selectedName);
+      }
 
       if (!chosenVoice) {
         if (currentLang === 'zh-TW') {
           chosenVoice = availableVoices.find(v => 
-            v.lang === 'zh-TW' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-tw')) || v.name.includes('國語') || v.name.includes('Taiwan') || v.name.includes('Mei-Jia')
-          ) || availableVoices.find(v => v.lang && v.lang.startsWith('zh-TW'));
+            v.lang === 'zh-TW' || v.lang === 'zh_TW' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-tw')) || v.name.includes('國語') || v.name.includes('Taiwan') || v.name.includes('Mei-Jia')
+          );
         } else if (currentLang === 'zh-CN') {
           chosenVoice = availableVoices.find(v => 
-            v.lang === 'zh-CN' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-cn')) || v.name.includes('普通話') || v.name.includes('Mandarin') || v.name.includes('Ting-Ting')
-          ) || availableVoices.find(v => v.lang && (v.lang.startsWith('zh-CN') || v.lang.startsWith('zh-TW')));
+            v.lang === 'zh-CN' || v.lang === 'zh_CN' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-cn')) || v.name.includes('普通話') || v.name.includes('Mandarin') || v.name.includes('Ting-Ting')
+          );
         } else {
           chosenVoice = availableVoices.find(v => 
-            v.lang === 'zh-HK' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-hk')) || v.name.includes('廣東話') || v.name.includes('Cantonese') || v.name.includes('Sin-Ji')
-          ) || availableVoices.find(v => v.lang && v.lang.startsWith('zh'));
+            v.lang === 'zh-HK' || v.lang === 'zh_HK' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-hk')) || v.name.includes('廣東話') || v.name.includes('Cantonese') || v.name.includes('Sin-Ji') || (v.name && v.name.toLowerCase().includes('hong kong'))
+          );
         }
       }
 
@@ -2360,7 +2524,6 @@ ${pinyinBlock}`;
         utterance.lang = currentLang;
       }
 
-      // Determine rate from current tab speed dropdown
       let activeRate = 0.82;
       const vocabSpeedSel = document.getElementById('vocabSpeedSelect');
       const dictSpeedSel = document.getElementById('dictationSpeedSelect');
@@ -2381,7 +2544,6 @@ ${pinyinBlock}`;
         if (onEndCallback) onEndCallback(); 
       };
 
-      // Ensure slight delay after cancel() so Chrome/Safari doesn't skip speech
       wakeUpTimeout = setTimeout(() => {
         synth.speak(utterance);
 
@@ -2404,7 +2566,31 @@ ${pinyinBlock}`;
     }
 
     function playSingleWord(word) {
-      speakText(word, null);
+      if (synth) synth.cancel();
+      if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
+      if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
+
+      singlePlayTimeout1 = setTimeout(() => {
+        speakText(word, () => {
+          singlePlayTimeout2 = setTimeout(() => {
+            speakText(word, null);
+          }, 3000);
+        });
+      }, 1000);
+    }
+
+    function playSingleDictationSentence(text) {
+      if (synth) synth.cancel();
+      if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
+      if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
+
+      singlePlayTimeout1 = setTimeout(() => {
+        speakSentenceWithPunctuation(text, () => {
+          singlePlayTimeout2 = setTimeout(() => {
+            speakSentenceWithPunctuation(text, null);
+          }, 3000);
+        });
+      }, 1000);
     }
 
     function startTimer(seconds, onFinish) {
@@ -2443,14 +2629,21 @@ ${pinyinBlock}`;
       return '課文詞語';
     }
 
-    function startAutoPlay() {
+    function startAutoPlay(onlyHighlighted = false) {
       resetPlayback();
       isPlaying = true;
       isPaused = false;
       isReviewPhase = false;
+      isOnlyHighlighted = onlyHighlighted;
       
       const goText = document.getElementById('goBtnText');
-      if (goText) goText.textContent = '自';
+      const wrongGoText = document.getElementById('wrongGoBtnText');
+
+      if (onlyHighlighted) {
+        if (wrongGoText) wrongGoText.textContent = '自';
+      } else {
+        if (goText) goText.textContent = '自';
+      }
 
       requestWakeLock();
 
@@ -2460,7 +2653,20 @@ ${pinyinBlock}`;
         let data = vocabWords;
         if (currentTab === 'tab2') data = pinyinVocabWords;
         if (currentTab === 'tab3') data = idiomWords;
-        queue = data;
+        queue = data.filter(it => !it || typeof it !== 'object' || it.type !== 'subtitle');
+      }
+
+      if (onlyHighlighted) {
+        if (!highlightedWords || highlightedWords.length === 0) {
+          alert("沒有找到高亮/重點詞語。");
+          resetPlayback();
+          return;
+        }
+        queue = queue.filter(item => {
+          const text = getItemText(item);
+          if (!text) return false;
+          return highlightedWords.some(hw => text.includes(hw));
+        });
       }
 
       playIndex = 0;
@@ -2516,8 +2722,11 @@ ${pinyinBlock}`;
         return;
       }
 
-      highlightVocabCard(playIndex);
-      const word = queue[playIndex];
+      let currentData = vocabWords;
+      if (currentTab === 'tab2') currentData = pinyinVocabWords;
+      if (currentTab === 'tab3') currentData = idiomWords;
+      highlightVocabCard(currentData.indexOf(queue[playIndex]));
+      const word = getItemText(queue[playIndex]);
 
       if (isReviewPhase) {
         speakText(word, () => {
@@ -2564,21 +2773,51 @@ ${pinyinBlock}`;
     }
 
     function clickPlayVocab(idx) {
-      highlightVocabCard(idx);
       let data = vocabWords;
       if (currentTab === 'tab2') data = pinyinVocabWords;
       if (currentTab === 'tab3') data = idiomWords;
 
       if (!data || !data[idx]) return;
+      const item = data[idx];
+      if (typeof item === 'object' && item !== null && item.type === 'subtitle') return;
+
+      highlightVocabCard(idx);
+      const wordText = getItemText(item);
 
       if (isPlaying) {
         if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
         clearInterval(timerInterval);
-        queue = data;
-        playIndex = idx;
+        
+        queue = data.filter(it => !it || typeof it !== 'object' || it.type !== 'subtitle');
+        
+        if (isOnlyHighlighted) {
+          queue = queue.filter(qItem => {
+            const text = getItemText(qItem);
+            return text && highlightedWords.some(hw => text.includes(hw));
+          });
+        }
+        
+        playIndex = queue.indexOf(item);
+        
+        if (playIndex === -1) {
+          let allItems = data.filter(it => !it || typeof it !== 'object' || it.type !== 'subtitle');
+          let clickedOriginalIndex = allItems.indexOf(item);
+          playIndex = queue.findIndex(qItem => allItems.indexOf(qItem) > clickedOriginalIndex);
+          if (playIndex === -1) playIndex = queue.length;
+          
+          speakText(wordText, () => {
+            if (!isPlaying) return;
+            startTimer(3, () => {
+              if (!isPlaying) return;
+              playNextVocabStep();
+            });
+          });
+          return;
+        }
+        
         playNextVocabStep();
       } else {
-        playSingleWord(data[idx]);
+        playSingleWord(wordText);
       }
     }
 
@@ -2717,20 +2956,49 @@ ${pinyinBlock}`;
 
     function clickPlayDictation(index) {
       highlightDictationCard(`dcard_${index}`);
-      const dictQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
+      let dictQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
 
       if (isPlaying) {
         if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
         clearInterval(timerInterval);
+        
+        if (isOnlyHighlighted) {
+          dictQueue = dictQueue.filter(item => {
+            const text = getItemText(item);
+            return text && highlightedWords.some(hw => text.includes(hw));
+          });
+        }
+        
         queue = dictQueue;
         playIndex = dictQueue.findIndex(q => q.index === index);
+        
+        if (playIndex === -1) {
+          let allQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
+          let clickedItem = allQueue.find(q => q.index === index);
+          let originalQIndex = allQueue.indexOf(clickedItem);
+          playIndex = dictQueue.findIndex(qItem => allQueue.indexOf(qItem) > originalQIndex);
+          if (playIndex === -1) playIndex = dictQueue.length;
+          
+          if (clickedItem) {
+            speakSentenceWithPunctuation(clickedItem.text, () => {
+              if (!isPlaying) return;
+              startTimer(3, () => {
+                if (!isPlaying) return;
+                playNextDictationStep();
+              });
+            });
+            return;
+          }
+        }
+        
         if (playIndex !== -1) {
           playNextDictationStep();
         }
       } else {
-        const item = dictQueue.find(q => q.index === index);
+        const allQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
+        const item = allQueue.find(q => q.index === index);
         if (item) {
-          speakSentenceWithPunctuation(item.text, null);
+          playSingleDictationSentence(item.text);
         }
       }
     }
@@ -2761,10 +3029,14 @@ ${pinyinBlock}`;
       isPlaying = false;
       isPaused = false;
       isReviewPhase = false;
+      isOnlyHighlighted = false;
       playIndex = 0;
 
       const goText = document.getElementById('goBtnText');
       if (goText) goText.textContent = '開';
+
+      const wrongGoText = document.getElementById('wrongGoBtnText');
+      if (wrongGoText) wrongGoText.textContent = '錯';
 
       releaseWakeLock();
 
@@ -2776,6 +3048,9 @@ ${pinyinBlock}`;
       }
 
       if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+      if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
+      if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
+
       clearInterval(timerInterval);
       remainingSeconds = 0;
       totalTimerSeconds = 0;
@@ -2784,9 +3059,7 @@ ${pinyinBlock}`;
       document.querySelectorAll('.active-reading').forEach(c => c.classList.remove('active-reading'));
     }
 
-
-    
-        let availableVoices = [];
+    let availableVoices = [];
     let userSelectedVoiceName = "";
 
     function populateVoices() {
@@ -2839,17 +3112,120 @@ ${pinyinBlock}`;
       }
     }
 
+    async function loadSystemFonts() {
+      const fontSelect = document.getElementById('fontSelect');
+      if (!fontSelect) return;
+
+      if (!('queryLocalFonts' in window)) {
+        alert("您的瀏覽器不支援 Local Font Access API (建議使用最新版 Google Chrome 或 Edge 桌面版)。");
+        return;
+      }
+
+      try {
+        const permissionStatus = await navigator.permissions.query({ name: 'local-fonts' });
+        if (permissionStatus.state === 'denied') {
+          alert("字型存取權限已被拒絕，請在瀏覽器設定中允許。");
+          return;
+        }
+
+        const fonts = await window.queryLocalFonts();
+        const fontFamilies = new Set();
+        
+        fonts.forEach(font => {
+          if (font.family) {
+            fontFamilies.add(font.family);
+          }
+        });
+
+        const sortedFamilies = Array.from(fontFamilies).sort();
+
+        const currentVal = fontSelect.value;
+        fontSelect.innerHTML = `
+          <option value="LXGW WenKai TC, serif">霞鶩文楷 (預設)</option>
+          <option value="Free HK Kai 4700, DFKai-SB, BiauKai, 標楷體, KaiTi, STKaiti, serif">Free HK Kai 4700</option>
+          <option value="DFKai-SB, BiauKai, 標楷體, KaiTi, STKaiti, serif">標楷體</option>
+          <option value="SimHei, Microsoft JhengHei, sans-serif">黑體 (微軟正黑)</option>
+          <option value="SimSun, MingLiu, serif">宋體 / 明體</option>
+          <option value="YouYuan, Rounded Mplus 1c, sans-serif">圓體</option>
+        `;
+
+        const optGroup = document.createElement('optgroup');
+        optGroup.label = "🖥️ 本機已安裝字型 (" + sortedFamilies.length + ")";
+        
+        sortedFamilies.forEach(family => {
+          if (!['霞鶩文楷', 'Free HK Kai 4700', '標楷體', '黑體', '宋體', '圓體'].includes(family)) {
+            const opt = document.createElement('option');
+            opt.value = `"${family}", serif`;
+            opt.textContent = family;
+            optGroup.appendChild(opt);
+          }
+        });
+
+        fontSelect.appendChild(optGroup);
+        if (currentVal) fontSelect.value = currentVal;
+        alert(`成功掃描並載錄 ${sortedFamilies.length} 款本機字型！`);
+      } catch (err) {
+        console.error("Failed to load local fonts:", err);
+        alert("無法讀取本機字型，請確認瀏覽器權限。");
+      }
+    }
+
+    function onFontChange() {
+      const fontSelect = document.getElementById('fontSelect');
+      if (!fontSelect) return;
+      const selectedFont = fontSelect.value;
+
+      let fontStack = `"${selectedFont}", sans-serif`;
+      if (selectedFont === 'DFKai-SB') {
+        fontStack = '"DFKai-SB", "BiauKai", "標楷體", "KaiTi", "STKaiti", "Apple LiSung", serif';
+      } else if (selectedFont === 'LXGW WenKai TC') {
+        fontStack = '"LXGW WenKai TC", "LXGW WenKai", "Microsoft JhengHei", sans-serif';
+      } else if (selectedFont === 'Iansui') {
+        fontStack = '"Iansui", cursive, serif';
+      } else if (selectedFont === 'Noto Serif HK') {
+        fontStack = '"Noto Serif HK", "Noto Serif TC", serif';
+      } else if (selectedFont === 'Noto Sans HK') {
+        fontStack = '"Noto Sans HK", "Noto Sans TC", sans-serif';
+      } else if (selectedFont === 'SimHei') {
+        fontStack = '"Microsoft JhengHei", "PingFang HK", "Heiti TC", "SimHei", sans-serif';
+      } else if (selectedFont === 'SimSun') {
+        fontStack = '"SimSun", "PMingLiU", "Apple Myungjo", serif';
+      } else if (selectedFont === 'YouYuan') {
+        fontStack = '"YouYuan", "Rounded Mplus 1c", "Hiragino Maru Gothic Pro", sans-serif';
+      } else if (selectedFont === 'Free HK Kai 4700') {
+        fontStack = '"Free HK Kai 4700", "BiauKai", "DFKai-SB", "標楷體", serif';
+      } else {
+        fontStack = `"${selectedFont}", serif`;
+      }
+
+      document.documentElement.style.setProperty('--font-family', fontStack);
+      document.body.style.fontFamily = fontStack;
+      
+      let dynStyle = document.getElementById('dynamicFontOverride');
+      if (!dynStyle) {
+        dynStyle = document.createElement('style');
+        dynStyle.id = 'dynamicFontOverride';
+        document.head.appendChild(dynStyle);
+      }
+      dynStyle.textContent = `
+        body, *, .word-text, .sentence-text, .word-card, .dictation-row, button, input, select, textarea, h1, h2, h3, span {
+          font-family: ${fontStack} !important;
+        }
+        .pinyin-text, .sentence-pinyin {
+          font-family: var(--pinyin-font-family) !important;
+        }
+      `;
+    }
+
     function onVoiceChange() {
       const voiceSelect = document.getElementById('voiceSelect');
       if (!voiceSelect) return;
       userSelectedVoiceName = voiceSelect.value;
 
-      
       if (synth) {
         synth.cancel();
       }
 
-      // 🔊 Provide instant audio sample when user selects a voice
       if (userSelectedVoiceName) {
         setTimeout(() => {
           speakText("語音已切換", null);
@@ -2858,7 +3234,6 @@ ${pinyinBlock}`;
     }
 
     function onSpeedChange() {
-      
       if (synth) {
         synth.cancel();
       }
@@ -2877,7 +3252,7 @@ ${pinyinBlock}`;
       }
     }
 
-function autoInitApp() {
+    function autoInitApp() {
       const embeddedDataTag = document.getElementById('embeddedPinyinData');
       if (embeddedDataTag && embeddedDataTag.textContent) {
         try {
@@ -2887,7 +3262,6 @@ function autoInitApp() {
         }
       }
 
-      
       if (synth) {
         initVoiceList();
       }
@@ -2925,7 +3299,6 @@ function autoInitApp() {
     window.onload = autoInitApp;
   </script>
 
-
 <div style="display: none;"><textarea id="rawTextEditor" placeholder="在此粘貼全文或點擊選擇檔案上傳...">Title:  開心小學 (26/27)  四年級中默 (2)
 
 課文詞語：課《那一瞬》、《大娃娃康弟》
@@ -2957,4 +3330,4 @@ function autoInitApp() {
 
 其他詞語:
 地上     母子    巨人
-</textarea></div><script id="embeddedPinyinData" type="application/json">{"概括":"gài kuò","藏":"cáng","組織":"zǔ zhī","呼喚":"hū huàn","眼神":"yǎn shén","方陣":"fāng zhèn","瞬間":"shùn jiàn","相遇":"xiāng yù","周圍":"zhōu wéi","垂青":"chuí qīng","劇烈":"jù liè","證明":"zhèng míng","溫柔":"wēn róu","盼望":"pàn wàng","流利":"liú lì","勇敢":"yǒng gǎn","溜冰":"liū bīng","祝賀":"zhù hè","練習":"liàn xí","奔跑":"bēn pǎo","索性":"suǒ xìng","巷子":"xiàng zi","氣喘":"qì chuǎn","氈帽":"zhān mào","怒吼":"nù hǒu","額頭":"é tóu","強烈":"qiáng liè","騰空":"téng kōng","跪地求饒":"guì dì qiú ráo","戴":"dài","道":"dào","過街老鼠":"guò jiē lǎo shǔ","項":"xiàng","遍":"biàn","篇":"piān","朝三暮四":"cháo sān mù sì","一竅不通":"yī qiào bù tōng","七上八下":"qī shàng bā xià","兩全其美":"liǎng quán qí měi","半斤八兩":"bàn jīn bā liǎng","九牛一毛":"jiǔ niú yī máo","約法三章":"yuē fǎ sān zhāng","四分五裂":"sì fēn wǔ liè","八面玲瓏":"bā miàn líng lóng","十拿九穩":"shí ná jiǔ wěn","六神無主":"liù shén wú zhǔ","一波三折":"yī bō sān zhé","地上":"dì shàng","母子":"mǔ zǐ","巨人":"jù rén","老師也在等。":"lǎo shī yě zài děng","又半分鐘過去了，":"yòu bàn fēn zhōng guò qù le","教室裏仍然那麼安靜，":"jiào shì lǐ réng rán nà mó ān jìng","老師決定「點將」了。":"lǎo shī jué dìng diǎn jiāng le","我盼望着老師的「垂青」，":"wǒ pàn wàng zhe lǎo shī de chuí qīng","我們的目光相遇了，":"wǒ mén de mù guāng xiāng yù le","我用眼神告訴她：":"wǒ yòng yǎn shén gào sù tā","「老師，":"lǎo shī","我會。」":"wǒ huì","她似乎看懂了我的「話」，":"tā sì hū kàn dǒng le wǒ de huà","先向我微微一笑，":"xiān xiàng wǒ wēi wēi yī xiào","像是鼓勵，":"xiàng shì gǔ lì","給了我一點信心，":"gěi le wǒ yī diǎn xìn xīn","然後點到我的名字。":"rán hòu diǎn dào wǒ de míng zì","那一瞬我既":"nà yī shùn wǒ jì","高興又緊張。":"gāo xīng yòu jǐn zhāng","我站起來，":"wǒ zhàn qǐ lái","說出早已":"shuō chū zǎo yǐ","組織好的內容，":"zǔ zhī hǎo de nèi róng","聲音相當響亮，":"shēng yīn xiāng dāng xiǎng liàng","答得非常流利。":"dá dé fēi cháng liú lì","說着，":"shuō zhe","我只覺得心在跳，":"wǒ zhī jué dé xīn zài tiào","劇烈地跳，":"jù liè dì tiào","興奮到了極點。":"xīng fèn dào le jí diǎn","這就是我—":"zhè jiù shì wǒ","一個成績一般的學生—":"yī gè chéng jì yī bān de xué shēng","今天回答問題":"jīn tiān huí dá wèn tí","時的瞬間感受。":"shí de shùn jiàn gǎn shòu","老師的目光與我的":"lǎo shī de mù guāng yǔ wǒ de","目光相遇的那一瞬，":"mù guāng xiāng yù de nà yī shùn","包含老師給我的信心，":"bāo hán lǎo shī gěi wǒ de xìn xīn","那一瞬讓我衝":"nà yī shùn ràng wǒ chōng","破緊張的束縛，":"pò jǐn zhāng de shù fù","證明了自己的能力。":"zhèng míng le zì jǐ de néng lì"}</script></body></html>
+</textarea></div><script id="embeddedPinyinData" type="application/json">{"概括":"gài kuò","藏":"cáng","組織":"zǔ zhī","呼喚":"hū huàn","眼神":"yǎn shén","方陣":"fāng zhèn","瞬間":"shùn jiàn","相遇":"xiāng yù","周圍":"zhōu wéi","垂青":"chuí qīng","劇烈":"jù liè","證明":"zhèng míng","溫柔":"wēn róu","盼望":"pàn wàng","流利":"liú lì","勇敢":"yǒng gǎn","溜冰":"liū bīng","祝賀":"zhù hè","練習":"liàn xí","奔跑":"bēn pǎo","索性":"suǒ xìng","巷子":"xiàng zi","氣喘":"qì chuǎn","氈帽":"zhān mào","怒吼":"nù hǒu","額頭":"é tóu","強烈":"qiáng liè","騰空":"téng kōng","跪地求饒":"guì dì qiú ráo","戴":"dài","道":"dào","過街老鼠":"guò jiē lǎo shǔ","項":"xiàng","遍":"biàn","篇":"piān","朝三暮四":"cháo sān mù sì","一竅不通":"yī qiào bù tōng","七上八下":"qī shàng bā xià","兩全其美":"liǎng quán qí měi","半斤八兩":"bàn jīn bā liǎng","九牛一毛":"jiǔ niú yī máo","約法三章":"yuē fǎ sān zhāng","四分五裂":"sì fēn wǔ liè","八面玲瓏":"bā miàn líng lóng","十拿九穩":"shí ná jiǔ wěn","六神無主":"liù shén wú zhǔ","一波三折":"yī bō sān zhé","地上":"dì shàng","母子":"mǔ zǐ","巨人":"jù rén","老師也在等。":"lǎo shī yě zài děng","又半分鐘過去了，":"yòu bàn fēn zhōng guò qù le","教室裏仍然那麼安靜，":"jiào shì lǐ réng rán nà mó ān jìng","老師決定「點將」了。":"lǎo shī jué dìng 「 diǎn jiāng 」 le","我盼望着老師":"wǒ pàn wàng zhe lǎo shī","的「垂青」，":"de 「 chuí qīng 」","我們的目光相遇了，":"wǒ mén de mù guāng xiāng yù le","我用眼神告訴她：":"wǒ yòng yǎn shén gào sù tā","「老師，":"「 lǎo shī","我會。」":"wǒ huì 」","她似乎看懂了":"tā sì hū kàn dǒng le","我的「話」，":"wǒ de 「 huà 」","先向我微微一笑，":"xiān xiàng wǒ wēi wēi yī xiào","像是鼓勵，":"xiàng shì gǔ lì","給了我一點信心，":"gěi le wǒ yī diǎn xìn xīn","然後點到我的名字。":"rán hòu diǎn dào wǒ de míng zì","那一瞬我既":"nà yī shùn wǒ jì","高興又緊張。":"gāo xīng yòu jǐn zhāng","我站起來，":"wǒ zhàn qǐ lái","說出早已":"shuō chū zǎo yǐ","組織好的內容，":"zǔ zhī hǎo de nèi róng","聲音相當響亮，":"shēng yīn xiāng dāng xiǎng liàng","答得非常流利。":"dá dé fēi cháng liú lì","說着，":"shuō zhe","我只覺得心在跳，":"wǒ zhī jué dé xīn zài tiào","劇烈地跳，":"jù liè dì tiào","興奮到了極點。":"xīng fèn dào le jí diǎn","這就是我——":"zhè jiù shì wǒ — —","一個成績一":"yī gè chéng jì yī","般的學生——":"bān de xué shēng — —","今天回答問題":"jīn tiān huí dá wèn tí","時的瞬間感受。":"shí de shùn jiàn gǎn shòu","老師的目光與我的":"lǎo shī de mù guāng yǔ wǒ de","目光相遇的那一瞬，":"mù guāng xiāng yù de nà yī shùn","包含老師給我的信心，":"bāo hán lǎo shī gěi wǒ de xìn xīn","那一瞬讓我衝":"nà yī shùn ràng wǒ chōng","破緊張的束縛，":"pò jǐn zhāng de shù fù","證明了自己的能力。":"zhèng míng le zì jǐ de néng lì"}</script></body></html>
