@@ -772,7 +772,7 @@
         </svg>
       </button>
 
-      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">Chi</button>
+      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">C+E</button>
       
       <div class="timer-clock-box" title="Remaining Time">
         <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 0%, rgb(229, 231, 235) 0%);"></div>
@@ -785,7 +785,19 @@
 
     <aside id="sidebar">
       <div class="nav-card">
-        <div class="nav-card-title">Dictation Scope</div>
+        <div class="nav-card-title" style="display: flex; align-items: center; justify-content: space-between;">
+          <span>Dictation Scope</span>
+          <button id="pdfViewerBtn" onclick="togglePdfViewer()" title="Open corresponding PDF file" style="display: none; background: none; border: none; cursor: pointer; padding: 0; margin-left: 8px;">
+            <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="100" height="100" rx="16" fill="#BA0000"></rect>
+              <path d="M 18 10 C 13.58 10 10 13.58 10 18 L 10 82 C 10 86.42 13.58 90 18 90 L 82 90 C 86.42 90 90 86.42 90 82 L 90 34 L 66 10 Z" fill="#D30000" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"></path>
+              <path d="M 66 10 L 66 26 C 66 30.42 69.58 34 74 34 L 90 34 Z" fill="#FFFFFF"></path>
+              <circle cx="27" cy="27" r="7.5" fill="#FFFFFF"></circle>
+              <path d="M 13 56 L 33 36 L 47 51 L 62 36 L 82 56 Z" fill="#FFFFFF"></path>
+              <text x="50" y="84" text-anchor="middle" fill="#FFFFFF" font-size="28" font-weight="900" font-family="Arial, Helvetica, sans-serif" letter-spacing="1">PDF</text>
+            </svg>
+          </button>
+        </div>
         <div class="nav-tabs">
           <button class="tab-btn active" id="btn_tab1" onclick="switchTab('tab1', this)">
             <span class="tab-icon">🔤</span> Vocabulary
@@ -838,7 +850,7 @@ Students with these good qualities usually grow up to become good people. It is 
       </div>
     </aside>
 
-    <main id="mainContent" class="mode-C">
+    <main id="mainContent" class="mode-EC">
       <div class="toolbar-card" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
@@ -903,7 +915,7 @@ Students with these good qualities usually grow up to become good people. It is 
           <div class="word-card" id="card_2" onclick="clickPlayVocab(2)">
             <div class="word-index">#3</div>
             <div class="word-text" title="brave">brave</div>
-            <div class="zh-text" data-en="brave">勇敢</div>
+            <div class="zh-text" data-en="brave">勇敢傳說</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(2)">▶</button>
           </div>
         
@@ -1578,6 +1590,7 @@ Students with these good qualities usually grow up to become good people. It is 
         document.getElementById('appMainTitle').innerHTML = '<span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School English Dictation';
         document.getElementById('browserWindowTitle').textContent = "Happy Primary School English Dictation";
         renderTab();
+        checkAndResolveSameNamePdf();
         return;
       }
 
@@ -1674,6 +1687,7 @@ Students with these good qualities usually grow up to become good people. It is 
 
       renderTab();
       preloadAllTranslations();
+      checkAndResolveSameNamePdf();
     }
 
     function refreshContentFromEditor() {
@@ -1866,6 +1880,146 @@ Students with these good qualities usually grow up to become good people. It is 
       html += '</div>';
       container.innerHTML = html;
       updateDisplayModeUI();
+    }
+
+    let resolvedPdfUrl = "";
+    let isPdfViewerOpen = false;
+
+    async function checkAndResolveSameNamePdf() {
+      const pdfBtn = document.getElementById('pdfViewerBtn');
+      if (pdfBtn) pdfBtn.style.display = 'none';
+
+      try {
+        let candidateNames = [];
+        let path = window.location.pathname;
+        let filename = path.substring(path.lastIndexOf('/') + 1);
+
+        if (filename && filename !== "" && filename !== "index.html") {
+          let baseName = decodeURIComponent(filename.replace(/\.[^/.]+$/, ""));
+          if (baseName) candidateNames.push(baseName + ".pdf");
+        }
+
+        const mainTitleEl = document.getElementById('appMainTitle');
+        const titleText = mainTitleEl ? mainTitleEl.textContent : "";
+
+        if (titleText) {
+          let t = titleText.trim();
+          let gradeMatch = t.match(/P[456]/i) || t.match(/([456])\s*grade/i);
+          let grade = gradeMatch ? gradeMatch[0].toUpperCase().replace(/\s+/g, '') : "";
+          if (grade.length === 1) grade = "P" + grade;
+
+          let dMatch = t.match(/D\d+/i) || t.match(/dictation\s*(\d+)/i);
+          let dNum = "";
+          if (dMatch) {
+            dNum = dMatch[0].toUpperCase().replace(/\s+/g, '');
+            if (!dNum.startsWith('D')) dNum = 'D' + dNum.replace(/\D/g, '');
+          }
+
+          if (grade && dNum) {
+            let titlePdf = `${grade}E_${dNum}.pdf`;
+            if (!candidateNames.includes(titlePdf)) candidateNames.push(titlePdf);
+          }
+        }
+
+        if (candidateNames.length === 0) return;
+
+        for (let pdfName of candidateNames) {
+          let exists = await probePdfExistence(pdfName);
+          if (exists) {
+            resolvedPdfUrl = pdfName;
+            showPdfButton(pdfName);
+            return;
+          }
+        }
+
+      } catch (err) {
+        console.warn("PDF check error:", err);
+      }
+    }
+
+    async function probePdfExistence(url) {
+      try {
+        let res = await fetch(url, { method: 'HEAD' });
+        if (res.ok) return true;
+        if (res.status === 404) return false;
+      } catch (e) {}
+
+      try {
+        const controller = new AbortController();
+        let res = await fetch(url, { method: 'GET', signal: controller.signal });
+        if (res.ok) {
+          controller.abort();
+          return true;
+        }
+      } catch (e) {}
+      
+      return new Promise((resolve) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open('HEAD', url, true);
+        xhr.onload = function() {
+          if (xhr.status >= 200 && xhr.status < 300) resolve(true);
+          else resolve(false);
+        };
+        xhr.onerror = function() {
+          resolve(false);
+        };
+        try { xhr.send(); } catch(err) { resolve(false); }
+      });
+    }
+
+    function showPdfButton(pdfName) {
+      const pdfBtn = document.getElementById('pdfViewerBtn');
+      if (pdfBtn) {
+        pdfBtn.style.display = 'inline-block';
+        pdfBtn.title = `View corresponding PDF file (${pdfName})`;
+      }
+    }
+
+    function togglePdfViewer() {
+      if (!resolvedPdfUrl) return;
+
+      const area = document.getElementById('contentArea');
+      const vocabToolbar = document.getElementById('vocabToolbar');
+      const dictationToolbar = document.getElementById('dictationToolbar');
+
+      if (!isPdfViewerOpen) {
+        isPdfViewerOpen = true;
+        if (vocabToolbar) vocabToolbar.classList.add('hidden');
+        if (dictationToolbar) dictationToolbar.classList.add('hidden');
+
+        const isOnline = window.location.protocol.startsWith('http');
+        const absolutePdfUrl = new URL(resolvedPdfUrl, window.location.href).href;
+        const viewerUrl = isOnline ? `https://docs.google.com/gview?url=${encodeURIComponent(absolutePdfUrl)}&embedded=true` : resolvedPdfUrl;
+
+        area.innerHTML = `
+          <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); width: 100%; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <div style="background: #e65100; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+              <span style="font-weight: bold; font-size: 1.05rem;">📄 Corresponding PDF File Preview (${resolvedPdfUrl})</span>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="${resolvedPdfUrl}" target="_blank" style="background: #ffffff; color: #e65100; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">Open PDF in New Window</a>
+                <button onclick="closePdfViewer()" style="background: #ffffff; color: #d32f2f; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ Close</button>
+              </div>
+            </div>
+            <div style="flex: 1; position: relative; background: #525659; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+              <iframe src="${viewerUrl}" style="width: 100%; height: 100%; border: none; display: block;" allowfullscreen>
+                <object data="${resolvedPdfUrl}" type="application/pdf" style="width: 100%; height: 100%;">
+                  <embed src="${resolvedPdfUrl}" type="application/pdf" style="width: 100%; height: 100%;" />
+                </object>
+              </iframe>
+            </div>
+          </div>
+        `;
+        if (window.innerWidth <= 768) {
+          closeSidebarMenu();
+        }
+      } else {
+        closePdfViewer();
+      }
+    }
+
+    function closePdfViewer() {
+      isPdfViewerOpen = false;
+      renderTab();
     }
 
     function switchTab(tabId, element) {
@@ -2366,6 +2520,7 @@ Students with these good qualities usually grow up to become good people. It is 
 
       updateDisplayModeUI();
       switchTab('tab1', document.getElementById('btn_tab1'));
+      checkAndResolveSameNamePdf();
     }
 
     document.addEventListener('DOMContentLoaded', autoInitApp);
@@ -2374,7 +2529,7 @@ Students with these good qualities usually grow up to become good people. It is 
 
 <script id="autoLoadScript">
           document.addEventListener('DOMContentLoaded', function() {
-            const savedCache = {"hard-working":"勤奮","polite":"有禮貌","brave":"勇敢","messy":"混亂的","cleanest":"最乾淨","outgoing":"向外","selfish":"自私","biggest":"最大","generous":"慷慨的","timid":"膽怯","kindest":"最善良的","highest":"最高","friendliest":"最友善","funniest":"最有趣的","not necessarily.":"「不一定。」","they had more free time":"他們有更多空閒時間","but this does not mean":"這並不意味著","that they were lazy.":"他們很懶惰","many of them still":"他們中的許多人仍然","worked very hard and":"非常努力地工作，","had a lot of good qualities.":"有很多優秀的品質","being a good student does":"做一個好學生","not mean just getting":"不僅僅是","high grades at school.":"學校的高分","it also means having good character⁴":"這也意味著要有良好的品格，","— doing the right things":"—做正確的事情","and being a nice person.":"並成為一個好人","you cannot change your character overnight,":"你不能一夜之間改變你的角色","but there are many things":"但有很多事情","you can do to help":"你可以提供協助","you become a good person.":"你會成為一個好人。","the easiest way is to":"最簡單的方法是","start with your school life.":"從你的學校生活開始","you can start by keeping your":"你可以先保留你的","school desk clean and tidy.":"書桌乾淨整潔。","being tidy is better":"整潔比較好","than being messy.":"而不是亂七八糟。","it shows that you know how":"這表明你知道如何","to look after your own things.":"照顧自己的東西","your classmates will want to":"你的同學會想要","come over to your seat":"過來你的座位","and chat with you!":"並與您聊天！","remember to greet your teachers":"記得跟老師打招呼","and classmates at school.":"和同學在學校","don’t be shy or rude.":"不要害羞或無禮。","a polite and outgoing student":"有禮貌且外向的學生","can make a lot of friends!":"可以交到很多朋友！","you can also try":"您也可以嘗試","to be generous.":"慷慨大方","no one likes a selfish person.":"沒有人喜歡自私的人。","next time you have some":"下次您有一些","cake, give the biggest":"蛋糕，給最大的","piece to your friends.":"送給朋友。","you will feel happier sharing":"分享會讓你感覺更快樂","food with others than eating":"與他人一起吃飯而不是吃飯","it on your own.":"就靠你自己了。","students with these good qualities usually":"具備這些優良品質的學生通常","grow up to become good people.":"長大後成為好人。","it is time for you":"是時候為您服務了","to set goals for yourself.":"為自己設定目標。"};
+            const savedCache = {"hard-working":"勤奮","polite":"有禮貌","brave":"勇敢傳說","messy":"混亂的","cleanest":"最乾淨","outgoing":"向外","selfish":"自私","biggest":"最大","generous":"慷慨的","timid":"膽怯","kindest":"最善良的","highest":"最高","friendliest":"最友善","funniest":"最有趣的","not necessarily.":"「不一定。」","they had more free time":"他們有更多空閒時間","but this does not mean":"這並不意味著","that they were lazy.":"他們很懶惰","many of them still":"他們中的許多人仍然","worked very hard and":"非常努力地工作，","had a lot of good qualities.":"有很多優秀的品質","being a good student does":"做一個好學生","not mean just getting":"不僅僅是","high grades at school.":"學校的高分","it also means having good character⁴":"這也意味著要有良好的品格，","— doing the right things":"—做正確的事情","and being a nice person.":"並成為一個好人","you cannot change your character overnight,":"你不能一夜之間改變你的角色","but there are many things":"但有很多事情","you can do to help":"你可以提供協助","you become a good person.":"你會成為一個好人。","the easiest way is to":"最簡單的方法是","start with your school life.":"從你的學校生活開始","you can start by keeping your":"你可以先保留你的","school desk clean and tidy.":"書桌乾淨整潔。","being tidy is better":"整潔比較好","than being messy.":"而不是亂七八糟。","it shows that you know how":"這表明你知道如何","to look after your own things.":"照顧自己的東西","your classmates will want to":"你的同學會想要","come over to your seat":"過來你的座位","and chat with you!":"並與您聊天！","remember to greet your teachers":"記得跟老師打招呼","and classmates at school.":"和同學在學校","don’t be shy or rude.":"不要害羞或無禮。","a polite and outgoing student":"有禮貌且外向的學生","can make a lot of friends!":"可以交到很多朋友！","you can also try":"您也可以嘗試","to be generous.":"慷慨大方","no one likes a selfish person.":"沒有人喜歡自私的人。","next time you have some":"下次您有一些","cake, give the biggest":"蛋糕，給最大的","piece to your friends.":"送給朋友。","you will feel happier sharing":"分享會讓你感覺更快樂","food with others than eating":"與他人一起吃飯而不是吃飯","it on your own.":"就靠你自己了。","students with these good qualities usually":"具備這些優良品質的學生通常","grow up to become good people.":"長大後成為好人。","it is time for you":"是時候為您服務了","to set goals for yourself.":"為自己設定目標。"};
             Object.assign(translationCache, savedCache);
 
             const vDelay = document.getElementById('vocabDelayInput');
