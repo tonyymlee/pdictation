@@ -18,9 +18,8 @@
       --bg-color: #f8fafc;
       --text-dark: #0f172a;
       --text-muted: #475569;
-      --header-bg: #eb6913; /* Requested header color */
-      --bright-lime-green: #edf030; /* Updated subtitle text color */
-      
+      --header-bg: #eb6913;
+      --bright-lime-green: #edf030;
       --font-en: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
 
@@ -40,7 +39,7 @@
       font-family: var(--font-en);
       color: var(--text-dark);
       min-height: 100vh;
-      padding-top: 135px; /* Exact height spacing so content flows right under header without white gap */
+      padding-top: 155px; /* Safe padding for desktop */
       padding-bottom: 45px;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -50,7 +49,7 @@
     header.dark-green-header {
       background-color: var(--header-bg);
       text-align: center;
-      padding: 16px 20px;
+      padding: 14px 16px;
       width: 100%;
       position: fixed;
       top: 0;
@@ -63,22 +62,23 @@
 
     .header-main-title {
       color: #ffffff;
-      font-size: 1.3rem;
+      font-size: 1.25rem;
       font-weight: 800;
-      letter-spacing: 1.5px;
-      margin-bottom: 8px;
+      letter-spacing: 1px;
+      margin-bottom: 6px;
       font-family: var(--font-en);
       text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      line-height: 1.3;
     }
 
     .header-sub-title {
-      color: var(--bright-lime-green); /* Updated to #edf030 */
-      font-size: 0.78rem;
+      color: var(--bright-lime-green);
+      font-size: 0.75rem;
       font-weight: 800;
-      letter-spacing: 0.8px;
+      letter-spacing: 0.5px;
       font-family: var(--font-en);
       text-shadow: 0 1px 3px rgba(0,0,0,0.4);
-      line-height: 1.5;
+      line-height: 1.4;
     }
 
     /* Rainbow Wheels Layout Container */
@@ -87,13 +87,13 @@
       flex-wrap: wrap;
       justify-content: center;
       align-items: center;
-      gap: 50px;
+      gap: 40px;
       max-width: 1100px;
-      margin: 9mm auto 60px;
+      margin: 20px auto 60px;
       padding: 0 20px;
     }
 
-    /* Rainbow Donut Chart Wheel Card - Completely hidden initially */
+    /* Rainbow Donut Chart Wheel Card */
     .rainbow-card {
       background: transparent;
       border-radius: 0;
@@ -105,12 +105,12 @@
       align-items: center;
       transition: transform 0.3s ease, opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
       position: relative;
-      opacity: 0; /* Keep completely invisible until link checks finish */
+      opacity: 0;
       visibility: hidden;
     }
 
     .rainbow-card.visible {
-      opacity: 1; /* Fade in cleanly after verification */
+      opacity: 1;
       visibility: visible;
     }
 
@@ -124,7 +124,6 @@
       height: 270px;
     }
 
-    /* SVG Donut Slices */
     .rainbow-svg {
       width: 100%;
       height: 100%;
@@ -143,7 +142,6 @@
       filter: drop-shadow(0px 0px 6px rgba(0,0,0,0.25));
     }
 
-    /* Center Badge (P4, P5, P6) Typography */
     .center-circle {
       position: absolute;
       top: 50%;
@@ -163,7 +161,6 @@
       transition: background-color 0.3s ease;
     }
 
-    /* When a valid wheel is hovered, center turns cyan */
     .wheel-wrapper:not(.disabled-wheel):has(.rainbow-svg:hover) .center-circle {
       background-color: #49fcfc;
     }
@@ -172,7 +169,7 @@
       font-family: var(--font-en);
       font-size: 2.2rem;
       font-weight: 900;
-      color: #eb6913; /* Professional Theme Match */
+      color: #eb6913;
       line-height: 1;
       letter-spacing: -0.5px;
     }
@@ -185,7 +182,6 @@
       letter-spacing: 1px;
     }
 
-    /* Typography Inside Rainbow Slices */
     .cell-text {
       font-family: var(--font-en);
       font-size: 15px;
@@ -208,10 +204,9 @@
       margin: 0 auto;
     }
   
-    /* Home Button Positioning and Purple Rounded Icon Style */
     .home-btn {
       position: absolute;
-      top: 3mm;
+      top: 12px;
       left: 12px;
       color: #ffffff;
       font-size: 1.4rem;
@@ -219,8 +214,8 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 42px;
-      height: 42px;
+      width: 40px;
+      height: 40px;
       border-radius: 12px;
       background: #8570ed;
       box-shadow: 0 2px 6px rgba(0,0,0,0.18);
@@ -235,8 +230,38 @@
     }
 
     .home-btn i {
-      font-size: 1.35rem;
+      font-size: 1.3rem;
       color: #ffffff;
+    }
+
+    /* Mobile Responsive Adjustments for Android screens */
+    @media (max-width: 600px) {
+      body {
+        padding-top: 175px; /* Ensures header never overlaps wheels on narrow viewports */
+      }
+      header.dark-green-header {
+        padding: 12px 10px 12px 50px; /* Leaves space for absolute home button */
+      }
+      .header-main-title {
+        font-size: 1.05rem;
+        letter-spacing: 0.5px;
+        margin-bottom: 4px;
+      }
+      .header-sub-title {
+        font-size: 0.68rem;
+        letter-spacing: 0.3px;
+      }
+      .home-btn {
+        width: 36px;
+        height: 36px;
+        top: 10px;
+        left: 8px;
+        font-size: 1.2rem;
+      }
+      .rainbow-container {
+        gap: 30px;
+        margin-top: 10px;
+      }
     }
   </style>
 </head>
@@ -381,7 +406,6 @@
           window.location.href = fileName;
         };
 
-        // Asynchronously check link status BEFORE wheel is shown
         const checkPromise = fetch(fileName, { method: 'HEAD' })
           .then(response => {
             if (!response.ok) {
@@ -438,17 +462,14 @@
     }
 
     window.onload = () => {
-      // 1. Build wheels & check all links while remaining completely hidden
       const wheelsPromise = Promise.all([
         buildRainbowWheel('svg-p4', 'P4'),
         buildRainbowWheel('svg-p5', 'P5'),
         buildRainbowWheel('svg-p6', 'P6')
       ]);
 
-      // 2. Minimum delay timer
       const delayPromise = new Promise(resolve => setTimeout(resolve, 800));
 
-      // 3. Reveal rainbow wheels only after link verification AND delay finish
       Promise.all([wheelsPromise, delayPromise]).then(() => {
         const cards = document.querySelectorAll('.rainbow-card');
         cards.forEach((card, index) => {
