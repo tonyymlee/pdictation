@@ -39,7 +39,7 @@
       font-family: var(--font-en);
       color: var(--text-dark);
       min-height: 100vh;
-      padding-top: 155px; /* Safe padding for desktop */
+      padding-top: 155px;
       padding-bottom: 45px;
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
@@ -237,10 +237,10 @@
     /* Mobile Responsive Adjustments for Android screens */
     @media (max-width: 600px) {
       body {
-        padding-top: 175px; /* Ensures header never overlaps wheels on narrow viewports */
+        padding-top: 205px; /* Further increased top padding to push content down */
       }
       header.dark-green-header {
-        padding: 12px 10px 12px 50px; /* Leaves space for absolute home button */
+        padding: 12px 10px 12px 50px;
       }
       .header-main-title {
         font-size: 1.05rem;
@@ -254,13 +254,13 @@
       .home-btn {
         width: 36px;
         height: 36px;
-        top: 10px;
+        top: 12px;
         left: 8px;
         font-size: 1.2rem;
       }
       .rainbow-container {
-        gap: 30px;
-        margin-top: 10px;
+        gap: 35px;
+        margin-top: 25px; /* Pushes the wheels down further */
       }
     }
   </style>
