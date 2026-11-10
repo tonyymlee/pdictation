@@ -628,6 +628,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
+      opacity: 0.3;
+      transition: opacity 0.2s ease;
+    }
+
+    .card-play-btn:hover {
+      opacity: 1.0;
     }
 
     .dictation-list { display: flex; flex-direction: column; gap: 10px; }
@@ -1075,6 +1081,7 @@
     let idiomWords = [];
     let customProtectedWords = [];
     let highlightedWords = []; 
+    let highlightedPinyinMap = {}; // { word: [charsToHighlightPinyin] }
     let rawDictationText = "";
     let rawReciteText = ""; 
 
@@ -1177,13 +1184,13 @@
     let wakeUpTimeout = null; 
     let singlePlayTimeout1 = null;
     let singlePlayTimeout2 = null;
-    let punctTimer = null; // 用于記錄標點符號停頓定時器
+    let punctTimer = null; 
     let currentLang = 'zh-CN'; 
     let displayMode = 'pinyin'; 
     let wakeLock = null; 
     let isOnlyHighlighted = false;
-    let isSpeakingSentence = false; // 新增：記錄目前是否正在發聲朗讀課文/標點中
-    let pendingJumpIndex = null;    // 新增：如果朗讀中被點擊，記錄下一個要跳轉的句子 index
+    let isSpeakingSentence = false; 
+    let pendingJumpIndex = null;    
 
     const synth = window.speechSynthesis;
 
@@ -1580,7 +1587,6 @@
           }
 
           if (protectedMatch) {
-            // 無論如何，讓保護詞語保留在前半句的結尾，所以從保護詞的後方切開
             splitPos = protectedMatch.start + protectedMatch.word.length;
           }
 
@@ -1688,7 +1694,6 @@
       return cleanedQueueList;
     }
 
-    // 背默課文專屬斷句 Logic (併合換行再於標點處切斷)
     function buildReciteQueue() {
       if (!rawReciteText || !rawReciteText.trim()) return [];
 
@@ -1789,6 +1794,7 @@
       let currentSection = 'vocab';
       let newVocab = [], newPinyin = [], newIdiom = [], newCustomProtected = [], newDictation = [], newRecite = [], newHighlight = [];
       dynamicCustomPinyinMap = {};
+      highlightedPinyinMap = {};
       lessonTitle = "";
 
       const blacklist = [
@@ -1816,21 +1822,42 @@
         if (trimmed.includes('聽寫課文段落')) { currentSection = 'dictation'; return; }
         if (trimmed.includes('背默課文段落')) { currentSection = 'recite'; return; }
         if (trimmed.includes('高亮詞語') || trimmed.includes('重點詞語')) { currentSection = 'highlight'; return; }
+        if (trimmed.includes('高亮拼音')) { currentSection = 'highlightPinyin'; return; }
 
         if (currentSection === 'dictation') {
           newDictation.push(autoConvertCharacters(line));
         } else if (currentSection === 'recite') {
           newRecite.push(autoConvertCharacters(line));
         } else if (currentSection === 'pinyinFix') {
-          if (trimmed.includes('=') || trimmed.includes('＝')) {
-            const parts = trimmed.split(/[=＝]/);
-            if (parts.length >= 2) {
-              const word = autoConvertCharacters(parts[0].trim().replace(/\s+/g, ''));
-              const customPy = parts[1].trim();
-              if (word && customPy) {
-                dynamicCustomPinyinMap[word] = customPy;
+          if (trimmed) {
+            const pairs = trimmed.split(/[\s,;\t]+/).filter(Boolean);
+            pairs.forEach(pair => {
+              if (pair.includes('=') || pair.includes('＝')) {
+                const parts = pair.split(/[=＝]/);
+                if (parts.length >= 2) {
+                  const word = autoConvertCharacters(parts[0].trim().replace(/\s+/g, ''));
+                  const customPy = parts[1].trim();
+                  if (word && customPy) {
+                    dynamicCustomPinyinMap[word] = customPy;
+                  }
+                }
               }
-            }
+            });
+          }
+        } else if (currentSection === 'highlightPinyin') {
+          if (trimmed) {
+            const items = trimmed.split(/[\s,;\t]+/).filter(Boolean);
+            items.forEach(item => {
+              const match = item.match(/^([^(（]+)[(（]([^)）]+)[)）]$/);
+              if (match) {
+                const word = autoConvertCharacters(match[1].trim());
+                const chars = autoConvertCharacters(match[2].trim()).split('');
+                if (word && chars.length > 0) {
+                  if (!highlightedPinyinMap[word]) highlightedPinyinMap[word] = [];
+                  highlightedPinyinMap[word].push(...chars);
+                }
+              }
+            });
           }
         } else {
           if (!trimmed) return;
@@ -2100,49 +2127,59 @@
 
     function getHighlightedPinyinHtml(cleanWord, dynamicPinyin) {
       let dp = dynamicPinyin;
-      if (typeof highlightedWords !== 'undefined' && highlightedWords.length > 0) {
-        let pyParts = dp.split(/\s+/);
-        let charList = cleanWord.split('');
+      let pyParts = dp.split(/\s+/);
+      let charList = cleanWord.split('');
 
-        function stripTones(str) {
-          let s = str.replace(/[üǖǘǚǜÜǕǗǙǛ]/g, "v");
-          return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
-        }
+      function stripTones(str) {
+        let s = str.replace(/[üǖǘǚǜÜǕǗǙǛ]/g, "v");
+        return s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+      }
 
-        pyParts = pyParts.map((origP, i) => {
-          let plainP = stripTones(origP.replace(/<[^>]*>/g, ''));
-          let char = charList[i] || '';
+      pyParts = pyParts.map((origP, i) => {
+        let plainP = stripTones(origP.replace(/<[^>]*>/g, ''));
+        let char = charList[i] || '';
 
-          let hasChineseHw = char && highlightedWords.some(hw => {
-            if (!hw) return false;
-            let clean = hw.trim().normalize("NFC");
-            return /[一-龥]/.test(clean) && clean.includes(char);
-          });
-
-          let hasPinyinHw = highlightedWords.some(hw => {
-            if (!hw) return false;
-            let clean = hw.trim().normalize("NFC");
-            return !/[一-龥]/.test(clean) && (stripTones(clean) === plainP);
-          });
-
-          let targetColor = null;
-          if (hasChineseHw && hasPinyinHw) {
-            targetColor = "#a811bf";
-          } else if (hasChineseHw) {
-            targetColor = "#0cb318";
-          } else if (hasPinyinHw) {
-            targetColor = "#f71942";
-          }
-
-          if (targetColor) {
-            return `<span style="color: ${targetColor};">${origP}</span>`;
-          }
-          return origP;
+        let hasChineseHw = char && typeof highlightedWords !== 'undefined' && highlightedWords.some(hw => {
+          if (!hw) return false;
+          let clean = hw.trim().normalize("NFC");
+          return /[一-龥]/.test(clean) && clean.includes(char);
         });
 
-        dp = pyParts.join(' ');
-      }
-      return dp;
+        let hasSpecificPinyinHw = false;
+        if (highlightedPinyinMap) {
+          for (let keyWord in highlightedPinyinMap) {
+            if (cleanWord.includes(keyWord)) {
+              const targetChars = highlightedPinyinMap[keyWord];
+              if (targetChars.includes(char)) {
+                hasSpecificPinyinHw = true;
+                break;
+              }
+            }
+          }
+        }
+
+        let hasPinyinHw = hasSpecificPinyinHw || (typeof highlightedWords !== 'undefined' && highlightedWords.some(hw => {
+          if (!hw) return false;
+          let clean = hw.trim().normalize("NFC");
+          return !/[一-龥]/.test(clean) && (stripTones(clean) === plainP);
+        }));
+
+        let targetColor = null;
+        if (hasChineseHw && hasPinyinHw) {
+          targetColor = "#a811bf";
+        } else if (hasChineseHw) {
+          targetColor = "#0cb318";
+        } else if (hasPinyinHw) {
+          targetColor = "#f71942";
+        }
+
+        if (targetColor) {
+          return `<span style="color: ${targetColor};">${origP}</span>`;
+        }
+        return origP;
+      });
+
+      return pyParts.join(' ');
     }
 
     function renderVocabGrid(container) {
@@ -2221,7 +2258,6 @@
       updateDisplayModeUI();
     }
 
-    // 渲染背默課文列表
     function renderRecite(container) {
       const queueList = buildReciteQueue();
       if (!queueList || queueList.length === 0) {
@@ -2670,7 +2706,6 @@
       });
     }
 
-    // 背默課文段落 自動播放流程
     function startRecitePlay(onlyHighlighted, startFromIndex = 0) {
       let fullQueue = buildReciteQueue();
       let sentenceItems = fullQueue.filter(q => q.type === 'sentence');
@@ -2706,11 +2741,9 @@
 
       let reciteIdx = 0;
 
-      // 如果從特定句子開始點擊，尋找對應索引
       if (startFromIndex > 0) {
         let foundIdx = sentenceItems.findIndex(item => item.index === startFromIndex);
         if (foundIdx === -1) {
-            // 如果點擊的是未高亮/過濾掉的句子，找下一個可用的
             let allItems = buildReciteQueue().filter(q => q.type === 'sentence');
             let clickedItem = allItems.find(q => q.index === startFromIndex);
             let originalQIndex = allItems.indexOf(clickedItem);
@@ -2726,7 +2759,6 @@
       function speakNextReciteSentence() {
         if (!isPlaying) return;
         if (reciteIdx >= sentenceItems.length) {
-          // 讀完所有句子後提示背默時間並倒數
           const annText = `同學,現在請開始背默課文, 背默課文總共有 ${totalSentences}句,背默課文 時間是 ${totalMinutes}分鐘`;
           speakText(annText, () => {
             if (!isPlaying) return;
@@ -2749,7 +2781,6 @@
         speakSentenceWithPunctuation(item.text, () => {
           if (!isPlaying) return;
           
-          // 在句子剛讀完時，檢查是否有 pending 的點擊
           if (pendingJumpIndex !== null) {
               let foundIdx = sentenceItems.findIndex(i => i.index === pendingJumpIndex);
               if (foundIdx === -1) {
@@ -2773,7 +2804,6 @@
         });
       }
 
-      // 若點擊句子直接開始，則跳過前導提示，直接播放句子；否則按標準流程提示
       if (startFromIndex > 0) {
         speakNextReciteSentence();
       } else {
@@ -2889,7 +2919,7 @@
         if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
         if (punctTimer) clearTimeout(punctTimer);
         clearInterval(timerInterval);
-        if (synth) synth.cancel(); // Vocab詞語短暫直接切換沒問題
+        if (synth) synth.cancel(); 
         
         queue = data.filter(it => !it || typeof it !== 'object' || it.type !== 'subtitle');
         
@@ -3116,7 +3146,7 @@
       let dictQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
 
       if (isPlaying) {
-        highlightDictationCard(`dcard_${index}`); // 點擊時立即反白提示
+        highlightDictationCard(`dcard_${index}`); 
         if (isOnlyHighlighted) {
           dictQueue = dictQueue.filter(item => {
             const text = getItemText(item);
@@ -3126,10 +3156,8 @@
         queue = dictQueue;
 
         if (isSpeakingSentence) {
-            // 若正在發聲（包含標點符號發聲），則紀錄欲跳轉 Index，使其能「優雅地讀完這句」再跳
             pendingJumpIndex = index;
         } else {
-            // 若處於段落/句與句間的長時間空白暫停，直接清空計時器並立刻跳轉
             if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
             if (punctTimer) clearTimeout(punctTimer);
             clearInterval(timerInterval);
@@ -3142,8 +3170,7 @@
         const allQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
         const item = allQueue.find(q => q.index === index);
         if (item) {
-          highlightDictationCard(`dcard_${index}`); // 點擊時立即反白提示
-          // 如果沒有播放，不要打斷目前的手動播放列隊
+          highlightDictationCard(`dcard_${index}`); 
           playSingleDictationSentence(item.text, index);
         }
       }
