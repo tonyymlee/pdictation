@@ -138,7 +138,7 @@
       height: 24px;
     }
 
-    /* 🏠 Home Button Specific Styling (#9b87f5 background, white icon) */
+    /* 🏠 Home Button Specific Styling */
     .home-link-btn {
       background: #9b87f5 !important;
       color: #ffffff !important;
@@ -188,7 +188,7 @@
       height: 26px;
     }
 
-    /* 🔄 重新載入/重設按鈕樣式 (#c62828 背景, 白字) */
+    /* 🔄 重新載入/重設按鈕樣式 */
     .btn-reload-icon {
       background-color: #c62828 !important;
       color: #ffffff !important;
@@ -202,7 +202,7 @@
       height: 22px;
     }
 
-    /* 🟡 朗讀語言切換按鈕 (#ebf213) */
+    /* 🟡 朗讀語言切換按鈕 */
     .btn-lang-opt {
       background-color: #ebf213 !important;
       color: #1b4332 !important;
@@ -212,7 +212,7 @@
       background-color: #d4dc00 !important;
     }
 
-    /* 🟣 顯示模式切換按鈕 (#bb3fd4) */
+    /* 🟣 顯示模式切換按鈕 */
     .btn-mode-opt {
       background-color: #bb3fd4 !important;
       color: #ffffff !important;
@@ -231,7 +231,6 @@
       background-color: #1f2937;
     }
 
-    /* 🌫 隱藏模式下，顯示按鈕呈現極淺灰色字體 */
     .btn-hdr-opt.btn-faint-text {
       color: rgba(255, 255, 255, 0.22) !important;
     }
@@ -440,7 +439,6 @@
       scroll-behavior: smooth;
     }
 
-    /* 📌 工具列固定在主內容區頂部 (Sticky Header) */
     .toolbar-card {
       position: sticky;
       top: 0;
@@ -459,7 +457,6 @@
       transition: background-color 0.25s ease, box-shadow 0.25s ease, padding 0.25s ease;
     }
 
-    /* 🌊 向下滑動時：工具列背景全透明、無陰影、隱藏中間文字與輸入框 */
     .toolbar-card.is-scrolled {
       background-color: transparent !important;
       background: transparent !important;
@@ -474,7 +471,6 @@
       display: none !important;
     }
 
-    /* 🌊 向下滑動時：兩側按鈕背景設為半透明 */
     .toolbar-card.is-scrolled .btn-tag-icon,
     .toolbar-card.is-scrolled .btn-copy-icon {
       opacity: 0.75;
@@ -491,7 +487,7 @@
     }
 
     .toolbar-card input[type="number"] {
-      width: 32px;
+      width: 42px;
       padding: 4px 6px;
       font-size: 0.95rem;
       font-family: inherit;
@@ -499,7 +495,6 @@
       border: 1px solid #ccc;
     }
 
-    /* 隱藏數字輸入框的上下箭頭 */
     .toolbar-card input[type="number"]::-webkit-outer-spin-button,
     .toolbar-card input[type="number"]::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -510,7 +505,6 @@
       text-align: center;
     }
 
-    /* 🏷️ 工具列標籤圖示按鈕 (#376957 背景，白字) - 點擊返回頂部 */
     .btn-tag-icon {
       background-color: #376957 !important;
       color: #ffffff !important;
@@ -534,7 +528,6 @@
       opacity: 1 !important;
     }
 
-    /* 📋 複製「抄」按鈕樣式 (#54d1f0 背景，白字) */
     .btn-copy-icon {
       background-color: #54d1f0;
       color: #ffffff;
@@ -587,17 +580,6 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
-    .word-card.highlight-card {
-      background-color: #f0f70c !important;
-      border-color: #d4d909 !important;
-    }
-    .dictation-highlight {
-      background-color: #f0f70c;
-      border-radius: 4px;
-      padding: 0 2px;
-      display: inline-block;
-    }
-
     .word-card.active-reading {
       border: 2px solid #2e7d32;
       background-color: #f1f8e9;
@@ -608,7 +590,6 @@
       color: #d32f2f !important;
     }
 
-    /* 🔢 詞語卡片左上角數字標籤樣式 */
     .word-index {
       position: absolute;
       left: 8px;
@@ -756,21 +737,6 @@
       color: #ffffff !important;
       border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
     }
-    body.exported-app header h1 {
-      color: #ffffff !important;
-    }
-    body.exported-app .header-subtitle {
-      color: #a3e635 !important;
-    }
-    body.exported-app .timer-clock-box {
-      background: rgba(0, 0, 0, 0.25) !important;
-    }
-    body.exported-app .empty-prompt {
-      color: #475569 !important;
-    }
-    body.exported-app .dictation-list h2 {
-      color: #1e3a8a !important;
-    }
 
     @media (max-width: 768px) {
       aside {
@@ -851,7 +817,6 @@
       accent-color: #2d6a4f;
     }
 
-    /* ⚡ Toolbar Speed Select */
     .speed-control-label {
       display: inline-flex;
       align-items: center;
@@ -883,7 +848,6 @@
     </div>
     <div class="header-subtitle" id="subTitleDisplay" style="display: block;">(26/27)  四年級中默 (4)</div>
     <div class="header-controls">
-      <!-- 🏠 Home Button Moved to Header Controls Toolbar -->
       <a href="https://tonyymlee.github.io/pdictation/chi/" class="home-link-btn" title="返回主頁">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
           <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v6H4a1 1 0 0 1-1-1v-9.5z"></path>
@@ -961,6 +925,11 @@
           <button class="tab-btn" id="btn_tab4" onclick="switchTab('tab4', this)">
             <span class="tab-icon">✍</span> 聽寫課文段落
           </button>
+
+          <!-- 背默課文段落 -->
+          <button class="tab-btn" id="btn_tab5" onclick="switchTab('tab5', this)">
+            <span class="tab-icon">💾</span> 背默課文段落
+          </button>
         </div>
       </div>
 
@@ -1007,9 +976,9 @@
     </aside>
 
     <main id="mainContent" class="mode-hanPinyin">
-      <div class="toolbar-card hidden" id="vocabToolbar">
+      <div class="toolbar-card hidden is-scrolled" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">挑戰題</button>
+          <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">詞語</button>
           <span class="toolbar-options">
             <label>間：<input type="number" id="vocabDelayInput" value="15" min="1"> 秒</label>
             <label class="speed-control-label"><select id="vocabSpeedSelect" onchange="onSpeedChange()">
@@ -1027,11 +996,11 @@
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="複製當前顯示文字">抄</button>
       </div>
 
-      <div class="toolbar-card" id="dictationToolbar">
+      <div class="toolbar-card is-scrolled" id="dictationToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="btn-tag-icon" onclick="scrollToTop()" title="返回頁面頂部">課文</button>
+          <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="返回頁面頂部">課文</button>
           <span class="toolbar-options">
-            <label>每字：<input type="number" id="secPerCharInput" value="2.3" min="1" step="0.1"> 秒</label>
+            <label id="secPerCharLabel">每字：<input type="number" id="secPerCharInput" value="2.3" min="0.1" step="0.1"> 秒</label>
             <label class="speed-control-label"><select id="dictationSpeedSelect" onchange="onSpeedChange()">
               <option value="0.1">0.1</option>
               <option value="0.2">0.2</option>
@@ -1047,269 +1016,221 @@
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="複製當前顯示文字">抄</button>
       </div>
 
-      <div id="contentArea"><div class="dictation-list" id="dictationList"><h2 style="font-size:1.2rem; color:#ffffff; margin: 8px 0 4px;">課 13《桂林山水》第 2、3 段</h2>
+      <div id="contentArea"><div class="dictation-list" id="dictationList"><h2 style="font-size:1.2rem; color:#ffffff; margin: 8px 0 4px;">課 6《珍珠鳥》第 3、4 段</h2>
             <div class="dictation-row" id="dcard_1" onclick="clickPlayDictation(1)">
               <div class="sentence-index">#1</div>
-              <div class="sentence-text">我看見過</div>
-              <div class="sentence-pinyin">wǒ kàn jiàn guò</div>
+              <div class="sentence-text">起先，</div>
+              <div class="sentence-pinyin">qǐ <span style="color: #f71942;">xiān</span></div>
             </div>
           
             <div class="dictation-row" id="dcard_2" onclick="clickPlayDictation(2)">
               <div class="sentence-index">#2</div>
-              <div class="sentence-text">波<span style="color: #f71942;">瀾</span>壯闊的大海，</div>
-              <div class="sentence-pinyin">bō <span style="color: #0cb318;">lán</span> zhuàng kuò de dà hǎi</div>
+              <div class="sentence-text">這小傢伙只在</div>
+              <div class="sentence-pinyin">zhè xiǎo jiā huǒ zhī zài</div>
             </div>
           
-            <div class="dictation-row" id="dcard_3" onclick="clickPlayDictation(3)">
+            <div class="dictation-row active-reading" id="dcard_3" onclick="clickPlayDictation(3)">
               <div class="sentence-index">#3</div>
-              <div class="sentence-text">欣賞過水平</div>
-              <div class="sentence-pinyin">xīn shǎng guò shuǐ píng</div>
+              <div class="sentence-text">籠子四周活動，</div>
+              <div class="sentence-pinyin">lóng zǐ sì zhōu huó dòng</div>
             </div>
           
             <div class="dictation-row" id="dcard_4" onclick="clickPlayDictation(4)">
               <div class="sentence-index">#4</div>
-              <div class="sentence-text">如鏡的西湖，</div>
-              <div class="sentence-pinyin">rú jìng de <span style="color: #f71942;">xī</span> hú</div>
+              <div class="sentence-text">隨後就在屋裏</div>
+              <div class="sentence-pinyin">suí hòu jiù zài wū lǐ</div>
             </div>
           
             <div class="dictation-row" id="dcard_5" onclick="clickPlayDictation(5)">
               <div class="sentence-index">#5</div>
-              <div class="sentence-text">卻從沒看見過</div>
-              <div class="sentence-pinyin">què cóng méi kàn jiàn guò</div>
+              <div class="sentence-text">飛來飛去，</div>
+              <div class="sentence-pinyin">fēi lái fēi qù</div>
             </div>
           
             <div class="dictation-row" id="dcard_6" onclick="clickPlayDictation(6)">
               <div class="sentence-index">#6</div>
-              <div class="sentence-text">漓江這樣的水。</div>
-              <div class="sentence-pinyin">lí jiāng zhè yàng de shuǐ</div>
+              <div class="sentence-text">一會兒落在</div>
+              <div class="sentence-pinyin">yī <span style="color: #f71942;">huì</span> ér luò zài</div>
             </div>
           
             <div class="dictation-row" id="dcard_7" onclick="clickPlayDictation(7)">
               <div class="sentence-index">#7</div>
-              <div class="sentence-text">漓江的水真靜啊，</div>
-              <div class="sentence-pinyin">lí jiāng de shuǐ zhēn jìng a</div>
+              <div class="sentence-text">櫃頂上，</div>
+              <div class="sentence-pinyin">guì dǐng shàng</div>
             </div>
           
             <div class="dictation-row" id="dcard_8" onclick="clickPlayDictation(8)">
               <div class="sentence-index">#8</div>
-              <div class="sentence-text">靜得讓你感覺</div>
-              <div class="sentence-pinyin">jìng dé ràng nǐ gǎn jué</div>
+              <div class="sentence-text">一會兒神氣十足地</div>
+              <div class="sentence-pinyin">yī <span style="color: #f71942;">huì</span> ér shén qì shí zú dì</div>
             </div>
           
-            <div class="dictation-row active-reading" id="dcard_9" onclick="clickPlayDictation(9)">
+            <div class="dictation-row" id="dcard_9" onclick="clickPlayDictation(9)">
               <div class="sentence-index">#9</div>
-              <div class="sentence-text">不到它在流動；</div>
-              <div class="sentence-pinyin">bù dào tā zài liú dòng</div>
+              <div class="sentence-text">站在書架上，</div>
+              <div class="sentence-pinyin">zhàn zài shū jià shàng</div>
             </div>
           
             <div class="dictation-row" id="dcard_10" onclick="clickPlayDictation(10)">
               <div class="sentence-index">#10</div>
-              <div class="sentence-text">漓江的水真清啊，</div>
-              <div class="sentence-pinyin">lí jiāng de shuǐ zhēn qīng a</div>
+              <div class="sentence-text">一會兒把燈繩</div>
+              <div class="sentence-pinyin">yī <span style="color: #f71942;">huì</span> ér bǎ dēng shéng</div>
             </div>
           
             <div class="dictation-row" id="dcard_11" onclick="clickPlayDictation(11)">
               <div class="sentence-index">#11</div>
-              <div class="sentence-text">清得可以看見</div>
-              <div class="sentence-pinyin">qīng dé kě yǐ kàn jiàn</div>
+              <div class="sentence-text">撞得來回搖動，</div>
+              <div class="sentence-pinyin">zhuàng dé lái <span style="color: #f71942;">huí</span> yáo dòng</div>
             </div>
           
             <div class="dictation-row" id="dcard_12" onclick="clickPlayDictation(12)">
               <div class="sentence-index">#12</div>
-              <div class="sentence-text">江底的沙石；</div>
-              <div class="sentence-pinyin">jiāng dǐ de shā shí</div>
+              <div class="sentence-text">跟着逃到畫框</div>
+              <div class="sentence-pinyin">gēn zhe táo dào huà kuàng</div>
             </div>
           
             <div class="dictation-row" id="dcard_13" onclick="clickPlayDictation(13)">
               <div class="sentence-index">#13</div>
-              <div class="sentence-text">漓江的水真綠啊，</div>
-              <div class="sentence-pinyin">lí jiāng de shuǐ zhēn lǜ a</div>
+              <div class="sentence-text">上去了。</div>
+              <div class="sentence-pinyin">shǎng qù le</div>
             </div>
           
             <div class="dictation-row" id="dcard_14" onclick="clickPlayDictation(14)">
               <div class="sentence-index">#14</div>
-              <div class="sentence-text">綠得彷彿那是一塊</div>
-              <div class="sentence-pinyin">lǜ dé páng fú nà shì yī kuài</div>
+              <div class="sentence-text">只要大鳥在籠裏</div>
+              <div class="sentence-pinyin">zhǐ yào dà niǎo zài lóng lǐ</div>
             </div>
           
             <div class="dictation-row" id="dcard_15" onclick="clickPlayDictation(15)">
               <div class="sentence-index">#15</div>
-              <div class="sentence-text">完整無瑕的翡翠。</div>
-              <div class="sentence-pinyin">wán zhěng wú xiá de fěi cuì</div>
+              <div class="sentence-text">生氣地叫一聲，</div>
+              <div class="sentence-pinyin">shēng qì dì jiào yī shēng</div>
             </div>
           
             <div class="dictation-row" id="dcard_16" onclick="clickPlayDictation(16)">
               <div class="sentence-index">#16</div>
-              <div class="sentence-text">只有船槳激起的微波，</div>
-              <div class="sentence-pinyin">zhǐ yǒu chuán jiǎng jī qǐ de wēi bō</div>
+              <div class="sentence-text">牠就立即飛回</div>
+              <div class="sentence-pinyin">tā jiù lì jí fēi <span style="color: #f71942;">huí</span></div>
             </div>
           
             <div class="dictation-row" id="dcard_17" onclick="clickPlayDictation(17)">
               <div class="sentence-index">#17</div>
-              <div class="sentence-text">擴散出一道道水紋，</div>
-              <div class="sentence-pinyin">kuò sàn chū yī dào dào shuǐ wén</div>
+              <div class="sentence-text">籠裏去。</div>
+              <div class="sentence-pinyin">lóng lǐ qù</div>
             </div>
-          
+          <div class="paragraph-break" id="break_card">下一個自然段</div>
             <div class="dictation-row" id="dcard_18" onclick="clickPlayDictation(18)">
               <div class="sentence-index">#18</div>
-              <div class="sentence-text">才讓你感覺</div>
-              <div class="sentence-pinyin">cái ràng nǐ gǎn jué</div>
+              <div class="sentence-text">漸漸牠膽子大了，</div>
+              <div class="sentence-pinyin">jiàn jiàn tā dǎn zǐ dà le</div>
             </div>
           
             <div class="dictation-row" id="dcard_19" onclick="clickPlayDictation(19)">
               <div class="sentence-index">#19</div>
-              <div class="sentence-text">到船在前進，</div>
-              <div class="sentence-pinyin">dào chuán zài qián jìn</div>
+              <div class="sentence-text">就落在我的</div>
+              <div class="sentence-pinyin">jiù luò zài wǒ de</div>
             </div>
           
             <div class="dictation-row" id="dcard_20" onclick="clickPlayDictation(20)">
               <div class="sentence-index">#20</div>
-              <div class="sentence-text">岸在後移。</div>
-              <div class="sentence-pinyin">àn zài hòu yí</div>
+              <div class="sentence-text">書桌上。</div>
+              <div class="sentence-pinyin">shū zhuō shàng</div>
             </div>
-          <div class="paragraph-break" id="break_card">下一個自然段</div>
+          
             <div class="dictation-row" id="dcard_21" onclick="clickPlayDictation(21)">
               <div class="sentence-index">#21</div>
-              <div class="sentence-text">我攀登過峯巒</div>
-              <div class="sentence-pinyin">wǒ pān dēng guò fēng luán</div>
+              <div class="sentence-text">牠先是離我較遠，</div>
+              <div class="sentence-pinyin">tā <span style="color: #f71942;">xiān</span> shì lí wǒ jiào yuǎn</div>
             </div>
           
             <div class="dictation-row" id="dcard_22" onclick="clickPlayDictation(22)">
               <div class="sentence-index">#22</div>
-              <div class="sentence-text">雄偉的泰山，</div>
-              <div class="sentence-pinyin">xióng wěi de tài shān</div>
+              <div class="sentence-text">見我不去傷害牠，</div>
+              <div class="sentence-pinyin">jiàn wǒ bù qù shāng hài tā</div>
             </div>
           
             <div class="dictation-row" id="dcard_23" onclick="clickPlayDictation(23)">
               <div class="sentence-index">#23</div>
-              <div class="sentence-text">遊覽過紅葉</div>
-              <div class="sentence-pinyin">yóu lǎn guò hóng yè</div>
+              <div class="sentence-text">便一點點挨近，</div>
+              <div class="sentence-pinyin">biàn yī diǎn diǎn āi jìn</div>
             </div>
           
             <div class="dictation-row" id="dcard_24" onclick="clickPlayDictation(24)">
               <div class="sentence-index">#24</div>
-              <div class="sentence-text">似火的香山，</div>
-              <div class="sentence-pinyin">sì huǒ de <span style="color: #f71942;">xiāng</span> shān</div>
+              <div class="sentence-text">然後<span style="color: #f71942;">蹦</span>到我的</div>
+              <div class="sentence-pinyin">rán hòu <span style="color: #0cb318;">bèng</span> dào wǒ de</div>
             </div>
           
             <div class="dictation-row" id="dcard_25" onclick="clickPlayDictation(25)">
               <div class="sentence-index">#25</div>
-              <div class="sentence-text">卻從沒看見過桂</div>
-              <div class="sentence-pinyin">què cóng méi kàn jiàn guò guì</div>
+              <div class="sentence-text">杯子上，</div>
+              <div class="sentence-pinyin">bēi zǐ shàng</div>
             </div>
           
             <div class="dictation-row" id="dcard_26" onclick="clickPlayDictation(26)">
               <div class="sentence-index">#26</div>
-              <div class="sentence-text">林這一帶的山。</div>
-              <div class="sentence-pinyin">lín zhè yī dài de shān</div>
+              <div class="sentence-text"><span style="color: #f71942;">俯</span>下頭來喝茶，</div>
+              <div class="sentence-pinyin"><span style="color: #0cb318;">fǔ</span> xià tóu lái hē chá</div>
             </div>
           
             <div class="dictation-row" id="dcard_27" onclick="clickPlayDictation(27)">
               <div class="sentence-index">#27</div>
-              <div class="sentence-text">桂林的山真奇啊，</div>
-              <div class="sentence-pinyin">guì lín de shān zhēn qí a</div>
+              <div class="sentence-text">再偏過臉瞧瞧</div>
+              <div class="sentence-pinyin">zài <span style="color: #f71942;">piān</span> guò liǎn qiáo qiáo</div>
             </div>
           
             <div class="dictation-row" id="dcard_28" onclick="clickPlayDictation(28)">
               <div class="sentence-index">#28</div>
-              <div class="sentence-text">一座座拔地而起，</div>
-              <div class="sentence-pinyin">yī zuò zuò bá dì ér qǐ</div>
+              <div class="sentence-text">我的反應。</div>
+              <div class="sentence-pinyin">wǒ de fǎn yīng</div>
             </div>
           
             <div class="dictation-row" id="dcard_29" onclick="clickPlayDictation(29)">
               <div class="sentence-index">#29</div>
-              <div class="sentence-text">各不相連，</div>
-              <div class="sentence-pinyin">gè bù <span style="color: #f71942;">xiāng</span> lián</div>
+              <div class="sentence-text">我只是微微一笑，</div>
+              <div class="sentence-pinyin">wǒ zhǐ shì wēi wēi yī xiào</div>
             </div>
           
             <div class="dictation-row" id="dcard_30" onclick="clickPlayDictation(30)">
               <div class="sentence-index">#30</div>
-              <div class="sentence-text">像老人，</div>
-              <div class="sentence-pinyin"><span style="color: #f71942;">xiàng</span> lǎo rén</div>
+              <div class="sentence-text">依舊寫東西。</div>
+              <div class="sentence-pinyin">yī jiù xiě dōng <span style="color: #f71942;">xī</span></div>
             </div>
           
             <div class="dictation-row" id="dcard_31" onclick="clickPlayDictation(31)">
               <div class="sentence-index">#31</div>
-              <div class="sentence-text">像巨象，</div>
-              <div class="sentence-pinyin"><span style="color: #f71942;">xiàng</span> jù <span style="color: #f71942;">xiàng</span></div>
+              <div class="sentence-text">牠就放開膽子</div>
+              <div class="sentence-pinyin">tā jiù fàng kāi dǎn zǐ</div>
             </div>
           
             <div class="dictation-row" id="dcard_32" onclick="clickPlayDictation(32)">
               <div class="sentence-index">#32</div>
-              <div class="sentence-text">像駱駝，</div>
-              <div class="sentence-pinyin"><span style="color: #f71942;">xiàng</span> luò tuó</div>
+              <div class="sentence-text">跑到稿紙上，</div>
+              <div class="sentence-pinyin">pǎo dào gǎo zhǐ shàng</div>
             </div>
           
             <div class="dictation-row" id="dcard_33" onclick="clickPlayDictation(33)">
               <div class="sentence-index">#33</div>
-              <div class="sentence-text">奇峯羅列，</div>
-              <div class="sentence-pinyin">qí fēng luó liè</div>
+              <div class="sentence-text">繞着我的筆</div>
+              <div class="sentence-pinyin">rào zhe wǒ de bǐ</div>
             </div>
           
             <div class="dictation-row" id="dcard_34" onclick="clickPlayDictation(34)">
               <div class="sentence-index">#34</div>
-              <div class="sentence-text">形態萬千；</div>
-              <div class="sentence-pinyin">xíng tài wàn qiān</div>
+              <div class="sentence-text">尖<span style="color: #f71942;">蹦</span>來<span style="color: #f71942;">蹦</span>去，</div>
+              <div class="sentence-pinyin">jiān <span style="color: #0cb318;">bèng</span> lái <span style="color: #0cb318;">bèng</span> qù</div>
             </div>
           
             <div class="dictation-row" id="dcard_35" onclick="clickPlayDictation(35)">
               <div class="sentence-index">#35</div>
-              <div class="sentence-text">桂林的山真秀啊，</div>
-              <div class="sentence-pinyin">guì lín de shān zhēn xiù a</div>
+              <div class="sentence-text">跳動的小紅爪子在紙上</div>
+              <div class="sentence-pinyin">tiào dòng de xiǎo hóng zhuǎ zi zài zhǐ shàng</div>
             </div>
           
             <div class="dictation-row" id="dcard_36" onclick="clickPlayDictation(36)">
               <div class="sentence-index">#36</div>
-              <div class="sentence-text">像翠綠的屏障，</div>
-              <div class="sentence-pinyin"><span style="color: #f71942;">xiàng</span> cuì lǜ de píng zhàng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_37" onclick="clickPlayDictation(37)">
-              <div class="sentence-index">#37</div>
-              <div class="sentence-text">新生的竹筍，</div>
-              <div class="sentence-pinyin">xīn shēng de zhú sǔn</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_38" onclick="clickPlayDictation(38)">
-              <div class="sentence-index">#38</div>
-              <div class="sentence-text">色彩明麗，</div>
-              <div class="sentence-pinyin">sè cǎi míng lí</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_39" onclick="clickPlayDictation(39)">
-              <div class="sentence-index">#39</div>
-              <div class="sentence-text">倒映水中；</div>
-              <div class="sentence-pinyin">dǎo yìng shuǐ zhōng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_40" onclick="clickPlayDictation(40)">
-              <div class="sentence-index">#40</div>
-              <div class="sentence-text">桂林的山真險啊，</div>
-              <div class="sentence-pinyin">guì lín de shān zhēn <span style="color: #f71942;">xiǎn</span> a</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_41" onclick="clickPlayDictation(41)">
-              <div class="sentence-index">#41</div>
-              <div class="sentence-text">危峯兀立，</div>
-              <div class="sentence-pinyin">wēi fēng wù lì</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_42" onclick="clickPlayDictation(42)">
-              <div class="sentence-index">#42</div>
-              <div class="sentence-text">怪石嶙峋，</div>
-              <div class="sentence-pinyin">guài shí lín xún</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_43" onclick="clickPlayDictation(43)">
-              <div class="sentence-index">#43</div>
-              <div class="sentence-text">好像一不小心</div>
-              <div class="sentence-pinyin">hǎo <span style="color: #f71942;">xiàng</span> yī bù xiǎo xīn</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_44" onclick="clickPlayDictation(44)">
-              <div class="sentence-index">#44</div>
-              <div class="sentence-text">就會栽倒下來。</div>
-              <div class="sentence-pinyin">jiù <span style="color: #f71942;">huì</span> zāi dǎo xià lái</div>
+              <div class="sentence-text">發出察察的響聲。</div>
+              <div class="sentence-pinyin">fā chū chá chá de <span style="color: #f71942;">xiǎng</span> shēng</div>
             </div>
           </div></div>
     </main>
@@ -1365,6 +1286,7 @@
     let customProtectedWords = [];
     let highlightedWords = []; 
     let rawDictationText = "";
+    let rawReciteText = ""; 
 
     function getItemText(it) { return typeof it === 'object' && it !== null ? it.text : it; }
 
@@ -1403,7 +1325,7 @@
       "思考", "想像", "注意", "關心", "尊重", "原諒", "理解", "體會", "回億", "忘記",
       "學習", "閱讀", "寫字", "說話", "唱歌", "跳舞", "跑步", "運動", "遊戲", "思考",
       "觀察", "研究", "討論", "解釋", "選擇", "比較", "解決", "安排", "計劃", "準備",
-      "突然", "立刻", "馬上", "漸漸", "常常", "總是", "已經", "依然", "非常", "十分",
+      "突然", "刻", "馬上", "漸漸", "常常", "總是", "已經", "依然", "非常", "十分",
       "時間", "今天", "明天", "昨天", "早上", "中午", "晚上", "星期", "時候", "將來",
       "現在", "過去", "最近", "平時", "每天", "有時", "經常", "很久", "瞬間", "從前",
       "最後", "第一", "同時", "後來", "重新", "大約", "幾乎", "大概", "必須", "一定",
@@ -1465,10 +1387,13 @@
     let wakeUpTimeout = null; 
     let singlePlayTimeout1 = null;
     let singlePlayTimeout2 = null;
+    let punctTimer = null; // 用于記錄標點符號停頓定時器
     let currentLang = 'zh-CN'; 
     let displayMode = 'pinyin'; 
     let wakeLock = null; 
     let isOnlyHighlighted = false;
+    let isSpeakingSentence = false; // 新增：記錄目前是否正在發聲朗讀課文/標點中
+    let pendingJumpIndex = null;    // 新增：如果朗讀中被點擊，記錄下一個要跳轉的句子 index
 
     const synth = window.speechSynthesis;
 
@@ -1550,8 +1475,8 @@
     function copyCurrentContent(btnElement) {
       let copyText = "";
 
-      if (currentTab === 'tab4') {
-        const queueList = buildDictationQueue();
+      if (currentTab === 'tab4' || currentTab === 'tab5') {
+        const queueList = (currentTab === 'tab5') ? buildReciteQueue() : buildDictationQueue();
         if (!queueList || queueList.length === 0) return;
 
         let hanLines = [];
@@ -1816,11 +1741,85 @@
       return text.replace(/[。\.，,！？\?；;：:\s]/g, '').length;
     }
 
+    function processTextChunkToQueue(textChunk, globalIndexCounter, allVocabWords) {
+      let queueList = [];
+      let globalIndex = globalIndexCounter;
+      let processedLine = textChunk.replace(/\s+/g, '');
+      let clauses = [];
+      let cur = "";
+      let closingPuncts = `」』》〉）)"''`;
+      let splittingPuncts = "。，.,！？?；;：:─—-…";
+
+      for (let i = 0; i < processedLine.length; i++) {
+        let ch = processedLine[i];
+        cur += ch;
+        if (splittingPuncts.includes(ch)) {
+          while (i + 1 < processedLine.length && closingPuncts.includes(processedLine[i + 1])) {
+            i++;
+            cur += processedLine[i];
+          }
+          clauses.push(cur);
+          cur = "";
+        }
+      }
+      if (cur) clauses.push(cur);
+
+      clauses.forEach(clause => {
+        const charCount = countChineseChars(clause);
+        if (charCount === 0) return;
+
+        if (charCount <= 7) {
+          globalIndex++;
+          queueList.push({ type: 'sentence', text: clause, index: globalIndex });
+        } else {
+          let splitPos = Math.floor(clause.length / 2);
+          let protectedMatch = null;
+
+          for (let vw of allVocabWords) {
+            if (vw.length >= 2) {
+              let idx = clause.indexOf(vw);
+              while (idx !== -1) {
+                if (splitPos > idx && splitPos < idx + vw.length) {
+                  protectedMatch = { word: vw, start: idx };
+                  break;
+                }
+                idx = clause.indexOf(vw, idx + 1);
+              }
+              if (protectedMatch) break;
+            }
+          }
+
+          if (protectedMatch) {
+            // 無論如何，讓保護詞語保留在前半句的結尾，所以從保護詞的後方切開
+            splitPos = protectedMatch.start + protectedMatch.word.length;
+          }
+
+          if (splitPos <= 0 || splitPos >= clause.length) {
+            splitPos = Math.floor(clause.length / 2);
+          }
+
+          let part1 = clause.substring(0, splitPos);
+          let part2 = clause.substring(splitPos);
+
+          if (countChineseChars(part1) > 0) {
+            globalIndex++;
+            queueList.push({ type: 'sentence', text: part1, index: globalIndex });
+          }
+          if (countChineseChars(part2) > 0) {
+            globalIndex++;
+            queueList.push({ type: 'sentence', text: part2, index: globalIndex });
+          }
+        }
+      });
+
+      return { queueList, globalIndexCounter: globalIndex };
+    }
+
     function buildDictationQueue() {
       if (!rawDictationText || !rawDictationText.trim()) return [];
       
       const rawLines = rawDictationText.split('\n');
-      const queueList = [];
+      let queueList = [];
       let globalIndex = 0;
       
       const allVocabWords = Array.from(new Set([
@@ -1831,10 +1830,22 @@
         ...customProtectedWords
       ])).sort((a, b) => b.length - a.length);
 
+      let textBuffer = "";
+
+      const flushBuffer = () => {
+        if (textBuffer.trim()) {
+          const res = processTextChunkToQueue(autoConvertCharacters(textBuffer.trim()), globalIndex, allVocabWords);
+          queueList.push(...res.queueList);
+          globalIndex = res.globalIndexCounter;
+          textBuffer = "";
+        }
+      };
+
       rawLines.forEach(line => {
         const trimmedLine = autoConvertCharacters(line.trim());
 
         if (!trimmedLine || trimmedLine === '下一個自然段') {
+          flushBuffer();
           if (queueList.length > 0 && queueList[queueList.length - 1].type !== 'break' && queueList[queueList.length - 1].type !== 'title') {
             queueList.push({ type: 'break', text: '下一個自然段' });
           }
@@ -1842,81 +1853,14 @@
         }
 
         if (trimmedLine.startsWith('《') || trimmedLine.includes('課') || (trimmedLine.includes('第') && trimmedLine.includes('段'))) {
+          flushBuffer();
           queueList.push({ type: 'title', text: trimmedLine });
           return;
         }
 
-        let processedLine = trimmedLine.replace(/\s+/g, '');
-        let clauses = [];
-        let cur = "";
-        let closingPuncts = `」』》〉）)"''`;
-        let splittingPuncts = "。，.,！？?；;：:─—-…";
-
-        for (let i = 0; i < processedLine.length; i++) {
-          let ch = processedLine[i];
-          cur += ch;
-          if (splittingPuncts.includes(ch)) {
-            while (i + 1 < processedLine.length && closingPuncts.includes(processedLine[i + 1])) {
-              i++;
-              cur += processedLine[i];
-            }
-            clauses.push(cur);
-            cur = "";
-          }
-        }
-        if (cur) clauses.push(cur);
-
-        clauses.forEach(clause => {
-          const charCount = countChineseChars(clause);
-          if (charCount === 0) return;
-
-          if (charCount <= 9) {
-            globalIndex++;
-            queueList.push({ type: 'sentence', text: clause, index: globalIndex });
-          } else {
-            let splitPos = Math.floor(clause.length / 2);
-            let protectedMatch = null;
-
-            for (let vw of allVocabWords) {
-              if (vw.length >= 2) {
-                let idx = clause.indexOf(vw);
-                while (idx !== -1) {
-                  if (splitPos > idx && splitPos < idx + vw.length) {
-                    protectedMatch = { word: vw, start: idx };
-                    break;
-                  }
-                  idx = clause.indexOf(vw, idx + 1);
-                }
-                if (protectedMatch) break;
-              }
-            }
-
-            if (protectedMatch) {
-              if (protectedMatch.start > 0) {
-                splitPos = protectedMatch.start;
-              } else {
-                splitPos = protectedMatch.start + protectedMatch.word.length;
-              }
-            }
-
-            if (splitPos <= 0 || splitPos >= clause.length) {
-              splitPos = Math.floor(clause.length / 2);
-            }
-
-            let part1 = clause.substring(0, splitPos);
-            let part2 = clause.substring(splitPos);
-
-            if (countChineseChars(part1) > 0) {
-              globalIndex++;
-              queueList.push({ type: 'sentence', text: part1, index: globalIndex });
-            }
-            if (countChineseChars(part2) > 0) {
-              globalIndex++;
-              queueList.push({ type: 'sentence', text: part2, index: globalIndex });
-            }
-          }
-        });
+        textBuffer += trimmedLine;
       });
+      flushBuffer();
 
       const cleanedQueueList = [];
       const trailingPuncts = "。,.，！？?；;：:」』》〉）)─—-…";
@@ -1954,6 +1898,82 @@
       return cleanedQueueList;
     }
 
+    // 背默課文專屬斷句 Logic (併合換行再於標點處切斷)
+    function buildReciteQueue() {
+      if (!rawReciteText || !rawReciteText.trim()) return [];
+
+      const rawLines = rawReciteText.split('\n');
+      let queueList = [];
+      let globalIndex = 0;
+
+      const closingPuncts = `」』》〉）)"''`;
+      const splittingPuncts = "。，.,！？?；;：:─—-…";
+
+      let textBuffer = "";
+
+      const flushReciteBuffer = () => {
+        if (!textBuffer.trim()) return;
+        let processedLine = autoConvertCharacters(textBuffer.trim()).replace(/\s+/g, '');
+        let cur = "";
+
+        for (let i = 0; i < processedLine.length; i++) {
+          let ch = processedLine[i];
+          cur += ch;
+          if (splittingPuncts.includes(ch)) {
+            while (i + 1 < processedLine.length && closingPuncts.includes(processedLine[i + 1])) {
+              i++;
+              cur += processedLine[i];
+            }
+            if (countChineseChars(cur) > 0) {
+              globalIndex++;
+              queueList.push({ type: 'sentence', text: cur, index: globalIndex });
+            }
+            cur = "";
+          }
+        }
+        if (cur && countChineseChars(cur) > 0) {
+          globalIndex++;
+          queueList.push({ type: 'sentence', text: cur, index: globalIndex });
+        }
+        textBuffer = "";
+      };
+
+      rawLines.forEach(line => {
+        const trimmedLine = autoConvertCharacters(line.trim());
+
+        if (!trimmedLine || trimmedLine === '下一個自然段') {
+          flushReciteBuffer();
+          if (queueList.length > 0 && queueList[queueList.length - 1].type !== 'break' && queueList[queueList.length - 1].type !== 'title') {
+            queueList.push({ type: 'break', text: '下一個自然段' });
+          }
+          return;
+        }
+
+        if (trimmedLine.startsWith('《') || trimmedLine.includes('課') || (trimmedLine.includes('第') && trimmedLine.includes('段'))) {
+          flushReciteBuffer();
+          queueList.push({ type: 'title', text: trimmedLine });
+          return;
+        }
+
+        textBuffer += trimmedLine;
+      });
+      flushReciteBuffer();
+
+      while (queueList.length > 0 && queueList[queueList.length - 1].type === 'break') {
+        queueList.pop();
+      }
+
+      let reIndex = 0;
+      queueList.forEach(item => {
+        if (item.type === 'sentence') {
+          reIndex++;
+          item.index = reIndex;
+        }
+      });
+
+      return queueList;
+    }
+
     function handleFileImport(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1977,7 +1997,7 @@
       const sanitizedText = convertedFullText.replace(/<[^>]*>/g, '');
 
       let currentSection = 'vocab';
-      let newVocab = [], newPinyin = [], newIdiom = [], newCustomProtected = [], newDictation = [], newHighlight = [];
+      let newVocab = [], newPinyin = [], newIdiom = [], newCustomProtected = [], newDictation = [], newRecite = [], newHighlight = [];
       dynamicCustomPinyinMap = {};
       lessonTitle = "";
 
@@ -2004,10 +2024,13 @@
         if (trimmed.includes('其他詞語') || trimmed.includes('保護詞語') || trimmed.includes('保護詞彙')) { currentSection = 'customProtected'; return; }
         if (trimmed.includes('拼音修正') || trimmed.includes('多音字')) { currentSection = 'pinyinFix'; return; }
         if (trimmed.includes('聽寫課文段落')) { currentSection = 'dictation'; return; }
+        if (trimmed.includes('背默課文段落')) { currentSection = 'recite'; return; }
         if (trimmed.includes('高亮詞語') || trimmed.includes('重點詞語')) { currentSection = 'highlight'; return; }
 
         if (currentSection === 'dictation') {
-          newDictation.push(autoConvertCharacters(trimmed));
+          newDictation.push(autoConvertCharacters(line));
+        } else if (currentSection === 'recite') {
+          newRecite.push(autoConvertCharacters(line));
         } else if (currentSection === 'pinyinFix') {
           if (trimmed.includes('=') || trimmed.includes('＝')) {
             const parts = trimmed.split(/[=＝]/);
@@ -2063,6 +2086,7 @@
       customProtectedWords = newCustomProtected;
       highlightedWords = newHighlight;
       rawDictationText = newDictation.join('\n');
+      rawReciteText = newRecite.join('\n');
 
       updateHeaderSubtitle();
       renderTab();
@@ -2106,6 +2130,16 @@
 
         const dictationQueue = buildDictationQueue();
         dictationQueue.forEach(item => {
+          if (item.type === 'sentence' && item.text) {
+            const clean = autoConvertCharacters(item.text.replace(/\s+/g, ''));
+            if (clean) {
+              pinyinMap[clean] = getDynamicPinyin(clean);
+            }
+          }
+        });
+
+        const reciteQueue = buildReciteQueue();
+        reciteQueue.forEach(item => {
           if (item.type === 'sentence' && item.text) {
             const clean = autoConvertCharacters(item.text.replace(/\s+/g, ''));
             if (clean) {
@@ -2219,7 +2253,7 @@
       resetPlayback();
       updateHeaderSubtitle();
       
-      if (currentTab === 'tab1' || currentTab === 'tab3' || currentTab === 'tab4') {
+      if (currentTab === 'tab1' || currentTab === 'tab3' || currentTab === 'tab4' || currentTab === 'tab5') {
         displayMode = 'pinyin';
       } else if (currentTab === 'tab2') {
         displayMode = 'blank';
@@ -2229,13 +2263,24 @@
       const vocabToolbar = document.getElementById('vocabToolbar');
       const dictationToolbar = document.getElementById('dictationToolbar');
       const vocabTagBtn = document.getElementById('vocabTagBtn');
+      const dictationTagBtn = document.getElementById('dictationTagBtn');
+      const secPerCharLabel = document.getElementById('secPerCharLabel');
 
       if (!area) return;
 
-      if (currentTab === 'tab4') {
+      if (currentTab === 'tab4' || currentTab === 'tab5') {
         if (vocabToolbar) vocabToolbar.classList.add('hidden');
         if (dictationToolbar) dictationToolbar.classList.remove('hidden');
-        renderDictation(area);
+
+        if (currentTab === 'tab5') {
+          if (dictationTagBtn) dictationTagBtn.textContent = '背默';
+          if (secPerCharLabel) secPerCharLabel.innerHTML = '每字：<input type="number" id="secPerCharInput" value="2.3" min="0.1" step="0.1"> 秒';
+          renderRecite(area);
+        } else {
+          if (dictationTagBtn) dictationTagBtn.textContent = '課文';
+          if (secPerCharLabel) secPerCharLabel.innerHTML = '每字：<input type="number" id="secPerCharInput" value="2.3" min="0.1" step="0.1"> 秒';
+          renderDictation(area);
+        }
       } else {
         if (vocabToolbar) vocabToolbar.classList.remove('hidden');
         if (dictationToolbar) dictationToolbar.classList.add('hidden');
@@ -2373,6 +2418,42 @@
 
           html += `
             <div class="dictation-row" id="dcard_${item.index}" onclick="clickPlayDictation(${item.index})">
+              <div class="sentence-index">#${item.index}</div>
+              <div class="sentence-text">${sentenceHtml}</div>
+              <div class="sentence-pinyin">${sentencePinyinHtml}</div>
+            </div>
+          `;
+        }
+      });
+
+      html += '</div>';
+      container.innerHTML = html;
+      updateDisplayModeUI();
+    }
+
+    // 渲染背默課文列表
+    function renderRecite(container) {
+      const queueList = buildReciteQueue();
+      if (!queueList || queueList.length === 0) {
+        container.innerHTML = '<div class="empty-prompt">（目前無背默內容，請在左側選單粘貼或上傳檔案）</div>';
+        return;
+      }
+
+      let html = '<div class="dictation-list" id="dictationList">';
+
+      queueList.forEach(item => {
+        if (item.type === 'title') {
+          html += `<h2 style="font-size:1.2rem; color:#ffffff; margin: 8px 0 4px;">${autoConvertCharacters(item.text)}</h2>`;
+        } else if (item.type === 'break') {
+          html += `<div class="paragraph-break" id="break_recite_card">${item.text}</div>`;
+        } else if (item.type === 'sentence') {
+          const cleanText = autoConvertCharacters(item.text.replace(/\s+/g, ''));
+          const dynamicPinyin = getDynamicPinyin(cleanText);
+          const sentenceHtml = getHighlightedWordHtml(cleanText);
+          const sentencePinyinHtml = getHighlightedPinyinHtml(cleanText, dynamicPinyin);
+
+          html += `
+            <div class="dictation-row" id="rcard_${item.index}" onclick="clickPlayRecite(${item.index})">
               <div class="sentence-index">#${item.index}</div>
               <div class="sentence-text">${sentenceHtml}</div>
               <div class="sentence-pinyin">${sentencePinyinHtml}</div>
@@ -2596,7 +2677,7 @@
       const vocabSpeedSel = document.getElementById('vocabSpeedSelect');
       const dictSpeedSel = document.getElementById('dictationSpeedSelect');
       
-      if (currentTab === 'tab4' && dictSpeedSel) {
+      if ((currentTab === 'tab4' || currentTab === 'tab5') && dictSpeedSel) {
         activeRate = parseFloat(dictSpeedSel.value) || 0.7;
       } else if (vocabSpeedSel) {
         activeRate = parseFloat(vocabSpeedSel.value) || 0.82;
@@ -2633,31 +2714,67 @@
       }, 120); 
     }
 
+    let manualPlayId = 0;
+
     function playSingleWord(word) {
       if (synth) synth.cancel();
       if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
       if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
 
+      manualPlayId++;
+      let currentId = manualPlayId;
+
       singlePlayTimeout1 = setTimeout(() => {
+        if (currentId !== manualPlayId) return;
         speakText(word, () => {
+          if (currentId !== manualPlayId) return;
           singlePlayTimeout2 = setTimeout(() => {
+            if (currentId !== manualPlayId) return;
             speakText(word, null);
           }, 3000);
         });
       }, 1000);
     }
 
-    function playSingleDictationSentence(text) {
-      if (synth) synth.cancel();
-      if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
-      if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
+    let dictationManualPlayId = 0;
+    let manualDictationQueue = [];
+    let isManualDictationPlaying = false;
+
+    function playSingleDictationSentence(text, index) {
+      manualDictationQueue.push({ text: text, index: index });
+      if (!isManualDictationPlaying) {
+        processManualDictationQueue();
+      }
+    }
+
+    function processManualDictationQueue() {
+      if (manualDictationQueue.length === 0) {
+        isManualDictationPlaying = false;
+        return;
+      }
+      isManualDictationPlaying = true;
+      let item = manualDictationQueue.shift();
+
+      if (item.index !== undefined) {
+        highlightDictationCard(`dcard_${item.index}`);
+      }
+
+      dictationManualPlayId++;
+      let currentId = dictationManualPlayId;
 
       singlePlayTimeout1 = setTimeout(() => {
-        speakSentenceWithPunctuation(text, () => {
+        if (currentId !== dictationManualPlayId) { isManualDictationPlaying = false; return; }
+        speakSentenceWithPunctuation(item.text, () => {
+          if (currentId !== dictationManualPlayId) { isManualDictationPlaying = false; return; }
           singlePlayTimeout2 = setTimeout(() => {
-            speakSentenceWithPunctuation(text, null);
+            if (currentId !== dictationManualPlayId) { isManualDictationPlaying = false; return; }
+            speakSentenceWithPunctuation(item.text, () => {
+              if (currentId !== dictationManualPlayId) { isManualDictationPlaying = false; return; }
+              isManualDictationPlaying = false;
+              processManualDictationQueue();
+            }, true, currentId);
           }, 3000);
-        });
+        }, true, currentId);
       }, 1000);
     }
 
@@ -2694,6 +2811,7 @@
       if (currentTab === 'tab2') return '漢語拼音';
       if (currentTab === 'tab3') return '挑戰題';
       if (currentTab === 'tab4') return '聽寫課文段落';
+      if (currentTab === 'tab5') return '背默課文段落';
       return '課文詞語';
     }
 
@@ -2714,6 +2832,11 @@
       }
 
       requestWakeLock();
+
+      if (currentTab === 'tab5') {
+        startRecitePlay(onlyHighlighted);
+        return;
+      }
 
       if (currentTab === 'tab4') {
         queue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
@@ -2755,6 +2878,126 @@
           }
         });
       });
+    }
+
+    // 背默課文段落 自動播放流程
+    function startRecitePlay(onlyHighlighted, startFromIndex = 0) {
+      let fullQueue = buildReciteQueue();
+      let sentenceItems = fullQueue.filter(q => q.type === 'sentence');
+
+      if (onlyHighlighted) {
+        if (!highlightedWords || highlightedWords.length === 0) {
+          alert("沒有找到高亮/重點詞語。");
+          resetPlayback();
+          return;
+        }
+        sentenceItems = sentenceItems.filter(item => {
+          const text = getItemText(item);
+          return text && highlightedWords.some(hw => text.includes(hw));
+        });
+      }
+
+      if (sentenceItems.length === 0) {
+        releaseWakeLock();
+        return;
+      }
+
+      const secPerCharInput = document.getElementById('secPerCharInput');
+      const secPerChar = secPerCharInput ? (parseFloat(secPerCharInput.value) || 0.7) : 0.7;
+
+      let totalWords = 0;
+      sentenceItems.forEach(item => {
+        totalWords += countChineseChars(item.text);
+      });
+
+      const totalSeconds = totalWords * secPerChar;
+      const totalMinutes = (totalSeconds / 60).toFixed(1);
+      const totalSentences = sentenceItems.length;
+
+      let reciteIdx = 0;
+
+      // 如果從特定句子開始點擊，尋找對應索引
+      if (startFromIndex > 0) {
+        let foundIdx = sentenceItems.findIndex(item => item.index === startFromIndex);
+        if (foundIdx === -1) {
+            // 如果點擊的是未高亮/過濾掉的句子，找下一個可用的
+            let allItems = buildReciteQueue().filter(q => q.type === 'sentence');
+            let clickedItem = allItems.find(q => q.index === startFromIndex);
+            let originalQIndex = allItems.indexOf(clickedItem);
+            foundIdx = sentenceItems.findIndex(qItem => allItems.indexOf(qItem) > originalQIndex);
+        }
+        if (foundIdx !== -1) {
+          reciteIdx = foundIdx;
+        } else {
+          reciteIdx = sentenceItems.length;
+        }
+      }
+
+      function speakNextReciteSentence() {
+        if (!isPlaying) return;
+        if (reciteIdx >= sentenceItems.length) {
+          // 讀完所有句子後提示背默時間並倒數
+          const annText = `同學,現在請開始背默課文, 背默課文總共有 ${totalSentences}句,背默課文 時間是 ${totalMinutes}分鐘`;
+          speakText(annText, () => {
+            if (!isPlaying) return;
+            startTimer(totalSeconds, () => {
+              if (!isPlaying) return;
+              startTimer(3, () => {
+                if (!isPlaying) return;
+                speakText("時間到了, 請檢查, 然後交默書, 謝謝", () => {
+                  resetPlayback();
+                });
+              });
+            });
+          });
+          return;
+        }
+
+        const item = sentenceItems[reciteIdx];
+        highlightReciteCard(`rcard_${item.index}`);
+
+        speakSentenceWithPunctuation(item.text, () => {
+          if (!isPlaying) return;
+          
+          // 在句子剛讀完時，檢查是否有 pending 的點擊
+          if (pendingJumpIndex !== null) {
+              let foundIdx = sentenceItems.findIndex(i => i.index === pendingJumpIndex);
+              if (foundIdx === -1) {
+                  let allItems = buildReciteQueue().filter(q => q.type === 'sentence');
+                  let clickedItem = allItems.find(q => q.index === pendingJumpIndex);
+                  let originalQIndex = allItems.indexOf(clickedItem);
+                  foundIdx = sentenceItems.findIndex(qItem => allItems.indexOf(qItem) > originalQIndex);
+                  if (foundIdx === -1) foundIdx = sentenceItems.length;
+              }
+              reciteIdx = foundIdx;
+              pendingJumpIndex = null;
+              speakNextReciteSentence();
+              return;
+          }
+
+          startTimer(3, () => {
+            if (!isPlaying) return;
+            reciteIdx++;
+            speakNextReciteSentence();
+          });
+        });
+      }
+
+      // 若點擊句子直接開始，則跳過前導提示，直接播放句子；否則按標準流程提示
+      if (startFromIndex > 0) {
+        speakNextReciteSentence();
+      } else {
+        startTimer(3, () => {
+          if (!isPlaying) return;
+          speakText("同學,現在是背默課文, 我會讀課文內容一次", () => {
+            if (!isPlaying) return;
+            startTimer(3, () => {
+              if (!isPlaying) return;
+              speakNextReciteSentence();
+            });
+          });
+        });
+      }
     }
 
     function playNextVocabStep() {
@@ -2854,7 +3097,9 @@
 
       if (isPlaying) {
         if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+        if (punctTimer) clearTimeout(punctTimer);
         clearInterval(timerInterval);
+        if (synth) synth.cancel(); // Vocab詞語短暫直接切換沒問題
         
         queue = data.filter(it => !it || typeof it !== 'object' || it.type !== 'subtitle');
         
@@ -2887,6 +3132,19 @@
       } else {
         playSingleWord(wordText);
       }
+    }
+
+    function applyPendingDictationJump() {
+        playIndex = queue.findIndex(q => q.index === pendingJumpIndex);
+        if (playIndex === -1) {
+            let allQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
+            let clickedItem = allQueue.find(q => q.index === pendingJumpIndex);
+            let originalQIndex = allQueue.indexOf(clickedItem);
+            playIndex = queue.findIndex(qItem => allQueue.indexOf(qItem) > originalQIndex);
+            if (playIndex === -1) playIndex = queue.length;
+        }
+        pendingJumpIndex = null;
+        playNextDictationStep();
     }
 
     function playNextDictationStep() {
@@ -2945,6 +3203,8 @@
       if (isReviewPhase) {
         speakSentenceWithPunctuation(item.text, () => {
           if (!isPlaying) return;
+          if (pendingJumpIndex !== null) { applyPendingDictationJump(); return; }
+          
           startTimer(2, () => {
             if (!isPlaying) return;
             playIndex++;
@@ -2961,10 +3221,15 @@
 
         speakSentenceWithPunctuation(item.text, () => {
           if (!isPlaying) return;
+          if (pendingJumpIndex !== null) { applyPendingDictationJump(); return; }
+
           startTimer(xSec, () => {
             if (!isPlaying) return;
+            
             speakSentenceWithPunctuation(item.text, () => {
               if (!isPlaying) return;
+              if (pendingJumpIndex !== null) { applyPendingDictationJump(); return; }
+
               startTimer(secondPauseSec, () => {
                 if (!isPlaying) return;
                 playIndex++;
@@ -2976,7 +3241,8 @@
       }
     }
 
-    function speakSentenceWithPunctuation(text, onComplete) {
+    function speakSentenceWithPunctuation(text, onComplete, isManual = false, playId = null) {
+      isSpeakingSentence = true;
       let tokens = [];
       let cur = "";
 
@@ -2993,7 +3259,17 @@
 
       let tokenIdx = 0;
       function step() {
+        if (isManual && playId !== null && playId !== dictationManualPlayId) {
+            isSpeakingSentence = false;
+            return;
+        }
+        if (!isPlaying && !isManual && onComplete) {
+            isSpeakingSentence = false;
+            return;
+        }
+
         if (tokenIdx >= tokens.length) {
+          isSpeakingSentence = false;
           if (onComplete) onComplete();
           return;
         }
@@ -3003,11 +3279,26 @@
         if (tok.type === 'text') {
           speakText(tok.val, step);
         } else if (tok.type === 'punct') {
-          startTimer(2, () => {
-            speakText(tok.val, () => {
-              startTimer(2, step);
-            });
-          });
+          if (punctTimer) clearTimeout(punctTimer);
+          punctTimer = setTimeout(() => {
+            if (isManual) {
+              setTimeout(() => {
+                if (playId !== null && playId !== dictationManualPlayId) return;
+                speakText(tok.val, () => {
+                  if (playId !== null && playId !== dictationManualPlayId) return;
+                  setTimeout(step, 2000);
+                });
+              }, 2000);
+            } else {
+              startTimer(2, () => {
+                if (!isPlaying) return;
+                speakText(tok.val, () => {
+                  if (!isPlaying) return;
+                  startTimer(2, step);
+                });
+              });
+            }
+          }, 0);
         }
       }
       step();
@@ -3022,53 +3313,79 @@
       }
     }
 
+    function highlightReciteCard(cardId) {
+      document.querySelectorAll('.dictation-row, .paragraph-break').forEach(c => c.classList.remove('active-reading'));
+      const card = document.getElementById(cardId);
+      if (card) {
+        card.classList.add('active-reading');
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
     function clickPlayDictation(index) {
-      highlightDictationCard(`dcard_${index}`);
       let dictQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
 
       if (isPlaying) {
-        if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
-        clearInterval(timerInterval);
-        
+        highlightDictationCard(`dcard_${index}`); // 點擊時立即反白提示
         if (isOnlyHighlighted) {
           dictQueue = dictQueue.filter(item => {
             const text = getItemText(item);
             return text && highlightedWords.some(hw => text.includes(hw));
           });
         }
-        
         queue = dictQueue;
-        playIndex = dictQueue.findIndex(q => q.index === index);
-        
-        if (playIndex === -1) {
-          let allQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
-          let clickedItem = allQueue.find(q => q.index === index);
-          let originalQIndex = allQueue.indexOf(clickedItem);
-          playIndex = dictQueue.findIndex(qItem => allQueue.indexOf(qItem) > originalQIndex);
-          if (playIndex === -1) playIndex = dictQueue.length;
-          
-          if (clickedItem) {
-            speakSentenceWithPunctuation(clickedItem.text, () => {
-              if (!isPlaying) return;
-              startTimer(3, () => {
-                if (!isPlaying) return;
-                playNextDictationStep();
-              });
-            });
-            return;
-          }
-        }
-        
-        if (playIndex !== -1) {
-          playNextDictationStep();
+
+        if (isSpeakingSentence) {
+            // 若正在發聲（包含標點符號發聲），則紀錄欲跳轉 Index，使其能「優雅地讀完這句」再跳
+            pendingJumpIndex = index;
+        } else {
+            // 若處於段落/句與句間的長時間空白暫停，直接清空計時器並立刻跳轉
+            if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+            if (punctTimer) clearTimeout(punctTimer);
+            clearInterval(timerInterval);
+            if (synth) synth.cancel(); 
+
+            pendingJumpIndex = index;
+            applyPendingDictationJump();
         }
       } else {
         const allQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
         const item = allQueue.find(q => q.index === index);
         if (item) {
-          playSingleDictationSentence(item.text);
+          highlightDictationCard(`dcard_${index}`); // 點擊時立即反白提示
+          // 如果沒有播放，不要打斷目前的手動播放列隊
+          playSingleDictationSentence(item.text, index);
         }
       }
+    }
+
+    function clickPlayRecite(index) {
+      if (isPlaying) {
+          highlightReciteCard(`rcard_${index}`);
+          if (isSpeakingSentence) {
+              pendingJumpIndex = index;
+          } else {
+              if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+              if (punctTimer) clearTimeout(punctTimer);
+              clearInterval(timerInterval);
+              if (synth) synth.cancel();
+              
+              pendingJumpIndex = null;
+              startRecitePlay(isOnlyHighlighted, index);
+          }
+          return;
+      }
+      
+      resetPlayback();
+      isPlaying = true;
+      isPaused = false;
+      isReviewPhase = false;
+      requestWakeLock();
+
+      const goText = document.getElementById('goBtnText');
+      if (goText) goText.textContent = '自';
+
+      startRecitePlay(false, index);
     }
 
     function togglePauseResume() {
@@ -3099,6 +3416,12 @@
       isReviewPhase = false;
       isOnlyHighlighted = false;
       playIndex = 0;
+      isSpeakingSentence = false;
+      pendingJumpIndex = null;
+
+      manualDictationQueue = [];
+      isManualDictationPlaying = false;
+      if (typeof dictationManualPlayId !== 'undefined') dictationManualPlayId++;
 
       const goText = document.getElementById('goBtnText');
       if (goText) goText.textContent = '開';
@@ -3118,6 +3441,7 @@
       if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
       if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
       if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
+      if (punctTimer) clearTimeout(punctTimer);
 
       clearInterval(timerInterval);
       remainingSeconds = 0;
@@ -3369,28 +3693,37 @@
 
 <div style="display: none;"><textarea id="rawTextEditor" placeholder="在此粘貼全文或點擊選擇檔案上傳...">Title:  開心小學 (26/27)  四年級中默 (4)
 
-課文詞語：課 13《桂林山水》、課 14《》
-無瑕、擴散、峯巒、羅列、形態、兀立、嶙峋
-波瀾壯闊、完整、雄偉、翠綠、屏障、明麗、倒映、圍繞、迷濛、連綿不斷
+課文詞語：課 6《珍珠鳥》、課 13《桂林山水》
+
+啄、細膩、繁茂、挨近、蓬鬆、神氣十足、瞧、鳴叫、流瀉、俯下、趴在、蹦來蹦去、不動聲色、兀立、擴散、峯巒、羅列、圍繞、嶙峋、翡翠、連綿、波瀾壯闊、完整無瑕、攀登、屏障、翠綠、迷濛、倒映
 
 漢語拼音: 課 13《桂林山水》詞庫
-無瑕、擴散、峯巒、羅列、形態、兀立、嶙峋
+無瑕、擴散、峯巒、羅列、形態、兀立、嶙峋,波瀾壯闊 完整 雄偉 翠綠
+屏障 明麗 倒映 圍繞
+迷濛 連綿不斷  
 
-挑戰題: 成語:單元2
-一髮千鈞 目瞪口呆 人心惶惶  挺身而出 
-束手無策  胸無點墨  推心置腹 充耳不聞 
-別出心裁  順手牽羊 促膝談心  唇齒相依
+挑戰題: 成語:單元3
+出爾反爾
+一針見血 津津樂道
+甜言蜜語 讚不絕口
+口是心非
+口若懸河
+異口同聲 娓娓動聽
+一語雙關 暢所欲言
+心直口快
+
 
 聽寫課文段落:
-課 13《桂林山水》第 2、3 段
+課 6《珍珠鳥》第 3、4 段
 
-我看見過波瀾壯闊的大海，欣賞過水平如鏡的西湖，卻從沒看見過漓江這樣的水。漓江的水真靜啊，靜得讓你感覺不到它在流動；漓江的水真清啊，清得可以看見江底的沙石；漓江的水真綠啊，綠得彷彿那是一塊完整無瑕的翡翠。只有船槳激起的微波，擴散出一道道水紋，才讓你感覺到船在前進，岸在後移。
+起先，這小傢伙只在籠子四周活動，隨後就在屋裏飛來飛去，一會兒落在櫃頂上，一會兒神氣十足地站在書架上，一會兒把燈繩撞得來回搖動，跟着逃到畫框上去了。只要大鳥在籠裏生氣地叫一聲，牠就立即飛回籠裏去。
 
-我攀登過峯巒雄偉的泰山，遊覽過紅葉似火的香山，卻從沒看見過桂林這一帶的山。桂林的山真奇啊，一座座拔地而起，各不相連，像老人，像巨象，像駱駝，奇峯羅列，形態萬千；桂林的山真秀啊，像翠綠的屏障，新生的竹筍，色彩明麗，倒映水中；桂林的山真險啊，危峯兀立，怪石嶙峋，好像一不小心就會栽倒下來。
+漸漸牠膽子大了，就落在我的書桌上。牠先是離我較遠，見我不去傷害牠，便一點點挨近，然後蹦到我的杯子上，俯下頭來喝茶，再偏過臉瞧瞧我的反應。我只是微微一笑，依舊寫東西。牠就放開膽子跑到稿紙上，繞着我的筆尖蹦來蹦去，跳動的小紅爪子在紙上發出察察的響聲。
+
 
 
 其他詞語:
-地上     母子    巨人
+地上 母子 巨人 落在 神氣十足地 畫框 飛回 我的 瞧瞧 紙上
 
 
 拼音修正
@@ -3399,6 +3732,6 @@
 康弟= kāngdì
 
 高亮詞語:
-瀾
+瀾 蹦 俯
 
-chéng xī tan xiàn huī xiáng piān</textarea></div><script id="embeddedPinyinData" type="application/json">{"無瑕":"wú xiá","擴散":"kuò sàn","峯巒":"fēng luán","羅列":"luó liè","形態":"xíng tài","兀立":"wù lì","嶙峋":"lín xún","波瀾壯闊":"bō lán zhuàng kuò","完整":"wán zhěng","雄偉":"xióng wěi","翠綠":"cuì lǜ","屏障":"píng zhàng","明麗":"míng lí","倒映":"dǎo yìng","圍繞":"wéi rào","迷濛":"mí méng","連綿不斷":"lián mián bù duàn","一髮千鈞":"yī fà qiān jūn","目瞪口呆":"mù dèng kǒu dāi","人心惶惶":"rén xīn huáng huáng","挺身而出":"tǐng shēn ér chū","束手無策":"shù shǒu wú cè","胸無點墨":"xiōng wú diǎn mò","推心置腹":"tuī xīn zhì fù","充耳不聞":"chōng ěr bù wén","別出心裁":"bié chū xīn cái","順手牽羊":"shùn shǒu qiān yáng","促膝談心":"cù xī tán xīn","唇齒相依":"chún chǐ xiāng yī","地上":"dì shàng","母子":"mǔ zǐ","巨人":"jù rén","我看見過":"wǒ kàn jiàn guò","波瀾壯闊的大海，":"bō lán zhuàng kuò de dà hǎi","欣賞過水平":"xīn shǎng guò shuǐ píng","如鏡的西湖，":"rú jìng de xī hú","卻從沒看見過":"què cóng méi kàn jiàn guò","漓江這樣的水。":"lí jiāng zhè yàng de shuǐ","漓江的水真靜啊，":"lí jiāng de shuǐ zhēn jìng a","靜得讓你感覺":"jìng dé ràng nǐ gǎn jué","不到它在流動；":"bù dào tā zài liú dòng","漓江的水真清啊，":"lí jiāng de shuǐ zhēn qīng a","清得可以看見":"qīng dé kě yǐ kàn jiàn","江底的沙石；":"jiāng dǐ de shā shí","漓江的水真綠啊，":"lí jiāng de shuǐ zhēn lǜ a","綠得彷彿那是一塊":"lǜ dé páng fú nà shì yī kuài","完整無瑕的翡翠。":"wán zhěng wú xiá de fěi cuì","只有船槳激起的微波，":"zhǐ yǒu chuán jiǎng jī qǐ de wēi bō","擴散出一道道水紋，":"kuò sàn chū yī dào dào shuǐ wén","才讓你感覺":"cái ràng nǐ gǎn jué","到船在前進，":"dào chuán zài qián jìn","岸在後移。":"àn zài hòu yí","我攀登過峯巒":"wǒ pān dēng guò fēng luán","雄偉的泰山，":"xióng wěi de tài shān","遊覽過紅葉":"yóu lǎn guò hóng yè","似火的香山，":"sì huǒ de xiāng shān","卻從沒看見過桂":"què cóng méi kàn jiàn guò guì","林這一帶的山。":"lín zhè yī dài de shān","桂林的山真奇啊，":"guì lín de shān zhēn qí a","一座座拔地而起，":"yī zuò zuò bá dì ér qǐ","各不相連，":"gè bù xiāng lián","像老人，":"xiàng lǎo rén","像巨象，":"xiàng jù xiàng","像駱駝，":"xiàng luò tuó","奇峯羅列，":"qí fēng luó liè","形態萬千；":"xíng tài wàn qiān","桂林的山真秀啊，":"guì lín de shān zhēn xiù a","像翠綠的屏障，":"xiàng cuì lǜ de píng zhàng","新生的竹筍，":"xīn shēng de zhú sǔn","色彩明麗，":"sè cǎi míng lí","倒映水中；":"dǎo yìng shuǐ zhōng","桂林的山真險啊，":"guì lín de shān zhēn xiǎn a","危峯兀立，":"wēi fēng wù lì","怪石嶙峋，":"guài shí lín xún","好像一不小心":"hǎo xiàng yī bù xiǎo xīn","就會栽倒下來。":"jiù huì zāi dǎo xià lái"}</script></body></html>
+chéng xī tan xiàn huī xiáng piān</textarea></div><script id="embeddedPinyinData" type="application/json">{"啄":"zhuó","細膩":"xì nì","繁茂":"fán mào","挨近":"āi jìn","蓬鬆":"péng sōng","神氣十足":"shén qì shí zú","瞧":"qiáo","鳴叫":"míng jiào","流瀉":"liú xiè","俯下":"fǔ xià","趴在":"pā zài","蹦來蹦去":"bèng lái bèng qù","不動聲色":"bù dòng shēng sè","兀立":"wù lì","擴散":"kuò sàn","峯巒":"fēng luán","羅列":"luó liè","圍繞":"wéi rào","嶙峋":"lín xún","翡翠":"fěi cuì","連綿":"lián mián","波瀾壯闊":"bō lán zhuàng kuò","完整無瑕":"wán zhěng wú xiá","攀登":"pān dēng","屏障":"píng zhàng","翠綠":"cuì lǜ","迷濛":"mí méng","倒映":"dǎo yìng","無瑕":"wú xiá","形態":"xíng tài","完整":"wán zhěng","雄偉":"xióng wěi","明麗":"míng lí","連綿不斷":"lián mián bù duàn","出爾反爾":"chū ěr fǎn ěr","一針見血":"yī zhēn jiàn xuè","津津樂道":"jīn jīn lè dào","甜言蜜語":"tián yán mì yǔ","讚不絕口":"zàn bù jué kǒu","口是心非":"kǒu shì xīn fēi","口若懸河":"kǒu ruò xuán hé","異口同聲":"yì kǒu tóng shēng","娓娓動聽":"wěi wěi dòng tīng","一語雙關":"yī yǔ shuāng guān","暢所欲言":"chàng suǒ yù yán","心直口快":"xīn zhí kǒu kuài","地上":"dì shàng","母子":"mǔ zǐ","巨人":"jù rén","落在":"luò zài","神氣十足地":"shén qì shí zú dì","畫框":"huà kuàng","飛回":"fēi huí","我的":"wǒ de","瞧瞧":"qiáo qiáo","紙上":"zhǐ shàng","起先，":"qǐ xiān","這小傢伙只在":"zhè xiǎo jiā huǒ zhī zài","籠子四周活動，":"lóng zǐ sì zhōu huó dòng","隨後就在屋裏":"suí hòu jiù zài wū lǐ","飛來飛去，":"fēi lái fēi qù","一會兒落在":"yī huì ér luò zài","櫃頂上，":"guì dǐng shàng","一會兒神氣十足地":"yī huì ér shén qì shí zú dì","站在書架上，":"zhàn zài shū jià shàng","一會兒把燈繩":"yī huì ér bǎ dēng shéng","撞得來回搖動，":"zhuàng dé lái huí yáo dòng","跟着逃到畫框":"gēn zhe táo dào huà kuàng","上去了。":"shǎng qù le","只要大鳥在籠裏":"zhǐ yào dà niǎo zài lóng lǐ","生氣地叫一聲，":"shēng qì dì jiào yī shēng","牠就立即飛回":"tā jiù lì jí fēi huí","籠裏去。":"lóng lǐ qù","漸漸牠膽子大了，":"jiàn jiàn tā dǎn zǐ dà le","就落在我的":"jiù luò zài wǒ de","書桌上。":"shū zhuō shàng","牠先是離我較遠，":"tā xiān shì lí wǒ jiào yuǎn","見我不去傷害牠，":"jiàn wǒ bù qù shāng hài tā","便一點點挨近，":"biàn yī diǎn diǎn āi jìn","然後蹦到我的":"rán hòu bèng dào wǒ de","杯子上，":"bēi zǐ shàng","俯下頭來喝茶，":"fǔ xià tóu lái hē chá","再偏過臉瞧瞧":"zài piān guò liǎn qiáo qiáo","我的反應。":"wǒ de fǎn yīng","我只是微微一笑，":"wǒ zhǐ shì wēi wēi yī xiào","依舊寫東西。":"yī jiù xiě dōng xī","牠就放開膽子":"tā jiù fàng kāi dǎn zǐ","跑到稿紙上，":"pǎo dào gǎo zhǐ shàng","繞着我的筆":"rào zhe wǒ de bǐ","尖蹦來蹦去，":"jiān bèng lái bèng qù","跳動的小紅爪子在紙上":"tiào dòng de xiǎo hóng zhuǎ zi zài zhǐ shàng","發出察察的響聲。":"fā chū chá chá de xiǎng shēng"}</script></body></html>

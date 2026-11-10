@@ -139,7 +139,7 @@
       height: 24px;
     }
 
-    /* 🏠 Home Button Specific Styling (#9b87f5 background, white icon) */
+    /* 🏠 Home Button Specific Styling */
     .home-link-btn {
       background: #9b87f5 !important;
       color: #ffffff !important;
@@ -189,7 +189,7 @@
       height: 26px;
     }
 
-    /* 🔄 重新載入/重設按鈕樣式 (#c62828 背景, 白字) */
+    /* 🔄 重新載入/重設按鈕樣式 */
     .btn-reload-icon {
       background-color: #c62828 !important;
       color: #ffffff !important;
@@ -203,7 +203,7 @@
       height: 22px;
     }
 
-    /* 🟡 朗讀語言切換按鈕 (#ebf213) */
+    /* 🟡 朗讀語言切換按鈕 */
     .btn-lang-opt {
       background-color: #ebf213 !important;
       color: #1b4332 !important;
@@ -213,7 +213,7 @@
       background-color: #d4dc00 !important;
     }
 
-    /* 🟣 顯示模式切換按鈕 (#bb3fd4) */
+    /* 🟣 顯示模式切換按鈕 */
     .btn-mode-opt {
       background-color: #bb3fd4 !important;
       color: #ffffff !important;
@@ -232,7 +232,6 @@
       background-color: #1f2937;
     }
 
-    /* 🌫 隱藏模式下，顯示按鈕呈現極淺灰色字體 */
     .btn-hdr-opt.btn-faint-text {
       color: rgba(255, 255, 255, 0.22) !important;
     }
@@ -441,7 +440,6 @@
       scroll-behavior: smooth;
     }
 
-    /* 📌 工具列固定在主內容區頂部 (Sticky Header) */
     .toolbar-card {
       position: sticky;
       top: 0;
@@ -460,7 +458,6 @@
       transition: background-color 0.25s ease, box-shadow 0.25s ease, padding 0.25s ease;
     }
 
-    /* 🌊 向下滑動時：工具列背景全透明、無陰影、隱藏中間文字與輸入框 */
     .toolbar-card.is-scrolled {
       background-color: transparent !important;
       background: transparent !important;
@@ -475,7 +472,6 @@
       display: none !important;
     }
 
-    /* 🌊 向下滑動時：兩側按鈕背景設為半透明 */
     .toolbar-card.is-scrolled .btn-tag-icon,
     .toolbar-card.is-scrolled .btn-copy-icon {
       opacity: 0.75;
@@ -492,7 +488,7 @@
     }
 
     .toolbar-card input[type="number"] {
-      width: 32px;
+      width: 42px;
       padding: 4px 6px;
       font-size: 0.95rem;
       font-family: inherit;
@@ -500,7 +496,6 @@
       border: 1px solid #ccc;
     }
 
-    /* 隱藏數字輸入框的上下箭頭 */
     .toolbar-card input[type="number"]::-webkit-outer-spin-button,
     .toolbar-card input[type="number"]::-webkit-inner-spin-button {
       -webkit-appearance: none;
@@ -511,7 +506,6 @@
       text-align: center;
     }
 
-    /* 🏷️ 工具列標籤圖示按鈕 (#376957 背景，白字) - 點擊返回頂部 */
     .btn-tag-icon {
       background-color: #376957 !important;
       color: #ffffff !important;
@@ -535,7 +529,6 @@
       opacity: 1 !important;
     }
 
-    /* 📋 複製「抄」按鈕樣式 (#54d1f0 背景，白字) */
     .btn-copy-icon {
       background-color: #54d1f0;
       color: #ffffff;
@@ -588,17 +581,6 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
 
-    .word-card.highlight-card {
-      background-color: #f0f70c !important;
-      border-color: #d4d909 !important;
-    }
-    .dictation-highlight {
-      background-color: #f0f70c;
-      border-radius: 4px;
-      padding: 0 2px;
-      display: inline-block;
-    }
-
     .word-card.active-reading {
       border: 2px solid #2e7d32;
       background-color: #f1f8e9;
@@ -609,7 +591,6 @@
       color: #d32f2f !important;
     }
 
-    /* 🔢 詞語卡片左上角數字標籤樣式 */
     .word-index {
       position: absolute;
       left: 8px;
@@ -757,21 +738,6 @@
       color: #ffffff !important;
       border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
     }
-    body.exported-app header h1 {
-      color: #ffffff !important;
-    }
-    body.exported-app .header-subtitle {
-      color: #a3e635 !important;
-    }
-    body.exported-app .timer-clock-box {
-      background: rgba(0, 0, 0, 0.25) !important;
-    }
-    body.exported-app .empty-prompt {
-      color: #475569 !important;
-    }
-    body.exported-app .dictation-list h2 {
-      color: #1e3a8a !important;
-    }
 
     @media (max-width: 768px) {
       aside {
@@ -852,7 +818,6 @@
       accent-color: #2d6a4f;
     }
 
-    /* ⚡ Toolbar Speed Select */
     .speed-control-label {
       display: inline-flex;
       align-items: center;
@@ -884,7 +849,6 @@
     </div>
     <div class="header-subtitle" id="subTitleDisplay"></div>
     <div class="header-controls">
-      <!-- 🏠 Home Button Moved to Header Controls Toolbar -->
       <a href="https://tonyymlee.github.io/pdictation/chi/" class="home-link-btn" title="返回主頁">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
           <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v6H4a1 1 0 0 1-1-1v-9.5z"/>
@@ -967,6 +931,11 @@
           <button class="tab-btn" id="btn_tab4" onclick="switchTab('tab4', this)">
             <span class="tab-icon">✍</span> 聽寫課文段落
           </button>
+
+          <!-- 背默課文段落 -->
+          <button class="tab-btn" id="btn_tab5" onclick="switchTab('tab5', this)">
+            <span class="tab-icon">💾</span> 背默課文段落
+          </button>
         </div>
       </div>
 
@@ -1035,9 +1004,9 @@
 
       <div class="toolbar-card hidden" id="dictationToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="btn-tag-icon" onclick="scrollToTop()" title="返回頁面頂部">課文</button>
+          <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="返回頁面頂部">課文</button>
           <span class="toolbar-options">
-            <label>每字：<input type="number" id="secPerCharInput" value="2.3" min="1" step="0.1"> 秒</label>
+            <label id="secPerCharLabel">每字：<input type="number" id="secPerCharInput" value="2.3" min="0.1" step="0.1"> 秒</label>
             <label class="speed-control-label"><select id="dictationSpeedSelect" onchange="onSpeedChange()">
               <option value="0.1">0.1</option>
               <option value="0.2">0.2</option>
@@ -1107,6 +1076,7 @@
     let customProtectedWords = [];
     let highlightedWords = []; 
     let rawDictationText = "";
+    let rawReciteText = ""; 
 
     function getItemText(it) { return typeof it === 'object' && it !== null ? it.text : it; }
 
@@ -1145,7 +1115,7 @@
       "思考", "想像", "注意", "關心", "尊重", "原諒", "理解", "體會", "回億", "忘記",
       "學習", "閱讀", "寫字", "說話", "唱歌", "跳舞", "跑步", "運動", "遊戲", "思考",
       "觀察", "研究", "討論", "解釋", "選擇", "比較", "解決", "安排", "計劃", "準備",
-      "突然", "立刻", "馬上", "漸漸", "常常", "總是", "已經", "依然", "非常", "十分",
+      "突然", "刻", "馬上", "漸漸", "常常", "總是", "已經", "依然", "非常", "十分",
       "時間", "今天", "明天", "昨天", "早上", "中午", "晚上", "星期", "時候", "將來",
       "現在", "過去", "最近", "平時", "每天", "有時", "經常", "很久", "瞬間", "從前",
       "最後", "第一", "同時", "後來", "重新", "大約", "幾乎", "大概", "必須", "一定",
@@ -1207,10 +1177,13 @@
     let wakeUpTimeout = null; 
     let singlePlayTimeout1 = null;
     let singlePlayTimeout2 = null;
+    let punctTimer = null; // 用于記錄標點符號停頓定時器
     let currentLang = 'zh-CN'; 
     let displayMode = 'pinyin'; 
     let wakeLock = null; 
     let isOnlyHighlighted = false;
+    let isSpeakingSentence = false; // 新增：記錄目前是否正在發聲朗讀課文/標點中
+    let pendingJumpIndex = null;    // 新增：如果朗讀中被點擊，記錄下一個要跳轉的句子 index
 
     const synth = window.speechSynthesis;
 
@@ -1292,8 +1265,8 @@
     function copyCurrentContent(btnElement) {
       let copyText = "";
 
-      if (currentTab === 'tab4') {
-        const queueList = buildDictationQueue();
+      if (currentTab === 'tab4' || currentTab === 'tab5') {
+        const queueList = (currentTab === 'tab5') ? buildReciteQueue() : buildDictationQueue();
         if (!queueList || queueList.length === 0) return;
 
         let hanLines = [];
@@ -1558,11 +1531,85 @@
       return text.replace(/[。\.，,！？\?；;：:\s]/g, '').length;
     }
 
+    function processTextChunkToQueue(textChunk, globalIndexCounter, allVocabWords) {
+      let queueList = [];
+      let globalIndex = globalIndexCounter;
+      let processedLine = textChunk.replace(/\s+/g, '');
+      let clauses = [];
+      let cur = "";
+      let closingPuncts = `」』》〉）)"''`;
+      let splittingPuncts = "。，.,！？?；;：:─—-…";
+
+      for (let i = 0; i < processedLine.length; i++) {
+        let ch = processedLine[i];
+        cur += ch;
+        if (splittingPuncts.includes(ch)) {
+          while (i + 1 < processedLine.length && closingPuncts.includes(processedLine[i + 1])) {
+            i++;
+            cur += processedLine[i];
+          }
+          clauses.push(cur);
+          cur = "";
+        }
+      }
+      if (cur) clauses.push(cur);
+
+      clauses.forEach(clause => {
+        const charCount = countChineseChars(clause);
+        if (charCount === 0) return;
+
+        if (charCount <= 7) {
+          globalIndex++;
+          queueList.push({ type: 'sentence', text: clause, index: globalIndex });
+        } else {
+          let splitPos = Math.floor(clause.length / 2);
+          let protectedMatch = null;
+
+          for (let vw of allVocabWords) {
+            if (vw.length >= 2) {
+              let idx = clause.indexOf(vw);
+              while (idx !== -1) {
+                if (splitPos > idx && splitPos < idx + vw.length) {
+                  protectedMatch = { word: vw, start: idx };
+                  break;
+                }
+                idx = clause.indexOf(vw, idx + 1);
+              }
+              if (protectedMatch) break;
+            }
+          }
+
+          if (protectedMatch) {
+            // 無論如何，讓保護詞語保留在前半句的結尾，所以從保護詞的後方切開
+            splitPos = protectedMatch.start + protectedMatch.word.length;
+          }
+
+          if (splitPos <= 0 || splitPos >= clause.length) {
+            splitPos = Math.floor(clause.length / 2);
+          }
+
+          let part1 = clause.substring(0, splitPos);
+          let part2 = clause.substring(splitPos);
+
+          if (countChineseChars(part1) > 0) {
+            globalIndex++;
+            queueList.push({ type: 'sentence', text: part1, index: globalIndex });
+          }
+          if (countChineseChars(part2) > 0) {
+            globalIndex++;
+            queueList.push({ type: 'sentence', text: part2, index: globalIndex });
+          }
+        }
+      });
+
+      return { queueList, globalIndexCounter: globalIndex };
+    }
+
     function buildDictationQueue() {
       if (!rawDictationText || !rawDictationText.trim()) return [];
       
       const rawLines = rawDictationText.split('\n');
-      const queueList = [];
+      let queueList = [];
       let globalIndex = 0;
       
       const allVocabWords = Array.from(new Set([
@@ -1573,10 +1620,22 @@
         ...customProtectedWords
       ])).sort((a, b) => b.length - a.length);
 
+      let textBuffer = "";
+
+      const flushBuffer = () => {
+        if (textBuffer.trim()) {
+          const res = processTextChunkToQueue(autoConvertCharacters(textBuffer.trim()), globalIndex, allVocabWords);
+          queueList.push(...res.queueList);
+          globalIndex = res.globalIndexCounter;
+          textBuffer = "";
+        }
+      };
+
       rawLines.forEach(line => {
         const trimmedLine = autoConvertCharacters(line.trim());
 
         if (!trimmedLine || trimmedLine === '下一個自然段') {
+          flushBuffer();
           if (queueList.length > 0 && queueList[queueList.length - 1].type !== 'break' && queueList[queueList.length - 1].type !== 'title') {
             queueList.push({ type: 'break', text: '下一個自然段' });
           }
@@ -1584,81 +1643,14 @@
         }
 
         if (trimmedLine.startsWith('《') || trimmedLine.includes('課') || (trimmedLine.includes('第') && trimmedLine.includes('段'))) {
+          flushBuffer();
           queueList.push({ type: 'title', text: trimmedLine });
           return;
         }
 
-        let processedLine = trimmedLine.replace(/\s+/g, '');
-        let clauses = [];
-        let cur = "";
-        let closingPuncts = `」』》〉）)"''`;
-        let splittingPuncts = "。，.,！？?；;：:─—-…";
-
-        for (let i = 0; i < processedLine.length; i++) {
-          let ch = processedLine[i];
-          cur += ch;
-          if (splittingPuncts.includes(ch)) {
-            while (i + 1 < processedLine.length && closingPuncts.includes(processedLine[i + 1])) {
-              i++;
-              cur += processedLine[i];
-            }
-            clauses.push(cur);
-            cur = "";
-          }
-        }
-        if (cur) clauses.push(cur);
-
-        clauses.forEach(clause => {
-          const charCount = countChineseChars(clause);
-          if (charCount === 0) return;
-
-          if (charCount <= 9) {
-            globalIndex++;
-            queueList.push({ type: 'sentence', text: clause, index: globalIndex });
-          } else {
-            let splitPos = Math.floor(clause.length / 2);
-            let protectedMatch = null;
-
-            for (let vw of allVocabWords) {
-              if (vw.length >= 2) {
-                let idx = clause.indexOf(vw);
-                while (idx !== -1) {
-                  if (splitPos > idx && splitPos < idx + vw.length) {
-                    protectedMatch = { word: vw, start: idx };
-                    break;
-                  }
-                  idx = clause.indexOf(vw, idx + 1);
-                }
-                if (protectedMatch) break;
-              }
-            }
-
-            if (protectedMatch) {
-              if (protectedMatch.start > 0) {
-                splitPos = protectedMatch.start;
-              } else {
-                splitPos = protectedMatch.start + protectedMatch.word.length;
-              }
-            }
-
-            if (splitPos <= 0 || splitPos >= clause.length) {
-              splitPos = Math.floor(clause.length / 2);
-            }
-
-            let part1 = clause.substring(0, splitPos);
-            let part2 = clause.substring(splitPos);
-
-            if (countChineseChars(part1) > 0) {
-              globalIndex++;
-              queueList.push({ type: 'sentence', text: part1, index: globalIndex });
-            }
-            if (countChineseChars(part2) > 0) {
-              globalIndex++;
-              queueList.push({ type: 'sentence', text: part2, index: globalIndex });
-            }
-          }
-        });
+        textBuffer += trimmedLine;
       });
+      flushBuffer();
 
       const cleanedQueueList = [];
       const trailingPuncts = "。,.，！？?；;：:」』》〉）)─—-…";
@@ -1696,6 +1688,82 @@
       return cleanedQueueList;
     }
 
+    // 背默課文專屬斷句 Logic (併合換行再於標點處切斷)
+    function buildReciteQueue() {
+      if (!rawReciteText || !rawReciteText.trim()) return [];
+
+      const rawLines = rawReciteText.split('\n');
+      let queueList = [];
+      let globalIndex = 0;
+
+      const closingPuncts = `」』》〉）)"''`;
+      const splittingPuncts = "。，.,！？?；;：:─—-…";
+
+      let textBuffer = "";
+
+      const flushReciteBuffer = () => {
+        if (!textBuffer.trim()) return;
+        let processedLine = autoConvertCharacters(textBuffer.trim()).replace(/\s+/g, '');
+        let cur = "";
+
+        for (let i = 0; i < processedLine.length; i++) {
+          let ch = processedLine[i];
+          cur += ch;
+          if (splittingPuncts.includes(ch)) {
+            while (i + 1 < processedLine.length && closingPuncts.includes(processedLine[i + 1])) {
+              i++;
+              cur += processedLine[i];
+            }
+            if (countChineseChars(cur) > 0) {
+              globalIndex++;
+              queueList.push({ type: 'sentence', text: cur, index: globalIndex });
+            }
+            cur = "";
+          }
+        }
+        if (cur && countChineseChars(cur) > 0) {
+          globalIndex++;
+          queueList.push({ type: 'sentence', text: cur, index: globalIndex });
+        }
+        textBuffer = "";
+      };
+
+      rawLines.forEach(line => {
+        const trimmedLine = autoConvertCharacters(line.trim());
+
+        if (!trimmedLine || trimmedLine === '下一個自然段') {
+          flushReciteBuffer();
+          if (queueList.length > 0 && queueList[queueList.length - 1].type !== 'break' && queueList[queueList.length - 1].type !== 'title') {
+            queueList.push({ type: 'break', text: '下一個自然段' });
+          }
+          return;
+        }
+
+        if (trimmedLine.startsWith('《') || trimmedLine.includes('課') || (trimmedLine.includes('第') && trimmedLine.includes('段'))) {
+          flushReciteBuffer();
+          queueList.push({ type: 'title', text: trimmedLine });
+          return;
+        }
+
+        textBuffer += trimmedLine;
+      });
+      flushReciteBuffer();
+
+      while (queueList.length > 0 && queueList[queueList.length - 1].type === 'break') {
+        queueList.pop();
+      }
+
+      let reIndex = 0;
+      queueList.forEach(item => {
+        if (item.type === 'sentence') {
+          reIndex++;
+          item.index = reIndex;
+        }
+      });
+
+      return queueList;
+    }
+
     function handleFileImport(event) {
       const file = event.target.files[0];
       if (!file) return;
@@ -1719,7 +1787,7 @@
       const sanitizedText = convertedFullText.replace(/<[^>]*>/g, '');
 
       let currentSection = 'vocab';
-      let newVocab = [], newPinyin = [], newIdiom = [], newCustomProtected = [], newDictation = [], newHighlight = [];
+      let newVocab = [], newPinyin = [], newIdiom = [], newCustomProtected = [], newDictation = [], newRecite = [], newHighlight = [];
       dynamicCustomPinyinMap = {};
       lessonTitle = "";
 
@@ -1746,10 +1814,13 @@
         if (trimmed.includes('其他詞語') || trimmed.includes('保護詞語') || trimmed.includes('保護詞彙')) { currentSection = 'customProtected'; return; }
         if (trimmed.includes('拼音修正') || trimmed.includes('多音字')) { currentSection = 'pinyinFix'; return; }
         if (trimmed.includes('聽寫課文段落')) { currentSection = 'dictation'; return; }
+        if (trimmed.includes('背默課文段落')) { currentSection = 'recite'; return; }
         if (trimmed.includes('高亮詞語') || trimmed.includes('重點詞語')) { currentSection = 'highlight'; return; }
 
         if (currentSection === 'dictation') {
-          newDictation.push(autoConvertCharacters(trimmed));
+          newDictation.push(autoConvertCharacters(line));
+        } else if (currentSection === 'recite') {
+          newRecite.push(autoConvertCharacters(line));
         } else if (currentSection === 'pinyinFix') {
           if (trimmed.includes('=') || trimmed.includes('＝')) {
             const parts = trimmed.split(/[=＝]/);
@@ -1805,6 +1876,7 @@
       customProtectedWords = newCustomProtected;
       highlightedWords = newHighlight;
       rawDictationText = newDictation.join('\n');
+      rawReciteText = newRecite.join('\n');
 
       updateHeaderSubtitle();
       renderTab();
@@ -1848,6 +1920,16 @@
 
         const dictationQueue = buildDictationQueue();
         dictationQueue.forEach(item => {
+          if (item.type === 'sentence' && item.text) {
+            const clean = autoConvertCharacters(item.text.replace(/\s+/g, ''));
+            if (clean) {
+              pinyinMap[clean] = getDynamicPinyin(clean);
+            }
+          }
+        });
+
+        const reciteQueue = buildReciteQueue();
+        reciteQueue.forEach(item => {
           if (item.type === 'sentence' && item.text) {
             const clean = autoConvertCharacters(item.text.replace(/\s+/g, ''));
             if (clean) {
@@ -1961,7 +2043,7 @@
       resetPlayback();
       updateHeaderSubtitle();
       
-      if (currentTab === 'tab1' || currentTab === 'tab3' || currentTab === 'tab4') {
+      if (currentTab === 'tab1' || currentTab === 'tab3' || currentTab === 'tab4' || currentTab === 'tab5') {
         displayMode = 'pinyin';
       } else if (currentTab === 'tab2') {
         displayMode = 'blank';
@@ -1971,13 +2053,24 @@
       const vocabToolbar = document.getElementById('vocabToolbar');
       const dictationToolbar = document.getElementById('dictationToolbar');
       const vocabTagBtn = document.getElementById('vocabTagBtn');
+      const dictationTagBtn = document.getElementById('dictationTagBtn');
+      const secPerCharLabel = document.getElementById('secPerCharLabel');
 
       if (!area) return;
 
-      if (currentTab === 'tab4') {
+      if (currentTab === 'tab4' || currentTab === 'tab5') {
         if (vocabToolbar) vocabToolbar.classList.add('hidden');
         if (dictationToolbar) dictationToolbar.classList.remove('hidden');
-        renderDictation(area);
+
+        if (currentTab === 'tab5') {
+          if (dictationTagBtn) dictationTagBtn.textContent = '背默';
+          if (secPerCharLabel) secPerCharLabel.innerHTML = '每字：<input type="number" id="secPerCharInput" value="2.3" min="0.1" step="0.1"> 秒';
+          renderRecite(area);
+        } else {
+          if (dictationTagBtn) dictationTagBtn.textContent = '課文';
+          if (secPerCharLabel) secPerCharLabel.innerHTML = '每字：<input type="number" id="secPerCharInput" value="2.3" min="0.1" step="0.1"> 秒';
+          renderDictation(area);
+        }
       } else {
         if (vocabToolbar) vocabToolbar.classList.remove('hidden');
         if (dictationToolbar) dictationToolbar.classList.add('hidden');
@@ -2115,6 +2208,42 @@
 
           html += `
             <div class="dictation-row" id="dcard_${item.index}" onclick="clickPlayDictation(${item.index})">
+              <div class="sentence-index">#${item.index}</div>
+              <div class="sentence-text">${sentenceHtml}</div>
+              <div class="sentence-pinyin">${sentencePinyinHtml}</div>
+            </div>
+          `;
+        }
+      });
+
+      html += '</div>';
+      container.innerHTML = html;
+      updateDisplayModeUI();
+    }
+
+    // 渲染背默課文列表
+    function renderRecite(container) {
+      const queueList = buildReciteQueue();
+      if (!queueList || queueList.length === 0) {
+        container.innerHTML = '<div class="empty-prompt">（目前無背默內容，請在左側選單粘貼或上傳檔案）</div>';
+        return;
+      }
+
+      let html = '<div class="dictation-list" id="dictationList">';
+
+      queueList.forEach(item => {
+        if (item.type === 'title') {
+          html += `<h2 style="font-size:1.2rem; color:#ffffff; margin: 8px 0 4px;">${autoConvertCharacters(item.text)}</h2>`;
+        } else if (item.type === 'break') {
+          html += `<div class="paragraph-break" id="break_recite_card">${item.text}</div>`;
+        } else if (item.type === 'sentence') {
+          const cleanText = autoConvertCharacters(item.text.replace(/\s+/g, ''));
+          const dynamicPinyin = getDynamicPinyin(cleanText);
+          const sentenceHtml = getHighlightedWordHtml(cleanText);
+          const sentencePinyinHtml = getHighlightedPinyinHtml(cleanText, dynamicPinyin);
+
+          html += `
+            <div class="dictation-row" id="rcard_${item.index}" onclick="clickPlayRecite(${item.index})">
               <div class="sentence-index">#${item.index}</div>
               <div class="sentence-text">${sentenceHtml}</div>
               <div class="sentence-pinyin">${sentencePinyinHtml}</div>
@@ -2338,7 +2467,7 @@
       const vocabSpeedSel = document.getElementById('vocabSpeedSelect');
       const dictSpeedSel = document.getElementById('dictationSpeedSelect');
       
-      if (currentTab === 'tab4' && dictSpeedSel) {
+      if ((currentTab === 'tab4' || currentTab === 'tab5') && dictSpeedSel) {
         activeRate = parseFloat(dictSpeedSel.value) || 0.7;
       } else if (vocabSpeedSel) {
         activeRate = parseFloat(vocabSpeedSel.value) || 0.82;
@@ -2375,31 +2504,67 @@
       }, 120); 
     }
 
+    let manualPlayId = 0;
+
     function playSingleWord(word) {
       if (synth) synth.cancel();
       if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
       if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
 
+      manualPlayId++;
+      let currentId = manualPlayId;
+
       singlePlayTimeout1 = setTimeout(() => {
+        if (currentId !== manualPlayId) return;
         speakText(word, () => {
+          if (currentId !== manualPlayId) return;
           singlePlayTimeout2 = setTimeout(() => {
+            if (currentId !== manualPlayId) return;
             speakText(word, null);
           }, 3000);
         });
       }, 1000);
     }
 
-    function playSingleDictationSentence(text) {
-      if (synth) synth.cancel();
-      if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
-      if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
+    let dictationManualPlayId = 0;
+    let manualDictationQueue = [];
+    let isManualDictationPlaying = false;
+
+    function playSingleDictationSentence(text, index) {
+      manualDictationQueue.push({ text: text, index: index });
+      if (!isManualDictationPlaying) {
+        processManualDictationQueue();
+      }
+    }
+
+    function processManualDictationQueue() {
+      if (manualDictationQueue.length === 0) {
+        isManualDictationPlaying = false;
+        return;
+      }
+      isManualDictationPlaying = true;
+      let item = manualDictationQueue.shift();
+
+      if (item.index !== undefined) {
+        highlightDictationCard(`dcard_${item.index}`);
+      }
+
+      dictationManualPlayId++;
+      let currentId = dictationManualPlayId;
 
       singlePlayTimeout1 = setTimeout(() => {
-        speakSentenceWithPunctuation(text, () => {
+        if (currentId !== dictationManualPlayId) { isManualDictationPlaying = false; return; }
+        speakSentenceWithPunctuation(item.text, () => {
+          if (currentId !== dictationManualPlayId) { isManualDictationPlaying = false; return; }
           singlePlayTimeout2 = setTimeout(() => {
-            speakSentenceWithPunctuation(text, null);
+            if (currentId !== dictationManualPlayId) { isManualDictationPlaying = false; return; }
+            speakSentenceWithPunctuation(item.text, () => {
+              if (currentId !== dictationManualPlayId) { isManualDictationPlaying = false; return; }
+              isManualDictationPlaying = false;
+              processManualDictationQueue();
+            }, true, currentId);
           }, 3000);
-        });
+        }, true, currentId);
       }, 1000);
     }
 
@@ -2436,6 +2601,7 @@
       if (currentTab === 'tab2') return '漢語拼音';
       if (currentTab === 'tab3') return '挑戰題';
       if (currentTab === 'tab4') return '聽寫課文段落';
+      if (currentTab === 'tab5') return '背默課文段落';
       return '課文詞語';
     }
 
@@ -2456,6 +2622,11 @@
       }
 
       requestWakeLock();
+
+      if (currentTab === 'tab5') {
+        startRecitePlay(onlyHighlighted);
+        return;
+      }
 
       if (currentTab === 'tab4') {
         queue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
@@ -2497,6 +2668,126 @@
           }
         });
       });
+    }
+
+    // 背默課文段落 自動播放流程
+    function startRecitePlay(onlyHighlighted, startFromIndex = 0) {
+      let fullQueue = buildReciteQueue();
+      let sentenceItems = fullQueue.filter(q => q.type === 'sentence');
+
+      if (onlyHighlighted) {
+        if (!highlightedWords || highlightedWords.length === 0) {
+          alert("沒有找到高亮/重點詞語。");
+          resetPlayback();
+          return;
+        }
+        sentenceItems = sentenceItems.filter(item => {
+          const text = getItemText(item);
+          return text && highlightedWords.some(hw => text.includes(hw));
+        });
+      }
+
+      if (sentenceItems.length === 0) {
+        releaseWakeLock();
+        return;
+      }
+
+      const secPerCharInput = document.getElementById('secPerCharInput');
+      const secPerChar = secPerCharInput ? (parseFloat(secPerCharInput.value) || 0.7) : 0.7;
+
+      let totalWords = 0;
+      sentenceItems.forEach(item => {
+        totalWords += countChineseChars(item.text);
+      });
+
+      const totalSeconds = totalWords * secPerChar;
+      const totalMinutes = (totalSeconds / 60).toFixed(1);
+      const totalSentences = sentenceItems.length;
+
+      let reciteIdx = 0;
+
+      // 如果從特定句子開始點擊，尋找對應索引
+      if (startFromIndex > 0) {
+        let foundIdx = sentenceItems.findIndex(item => item.index === startFromIndex);
+        if (foundIdx === -1) {
+            // 如果點擊的是未高亮/過濾掉的句子，找下一個可用的
+            let allItems = buildReciteQueue().filter(q => q.type === 'sentence');
+            let clickedItem = allItems.find(q => q.index === startFromIndex);
+            let originalQIndex = allItems.indexOf(clickedItem);
+            foundIdx = sentenceItems.findIndex(qItem => allItems.indexOf(qItem) > originalQIndex);
+        }
+        if (foundIdx !== -1) {
+          reciteIdx = foundIdx;
+        } else {
+          reciteIdx = sentenceItems.length;
+        }
+      }
+
+      function speakNextReciteSentence() {
+        if (!isPlaying) return;
+        if (reciteIdx >= sentenceItems.length) {
+          // 讀完所有句子後提示背默時間並倒數
+          const annText = `同學,現在請開始背默課文, 背默課文總共有 ${totalSentences}句,背默課文 時間是 ${totalMinutes}分鐘`;
+          speakText(annText, () => {
+            if (!isPlaying) return;
+            startTimer(totalSeconds, () => {
+              if (!isPlaying) return;
+              startTimer(3, () => {
+                if (!isPlaying) return;
+                speakText("時間到了, 請檢查, 然後交默書, 謝謝", () => {
+                  resetPlayback();
+                });
+              });
+            });
+          });
+          return;
+        }
+
+        const item = sentenceItems[reciteIdx];
+        highlightReciteCard(`rcard_${item.index}`);
+
+        speakSentenceWithPunctuation(item.text, () => {
+          if (!isPlaying) return;
+          
+          // 在句子剛讀完時，檢查是否有 pending 的點擊
+          if (pendingJumpIndex !== null) {
+              let foundIdx = sentenceItems.findIndex(i => i.index === pendingJumpIndex);
+              if (foundIdx === -1) {
+                  let allItems = buildReciteQueue().filter(q => q.type === 'sentence');
+                  let clickedItem = allItems.find(q => q.index === pendingJumpIndex);
+                  let originalQIndex = allItems.indexOf(clickedItem);
+                  foundIdx = sentenceItems.findIndex(qItem => allItems.indexOf(qItem) > originalQIndex);
+                  if (foundIdx === -1) foundIdx = sentenceItems.length;
+              }
+              reciteIdx = foundIdx;
+              pendingJumpIndex = null;
+              speakNextReciteSentence();
+              return;
+          }
+
+          startTimer(3, () => {
+            if (!isPlaying) return;
+            reciteIdx++;
+            speakNextReciteSentence();
+          });
+        });
+      }
+
+      // 若點擊句子直接開始，則跳過前導提示，直接播放句子；否則按標準流程提示
+      if (startFromIndex > 0) {
+        speakNextReciteSentence();
+      } else {
+        startTimer(3, () => {
+          if (!isPlaying) return;
+          speakText("同學,現在是背默課文, 我會讀課文內容一次", () => {
+            if (!isPlaying) return;
+            startTimer(3, () => {
+              if (!isPlaying) return;
+              speakNextReciteSentence();
+            });
+          });
+        });
+      }
     }
 
     function playNextVocabStep() {
@@ -2596,7 +2887,9 @@
 
       if (isPlaying) {
         if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+        if (punctTimer) clearTimeout(punctTimer);
         clearInterval(timerInterval);
+        if (synth) synth.cancel(); // Vocab詞語短暫直接切換沒問題
         
         queue = data.filter(it => !it || typeof it !== 'object' || it.type !== 'subtitle');
         
@@ -2629,6 +2922,19 @@
       } else {
         playSingleWord(wordText);
       }
+    }
+
+    function applyPendingDictationJump() {
+        playIndex = queue.findIndex(q => q.index === pendingJumpIndex);
+        if (playIndex === -1) {
+            let allQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
+            let clickedItem = allQueue.find(q => q.index === pendingJumpIndex);
+            let originalQIndex = allQueue.indexOf(clickedItem);
+            playIndex = queue.findIndex(qItem => allQueue.indexOf(qItem) > originalQIndex);
+            if (playIndex === -1) playIndex = queue.length;
+        }
+        pendingJumpIndex = null;
+        playNextDictationStep();
     }
 
     function playNextDictationStep() {
@@ -2687,6 +2993,8 @@
       if (isReviewPhase) {
         speakSentenceWithPunctuation(item.text, () => {
           if (!isPlaying) return;
+          if (pendingJumpIndex !== null) { applyPendingDictationJump(); return; }
+          
           startTimer(2, () => {
             if (!isPlaying) return;
             playIndex++;
@@ -2703,10 +3011,15 @@
 
         speakSentenceWithPunctuation(item.text, () => {
           if (!isPlaying) return;
+          if (pendingJumpIndex !== null) { applyPendingDictationJump(); return; }
+
           startTimer(xSec, () => {
             if (!isPlaying) return;
+            
             speakSentenceWithPunctuation(item.text, () => {
               if (!isPlaying) return;
+              if (pendingJumpIndex !== null) { applyPendingDictationJump(); return; }
+
               startTimer(secondPauseSec, () => {
                 if (!isPlaying) return;
                 playIndex++;
@@ -2718,7 +3031,8 @@
       }
     }
 
-    function speakSentenceWithPunctuation(text, onComplete) {
+    function speakSentenceWithPunctuation(text, onComplete, isManual = false, playId = null) {
+      isSpeakingSentence = true;
       let tokens = [];
       let cur = "";
 
@@ -2735,7 +3049,17 @@
 
       let tokenIdx = 0;
       function step() {
+        if (isManual && playId !== null && playId !== dictationManualPlayId) {
+            isSpeakingSentence = false;
+            return;
+        }
+        if (!isPlaying && !isManual && onComplete) {
+            isSpeakingSentence = false;
+            return;
+        }
+
         if (tokenIdx >= tokens.length) {
+          isSpeakingSentence = false;
           if (onComplete) onComplete();
           return;
         }
@@ -2745,11 +3069,26 @@
         if (tok.type === 'text') {
           speakText(tok.val, step);
         } else if (tok.type === 'punct') {
-          startTimer(2, () => {
-            speakText(tok.val, () => {
-              startTimer(2, step);
-            });
-          });
+          if (punctTimer) clearTimeout(punctTimer);
+          punctTimer = setTimeout(() => {
+            if (isManual) {
+              setTimeout(() => {
+                if (playId !== null && playId !== dictationManualPlayId) return;
+                speakText(tok.val, () => {
+                  if (playId !== null && playId !== dictationManualPlayId) return;
+                  setTimeout(step, 2000);
+                });
+              }, 2000);
+            } else {
+              startTimer(2, () => {
+                if (!isPlaying) return;
+                speakText(tok.val, () => {
+                  if (!isPlaying) return;
+                  startTimer(2, step);
+                });
+              });
+            }
+          }, 0);
         }
       }
       step();
@@ -2764,53 +3103,79 @@
       }
     }
 
+    function highlightReciteCard(cardId) {
+      document.querySelectorAll('.dictation-row, .paragraph-break').forEach(c => c.classList.remove('active-reading'));
+      const card = document.getElementById(cardId);
+      if (card) {
+        card.classList.add('active-reading');
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
     function clickPlayDictation(index) {
-      highlightDictationCard(`dcard_${index}`);
       let dictQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
 
       if (isPlaying) {
-        if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
-        clearInterval(timerInterval);
-        
+        highlightDictationCard(`dcard_${index}`); // 點擊時立即反白提示
         if (isOnlyHighlighted) {
           dictQueue = dictQueue.filter(item => {
             const text = getItemText(item);
             return text && highlightedWords.some(hw => text.includes(hw));
           });
         }
-        
         queue = dictQueue;
-        playIndex = dictQueue.findIndex(q => q.index === index);
-        
-        if (playIndex === -1) {
-          let allQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
-          let clickedItem = allQueue.find(q => q.index === index);
-          let originalQIndex = allQueue.indexOf(clickedItem);
-          playIndex = dictQueue.findIndex(qItem => allQueue.indexOf(qItem) > originalQIndex);
-          if (playIndex === -1) playIndex = dictQueue.length;
-          
-          if (clickedItem) {
-            speakSentenceWithPunctuation(clickedItem.text, () => {
-              if (!isPlaying) return;
-              startTimer(3, () => {
-                if (!isPlaying) return;
-                playNextDictationStep();
-              });
-            });
-            return;
-          }
-        }
-        
-        if (playIndex !== -1) {
-          playNextDictationStep();
+
+        if (isSpeakingSentence) {
+            // 若正在發聲（包含標點符號發聲），則紀錄欲跳轉 Index，使其能「優雅地讀完這句」再跳
+            pendingJumpIndex = index;
+        } else {
+            // 若處於段落/句與句間的長時間空白暫停，直接清空計時器並立刻跳轉
+            if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+            if (punctTimer) clearTimeout(punctTimer);
+            clearInterval(timerInterval);
+            if (synth) synth.cancel(); 
+
+            pendingJumpIndex = index;
+            applyPendingDictationJump();
         }
       } else {
         const allQueue = buildDictationQueue().filter(q => q.type === 'sentence' || q.type === 'break');
         const item = allQueue.find(q => q.index === index);
         if (item) {
-          playSingleDictationSentence(item.text);
+          highlightDictationCard(`dcard_${index}`); // 點擊時立即反白提示
+          // 如果沒有播放，不要打斷目前的手動播放列隊
+          playSingleDictationSentence(item.text, index);
         }
       }
+    }
+
+    function clickPlayRecite(index) {
+      if (isPlaying) {
+          highlightReciteCard(`rcard_${index}`);
+          if (isSpeakingSentence) {
+              pendingJumpIndex = index;
+          } else {
+              if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+              if (punctTimer) clearTimeout(punctTimer);
+              clearInterval(timerInterval);
+              if (synth) synth.cancel();
+              
+              pendingJumpIndex = null;
+              startRecitePlay(isOnlyHighlighted, index);
+          }
+          return;
+      }
+      
+      resetPlayback();
+      isPlaying = true;
+      isPaused = false;
+      isReviewPhase = false;
+      requestWakeLock();
+
+      const goText = document.getElementById('goBtnText');
+      if (goText) goText.textContent = '自';
+
+      startRecitePlay(false, index);
     }
 
     function togglePauseResume() {
@@ -2841,6 +3206,12 @@
       isReviewPhase = false;
       isOnlyHighlighted = false;
       playIndex = 0;
+      isSpeakingSentence = false;
+      pendingJumpIndex = null;
+
+      manualDictationQueue = [];
+      isManualDictationPlaying = false;
+      if (typeof dictationManualPlayId !== 'undefined') dictationManualPlayId++;
 
       const goText = document.getElementById('goBtnText');
       if (goText) goText.textContent = '開';
@@ -2860,6 +3231,7 @@
       if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
       if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
       if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
+      if (punctTimer) clearTimeout(punctTimer);
 
       clearInterval(timerInterval);
       remainingSeconds = 0;
