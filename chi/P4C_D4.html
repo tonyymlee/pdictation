@@ -976,7 +976,7 @@
     </aside>
 
     <main id="mainContent" class="mode-hanPinyin">
-      <div class="toolbar-card hidden is-scrolled" id="vocabToolbar">
+      <div class="toolbar-card" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">詞語</button>
           <span class="toolbar-options">
@@ -996,7 +996,7 @@
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="複製當前顯示文字">抄</button>
       </div>
 
-      <div class="toolbar-card is-scrolled" id="dictationToolbar">
+      <div class="toolbar-card hidden" id="dictationToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="返回頁面頂部">課文</button>
           <span class="toolbar-options">
@@ -1016,221 +1016,201 @@
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="複製當前顯示文字">抄</button>
       </div>
 
-      <div id="contentArea"><div class="dictation-list" id="dictationList"><h2 style="font-size:1.2rem; color:#ffffff; margin: 8px 0 4px;">課 6《珍珠鳥》第 3、4 段</h2>
-            <div class="dictation-row" id="dcard_1" onclick="clickPlayDictation(1)">
-              <div class="sentence-index">#1</div>
-              <div class="sentence-text">起先，</div>
-              <div class="sentence-pinyin">qǐ <span style="color: #f71942;">xiān</span></div>
+      <div id="contentArea"><div class="words-grid">
+            <div class="word-card " id="card_0" onclick="clickPlayVocab(0)">
+              <div class="word-index">#1</div>
+              <div class="word-text">啄</div>
+              <div class="pinyin-text">zhuó</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(0)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_2" onclick="clickPlayDictation(2)">
-              <div class="sentence-index">#2</div>
-              <div class="sentence-text">這小傢伙只在</div>
-              <div class="sentence-pinyin">zhè xiǎo jiā huǒ zhī zài</div>
+            <div class="word-card " id="card_1" onclick="clickPlayVocab(1)">
+              <div class="word-index">#2</div>
+              <div class="word-text">細<span style="color: #f71942;">膩</span></div>
+              <div class="pinyin-text"><span style="color: #f71942;">xì</span> <span style="color: #0cb318;">nì</span></div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(1)">▶</button>
             </div>
           
-            <div class="dictation-row active-reading" id="dcard_3" onclick="clickPlayDictation(3)">
-              <div class="sentence-index">#3</div>
-              <div class="sentence-text">籠子四周活動，</div>
-              <div class="sentence-pinyin">lóng zǐ sì zhōu huó dòng</div>
+            <div class="word-card " id="card_2" onclick="clickPlayVocab(2)">
+              <div class="word-index">#3</div>
+              <div class="word-text">繁<span style="color: #f71942;">茂</span></div>
+              <div class="pinyin-text">fán <span style="color: #0cb318;">mào</span></div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(2)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_4" onclick="clickPlayDictation(4)">
-              <div class="sentence-index">#4</div>
-              <div class="sentence-text">隨後就在屋裏</div>
-              <div class="sentence-pinyin">suí hòu jiù zài wū lǐ</div>
+            <div class="word-card " id="card_3" onclick="clickPlayVocab(3)">
+              <div class="word-index">#4</div>
+              <div class="word-text">挨近</div>
+              <div class="pinyin-text">āi jìn</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(3)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_5" onclick="clickPlayDictation(5)">
-              <div class="sentence-index">#5</div>
-              <div class="sentence-text">飛來飛去，</div>
-              <div class="sentence-pinyin">fēi lái fēi qù</div>
+            <div class="word-card " id="card_4" onclick="clickPlayVocab(4)">
+              <div class="word-index">#5</div>
+              <div class="word-text"><span style="color: #f71942;">蓬鬆</span></div>
+              <div class="pinyin-text"><span style="color: #0cb318;">péng</span> <span style="color: #0cb318;">sōng</span></div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(4)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_6" onclick="clickPlayDictation(6)">
-              <div class="sentence-index">#6</div>
-              <div class="sentence-text">一會兒落在</div>
-              <div class="sentence-pinyin">yī <span style="color: #f71942;">huì</span> ér luò zài</div>
+            <div class="word-card " id="card_5" onclick="clickPlayVocab(5)">
+              <div class="word-index">#6</div>
+              <div class="word-text">神氣十足</div>
+              <div class="pinyin-text">shén qì shí zú</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(5)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_7" onclick="clickPlayDictation(7)">
-              <div class="sentence-index">#7</div>
-              <div class="sentence-text">櫃頂上，</div>
-              <div class="sentence-pinyin">guì dǐng shàng</div>
+            <div class="word-card " id="card_6" onclick="clickPlayVocab(6)">
+              <div class="word-index">#7</div>
+              <div class="word-text"><span style="color: #f71942;">瞧</span></div>
+              <div class="pinyin-text"><span style="color: #0cb318;">qiáo</span></div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(6)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_8" onclick="clickPlayDictation(8)">
-              <div class="sentence-index">#8</div>
-              <div class="sentence-text">一會兒神氣十足地</div>
-              <div class="sentence-pinyin">yī <span style="color: #f71942;">huì</span> ér shén qì shí zú dì</div>
+            <div class="word-card " id="card_7" onclick="clickPlayVocab(7)">
+              <div class="word-index">#8</div>
+              <div class="word-text">鳴叫</div>
+              <div class="pinyin-text">míng jiào</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(7)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_9" onclick="clickPlayDictation(9)">
-              <div class="sentence-index">#9</div>
-              <div class="sentence-text">站在書架上，</div>
-              <div class="sentence-pinyin">zhàn zài shū jià shàng</div>
+            <div class="word-card " id="card_8" onclick="clickPlayVocab(8)">
+              <div class="word-index">#9</div>
+              <div class="word-text">流瀉</div>
+              <div class="pinyin-text">liú xiè</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(8)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_10" onclick="clickPlayDictation(10)">
-              <div class="sentence-index">#10</div>
-              <div class="sentence-text">一會兒把燈繩</div>
-              <div class="sentence-pinyin">yī <span style="color: #f71942;">huì</span> ér bǎ dēng shéng</div>
+            <div class="word-card " id="card_9" onclick="clickPlayVocab(9)">
+              <div class="word-index">#10</div>
+              <div class="word-text"><span style="color: #f71942;">俯</span>下</div>
+              <div class="pinyin-text"><span style="color: #0cb318;">fǔ</span> xià</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(9)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_11" onclick="clickPlayDictation(11)">
-              <div class="sentence-index">#11</div>
-              <div class="sentence-text">撞得來回搖動，</div>
-              <div class="sentence-pinyin">zhuàng dé lái <span style="color: #f71942;">huí</span> yáo dòng</div>
+            <div class="word-card " id="card_10" onclick="clickPlayVocab(10)">
+              <div class="word-index">#11</div>
+              <div class="word-text">趴在</div>
+              <div class="pinyin-text">pā zài</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(10)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_12" onclick="clickPlayDictation(12)">
-              <div class="sentence-index">#12</div>
-              <div class="sentence-text">跟着逃到畫框</div>
-              <div class="sentence-pinyin">gēn zhe táo dào huà kuàng</div>
+            <div class="word-card " id="card_11" onclick="clickPlayVocab(11)">
+              <div class="word-index">#12</div>
+              <div class="word-text"><span style="color: #f71942;">蹦</span>來<span style="color: #f71942;">蹦</span>去</div>
+              <div class="pinyin-text"><span style="color: #0cb318;">bèng</span> lái <span style="color: #0cb318;">bèng</span> qù</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(11)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_13" onclick="clickPlayDictation(13)">
-              <div class="sentence-index">#13</div>
-              <div class="sentence-text">上去了。</div>
-              <div class="sentence-pinyin">shǎng qù le</div>
+            <div class="word-card " id="card_12" onclick="clickPlayVocab(12)">
+              <div class="word-index">#13</div>
+              <div class="word-text">不動<span style="color: #f71942;">聲</span>色</div>
+              <div class="pinyin-text">bù dòng <span style="color: #0cb318;">shēng</span> sè</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(12)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_14" onclick="clickPlayDictation(14)">
-              <div class="sentence-index">#14</div>
-              <div class="sentence-text">只要大鳥在籠裏</div>
-              <div class="sentence-pinyin">zhǐ yào dà niǎo zài lóng lǐ</div>
+            <div class="word-card " id="card_13" onclick="clickPlayVocab(13)">
+              <div class="word-index">#14</div>
+              <div class="word-text"><span style="color: #f71942;">兀</span>立</div>
+              <div class="pinyin-text"><span style="color: #0cb318;">wù</span> lì</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(13)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_15" onclick="clickPlayDictation(15)">
-              <div class="sentence-index">#15</div>
-              <div class="sentence-text">生氣地叫一聲，</div>
-              <div class="sentence-pinyin">shēng qì dì jiào yī shēng</div>
+            <div class="word-card " id="card_14" onclick="clickPlayVocab(14)">
+              <div class="word-index">#15</div>
+              <div class="word-text">擴散</div>
+              <div class="pinyin-text">kuò sàn</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(14)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_16" onclick="clickPlayDictation(16)">
-              <div class="sentence-index">#16</div>
-              <div class="sentence-text">牠就立即飛回</div>
-              <div class="sentence-pinyin">tā jiù lì jí fēi <span style="color: #f71942;">huí</span></div>
+            <div class="word-card " id="card_15" onclick="clickPlayVocab(15)">
+              <div class="word-index">#16</div>
+              <div class="word-text"><span style="color: #f71942;">峯巒</span></div>
+              <div class="pinyin-text"><span style="color: #0cb318;">fēng</span> <span style="color: #0cb318;">luán</span></div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(15)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_17" onclick="clickPlayDictation(17)">
-              <div class="sentence-index">#17</div>
-              <div class="sentence-text">籠裏去。</div>
-              <div class="sentence-pinyin">lóng lǐ qù</div>
-            </div>
-          <div class="paragraph-break" id="break_card">下一個自然段</div>
-            <div class="dictation-row" id="dcard_18" onclick="clickPlayDictation(18)">
-              <div class="sentence-index">#18</div>
-              <div class="sentence-text">漸漸牠膽子大了，</div>
-              <div class="sentence-pinyin">jiàn jiàn tā dǎn zǐ dà le</div>
+            <div class="word-card " id="card_16" onclick="clickPlayVocab(16)">
+              <div class="word-index">#17</div>
+              <div class="word-text">羅列</div>
+              <div class="pinyin-text">luó liè</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(16)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_19" onclick="clickPlayDictation(19)">
-              <div class="sentence-index">#19</div>
-              <div class="sentence-text">就落在我的</div>
-              <div class="sentence-pinyin">jiù luò zài wǒ de</div>
+            <div class="word-card " id="card_17" onclick="clickPlayVocab(17)">
+              <div class="word-index">#18</div>
+              <div class="word-text">圍繞</div>
+              <div class="pinyin-text">wéi rào</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(17)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_20" onclick="clickPlayDictation(20)">
-              <div class="sentence-index">#20</div>
-              <div class="sentence-text">書桌上。</div>
-              <div class="sentence-pinyin">shū zhuō shàng</div>
+            <div class="word-card " id="card_18" onclick="clickPlayVocab(18)">
+              <div class="word-index">#19</div>
+              <div class="word-text"><span style="color: #f71942;">嶙峋</span></div>
+              <div class="pinyin-text"><span style="color: #0cb318;">lín</span> <span style="color: #0cb318;">xún</span></div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(18)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_21" onclick="clickPlayDictation(21)">
-              <div class="sentence-index">#21</div>
-              <div class="sentence-text">牠先是離我較遠，</div>
-              <div class="sentence-pinyin">tā <span style="color: #f71942;">xiān</span> shì lí wǒ jiào yuǎn</div>
+            <div class="word-card " id="card_19" onclick="clickPlayVocab(19)">
+              <div class="word-index">#20</div>
+              <div class="word-text"><span style="color: #f71942;">翡<span style="color: #f71942;">翠</span></span></div>
+              <div class="pinyin-text"><span style="color: #0cb318;">fěi</span> <span style="color: #0cb318;">cuì</span></div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(19)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_22" onclick="clickPlayDictation(22)">
-              <div class="sentence-index">#22</div>
-              <div class="sentence-text">見我不去傷害牠，</div>
-              <div class="sentence-pinyin">jiàn wǒ bù qù shāng hài tā</div>
+            <div class="word-card " id="card_20" onclick="clickPlayVocab(20)">
+              <div class="word-index">#21</div>
+              <div class="word-text">連綿</div>
+              <div class="pinyin-text">lián mián</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(20)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_23" onclick="clickPlayDictation(23)">
-              <div class="sentence-index">#23</div>
-              <div class="sentence-text">便一點點挨近，</div>
-              <div class="sentence-pinyin">biàn yī diǎn diǎn āi jìn</div>
+            <div class="word-card " id="card_21" onclick="clickPlayVocab(21)">
+              <div class="word-index">#22</div>
+              <div class="word-text">波<span style="color: #f71942;"><span style="color: #f71942;">瀾</span></span>壯闊</div>
+              <div class="pinyin-text">bō <span style="color: #0cb318;">lán</span> zhuàng kuò</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(21)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_24" onclick="clickPlayDictation(24)">
-              <div class="sentence-index">#24</div>
-              <div class="sentence-text">然後<span style="color: #f71942;">蹦</span>到我的</div>
-              <div class="sentence-pinyin">rán hòu <span style="color: #0cb318;">bèng</span> dào wǒ de</div>
+            <div class="word-card " id="card_22" onclick="clickPlayVocab(22)">
+              <div class="word-index">#23</div>
+              <div class="word-text">完整無瑕</div>
+              <div class="pinyin-text">wán zhěng wú xiá</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(22)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_25" onclick="clickPlayDictation(25)">
-              <div class="sentence-index">#25</div>
-              <div class="sentence-text">杯子上，</div>
-              <div class="sentence-pinyin">bēi zǐ shàng</div>
+            <div class="word-card " id="card_23" onclick="clickPlayVocab(23)">
+              <div class="word-index">#24</div>
+              <div class="word-text">攀登</div>
+              <div class="pinyin-text">pān dēng</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(23)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_26" onclick="clickPlayDictation(26)">
-              <div class="sentence-index">#26</div>
-              <div class="sentence-text"><span style="color: #f71942;">俯</span>下頭來喝茶，</div>
-              <div class="sentence-pinyin"><span style="color: #0cb318;">fǔ</span> xià tóu lái hē chá</div>
+            <div class="word-card " id="card_24" onclick="clickPlayVocab(24)">
+              <div class="word-index">#25</div>
+              <div class="word-text">屏<span style="color: #f71942;">障</span></div>
+              <div class="pinyin-text">píng <span style="color: #0cb318;">zhàng</span></div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(24)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_27" onclick="clickPlayDictation(27)">
-              <div class="sentence-index">#27</div>
-              <div class="sentence-text">再偏過臉瞧瞧</div>
-              <div class="sentence-pinyin">zài <span style="color: #f71942;">piān</span> guò liǎn qiáo qiáo</div>
+            <div class="word-card " id="card_25" onclick="clickPlayVocab(25)">
+              <div class="word-index">#26</div>
+              <div class="word-text"><span style="color: #f71942;">翠</span>綠</div>
+              <div class="pinyin-text"><span style="color: #0cb318;">cuì</span> lǜ</div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(25)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_28" onclick="clickPlayDictation(28)">
-              <div class="sentence-index">#28</div>
-              <div class="sentence-text">我的反應。</div>
-              <div class="sentence-pinyin">wǒ de fǎn yīng</div>
+            <div class="word-card " id="card_26" onclick="clickPlayVocab(26)">
+              <div class="word-index">#27</div>
+              <div class="word-text">迷<span style="color: #f71942;">濛</span></div>
+              <div class="pinyin-text">mí <span style="color: #0cb318;">méng</span></div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(26)">▶</button>
             </div>
           
-            <div class="dictation-row" id="dcard_29" onclick="clickPlayDictation(29)">
-              <div class="sentence-index">#29</div>
-              <div class="sentence-text">我只是微微一笑，</div>
-              <div class="sentence-pinyin">wǒ zhǐ shì wēi wēi yī xiào</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_30" onclick="clickPlayDictation(30)">
-              <div class="sentence-index">#30</div>
-              <div class="sentence-text">依舊寫東西。</div>
-              <div class="sentence-pinyin">yī jiù xiě dōng <span style="color: #f71942;">xī</span></div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_31" onclick="clickPlayDictation(31)">
-              <div class="sentence-index">#31</div>
-              <div class="sentence-text">牠就放開膽子</div>
-              <div class="sentence-pinyin">tā jiù fàng kāi dǎn zǐ</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_32" onclick="clickPlayDictation(32)">
-              <div class="sentence-index">#32</div>
-              <div class="sentence-text">跑到稿紙上，</div>
-              <div class="sentence-pinyin">pǎo dào gǎo zhǐ shàng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_33" onclick="clickPlayDictation(33)">
-              <div class="sentence-index">#33</div>
-              <div class="sentence-text">繞着我的筆</div>
-              <div class="sentence-pinyin">rào zhe wǒ de bǐ</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_34" onclick="clickPlayDictation(34)">
-              <div class="sentence-index">#34</div>
-              <div class="sentence-text">尖<span style="color: #f71942;">蹦</span>來<span style="color: #f71942;">蹦</span>去，</div>
-              <div class="sentence-pinyin">jiān <span style="color: #0cb318;">bèng</span> lái <span style="color: #0cb318;">bèng</span> qù</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_35" onclick="clickPlayDictation(35)">
-              <div class="sentence-index">#35</div>
-              <div class="sentence-text">跳動的小紅爪子在紙上</div>
-              <div class="sentence-pinyin">tiào dòng de xiǎo hóng zhuǎ zi zài zhǐ shàng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_36" onclick="clickPlayDictation(36)">
-              <div class="sentence-index">#36</div>
-              <div class="sentence-text">發出察察的響聲。</div>
-              <div class="sentence-pinyin">fā chū chá chá de <span style="color: #f71942;">xiǎng</span> shēng</div>
+            <div class="word-card " id="card_27" onclick="clickPlayVocab(27)">
+              <div class="word-index">#28</div>
+              <div class="word-text">倒<span style="color: #f71942;">映</span></div>
+              <div class="pinyin-text">dào <span style="color: #0cb318;">yìng</span></div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(27)">▶</button>
             </div>
           </div></div>
     </main>
@@ -3725,13 +3705,31 @@
 其他詞語:
 地上 母子 巨人 落在 神氣十足地 畫框 飛回 我的 瞧瞧 紙上
 
+高亮詞語:
+瀾 蹦 俯 膩 茂 蓬鬆 瞧 聲 兀 峯巒 嶙峋 翡翠 瀾 障 翠 濛 映
+
+chéng xī tan xiàn huī xiáng piān
+
 
 拼音修正
 盛滿＝chéng mǎn
 動彈＝dòng tan
-康弟= kāngdì
+康弟=kāngdì
+伙=huo
+只=zhǐ
+子=zǐ
+裏=li
+會兒=huìr
+上=shang
+地=de
+得=de
+子=zi
+反應=fǎn yìng
+一=yí
+西=xi
+麗=lì
+倒=dào
 
-高亮詞語:
-瀾 蹦 俯
 
-chéng xī tan xiàn huī xiáng piān</textarea></div><script id="embeddedPinyinData" type="application/json">{"啄":"zhuó","細膩":"xì nì","繁茂":"fán mào","挨近":"āi jìn","蓬鬆":"péng sōng","神氣十足":"shén qì shí zú","瞧":"qiáo","鳴叫":"míng jiào","流瀉":"liú xiè","俯下":"fǔ xià","趴在":"pā zài","蹦來蹦去":"bèng lái bèng qù","不動聲色":"bù dòng shēng sè","兀立":"wù lì","擴散":"kuò sàn","峯巒":"fēng luán","羅列":"luó liè","圍繞":"wéi rào","嶙峋":"lín xún","翡翠":"fěi cuì","連綿":"lián mián","波瀾壯闊":"bō lán zhuàng kuò","完整無瑕":"wán zhěng wú xiá","攀登":"pān dēng","屏障":"píng zhàng","翠綠":"cuì lǜ","迷濛":"mí méng","倒映":"dǎo yìng","無瑕":"wú xiá","形態":"xíng tài","完整":"wán zhěng","雄偉":"xióng wěi","明麗":"míng lí","連綿不斷":"lián mián bù duàn","出爾反爾":"chū ěr fǎn ěr","一針見血":"yī zhēn jiàn xuè","津津樂道":"jīn jīn lè dào","甜言蜜語":"tián yán mì yǔ","讚不絕口":"zàn bù jué kǒu","口是心非":"kǒu shì xīn fēi","口若懸河":"kǒu ruò xuán hé","異口同聲":"yì kǒu tóng shēng","娓娓動聽":"wěi wěi dòng tīng","一語雙關":"yī yǔ shuāng guān","暢所欲言":"chàng suǒ yù yán","心直口快":"xīn zhí kǒu kuài","地上":"dì shàng","母子":"mǔ zǐ","巨人":"jù rén","落在":"luò zài","神氣十足地":"shén qì shí zú dì","畫框":"huà kuàng","飛回":"fēi huí","我的":"wǒ de","瞧瞧":"qiáo qiáo","紙上":"zhǐ shàng","起先，":"qǐ xiān","這小傢伙只在":"zhè xiǎo jiā huǒ zhī zài","籠子四周活動，":"lóng zǐ sì zhōu huó dòng","隨後就在屋裏":"suí hòu jiù zài wū lǐ","飛來飛去，":"fēi lái fēi qù","一會兒落在":"yī huì ér luò zài","櫃頂上，":"guì dǐng shàng","一會兒神氣十足地":"yī huì ér shén qì shí zú dì","站在書架上，":"zhàn zài shū jià shàng","一會兒把燈繩":"yī huì ér bǎ dēng shéng","撞得來回搖動，":"zhuàng dé lái huí yáo dòng","跟着逃到畫框":"gēn zhe táo dào huà kuàng","上去了。":"shǎng qù le","只要大鳥在籠裏":"zhǐ yào dà niǎo zài lóng lǐ","生氣地叫一聲，":"shēng qì dì jiào yī shēng","牠就立即飛回":"tā jiù lì jí fēi huí","籠裏去。":"lóng lǐ qù","漸漸牠膽子大了，":"jiàn jiàn tā dǎn zǐ dà le","就落在我的":"jiù luò zài wǒ de","書桌上。":"shū zhuō shàng","牠先是離我較遠，":"tā xiān shì lí wǒ jiào yuǎn","見我不去傷害牠，":"jiàn wǒ bù qù shāng hài tā","便一點點挨近，":"biàn yī diǎn diǎn āi jìn","然後蹦到我的":"rán hòu bèng dào wǒ de","杯子上，":"bēi zǐ shàng","俯下頭來喝茶，":"fǔ xià tóu lái hē chá","再偏過臉瞧瞧":"zài piān guò liǎn qiáo qiáo","我的反應。":"wǒ de fǎn yīng","我只是微微一笑，":"wǒ zhǐ shì wēi wēi yī xiào","依舊寫東西。":"yī jiù xiě dōng xī","牠就放開膽子":"tā jiù fàng kāi dǎn zǐ","跑到稿紙上，":"pǎo dào gǎo zhǐ shàng","繞着我的筆":"rào zhe wǒ de bǐ","尖蹦來蹦去，":"jiān bèng lái bèng qù","跳動的小紅爪子在紙上":"tiào dòng de xiǎo hóng zhuǎ zi zài zhǐ shàng","發出察察的響聲。":"fā chū chá chá de xiǎng shēng"}</script></body></html>
+
+</textarea></div><script id="embeddedPinyinData" type="application/json">{"啄":"zhuó","細膩":"xì nì","繁茂":"fán mào","挨近":"āi jìn","蓬鬆":"péng sōng","神氣十足":"shén qì shí zú","瞧":"qiáo","鳴叫":"míng jiào","流瀉":"liú xiè","俯下":"fǔ xià","趴在":"pā zài","蹦來蹦去":"bèng lái bèng qù","不動聲色":"bù dòng shēng sè","兀立":"wù lì","擴散":"kuò sàn","峯巒":"fēng luán","羅列":"luó liè","圍繞":"wéi rào","嶙峋":"lín xún","翡翠":"fěi cuì","連綿":"lián mián","波瀾壯闊":"bō lán zhuàng kuò","完整無瑕":"wán zhěng wú xiá","攀登":"pān dēng","屏障":"píng zhàng","翠綠":"cuì lǜ","迷濛":"mí méng","倒映":"dào yìng","無瑕":"wú xiá","形態":"xíng tài","完整":"wán zhěng","雄偉":"xióng wěi","明麗":"míng lì","連綿不斷":"lián mián bù duàn","出爾反爾":"chū ěr fǎn ěr","一針見血":"yí zhēn jiàn xuè","津津樂道":"jīn jīn lè dào","甜言蜜語":"tián yán mì yǔ","讚不絕口":"zàn bù jué kǒu","口是心非":"kǒu shì xīn fēi","口若懸河":"kǒu ruò xuán hé","異口同聲":"yì kǒu tóng shēng","娓娓動聽":"wěi wěi dòng tīng","一語雙關":"yí yǔ shuāng guān","暢所欲言":"chàng suǒ yù yán","心直口快":"xīn zhí kǒu kuài","地上":"de shang","母子":"mǔ zi","巨人":"jù rén","落在":"luò zài","神氣十足地":"shén qì shí zú de","畫框":"huà kuàng","飛回":"fēi huí","我的":"wǒ de","瞧瞧":"qiáo qiáo","紙上":"zhǐ shang","起先，":"qǐ xiān","這小傢伙只在":"zhè xiǎo jiā huo zhǐ zài","籠子四周活動，":"lóng zi sì zhōu huó dòng","隨後就在屋裏":"suí hòu jiù zài wū li","飛來飛去，":"fēi lái fēi qù","一會兒落在":"yí huìr  luò zài","櫃頂上，":"guì dǐng shang","一會兒神氣十足地":"yí huìr  shén qì shí zú de","站在書架上，":"zhàn zài shū jià shang","一會兒把燈繩":"yí huìr  bǎ dēng shéng","撞得來回搖動，":"zhuàng de lái huí yáo dòng","跟着逃到畫框":"gēn zhe táo dào huà kuàng","上去了。":"shang qù le","只要大鳥在籠裏":"zhǐ yào dà niǎo zài lóng li","生氣地叫一聲，":"shēng qì de jiào yí shēng","牠就立即飛回":"tā jiù lì jí fēi huí","籠裏去。":"lóng li qù","漸漸牠膽子大了，":"jiàn jiàn tā dǎn zi dà le","就落在我的":"jiù luò zài wǒ de","書桌上。":"shū zhuō shang","牠先是離我較遠，":"tā xiān shì lí wǒ jiào yuǎn","見我不去傷害牠，":"jiàn wǒ bù qù shāng hài tā","便一點點挨近，":"biàn yí diǎn diǎn āi jìn","然後蹦到我的":"rán hòu bèng dào wǒ de","杯子上，":"bēi zi shang","俯下頭來喝茶，":"fǔ xià tóu lái hē chá","再偏過臉瞧瞧":"zài piān guò liǎn qiáo qiáo","我的反應。":"wǒ de fǎn yìng","我只是微微一笑，":"wǒ zhǐ shì wēi wēi yí xiào","依舊寫東西。":"yī jiù xiě dōng xi","牠就放開膽子":"tā jiù fàng kāi dǎn zi","跑到稿紙上，":"pǎo dào gǎo zhǐ shang","繞着我的筆":"rào zhe wǒ de bǐ","尖蹦來蹦去，":"jiān bèng lái bèng qù","跳動的小紅爪子在紙上":"tiào dòng de xiǎo hóng zhuǎ zi zài zhǐ shang","發出察察的響聲。":"fā chū chá chá de xiǎng shēng"}</script></body></html>
