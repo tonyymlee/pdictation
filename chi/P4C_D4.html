@@ -1229,14 +1229,20 @@
           
             <div class="dictation-row" id="dcard_35" onclick="clickPlayDictation(35)">
               <div class="sentence-index">#35</div>
-              <div class="sentence-text">跳動的小紅爪子在紙上</div>
-              <div class="sentence-pinyin">tiào dòng de xiǎo hóng zhuǎ zi zài zhǐ shang</div>
+              <div class="sentence-text">跳動的小紅爪子</div>
+              <div class="sentence-pinyin">tiào dòng de xiǎo hóng zhuǎ zi</div>
             </div>
           
             <div class="dictation-row" id="dcard_36" onclick="clickPlayDictation(36)">
               <div class="sentence-index">#36</div>
-              <div class="sentence-text">發出察察的響<span style="color: #f71942;">聲</span>。</div>
-              <div class="sentence-pinyin">fā chū chá chá de xiǎng <span style="color: #0cb318;">shēng</span></div>
+              <div class="sentence-text">在紙上發出</div>
+              <div class="sentence-pinyin">zài zhǐ shang fā chū</div>
+            </div>
+          
+            <div class="dictation-row" id="dcard_37" onclick="clickPlayDictation(37)">
+              <div class="sentence-index">#37</div>
+              <div class="sentence-text">察察的響<span style="color: #f71942;">聲</span>。</div>
+              <div class="sentence-pinyin">chá chá de xiǎng <span style="color: #0cb318;">shēng</span></div>
             </div>
           </div></div>
     </main>
@@ -1836,22 +1842,10 @@
         ...customProtectedWords
       ])).sort((a, b) => b.length - a.length);
 
-      let textBuffer = "";
-
-      const flushBuffer = () => {
-        if (textBuffer.trim()) {
-          const res = processTextChunkToQueue(autoConvertCharacters(textBuffer.trim()), globalIndex, allVocabWords);
-          queueList.push(...res.queueList);
-          globalIndex = res.globalIndexCounter;
-          textBuffer = "";
-        }
-      };
-
       rawLines.forEach(line => {
         const trimmedLine = autoConvertCharacters(line.trim());
 
         if (!trimmedLine || trimmedLine === '下一個自然段') {
-          flushBuffer();
           if (queueList.length > 0 && queueList[queueList.length - 1].type !== 'break' && queueList[queueList.length - 1].type !== 'title') {
             queueList.push({ type: 'break', text: '下一個自然段' });
           }
@@ -1859,14 +1853,15 @@
         }
 
         if (trimmedLine.startsWith('《') || trimmedLine.includes('課') || (trimmedLine.includes('第') && trimmedLine.includes('段'))) {
-          flushBuffer();
           queueList.push({ type: 'title', text: trimmedLine });
           return;
         }
 
-        textBuffer += trimmedLine;
+        // 當輸入文件包含換行時，直接逐行進行處理切分
+        const res = processTextChunkToQueue(trimmedLine, globalIndex, allVocabWords);
+        queueList.push(...res.queueList);
+        globalIndex = res.globalIndexCounter;
       });
-      flushBuffer();
 
       const cleanedQueueList = [];
       const trailingPuncts = "。,.，！？?；;：:」』》〉）)─—-…";
@@ -3748,8 +3743,7 @@
 漸漸牠膽子大了，就落在我的書桌上。牠先是離我較遠，見我不去傷害牠，便一點點挨近，然後蹦到我的杯子上，俯下頭來喝茶，再偏過臉瞧瞧我的反應。我只是微微一笑，依舊寫東西。牠就放開膽子跑到稿紙上，繞着我的筆尖蹦來蹦去，跳動的小紅爪子
 在紙上發出
 察察的響聲。
-
-
+	
 
 其他詞語:
 地上 母子 巨人 落在 神氣十足地 畫框 飛回 我的 瞧瞧 紙上 筆尖 畫框上
@@ -3764,6 +3758,10 @@
 盛滿＝chéng mǎn 動彈＝dòng tan 康弟=kāngdì 伙=huo 只=zhǐ 子=zǐ
 裏=li 會兒=huìr 上=shang 地=de 得=de 子=zi 反應=fǎn yìng 一=yí 西=xi 麗=lì 倒=dào
 
+背默課文段落:
+課 13《山水》第 1、5 段
+漸漸牠膽子大了，就落在我的書桌上。牠先是離我較遠，見我不去傷害牠，便一點點挨近，然後蹦到我的杯子上，俯下頭來喝茶，再偏過臉瞧瞧我的反應。
 
 
-</textarea></div><script id="embeddedPinyinData" type="application/json">{"啄":"zhuó","細膩":"xì nì","繁茂":"fán mào","挨近":"āi jìn","蓬鬆":"péng sōng","神氣十足":"shén qì shí zú","瞧":"qiáo","鳴叫":"míng jiào","流瀉":"liú xiè","俯下":"fǔ xià","趴在":"pā zài","蹦來蹦去":"bèng lái bèng qù","不動聲色":"bù dòng shēng sè","兀立":"wù lì","擴散":"kuò sàn","峯巒":"fēng luán","羅列":"luó liè","圍繞":"wéi rào","嶙峋":"lín xún","翡翠":"fěi cuì","連綿":"lián mián","波瀾壯闊":"bō lán zhuàng kuò","完整無瑕":"wán zhěng wú xiá","攀登":"pān dēng","屏障":"píng zhàng","翠綠":"cuì lǜ","迷濛":"mí méng","倒映":"dào yìng","無瑕":"wú xiá","形態":"xíng tài","完整":"wán zhěng","雄偉":"xióng wěi","明麗":"míng lì","連綿不斷":"lián mián bù duàn","出爾反爾":"chū ěr fǎn ěr","一針見血":"yí zhēn jiàn xuè","津津樂道":"jīn jīn lè dào","甜言蜜語":"tián yán mì yǔ","讚不絕口":"zàn bù jué kǒu","口是心非":"kǒu shì xīn fēi","口若懸河":"kǒu ruò xuán hé","異口同聲":"yì kǒu tóng shēng","娓娓動聽":"wěi wěi dòng tīng","一語雙關":"yí yǔ shuāng guān","暢所欲言":"chàng suǒ yù yán","心直口快":"xīn zhí kǒu kuài","地上":"de shang","母子":"mǔ zi","巨人":"jù rén","落在":"luò zài","神氣十足地":"shén qì shí zú de","畫框":"huà kuàng","飛回":"fēi huí","我的":"wǒ de","瞧瞧":"qiáo qiáo","紙上":"zhǐ shang","筆尖":"bǐ jiān","畫框上":"huà kuàng shang","起先，":"qǐ xiān","這小傢伙只在":"zhè xiǎo jiā huo zhǐ zài","籠子四周活動，":"lóng zi sì zhōu huó dòng","隨後就在屋裏":"suí hòu jiù zài wū li","飛來飛去，":"fēi lái fēi qù","一會兒落在":"yí huìr  luò zài","櫃頂上，":"guì dǐng shang","一會兒神氣十足地":"yí huìr  shén qì shí zú de","站在書架上，":"zhàn zài shū jià shang","一會兒把燈繩":"yí huìr  bǎ dēng shéng","撞得來回搖動，":"zhuàng de lái huí yáo dòng","跟着逃到畫框上":"gēn zhe táo dào huà kuàng shang","去了。":"qù le","只要大鳥在籠裏":"zhǐ yào dà niǎo zài lóng li","生氣地叫一聲，":"shēng qì de jiào yí shēng","牠就立即飛回":"tā jiù lì jí fēi huí","籠裏去。":"lóng li qù","漸漸牠膽子大了，":"jiàn jiàn tā dǎn zi dà le","就落在我的":"jiù luò zài wǒ de","書桌上。":"shū zhuō shang","牠先是離我較遠，":"tā xiān shì lí wǒ jiào yuǎn","見我不去傷害牠，":"jiàn wǒ bù qù shāng hài tā","便一點點挨近，":"biàn yí diǎn diǎn āi jìn","然後蹦到我的":"rán hòu bèng dào wǒ de","杯子上，":"bēi zi shang","俯下頭來喝茶，":"fǔ xià tóu lái hē chá","再偏過臉瞧瞧":"zài piān guò liǎn qiáo qiáo","我的反應。":"wǒ de fǎn ","我只是微微一笑，":"wǒ zhǐ shì wēi wēi yí xiào","依舊寫東西。":"yī jiù xiě dōng xi","牠就放開膽子":"tā jiù fàng kāi dǎn zi","跑到稿紙上，":"pǎo dào gǎo zhǐ shang","繞着我的筆尖":"rào zhe wǒ de bǐ jiān","蹦來蹦去，":"bèng lái bèng qù","跳動的小紅爪子在紙上":"tiào dòng de xiǎo hóng zhuǎ zi zài zhǐ shang","發出察察的響聲。":"fā chū chá chá de xiǎng shēng"}</script></body></html>
+
+</textarea></div><script id="embeddedPinyinData" type="application/json">{"啄":"zhuó","細膩":"xì nì","繁茂":"fán mào","挨近":"āi jìn","蓬鬆":"péng sōng","神氣十足":"shén qì shí zú","瞧":"qiáo","鳴叫":"míng jiào","流瀉":"liú xiè","俯下":"fǔ xià","趴在":"pā zài","蹦來蹦去":"bèng lái bèng qù","不動聲色":"bù dòng shēng sè","兀立":"wù lì","擴散":"kuò sàn","峯巒":"fēng luán","羅列":"luó liè","圍繞":"wéi rào","嶙峋":"lín xún","翡翠":"fěi cuì","連綿":"lián mián","波瀾壯闊":"bō lán zhuàng kuò","完整無瑕":"wán zhěng wú xiá","攀登":"pān dēng","屏障":"píng zhàng","翠綠":"cuì lǜ","迷濛":"mí méng","倒映":"dào yìng","無瑕":"wú xiá","形態":"xíng tài","完整":"wán zhěng","雄偉":"xióng wěi","明麗":"míng lì","連綿不斷":"lián mián bù duàn","出爾反爾":"chū ěr fǎn ěr","一針見血":"yí zhēn jiàn xuè","津津樂道":"jīn jīn lè dào","甜言蜜語":"tián yán mì yǔ","讚不絕口":"zàn bù jué kǒu","口是心非":"kǒu shì xīn fēi","口若懸河":"kǒu ruò xuán hé","異口同聲":"yì kǒu tóng shēng","娓娓動聽":"wěi wěi dòng tīng","一語雙關":"yí yǔ shuāng guān","暢所欲言":"chàng suǒ yù yán","心直口快":"xīn zhí kǒu kuài","地上":"de shang","母子":"mǔ zi","巨人":"jù rén","落在":"luò zài","神氣十足地":"shén qì shí zú de","畫框":"huà kuàng","飛回":"fēi huí","我的":"wǒ de","瞧瞧":"qiáo qiáo","紙上":"zhǐ shang","筆尖":"bǐ jiān","畫框上":"huà kuàng shang","起先，":"qǐ xiān","這小傢伙只在":"zhè xiǎo jiā huo zhǐ zài","籠子四周活動，":"lóng zi sì zhōu huó dòng","隨後就在屋裏":"suí hòu jiù zài wū li","飛來飛去，":"fēi lái fēi qù","一會兒落在":"yí huìr  luò zài","櫃頂上，":"guì dǐng shang","一會兒神氣十足地":"yí huìr  shén qì shí zú de","站在書架上，":"zhàn zài shū jià shang","一會兒把燈繩":"yí huìr  bǎ dēng shéng","撞得來回搖動，":"zhuàng de lái huí yáo dòng","跟着逃到畫框上":"gēn zhe táo dào huà kuàng shang","去了。":"qù le","只要大鳥在籠裏":"zhǐ yào dà niǎo zài lóng li","生氣地叫一聲，":"shēng qì de jiào yí shēng","牠就立即飛回":"tā jiù lì jí fēi huí","籠裏去。":"lóng li qù","漸漸牠膽子大了，":"jiàn jiàn tā dǎn zi dà le","就落在我的":"jiù luò zài wǒ de","書桌上。":"shū zhuō shang","牠先是離我較遠，":"tā xiān shì lí wǒ jiào yuǎn","見我不去傷害牠，":"jiàn wǒ bù qù shāng hài tā","便一點點挨近，":"biàn yí diǎn diǎn āi jìn","然後蹦到我的":"rán hòu bèng dào wǒ de","杯子上，":"bēi zi shang","俯下頭來喝茶，":"fǔ xià tóu lái hē chá","再偏過臉瞧瞧":"zài piān guò liǎn qiáo qiáo","我的反應。":"wǒ de fǎn ","我只是微微一笑，":"wǒ zhǐ shì wēi wēi yí xiào","依舊寫東西。":"yī jiù xiě dōng xi","牠就放開膽子":"tā jiù fàng kāi dǎn zi","跑到稿紙上，":"pǎo dào gǎo zhǐ shang","繞着我的筆尖":"rào zhe wǒ de bǐ jiān","蹦來蹦去，":"bèng lái bèng qù","跳動的小紅爪子":"tiào dòng de xiǎo hóng zhuǎ zi","在紙上發出":"zài zhǐ shang fā chū","察察的響聲。":"chá chá de xiǎng shēng","就落在我的書桌上。":"jiù luò zài wǒ de shū zhuō shang","然後蹦到我的杯子上，":"rán hòu bèng dào wǒ de bēi zi shang","再偏過臉瞧瞧我的反應。":"zài piān guò liǎn qiáo qiáo wǒ de fǎn "}</script></body></html>
