@@ -235,7 +235,13 @@
       color: rgba(255, 255, 255, 0.22) !important;
     }
 
-    /* ⏱ 動態圖形倒數時鐘樣式 */
+    /* ⏱ 動態圖形倒數時鐘與數位計時器樣式 */
+    .timer-container {
+      display: none; /* Displayed during auto-play */
+      align-items: center;
+      gap: 6px;
+    }
+
     .timer-clock-box {
       display: inline-flex;
       align-items: center;
@@ -270,6 +276,22 @@
       background: #000000;
       border-radius: 50%;
       transform: translate(-50%, -50%);
+    }
+
+    .digital-timer-box {
+      display: none; /* Appears only in Tab 5 phase 2 during auto mode */
+      background: #000000;
+      color: #a3e635;
+      font-family: 'Consolas', 'Courier New', monospace !important;
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 2px solid #2d6a4f;
+      min-width: 65px;
+      text-align: center;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+      letter-spacing: 1px;
     }
 
     .btn-action {
@@ -879,7 +901,7 @@
 
       <!-- 🔴 錯詞專用播放按鈕 -->
       <button class="btn-icon btn-highlight-play-icon" onclick="startAutoPlay(true)" title="播放高亮/重點詞語">
-        <span id="wrongGoBtnText">錯</span>
+        <span id="wrongGoBtnText">自</span>
       </button>
 
       <button class="btn-icon btn-pause-icon" id="pauseResumeBtn" onclick="togglePauseResume()" title="暫停播放"><svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="3" width="5" height="18" rx="1.5"></rect><rect x="14" y="3" width="5" height="18" rx="1.5"></rect></svg></button>
@@ -892,10 +914,14 @@
       </button>
 
       <button class="btn-hdr-opt btn-lang-opt" id="langSwitchBtn" onclick="toggleLanguage()" title="切換朗讀語言">普</button>
-      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="切換顯示模式">漢+拼</button>
+      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="切換顯示模式">拼</button>
       
-      <div class="timer-clock-box" title="剩餘時間倒數">
-        <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 0%, rgb(229, 231, 235) 0%);"></div>
+      <!-- ⏱ 動態圖形倒數時鐘與數位計時器 -->
+      <div class="timer-container" style="display: flex;">
+        <div class="timer-clock-box" id="timerClockBox" title="剩餘時間倒數" style="display: inline-flex;">
+          <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 80.9524%, rgb(229, 231, 235) 80.9524%);"></div>
+        </div>
+        <div class="digital-timer-box" id="digitalTimerDisplay" title="數位剩餘時間" style="display: block;">0:17</div>
       </div>
     </div>
   </header>
@@ -931,7 +957,6 @@
           <button class="tab-btn" id="btn_tab4" onclick="switchTab('tab4', this)">
             <span class="tab-icon">✍</span> 聽寫課文段落
           </button>
-
           <!-- 背默課文段落 -->
           <button class="tab-btn" id="btn_tab5" onclick="switchTab('tab5', this)">
             <span class="tab-icon">💾</span> 背默課文段落
@@ -981,7 +1006,7 @@
       </div>
     </aside>
 
-    <main id="mainContent" class="mode-hanPinyin">
+    <main id="mainContent" class="mode-pinyin">
       <div class="toolbar-card hidden is-scrolled" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="返回頁面頂部">詞語</button>
@@ -1004,7 +1029,7 @@
 
       <div class="toolbar-card is-scrolled" id="dictationToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="返回頁面頂部">課文</button>
+          <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="返回頁面頂部">背默</button>
           <span class="toolbar-options">
             <label id="secPerCharLabel">每字：<input type="number" id="secPerCharInput" value="2.3" min="0.1" step="0.1"> 秒</label>
             <label class="speed-control-label"><select id="dictationSpeedSelect" onchange="onSpeedChange()">
@@ -1022,227 +1047,53 @@
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="複製當前顯示文字">抄</button>
       </div>
 
-      <div id="contentArea"><div class="dictation-list" id="dictationList"><h2 style="font-size:1.2rem; color:#ffffff; margin: 8px 0 4px;">課 6《珍珠鳥》第 3、4 段</h2>
-            <div class="dictation-row" id="dcard_1" onclick="clickPlayDictation(1)">
+      <div id="contentArea"><div class="dictation-list" id="dictationList"><h2 style="font-size:1.2rem; color:#ffffff; margin: 8px 0 4px;">課 13《山水》第 1、5 段</h2>
+            <div class="dictation-row" id="rcard_1" onclick="clickPlayRecite(1)">
               <div class="sentence-index">#1</div>
-              <div class="sentence-text">起先，</div>
-              <div class="sentence-pinyin">qǐ xiān</div>
+              <div class="sentence-text">漸漸⭕⭕⭕⭕⭕⭕</div>
+              <div class="sentence-pinyin">jiàn jiàn ⭕ ⭕ ⭕ ⭕ ⭕</div>
             </div>
           
-            <div class="dictation-row" id="dcard_2" onclick="clickPlayDictation(2)">
+            <div class="dictation-row" id="rcard_2" onclick="clickPlayRecite(2)">
               <div class="sentence-index">#2</div>
-              <div class="sentence-text">這小傢伙只在</div>
-              <div class="sentence-pinyin">zhè xiǎo jiā huo zhǐ zài</div>
+              <div class="sentence-text">就落⭕⭕⭕⭕⭕⭕⭕</div>
+              <div class="sentence-pinyin">jiù luò ⭕ ⭕ ⭕ ⭕ ⭕ ⭕</div>
             </div>
           
-            <div class="dictation-row" id="dcard_3" onclick="clickPlayDictation(3)">
+            <div class="dictation-row" id="rcard_3" onclick="clickPlayRecite(3)">
               <div class="sentence-index">#3</div>
-              <div class="sentence-text">籠子四周活動，</div>
-              <div class="sentence-pinyin">lóng zi sì zhōu huó dòng</div>
+              <div class="sentence-text">牠先⭕⭕⭕⭕⭕⭕</div>
+              <div class="sentence-pinyin">tā xiān ⭕ ⭕ ⭕ ⭕ ⭕</div>
             </div>
           
-            <div class="dictation-row" id="dcard_4" onclick="clickPlayDictation(4)">
+            <div class="dictation-row" id="rcard_4" onclick="clickPlayRecite(4)">
               <div class="sentence-index">#4</div>
-              <div class="sentence-text">隨後就在屋裏</div>
-              <div class="sentence-pinyin">suí hòu jiù zài wū li</div>
+              <div class="sentence-text">見我⭕⭕⭕⭕⭕⭕</div>
+              <div class="sentence-pinyin">jiàn wǒ ⭕ ⭕ ⭕ ⭕ ⭕</div>
             </div>
           
-            <div class="dictation-row" id="dcard_5" onclick="clickPlayDictation(5)">
+            <div class="dictation-row" id="rcard_5" onclick="clickPlayRecite(5)">
               <div class="sentence-index">#5</div>
-              <div class="sentence-text">飛來飛去，</div>
-              <div class="sentence-pinyin">fēi lái fēi qù</div>
+              <div class="sentence-text">便一⭕⭕⭕⭕⭕</div>
+              <div class="sentence-pinyin">biàn yí ⭕ ⭕ ⭕ ⭕</div>
             </div>
           
-            <div class="dictation-row" id="dcard_6" onclick="clickPlayDictation(6)">
+            <div class="dictation-row active-reading" id="rcard_6" onclick="clickPlayRecite(6)">
               <div class="sentence-index">#6</div>
-              <div class="sentence-text">一會兒落在</div>
-              <div class="sentence-pinyin">yí huìr luò zài</div>
+              <div class="sentence-text">然後⭕⭕⭕⭕⭕⭕⭕⭕</div>
+              <div class="sentence-pinyin">rán hòu ⭕ ⭕ ⭕ ⭕ ⭕ ⭕ ⭕</div>
             </div>
           
-            <div class="dictation-row" id="dcard_7" onclick="clickPlayDictation(7)">
+            <div class="dictation-row" id="rcard_7" onclick="clickPlayRecite(7)">
               <div class="sentence-index">#7</div>
-              <div class="sentence-text">櫃頂上，</div>
-              <div class="sentence-pinyin">guì dǐng shang</div>
+              <div class="sentence-text"><span style="color: #f71942;">俯</span>下⭕⭕⭕⭕⭕</div>
+              <div class="sentence-pinyin"><span style="color: #0cb318;">fǔ</span> xià ⭕ ⭕ ⭕ ⭕</div>
             </div>
           
-            <div class="dictation-row" id="dcard_8" onclick="clickPlayDictation(8)">
+            <div class="dictation-row" id="rcard_8" onclick="clickPlayRecite(8)">
               <div class="sentence-index">#8</div>
-              <div class="sentence-text">一會兒神氣十足地</div>
-              <div class="sentence-pinyin">yí huìr shén qì shí zú de</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_9" onclick="clickPlayDictation(9)">
-              <div class="sentence-index">#9</div>
-              <div class="sentence-text">站在書架上，</div>
-              <div class="sentence-pinyin">zhàn zài shū jià shang</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_10" onclick="clickPlayDictation(10)">
-              <div class="sentence-index">#10</div>
-              <div class="sentence-text">一會兒把燈繩</div>
-              <div class="sentence-pinyin">yí huìr bǎ dēng shéng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_11" onclick="clickPlayDictation(11)">
-              <div class="sentence-index">#11</div>
-              <div class="sentence-text">撞得來回搖動，</div>
-              <div class="sentence-pinyin">zhuàng de lái huí yáo dòng</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_12" onclick="clickPlayDictation(12)">
-              <div class="sentence-index">#12</div>
-              <div class="sentence-text">跟着逃到畫框上</div>
-              <div class="sentence-pinyin">gēn zhe táo dào huà kuàng shang</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_13" onclick="clickPlayDictation(13)">
-              <div class="sentence-index">#13</div>
-              <div class="sentence-text">去了。</div>
-              <div class="sentence-pinyin">qù le</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_14" onclick="clickPlayDictation(14)">
-              <div class="sentence-index">#14</div>
-              <div class="sentence-text">只要大鳥在籠裏</div>
-              <div class="sentence-pinyin">zhǐ yào dà niǎo zài lóng li</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_15" onclick="clickPlayDictation(15)">
-              <div class="sentence-index">#15</div>
-              <div class="sentence-text">生氣地叫一<span style="color: #f71942;">聲</span>，</div>
-              <div class="sentence-pinyin">shēng qì de jiào yí <span style="color: #0cb318;">shēng</span></div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_16" onclick="clickPlayDictation(16)">
-              <div class="sentence-index">#16</div>
-              <div class="sentence-text">牠就立即飛回</div>
-              <div class="sentence-pinyin">tā jiù lì jí fēi huí</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_17" onclick="clickPlayDictation(17)">
-              <div class="sentence-index">#17</div>
-              <div class="sentence-text">籠裏去。</div>
-              <div class="sentence-pinyin">lóng li qù</div>
-            </div>
-          <div class="paragraph-break" id="break_card">下一個自然段</div>
-            <div class="dictation-row" id="dcard_18" onclick="clickPlayDictation(18)">
-              <div class="sentence-index">#18</div>
-              <div class="sentence-text">漸漸牠膽子大了，</div>
-              <div class="sentence-pinyin">jiàn jiàn tā dǎn zi dà le</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_19" onclick="clickPlayDictation(19)">
-              <div class="sentence-index">#19</div>
-              <div class="sentence-text">就落在我的</div>
-              <div class="sentence-pinyin">jiù luò zài wǒ de</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_20" onclick="clickPlayDictation(20)">
-              <div class="sentence-index">#20</div>
-              <div class="sentence-text">書桌上。</div>
-              <div class="sentence-pinyin">shū zhuō shang</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_21" onclick="clickPlayDictation(21)">
-              <div class="sentence-index">#21</div>
-              <div class="sentence-text">牠先是離我較遠，</div>
-              <div class="sentence-pinyin">tā xiān shì lí wǒ jiào yuǎn</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_22" onclick="clickPlayDictation(22)">
-              <div class="sentence-index">#22</div>
-              <div class="sentence-text">見我不去傷害牠，</div>
-              <div class="sentence-pinyin">jiàn wǒ bù qù shāng hài tā</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_23" onclick="clickPlayDictation(23)">
-              <div class="sentence-index">#23</div>
-              <div class="sentence-text">便一點點挨近，</div>
-              <div class="sentence-pinyin">biàn yí diǎn diǎn āi jìn</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_24" onclick="clickPlayDictation(24)">
-              <div class="sentence-index">#24</div>
-              <div class="sentence-text">然後<span style="color: #f71942;">蹦</span>到我的</div>
-              <div class="sentence-pinyin">rán hòu <span style="color: #0cb318;">bèng</span> dào wǒ de</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_25" onclick="clickPlayDictation(25)">
-              <div class="sentence-index">#25</div>
-              <div class="sentence-text">杯子上，</div>
-              <div class="sentence-pinyin">bēi zi shang</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_26" onclick="clickPlayDictation(26)">
-              <div class="sentence-index">#26</div>
-              <div class="sentence-text"><span style="color: #f71942;">俯</span>下頭來喝茶，</div>
-              <div class="sentence-pinyin"><span style="color: #0cb318;">fǔ</span> xià tóu lái hē chá</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_27" onclick="clickPlayDictation(27)">
-              <div class="sentence-index">#27</div>
-              <div class="sentence-text">再偏過臉<span style="color: #f71942;">瞧</span><span style="color: #f71942;">瞧</span></div>
-              <div class="sentence-pinyin">zài piān guò liǎn <span style="color: #0cb318;">qiáo</span> <span style="color: #0cb318;">qiáo</span></div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_28" onclick="clickPlayDictation(28)">
-              <div class="sentence-index">#28</div>
-              <div class="sentence-text">我的反應。</div>
-              <div class="sentence-pinyin">wǒ de fǎn </div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_29" onclick="clickPlayDictation(29)">
-              <div class="sentence-index">#29</div>
-              <div class="sentence-text">我只是微微一笑，</div>
-              <div class="sentence-pinyin">wǒ zhǐ shì wēi wēi yí xiào</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_30" onclick="clickPlayDictation(30)">
-              <div class="sentence-index">#30</div>
-              <div class="sentence-text">依舊寫東西。</div>
-              <div class="sentence-pinyin">yī jiù xiě dōng xi</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_31" onclick="clickPlayDictation(31)">
-              <div class="sentence-index">#31</div>
-              <div class="sentence-text">牠就放開膽子</div>
-              <div class="sentence-pinyin">tā jiù fàng kāi dǎn zi</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_32" onclick="clickPlayDictation(32)">
-              <div class="sentence-index">#32</div>
-              <div class="sentence-text">跑到稿紙上，</div>
-              <div class="sentence-pinyin">pǎo dào gǎo zhǐ shang</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_33" onclick="clickPlayDictation(33)">
-              <div class="sentence-index">#33</div>
-              <div class="sentence-text">繞着我的筆尖</div>
-              <div class="sentence-pinyin">rào zhe wǒ de bǐ jiān</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_34" onclick="clickPlayDictation(34)">
-              <div class="sentence-index">#34</div>
-              <div class="sentence-text"><span style="color: #f71942;">蹦</span>來<span style="color: #f71942;">蹦</span>去，</div>
-              <div class="sentence-pinyin"><span style="color: #0cb318;">bèng</span> lái <span style="color: #0cb318;">bèng</span> qù</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_35" onclick="clickPlayDictation(35)">
-              <div class="sentence-index">#35</div>
-              <div class="sentence-text">跳動的小紅爪子</div>
-              <div class="sentence-pinyin">tiào dòng de xiǎo hóng zhuǎ zi</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_36" onclick="clickPlayDictation(36)">
-              <div class="sentence-index">#36</div>
-              <div class="sentence-text">在紙上發出</div>
-              <div class="sentence-pinyin">zài zhǐ shang fā chū</div>
-            </div>
-          
-            <div class="dictation-row" id="dcard_37" onclick="clickPlayDictation(37)">
-              <div class="sentence-index">#37</div>
-              <div class="sentence-text">察察的響<span style="color: #f71942;">聲</span>。</div>
-              <div class="sentence-pinyin">chá chá de xiǎng <span style="color: #0cb318;">shēng</span></div>
+              <div class="sentence-text">再偏⭕⭕⭕⭕⭕⭕⭕⭕⭕</div>
+              <div class="sentence-pinyin">zài piān ⭕ ⭕ ⭕ ⭕ ⭕ ⭕ ⭕ ⭕</div>
             </div>
           </div></div>
     </main>
@@ -1297,9 +1148,10 @@
     let idiomWords = [];
     let customProtectedWords = [];
     let highlightedWords = []; 
-    let highlightedPinyinMap = {}; // { word: [charsToHighlightPinyin] }
+    let highlightedPinyinMap = {}; 
     let rawDictationText = "";
     let rawReciteText = ""; 
+    let isRecitePromptMode = false; 
 
     function getItemText(it) { return typeof it === 'object' && it !== null ? it.text : it; }
 
@@ -1412,6 +1264,27 @@
 
     const pauseIconSvg = `<svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="3" width="5" height="18" rx="1.5"/><rect x="14" y="3" width="5" height="18" rx="1.5"/></svg>`;
     const playIconSvg = `<svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>`;
+
+    /* ⏱ 動態時鐘與數位計時器顯示規則控制 */
+    function updateClockVisibility() {
+      const timerContainer = document.querySelector('.timer-container');
+      const clockBox = document.querySelector('.timer-clock-box');
+      const digitalBox = document.getElementById('digitalTimerDisplay');
+
+      if (isPlaying) {
+        if (timerContainer) timerContainer.style.display = 'flex';
+        if (clockBox) clockBox.style.display = 'inline-flex';
+        if (digitalBox) {
+          if (currentTab === 'tab5' && isRecitePromptMode) {
+            digitalBox.style.display = 'block';
+          } else {
+            digitalBox.style.display = 'none';
+          }
+        }
+      } else {
+        if (timerContainer) timerContainer.style.display = 'none';
+      }
+    }
 
     function formatWordsTo4PerRow(arr) {
       let result = [];
@@ -1857,7 +1730,6 @@
           return;
         }
 
-        // 當輸入文件包含換行時，直接逐行進行處理切分
         const res = processTextChunkToQueue(trimmedLine, globalIndex, allVocabWords);
         queueList.push(...res.queueList);
         globalIndex = res.globalIndexCounter;
@@ -2250,8 +2122,6 @@
             document.body.appendChild(downloadAnchor);
             downloadAnchor.click();
             document.body.removeChild(downloadAnchor);
-          } else {
-            alert("已成功匯出！若在 iOS/iPad 瀏覽器中，請點選分享按鈕並選擇「儲存至檔案」或加入書籤。");
           }
         } else {
           const downloadAnchor = document.createElement("a");
@@ -2267,7 +2137,6 @@
         }, 3000);
       } catch (err) {
         console.error("Export Error:", err);
-        alert("匯出檔案時發生錯誤，請重新再試一遍。");
       }
     }
 
@@ -2315,6 +2184,7 @@
 
         renderVocabGrid(area);
       }
+      updateClockVisibility();
     }
 
     function getHighlightedWordHtml(cleanWord) {
@@ -2463,6 +2333,37 @@
       updateDisplayModeUI();
     }
 
+    /* 生成背默提示版本的文本（僅前2字顯示，其餘轉為圓圈 ⭕） */
+    function getRecitePromptHtml(cleanText, dynamicPinyin) {
+      let charArr = Array.from(cleanText);
+      let pyParts = dynamicPinyin.split(/\s+/);
+
+      let textHtml = "";
+      let pinyinHtml = "";
+
+      let charCount = 0;
+
+      for (let i = 0; i < charArr.length; i++) {
+        let ch = charArr[i];
+        let py = pyParts[i] || "";
+
+        if (/[一-龥]/.test(ch)) {
+          charCount++;
+          if (charCount <= 2) {
+            textHtml += getHighlightedWordHtml(ch);
+            pinyinHtml += (pinyinHtml ? " " : "") + getHighlightedPinyinHtml(ch, py);
+          } else {
+            textHtml += "⭕";
+            pinyinHtml += (pinyinHtml ? " " : "") + "⭕";
+          }
+        } else {
+          textHtml += "⭕";
+        }
+      }
+
+      return { textHtml, pinyinHtml };
+    }
+
     function renderRecite(container) {
       const queueList = buildReciteQueue();
       if (!queueList || queueList.length === 0) {
@@ -2480,8 +2381,16 @@
         } else if (item.type === 'sentence') {
           const cleanText = autoConvertCharacters(item.text.replace(/\s+/g, ''));
           const dynamicPinyin = getDynamicPinyin(cleanText);
-          const sentenceHtml = getHighlightedWordHtml(cleanText);
-          const sentencePinyinHtml = getHighlightedPinyinHtml(cleanText, dynamicPinyin);
+          
+          let sentenceHtml, sentencePinyinHtml;
+          if (isRecitePromptMode) {
+            let res = getRecitePromptHtml(cleanText, dynamicPinyin);
+            sentenceHtml = res.textHtml;
+            sentencePinyinHtml = res.pinyinHtml;
+          } else {
+            sentenceHtml = getHighlightedWordHtml(cleanText);
+            sentencePinyinHtml = getHighlightedPinyinHtml(cleanText, dynamicPinyin);
+          }
 
           html += `
             <div class="dictation-row" id="rcard_${item.index}" onclick="clickPlayRecite(${item.index})">
@@ -2813,6 +2722,7 @@
       clearInterval(timerInterval);
       totalTimerSeconds = Math.round(seconds);
       remainingSeconds = totalTimerSeconds;
+      updateClockVisibility();
       updateTimerDisplay();
 
       timerInterval = setInterval(() => {
@@ -2828,12 +2738,20 @@
 
     function updateTimerDisplay() {
       const pie = document.getElementById('timerPie');
+      const digitalDisplay = document.getElementById('digitalTimerDisplay');
 
       if (remainingSeconds > 0 && totalTimerSeconds > 0) {
         const pct = (remainingSeconds / totalTimerSeconds) * 100;
         if (pie) pie.style.background = `conic-gradient(#3b82f6 ${pct}%, #e5e7eb ${pct}%)`;
+        
+        const mins = Math.floor(remainingSeconds / 60);
+        const secs = remainingSeconds % 60;
+        if (digitalDisplay) {
+          digitalDisplay.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
       } else {
         if (pie) pie.style.background = `conic-gradient(#3b82f6 0%, #e5e7eb 0%)`;
+        if (digitalDisplay) digitalDisplay.textContent = "0:00";
       }
     }
 
@@ -2852,6 +2770,7 @@
       isPaused = false;
       isReviewPhase = false;
       isOnlyHighlighted = onlyHighlighted;
+      updateClockVisibility();
       
       const goText = document.getElementById('goBtnText');
       const wrongGoText = document.getElementById('wrongGoBtnText');
@@ -2880,7 +2799,6 @@
 
       if (onlyHighlighted) {
         if (!highlightedWords || highlightedWords.length === 0) {
-          alert("沒有找到高亮/重點詞語。");
           resetPlayback();
           return;
         }
@@ -2911,13 +2829,65 @@
       });
     }
 
+    /* 獲取句子的前 2 個漢字 */
+    function getFirstTwoChars(text) {
+      let chars = Array.from(autoConvertCharacters(text.replace(/\s+/g, '')));
+      let result = "";
+      for (let ch of chars) {
+        if (/[一-龥]/.test(ch)) {
+          result += ch;
+          if (result.length >= 2) break;
+        }
+      }
+      return result || text.substring(0, 2);
+    }
+
+    /* 處理階段二的兩次回放邏輯 (含精確秒數與間隔) */
+    function playRecitePromptSequence(item, onComplete) {
+      const firstTwo = getFirstTwoChars(item.text);
+      const total = countChineseChars(item.text) || 1;
+      const secPerCharInput = document.getElementById('secPerCharInput');
+      const secPerChar = secPerCharInput ? (parseFloat(secPerCharInput.value) || 2.3) : 2.3;
+      const waitSec = total * secPerChar;
+
+      function doRound(roundNum, roundCb) {
+        if (!isPlaying) return;
+        speakText(firstTwo, () => {
+          if (!isPlaying) return;
+          startTimer(2, () => {
+            if (!isPlaying) return;
+            speakText("全句", () => {
+              if (!isPlaying) return;
+              startTimer(1, () => {
+                if (!isPlaying) return;
+                speakText(total + "個字", () => {
+                  if (!isPlaying) return;
+                  startTimer(waitSec, () => {
+                    if (!isPlaying) return;
+                    roundCb();
+                  });
+                });
+              });
+            });
+          });
+        });
+      }
+
+      doRound(1, () => {
+        if (!isPlaying) return;
+        doRound(2, () => {
+          if (!isPlaying) return;
+          onComplete();
+        });
+      });
+    }
+
     function startRecitePlay(onlyHighlighted, startFromIndex = 0) {
       let fullQueue = buildReciteQueue();
       let sentenceItems = fullQueue.filter(q => q.type === 'sentence');
 
       if (onlyHighlighted) {
         if (!highlightedWords || highlightedWords.length === 0) {
-          alert("沒有找到高亮/重點詞語。");
           resetPlayback();
           return;
         }
@@ -2961,21 +2931,23 @@
         }
       }
 
+      // 第一階段：正常完整朗讀每一句
       function speakNextReciteSentence() {
         if (!isPlaying) return;
         if (reciteIdx >= sentenceItems.length) {
+          // 切換至背默提示模式 (第二階段)
+          isRecitePromptMode = true;
+          updateClockVisibility();
+          const area = document.getElementById('contentArea');
+          if (area) renderRecite(area);
+
           const annText = `同學,現在請開始背默課文, 背默課文總共有 ${totalSentences}句,背默課文 時間是 ${totalMinutes}分鐘`;
           speakText(annText, () => {
             if (!isPlaying) return;
-            startTimer(totalSeconds, () => {
-              if (!isPlaying) return;
-              startTimer(3, () => {
-                if (!isPlaying) return;
-                speakText("時間到了, 請檢查, 然後交默書, 謝謝", () => {
-                  resetPlayback();
-                });
-              });
-            });
+            
+            // 開始第二階段：啟動背默提示語音與倒數
+            reciteIdx = 0;
+            speakNextRecitePromptSentence();
           });
           return;
         }
@@ -3006,6 +2978,42 @@
             reciteIdx++;
             speakNextReciteSentence();
           });
+        });
+      }
+
+      // 第二階段：啟動 2 輪提示回放
+      function speakNextRecitePromptSentence() {
+        if (!isPlaying) return;
+        if (reciteIdx >= sentenceItems.length) {
+          speakText("時間到了, 請檢查, 然後交默書, 謝謝", () => {
+            resetPlayback(true);
+          });
+          return;
+        }
+
+        const item = sentenceItems[reciteIdx];
+        highlightReciteCard(`rcard_${item.index}`);
+
+        playRecitePromptSequence(item, () => {
+          if (!isPlaying) return;
+
+          if (pendingJumpIndex !== null) {
+              let foundIdx = sentenceItems.findIndex(i => i.index === pendingJumpIndex);
+              if (foundIdx === -1) {
+                  let allItems = buildReciteQueue().filter(q => q.type === 'sentence');
+                  let clickedItem = allItems.find(q => q.index === pendingJumpIndex);
+                  let originalQIndex = allItems.indexOf(clickedItem);
+                  foundIdx = sentenceItems.findIndex(qItem => allItems.indexOf(qItem) > originalQIndex);
+                  if (foundIdx === -1) foundIdx = sentenceItems.length;
+              }
+              reciteIdx = foundIdx;
+              pendingJumpIndex = null;
+              speakNextRecitePromptSentence();
+              return;
+          }
+
+          reciteIdx++;
+          speakNextRecitePromptSentence();
         });
       }
 
@@ -3384,7 +3392,7 @@
     function clickPlayRecite(index) {
       if (isPlaying) {
           highlightReciteCard(`rcard_${index}`);
-          if (isSpeakingSentence) {
+          if (isSpeakingSentence || isRecitePromptMode) {
               pendingJumpIndex = index;
           } else {
               if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
@@ -3432,11 +3440,16 @@
       }
     }
 
-    function resetPlayback() {
+    function resetPlayback(keepCircles = false) {
       isPlaying = false;
       isPaused = false;
       isReviewPhase = false;
       isOnlyHighlighted = false;
+      
+      if (!keepCircles) {
+        isRecitePromptMode = false;
+      }
+      
       playIndex = 0;
       isSpeakingSentence = false;
       pendingJumpIndex = null;
@@ -3469,8 +3482,15 @@
       remainingSeconds = 0;
       totalTimerSeconds = 0;
       updateTimerDisplay();
+      updateClockVisibility();
+
       if (synth) synth.cancel();
       document.querySelectorAll('.active-reading').forEach(c => c.classList.remove('active-reading'));
+
+      const area = document.getElementById('contentArea');
+      if (area && currentTab === 'tab5') {
+        renderRecite(area);
+      }
     }
 
     let availableVoices = [];
@@ -3531,14 +3551,12 @@
       if (!fontSelect) return;
 
       if (!('queryLocalFonts' in window)) {
-        alert("您的瀏覽器不支援 Local Font Access API (建議使用最新版 Google Chrome 或 Edge 桌面版)。");
         return;
       }
 
       try {
         const permissionStatus = await navigator.permissions.query({ name: 'local-fonts' });
         if (permissionStatus.state === 'denied') {
-          alert("字型存取權限已被拒絕，請在瀏覽器設定中允許。");
           return;
         }
 
@@ -3577,10 +3595,8 @@
 
         fontSelect.appendChild(optGroup);
         if (currentVal) fontSelect.value = currentVal;
-        alert(`成功掃描並載錄 ${sortedFamilies.length} 款本機字型！`);
       } catch (err) {
         console.error("Failed to load local fonts:", err);
-        alert("無法讀取本機字型，請確認瀏覽器權限。");
       }
     }
 
