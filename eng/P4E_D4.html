@@ -1,0 +1,2743 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title id="browserWindowTitle">Happy Primary School(26/27 Division 1) Primary 4 Dictation 4 scope</title>
+
+  <!-- 🎨 Favicon -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 500 450'%3E%3Cpolygon points='250,0 187.5,108.25 312.5,108.25' fill='%2352B766'/%3E%3Cpolygon points='250,216.5 187.5,108.25 312.5,108.25' fill='%2348A172'/%3E%3Cpolygon points='187.5,108.25 125,216.5 250,216.5' fill='%2300A884'/%3E%3Cpolygon points='62.5,324.75 0,433 125,433' fill='%230052B4'/%3E%3Cpolygon points='312.5,108.25 250,216.5 375,216.5' fill='%2392C128'/%3E%3Cpolygon points='375,216.5 312.5,324.75 437.5,324.75' fill='%23DDA100'/%3E%3Cpolygon points='437.5,324.75 375,433 500,433' fill='%23A43161'/%3E%3Cpolygon points='312.5,324.75 250,433 375,433' fill='%23C0444A'/%3E%3Cpolygon points='375,216.5 250,324.75 312.5,324.75' fill='%23D48000'/%3E%3C/svg%3E">
+
+  <style>
+    :root {
+      --header-bg: #fc7f19;
+      --header-text: #ffffff;
+      --sidebar-bg: #fc7f19; 
+      --card-bg: #ffffff;
+      --active-green: #e65100;
+      --main-bg: #fc7f19;
+      --text-color: #2b2b2b;
+      --font-family: "Calibri", "Segoe UI", Arial, sans-serif;
+    }
+
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+      -webkit-tap-highlight-color: transparent; 
+    }
+
+    body {
+      font-family: var(--font-family);
+      background-color: var(--main-bg);
+      color: var(--text-color);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      touch-action: pan-y;
+    }
+
+    header {
+      background-color: var(--header-bg);
+      color: var(--header-text);
+      padding: 10px 15px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      border-bottom: 1px solid rgba(255,255,255,0.2);
+      flex-shrink: 0;
+      gap: 6px;
+    }
+
+    .header-top-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      position: relative;
+      padding: 0 10px;
+    }
+
+    /* 🏠 Home Button Styling in Header Controls Toolbar */
+    .home-link-btn {
+      background: #928ff2 !important;
+      color: #ffffff !important;
+      border: none;
+      height: 38px;
+      width: 38px;
+      border-radius: 8px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.15s, background-color 0.15s;
+      text-decoration: none;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .home-link-btn:hover {
+      background-color: #7d7ae6 !important;
+      transform: scale(1.05);
+    }
+
+    .home-link-btn svg {
+      width: 22px;
+      height: 22px;
+      fill: none;
+      stroke: #ffffff;
+      stroke-width: 2;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+    }
+
+    header h1 {
+      font-size: clamp(1rem, 2.8vw, 1.3rem);
+      font-weight: bold;
+      text-align: center;
+      letter-spacing: 0.5px;
+      line-height: 1.3;
+    }
+
+    .header-controls {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .menu-toggle-btn, .btn-icon, .btn-hdr-opt {
+      background: #ffffff;
+      color: #333333;
+      border: none;
+      height: 38px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      transition: transform 0.15s, background-color 0.15s, color 0.15s;
+      user-select: none;
+      padding: 0 10px;
+    }
+
+    .menu-toggle-btn, .btn-icon {
+      width: 38px;
+      font-size: 1.1rem;
+      padding: 0;
+    }
+
+    .menu-toggle-btn:hover, .btn-icon:hover, .btn-hdr-opt:hover {
+      background-color: #f0f0f0;
+      transform: scale(1.05);
+    }
+
+    .menu-toggle-btn svg { width: 26px; height: 26px; }
+
+    /* 💚 GO Play Button */
+    .btn-play-icon { 
+      background-color: #2e7d32; 
+      color: #ffffff; 
+      cursor: pointer !important;
+      font-size: 1.3rem !important;
+    }
+    .btn-play-icon:hover { background-color: #1b5e20; }
+
+    /* 🔴 W / Mistake Play Button */
+    .btn-highlight-play-icon {
+      background-color: #d32f2f;
+      color: #ffffff;
+      cursor: pointer !important;
+      font-size: 1.3rem !important;
+    }
+    .btn-highlight-play-icon:hover {
+      background-color: #b71c1c;
+    }
+
+    .btn-pause-icon { background-color: #ef6c00; color: #ffffff; }
+    .btn-pause-icon:hover { background-color: #d86000; }
+    .btn-pause-icon.is-paused { background-color: #1565c0; }
+    .btn-pause-icon.is-paused:hover { background-color: #0d47a1; }
+    .btn-pause-icon svg { width: 26px; height: 26px; }
+
+    .btn-reset-icon { background-color: #c62828; color: white; }
+    .btn-reset-icon:hover { background-color: #b22424; }
+    .btn-reset-icon svg { width: 26px; height: 26px; }
+
+    .btn-mode-opt {
+      background-color: #bb3fd4 !important;
+      color: #ffffff !important;
+      min-width: 60px;
+      font-size: 0.85rem;
+    }
+    .btn-mode-opt:hover { background-color: #a02bb8 !important; }
+
+    .timer-clock-box {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.25);
+      padding: 5px;
+      border-radius: 50%;
+      height: 38px;
+      width: 38px;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+    }
+
+    .timer-pie {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: conic-gradient(#3b82f6 0%, #f3f4f6 0%);
+      border: 3.5px solid #000000;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      position: relative;
+      flex-shrink: 0;
+      transition: background 0.2s linear;
+    }
+
+    .timer-pie::after {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 5px;
+      height: 5px;
+      background: #000000;
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .btn-action {
+      padding: 8px 14px;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      font-family: inherit;
+      background-color: #1565c0;
+    }
+
+    .btn-export {
+      padding: 8px 14px;
+      font-size: 0.95rem;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      font-family: inherit;
+      background-color: #6a1b9a;
+      transition: background-color 0.2s;
+    }
+
+    .app-container {
+      display: flex;
+      flex: 1;
+      overflow: hidden;
+      position: relative;
+      background-color: var(--main-bg);
+    }
+
+    .mobile-overlay {
+      display: none;
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 900;
+    }
+
+    aside {
+      width: 290px;
+      background-color: var(--sidebar-bg);
+      display: flex;
+      flex-direction: column;
+      padding: 15px;
+      flex-shrink: 0;
+      gap: 12px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      transition: margin-left 0.3s ease, transform 0.3s ease;
+      z-index: 950;
+      border-right: 1px solid rgba(255,255,255,0.2);
+    }
+
+    aside.collapsed { margin-left: -290px; }
+
+    .nav-card {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .nav-card-title {
+      font-size: 1.05rem;
+      font-weight: bold;
+      color: #1a1a1a;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .nav-tabs {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .nav-tabs button {
+      background: transparent;
+      border: none;
+      color: #2b2b2b;
+      padding: 10px 14px;
+      text-align: left;
+      font-size: 0.95rem;
+      font-family: inherit;
+      cursor: pointer;
+      width: 100%;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+      transition: all 0.2s ease;
+    }
+
+    .nav-tabs button.active {
+      background-color: var(--active-green);
+      color: #ffffff;
+      font-weight: bold;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .nav-tabs button:hover:not(.active) { background-color: #f5f5f5; }
+    .tab-icon { font-size: 1.1rem; display: inline-block; }
+
+    .voice-select-box {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .voice-select-box label {
+      font-size: 0.85rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .voice-select-box select {
+      width: 100%;
+      padding: 6px 8px;
+      font-size: 0.85rem;
+      font-family: inherit;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background-color: #ffffff;
+      color: #2b2b2b;
+      cursor: pointer;
+      outline: none;
+    }
+
+    .filter-checkbox-label {
+      font-size: 0.8rem;
+      color: #555;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      margin-top: 2px;
+      user-select: none;
+    }
+
+    .editor-box {
+      background: var(--card-bg);
+      border-radius: 12px;
+      padding: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: auto;
+    }
+
+    .editor-box h3 {
+      font-size: 0.95rem;
+      font-weight: bold;
+      color: #e65100;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 4px;
+    }
+
+    .editor-box textarea {
+      width: 100%;
+      height: 120px;
+      font-family: var(--font-family);
+      font-size: 0.85rem;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      background-color: #ffffff;
+      color: #2b2b2b;
+      resize: vertical;
+      white-space: pre-wrap;
+    }
+
+    .file-input-label {
+      background: #e65100;
+      color: white;
+      padding: 8px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      text-align: center;
+      cursor: pointer;
+      min-height: 38px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    main {
+      flex: 1;
+      padding: 15px 20px;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      touch-action: pan-y;
+      background-color: var(--main-bg);
+      transition: width 0.3s ease;
+      scroll-behavior: smooth;
+    }
+
+    .toolbar-card {
+      position: sticky;
+      top: 0;
+      z-index: 800;
+      background: #ffffff;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      font-size: 0.95rem;
+      flex-wrap: wrap;
+      transition: background-color 0.25s ease, box-shadow 0.25s ease, padding 0.25s ease;
+    }
+
+    .toolbar-card.is-scrolled {
+      background-color: transparent !important;
+      background: transparent !important;
+      backdrop-filter: none !important;
+      -webkit-backdrop-filter: none !important;
+      box-shadow: none !important;
+      padding-left: 0;
+      padding-right: 0;
+    }
+
+    .toolbar-card.is-scrolled .toolbar-options { display: none !important; }
+
+    .toolbar-card.is-scrolled .btn-tag-icon,
+    .toolbar-card.is-scrolled .btn-copy-icon {
+      opacity: 0.85;
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+    }
+
+    .toolbar-options {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: #1a1a1a;
+      font-weight: bold;
+      flex-wrap: wrap;
+    }
+
+    .toolbar-card input[type="number"], .toolbar-card select {
+      padding: 4px 4px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      background-color: #ffffff;
+      color: #2b2b2b;
+    }
+
+    .toolbar-card input[type="number"] { 
+      width: 38px; 
+      text-align: center;
+      -moz-appearance: textfield;
+    }
+
+    .toolbar-card input[type="number"]::-webkit-outer-spin-button,
+    .toolbar-card input[type="number"]::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    .btn-tag-icon {
+      background-color: #e65100 !important;
+      color: #ffffff !important;
+      border: none;
+      height: 36px;
+      padding: 0 12px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      user-select: none;
+      cursor: pointer;
+      transition: opacity 0.25s ease, transform 0.15s ease;
+    }
+
+    .btn-tag-icon:hover { transform: scale(1.05); opacity: 1 !important; }
+
+    .btn-copy-icon {
+      background-color: #54d1f0;
+      color: #ffffff;
+      border: none;
+      height: 36px;
+      padding: 0 14px;
+      border-radius: 8px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+      transition: transform 0.15s, background-color 0.15s, opacity 0.25s ease;
+      user-select: none;
+      margin-left: auto;
+    }
+
+    .btn-copy-icon:hover { background-color: #38c4e8; transform: scale(1.05); opacity: 1 !important; }
+
+    /* Word Card Grid */
+    .words-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+      gap: 12px;
+    }
+
+    .word-card {
+      background: white;
+      border: 1px solid #ffe0b2;
+      border-radius: 8px;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      min-height: 80px;
+      justify-content: center;
+      transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .word-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .word-card.active-reading {
+      border: 2px solid #e65100;
+      background-color: #fff3e0;
+    }
+
+    .word-card.active-reading .word-text { color: #d32f2f !important; }
+
+    .word-index {
+      position: absolute;
+      left: 8px;
+      top: 6px;
+      font-size: 0.8rem;
+      color: #888888;
+      font-weight: bold;
+    }
+
+    .word-text { 
+      font-size: 1.1rem; 
+      font-weight: bold;
+      color: #2b2b2b;
+      margin-top: 6px;
+      white-space: nowrap !important;
+      display: inline-block !important;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 95%;
+      text-align: center;
+    }
+
+    /* Chinese Text Alignment Controls */
+    .zh-text {
+      font-size: 0.95rem;
+      color: #0d47a1;
+      font-weight: bold;
+      margin-top: 4px;
+      min-height: 1.2em;
+    }
+
+    .dictation-row .zh-text {
+      text-align: left !important;
+    }
+
+    .word-card .zh-text {
+      text-align: center !important;
+    }
+
+    .card-play-btn {
+      position: absolute;
+      background: #fff3e0;
+      color: #e65100;
+      border: none;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      transition: background 0.15s, transform 0.15s;
+      z-index: 2;
+    }
+    
+    .card-play-btn:hover { background: #ffe0b2; }
+
+    .word-card .card-play-btn { right: 6px; bottom: 6px; }
+    .word-card .card-play-btn:hover { transform: scale(1.1); }
+
+    .dictation-list { display: flex; flex-direction: column; gap: 10px; }
+
+    .dictation-row {
+      background: white;
+      border: 1px solid #ffe0b2;
+      border-radius: 8px;
+      padding: 12px 48px 12px 16px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+      transition: transform 0.15s ease;
+      position: relative;
+    }
+
+    .dictation-row:hover { transform: translateX(3px); }
+
+    .dictation-row.active-reading {
+      border: 2px solid #e65100;
+      background-color: #fff3e0;
+    }
+
+    .dictation-row.active-reading .sentence-text {
+      color: #d32f2f !important;
+      font-weight: bold;
+    }
+
+    .dictation-row .card-play-btn {
+      top: 50%;
+      transform: translateY(-50%);
+      right: 12px;
+      bottom: auto;
+    }
+    .dictation-row .card-play-btn:hover { transform: translateY(-50%) scale(1.1); }
+
+    .sentence-index { font-size: 0.8rem; color: #888; margin-bottom: 2px; }
+    
+    .sentence-text { 
+      font-size: 1.25rem; 
+      line-height: 1.45; 
+      color: #2b2b2b; 
+      word-break: normal;
+      hyphens: none;
+    }
+
+    .sentence-text span.nowrap-word {
+      white-space: nowrap !important;
+      display: inline-block !important;
+    }
+
+    .mode-E .sentence-text, .mode-E .word-text { display: block !important; }
+    .mode-E .zh-text { display: none !important; }
+
+    .mode-EC .sentence-text, .mode-EC .word-text { display: block !important; }
+    .mode-EC .zh-text { display: block !important; }
+
+    .mode-C .sentence-text, .mode-C .word-text { display: none !important; }
+    .mode-C .zh-text { display: block !important; }
+
+    .mode-Blank .sentence-text, .mode-Blank .word-text, .mode-Blank .zh-text { display: none !important; }
+
+    .paragraph-break {
+      background-color: #fff3e0;
+      border-left: 4px solid #e65100;
+      padding: 8px 12px;
+      margin: 6px 0;
+      font-size: 1rem;
+      color: #e65100;
+      position: relative;
+    }
+
+    .empty-prompt {
+      color: #ffffff;
+      text-align: center;
+      padding: 40px 20px;
+      font-size: 1.15rem;
+    }
+
+    .hidden { display: none !important; }
+
+    body.exported-app { --main-bg: #f7dec8 !important; --sidebar-bg: #f7dec8 !important; }
+    body.exported-app main { background-color: #f7dec8 !important; }
+    body.exported-app .app-container { background-color: #f7dec8 !important; }
+    body.exported-app aside { background-color: #f7dec8 !important; border-right: 1px solid rgba(0,0,0,0.1); }
+    body.exported-app header { background-color: #fc7f19 !important; color: #ffffff !important; border-bottom: 1px solid rgba(255,255,255,0.2) !important; }
+    body.exported-app header h1 { color: #ffffff !important; }
+
+    @media (max-width: 768px) {
+      aside {
+        position: absolute;
+        top: 0; bottom: 0; left: 0;
+        transform: translateX(-100%);
+        margin-left: 0 !important;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+      }
+      aside.open { transform: translateX(0); }
+      .mobile-overlay.open { display: block; }
+      main { padding: 10px; }
+      .words-grid { grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+    }
+  </style>
+</head>
+<body class="exported-app">
+
+  <header>
+    <div class="header-top-row">
+      <h1 id="appMainTitle"><span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School<br>(26/27 Division 1)<br>Primary 4 Dictation 4 scope</h1>
+    </div>
+    <div class="header-controls">
+      <!-- 🏠 Home Button Moved to Header Controls Toolbar -->
+      <a href="index.html" class="home-link-btn" title="Home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v6H4a1 1 0 0 1-1-1v-9.5z"></path>
+        </svg>
+      </a>
+
+      <button class="menu-toggle-btn" onclick="toggleSidebarMenu()" title="Show/Hide Menu">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="50" cy="50" r="44" stroke="currentColor" stroke-width="7"></circle>
+          <circle cx="28" cy="32" r="5" fill="currentColor"></circle>
+          <rect x="42" y="28" width="34" height="8" rx="4" fill="currentColor"></rect>
+          <circle cx="28" cy="50" r="5" fill="currentColor"></circle>
+          <rect x="42" y="46" width="34" height="8" rx="4" fill="currentColor"></rect>
+          <circle cx="28" cy="68" r="5" fill="currentColor"></circle>
+          <rect x="42" y="64" width="34" height="8" rx="4" fill="currentColor"></rect>
+        </svg>
+      </button>
+
+      <!-- 💚 GO Play Button (Toggles to A when running) -->
+      <button class="btn-icon btn-play-icon" onclick="startAutoPlay(false)" title="Start Auto-Play">
+        <span id="goBtnText">GO</span>
+      </button>
+
+      <!-- 🔴 W Mistake/Wrong Play Button -->
+      <button class="btn-icon btn-highlight-play-icon" onclick="startAutoPlay(true)" title="Play Highlighted / Mistake Words">
+        <span id="wrongGoBtnText">W</span>
+      </button>
+
+      <button class="btn-icon btn-pause-icon" id="pauseResumeBtn" onclick="togglePauseResume()" title="Pause"><svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="3" width="5" height="18" rx="1.5"></rect><rect x="14" y="3" width="5" height="18" rx="1.5"></rect></svg></button>
+      
+      <button class="btn-icon btn-reset-icon" onclick="resetPlayback()" title="Reset">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.19"></path>
+        </svg>
+      </button>
+
+      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">Chi</button>
+      
+      <div class="timer-clock-box" title="Remaining Time">
+        <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 0%, rgb(229, 231, 235) 0%);"></div>
+      </div>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <div class="mobile-overlay" id="mobileOverlay" onclick="closeSidebarMenu()"></div>
+
+    <aside id="sidebar">
+      <div class="nav-card">
+        <div class="nav-card-title" style="display: flex; align-items: center; justify-content: space-between;">
+          <span>Dictation Scope</span>
+          <button id="pdfViewerBtn" onclick="togglePdfViewer()" title="Open corresponding PDF file" style="display: none; background: none; border: none; cursor: pointer; padding: 0; margin-left: 8px;">
+            <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect width="100" height="100" rx="16" fill="#BA0000"></rect>
+              <path d="M 18 10 C 13.58 10 10 13.58 10 18 L 10 82 C 10 86.42 13.58 90 18 90 L 82 90 C 86.42 90 90 86.42 90 82 L 90 34 L 66 10 Z" fill="#D30000" stroke="#FFFFFF" stroke-width="3" stroke-linejoin="round"></path>
+              <path d="M 66 10 L 66 26 C 66 30.42 69.58 34 74 34 L 90 34 Z" fill="#FFFFFF"></path>
+              <circle cx="27" cy="27" r="7.5" fill="#FFFFFF"></circle>
+              <path d="M 13 56 L 33 36 L 47 51 L 62 36 L 82 56 Z" fill="#FFFFFF"></path>
+              <text x="50" y="84" text-anchor="middle" fill="#FFFFFF" font-size="28" font-weight="900" font-family="Arial, Helvetica, sans-serif" letter-spacing="1">PDF</text>
+            </svg>
+          </button>
+        </div>
+        <div class="nav-tabs">
+          <button class="tab-btn" id="btn_tab1" onclick="switchTab('tab1', this)">
+            <span class="tab-icon">🔤</span> Vocabulary
+          </button>
+          <button class="tab-btn active" id="btn_tab2" onclick="switchTab('tab2', this)">
+            <span class="tab-icon">📖</span> Passage
+          </button>
+          <button class="tab-btn" id="btn_tab3" onclick="switchTab('tab3', this)">
+            <span class="tab-icon">🎯</span> Unseen
+          </button>
+        </div>
+
+        <div class="voice-select-box">
+          <label for="voiceSelect">🗣️ Select Voice:</label>
+          <select id="voiceSelect" onchange="changeVoice()"><option value="Google UK English Female">👨 Google UK English Female (en-GB)</option><option value="Google UK English Male">👨 Google UK English Male (en-GB)</option><option value="Google US English">👩 Google US English (en-US)</option><option value="Microsoft David - English (United States)">👨 Microsoft David - English (United States) (en-US)</option><option value="Microsoft Mark - English (United States)">👨 Microsoft Mark - English (United States) (en-US)</option><option value="Microsoft Zira - English (United States)">👩 Microsoft Zira - English (United States) (en-US)</option></select>
+          
+          <label class="filter-checkbox-label">
+            <input type="checkbox" id="englishOnlyCheck" checked="" onchange="populateVoices()">
+            English Voices Only
+          </label>
+        </div>
+      </div>
+
+      <div class="editor-box" id="editorSection" style="display: none;">
+        <h3>Load / Edit Content</h3>
+        <label class="file-input-label">
+          📁 Load Text File (.txt / .json)
+          <input type="file" id="fileImporter" accept=".txt,.json" style="display:none;" onchange="handleFileImport(event)">
+        </label>
+        <textarea id="rawTextEditor" placeholder="Paste full content here...">Ying Wa Primary School (26/27 Division 1)
+Primary 4 Dictation 4 scope
+Date of Dictation: 19th November,2026 (Thursday) 
+
+Part A: Vocabulary (15% @3, Sp.-3 P./C.-1)
+emerge	bristly	murmur	hobble	
+beckon	creaky	musty	luminous   
+clutch	rustling	stale	crouch	froth	fabulous   	
+
+Part B: James and the Giant Peach (Chapter 5)(Pp.13-15)(70% @3, Sp.-3 P./C.-1)
+
+THE NEXT MOMENT, James was running back toward the house as fast as he could go. He would do it all in the kitchen, he told himself—if only he could get in there without Aunt Sponge and Aunt Spiker seeing him. He was terribly excited. He flew through the long grass and the stinging-nettles, not caring whether he got stung or not on his bare knees, and in the distance he could see Aunt Sponge and Aunt Spiker sitting in their chairs with their backs toward him. He swerved away from them so as to go around the other side of the house, but then suddenly, just as he was passing underneath the old peach tree that stood in the middle of the garden, his foot slipped and he fell flat on his face in the grass. The paper bag burst open as it hit the ground and the thousands of tiny green things were scattered in all directions.
+James immediately picked himself up onto his hands and knees and started searching around for his precious treasures. But what was this? They were all sinking into the soil! He could actually see them wriggling and twisting as they burrowed their way downward into the hard earth, and at once he reached out a hand to pick some of them up before it was too late, but they disappeared right under his fingers. He went after some others, and the same thing happened!</textarea>
+        <button class="btn-action" onclick="refreshContentFromEditor()">🔄 Update Content</button>
+        <button class="btn-export" onclick="exportCurrentAppAsHTML()">📥 Export HTML</button>
+      </div>
+    </aside>
+
+    <main id="mainContent" class="mode-C">
+      <div class="toolbar-card hidden" id="vocabToolbar">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
+          <span class="toolbar-options">
+            <label>I: <input type="number" id="vocabDelayInput" value="10" min="0.5" step="0.1" max="99"> s</label>
+            <label>S: 
+              <select id="vocabVoiceSpeedSelect">
+                <option value="0.95">0.95x</option>
+                <option value="0.88">0.88x</option>
+                <option value="0.7">0.7x</option>
+                <option value="0.6">0.6x</option>
+                <option value="0.5">0.5x</option>
+                <option value="0.38" selected="selected">0.38x</option>
+                <option value="0.3">0.3x</option>
+                <option value="0.2">0.2x</option>
+                <option value="0.1">0.1x</option>
+              </select>
+            </label>
+          </span>
+        </div>
+        <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="Copy Content">C</button>
+      </div>
+
+      <div class="toolbar-card" id="dictationToolbar">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="Back to Top">Passage</button>
+          <span class="toolbar-options">
+            <label>I: <input type="number" id="secPerWordInput" value="2.8" min="0.5" step="0.1" max="99"> s</label>
+            <label>S: 
+              <select id="voiceSpeedSelect">
+                <option value="0.95">0.95x</option>
+                <option value="0.88">0.88x</option>
+                <option value="0.7">0.7x</option>
+                <option value="0.6">0.6x</option>
+                <option value="0.5">0.5x</option>
+                <option value="0.38">0.38x</option>
+                <option value="0.3" selected="selected">0.3x</option>
+                <option value="0.2">0.2x</option>
+                <option value="0.1">0.1x</option>
+              </select>
+            </label>
+          </span>
+        </div>
+        <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="Copy Content">C</button>
+      </div>
+
+      <div id="contentArea"><div class="dictation-list" id="dictationList">
+            <div class="dictation-row" id="dcard_1" onclick="clickPlayDictation(1)">
+              <div>
+                <div class="sentence-index">#1</div>
+                <div class="sentence-text"><span class="nowrap-word">THE</span> <span class="nowrap-word">NEXT</span> <span class="nowrap-word">MOMENT,</span> <span class="nowrap-word">James</span> <span class="nowrap-word">was</span> <span class="nowrap-word">running</span></div>
+                <div class="zh-text" data-en="THE NEXT MOMENT, James was running">下一刻，詹姆斯就跑了起來。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(1)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_2" onclick="clickPlayDictation(2)">
+              <div>
+                <div class="sentence-index">#2</div>
+                <div class="sentence-text"><span class="nowrap-word">back</span> <span class="nowrap-word">toward</span> <span class="nowrap-word">the</span> <span class="nowrap-word">house</span> <span class="nowrap-word">as</span></div>
+                <div class="zh-text" data-en="back toward the house as">往房子方向走回去，</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(2)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_3" onclick="clickPlayDictation(3)">
+              <div>
+                <div class="sentence-index">#3</div>
+                <div class="sentence-text"><span class="nowrap-word">fast</span> <span class="nowrap-word">as</span> <span class="nowrap-word">he</span> <span class="nowrap-word">could</span> <span class="nowrap-word">go.</span></div>
+                <div class="zh-text" data-en="fast as he could go.">他能跑多快就多快。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(3)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_4" onclick="clickPlayDictation(4)">
+              <div>
+                <div class="sentence-index">#4</div>
+                <div class="sentence-text"><span class="nowrap-word">He</span> <span class="nowrap-word">would</span> <span class="nowrap-word">do</span> <span class="nowrap-word">it</span> <span class="nowrap-word">all</span> <span class="nowrap-word">in</span> <span class="nowrap-word">the</span></div>
+                <div class="zh-text" data-en="He would do it all in the">他會把所有事情都</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(4)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_5" onclick="clickPlayDictation(5)">
+              <div>
+                <div class="sentence-index">#5</div>
+                <div class="sentence-text"><span class="nowrap-word">kitchen,</span> <span class="nowrap-word">he</span> <span class="nowrap-word">told</span> <span class="nowrap-word">himself—if</span> <span class="nowrap-word">only</span> <span class="nowrap-word">he</span></div>
+                <div class="zh-text" data-en="kitchen, he told himself—if only he">廚房，他心想——如果他</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(5)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_6" onclick="clickPlayDictation(6)">
+              <div>
+                <div class="sentence-index">#6</div>
+                <div class="sentence-text"><span class="nowrap-word">could</span> <span class="nowrap-word">get</span> <span class="nowrap-word">in</span> <span class="nowrap-word">there</span> <span class="nowrap-word">without</span> <span class="nowrap-word">Aunt</span></div>
+                <div class="zh-text" data-en="could get in there without Aunt">沒有阿姨的幫忙，我可能進不去那裡。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(6)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_7" onclick="clickPlayDictation(7)">
+              <div>
+                <div class="sentence-index">#7</div>
+                <div class="sentence-text"><span class="nowrap-word">Sponge</span> <span class="nowrap-word">and</span> <span class="nowrap-word">Aunt</span> <span class="nowrap-word">Spiker</span> <span class="nowrap-word">seeing</span> <span class="nowrap-word">him.</span></div>
+                <div class="zh-text" data-en="Sponge and Aunt Spiker seeing him.">海綿和尖刺阿姨正在看他。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(7)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_8" onclick="clickPlayDictation(8)">
+              <div>
+                <div class="sentence-index">#8</div>
+                <div class="sentence-text"><span class="nowrap-word">He</span> <span class="nowrap-word">was</span> <span class="nowrap-word">terribly</span> <span class="nowrap-word">excited.</span></div>
+                <div class="zh-text" data-en="He was terribly excited.">他非常興奮。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(8)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_9" onclick="clickPlayDictation(9)">
+              <div>
+                <div class="sentence-index">#9</div>
+                <div class="sentence-text"><span class="nowrap-word">He</span> <span class="nowrap-word">flew</span> <span class="nowrap-word">through</span> <span class="nowrap-word">the</span> <span class="nowrap-word">long</span> <span class="nowrap-word">grass</span> <span class="nowrap-word">and</span> <span class="nowrap-word">the</span> <span class="nowrap-word">stinging-nettles,</span> <span class="nowrap-word">not</span> <span class="nowrap-word">caring</span></div>
+                <div class="zh-text" data-en="He flew through the long grass and the stinging-nettles, not caring">他穿過茂密的草叢和蕁麻，毫不在意。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(9)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_10" onclick="clickPlayDictation(10)">
+              <div>
+                <div class="sentence-index">#10</div>
+                <div class="sentence-text"><span class="nowrap-word">whether</span> <span class="nowrap-word">he</span> <span class="nowrap-word">got</span> <span class="nowrap-word">stung</span> <span class="nowrap-word">or</span> <span class="nowrap-word">not</span> <span class="nowrap-word">on</span> <span class="nowrap-word">his</span> <span class="nowrap-word">bare</span> <span class="nowrap-word">knees,</span> <span class="nowrap-word">and</span></div>
+                <div class="zh-text" data-en="whether he got stung or not on his bare knees, and">他光著的膝蓋有沒有被叮到，還有</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(10)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_11" onclick="clickPlayDictation(11)">
+              <div>
+                <div class="sentence-index">#11</div>
+                <div class="sentence-text"><span class="nowrap-word">in</span> <span class="nowrap-word">the</span> <span class="nowrap-word">distance</span> <span class="nowrap-word">he</span> <span class="nowrap-word">could</span> <span class="nowrap-word">see</span> <span class="nowrap-word">Aunt</span> <span class="nowrap-word">Sponge</span> <span class="nowrap-word">and</span> <span class="nowrap-word">Aunt</span></div>
+                <div class="zh-text" data-en="in the distance he could see Aunt Sponge and Aunt">他在遠處可以看到史龐吉姑姑和</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(11)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_12" onclick="clickPlayDictation(12)">
+              <div>
+                <div class="sentence-index">#12</div>
+                <div class="sentence-text"><span class="nowrap-word">Spiker</span> <span class="nowrap-word">sitting</span> <span class="nowrap-word">in</span> <span class="nowrap-word">their</span> <span class="nowrap-word">chairs</span> <span class="nowrap-word">with</span> <span class="nowrap-word">their</span> <span class="nowrap-word">backs</span> <span class="nowrap-word">toward</span> <span class="nowrap-word">him.</span></div>
+                <div class="zh-text" data-en="Spiker sitting in their chairs with their backs toward him.">尖刺者坐在椅子上，背對著他。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(12)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_13" onclick="clickPlayDictation(13)">
+              <div>
+                <div class="sentence-index">#13</div>
+                <div class="sentence-text"><span class="nowrap-word">He</span> <span class="nowrap-word">swerved</span> <span class="nowrap-word">away</span> <span class="nowrap-word">from</span> <span class="nowrap-word">them</span> <span class="nowrap-word">so</span> <span class="nowrap-word">as</span> <span class="nowrap-word">to</span> <span class="nowrap-word">go</span> <span class="nowrap-word">around</span> <span class="nowrap-word">the</span> <span class="nowrap-word">other</span> <span class="nowrap-word">side</span> <span class="nowrap-word">of</span></div>
+                <div class="zh-text" data-en="He swerved away from them so as to go around the other side of">他轉向避開他們，繞到另一邊。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(13)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_14" onclick="clickPlayDictation(14)">
+              <div>
+                <div class="sentence-index">#14</div>
+                <div class="sentence-text"><span class="nowrap-word">the</span> <span class="nowrap-word">house,</span> <span class="nowrap-word">but</span> <span class="nowrap-word">then</span> <span class="nowrap-word">suddenly,</span> <span class="nowrap-word">just</span> <span class="nowrap-word">as</span> <span class="nowrap-word">he</span> <span class="nowrap-word">was</span> <span class="nowrap-word">passing</span> <span class="nowrap-word">underneath</span></div>
+                <div class="zh-text" data-en="the house, but then suddenly, just as he was passing underneath">房子，但就在他經過下方時，突然間，</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(14)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_15" onclick="clickPlayDictation(15)">
+              <div>
+                <div class="sentence-index">#15</div>
+                <div class="sentence-text"><span class="nowrap-word">the</span> <span class="nowrap-word">old</span> <span class="nowrap-word">peach</span> <span class="nowrap-word">tree</span> <span class="nowrap-word">that</span> <span class="nowrap-word">stood</span> <span class="nowrap-word">in</span> <span class="nowrap-word">the</span> <span class="nowrap-word">middle</span> <span class="nowrap-word">of</span> <span class="nowrap-word">the</span> <span class="nowrap-word">garden,</span> <span class="nowrap-word">his</span> <span class="nowrap-word">foot</span></div>
+                <div class="zh-text" data-en="the old peach tree that stood in the middle of the garden, his foot">那棵矗立在花園中央的老桃樹，他的腳</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(15)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_16" onclick="clickPlayDictation(16)">
+              <div>
+                <div class="sentence-index">#16</div>
+                <div class="sentence-text"><span class="nowrap-word">slipped</span> <span class="nowrap-word">and</span> <span class="nowrap-word">he</span> <span class="nowrap-word">fell</span> <span class="nowrap-word">flat</span> <span class="nowrap-word">on</span> <span class="nowrap-word">his</span> <span class="nowrap-word">face</span> <span class="nowrap-word">in</span> <span class="nowrap-word">the</span> <span class="nowrap-word">grass.</span></div>
+                <div class="zh-text" data-en="slipped and he fell flat on his face in the grass.">他滑倒了，臉朝下摔在草地上。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(16)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_17" onclick="clickPlayDictation(17)">
+              <div>
+                <div class="sentence-index">#17</div>
+                <div class="sentence-text"><span class="nowrap-word">The</span> <span class="nowrap-word">paper</span> <span class="nowrap-word">bag</span> <span class="nowrap-word">burst</span> <span class="nowrap-word">open</span> <span class="nowrap-word">as</span></div>
+                <div class="zh-text" data-en="The paper bag burst open as">紙袋突然爆開，</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(17)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_18" onclick="clickPlayDictation(18)">
+              <div>
+                <div class="sentence-index">#18</div>
+                <div class="sentence-text"><span class="nowrap-word">it</span> <span class="nowrap-word">hit</span> <span class="nowrap-word">the</span> <span class="nowrap-word">ground</span> <span class="nowrap-word">and</span> <span class="nowrap-word">the</span></div>
+                <div class="zh-text" data-en="it hit the ground and the">它撞到地面，然後</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(18)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_19" onclick="clickPlayDictation(19)">
+              <div>
+                <div class="sentence-index">#19</div>
+                <div class="sentence-text"><span class="nowrap-word">thousands</span> <span class="nowrap-word">of</span> <span class="nowrap-word">tiny</span> <span class="nowrap-word">green</span> <span class="nowrap-word">things</span></div>
+                <div class="zh-text" data-en="thousands of tiny green things">成千上萬的小綠色東西</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(19)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_20" onclick="clickPlayDictation(20)">
+              <div>
+                <div class="sentence-index">#20</div>
+                <div class="sentence-text"><span class="nowrap-word">were</span> <span class="nowrap-word">scattered</span> <span class="nowrap-word">in</span> <span class="nowrap-word">all</span> <span class="nowrap-word">directions.</span></div>
+                <div class="zh-text" data-en="were scattered in all directions.">散落在四面八方。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(20)">▶</button>
+            </div>
+          <div class="paragraph-break" id="break_1">--- Next Paragraph ---</div>
+            <div class="dictation-row" id="dcard_21" onclick="clickPlayDictation(21)">
+              <div>
+                <div class="sentence-index">#21</div>
+                <div class="sentence-text"><span class="nowrap-word">James</span> <span class="nowrap-word">immediately</span> <span class="nowrap-word">picked</span> <span class="nowrap-word">himself</span> <span class="nowrap-word">up</span> <span class="nowrap-word">onto</span></div>
+                <div class="zh-text" data-en="James immediately picked himself up onto">詹姆斯立刻爬起來，</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(21)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_22" onclick="clickPlayDictation(22)">
+              <div>
+                <div class="sentence-index">#22</div>
+                <div class="sentence-text"><span class="nowrap-word">his</span> <span class="nowrap-word">hands</span> <span class="nowrap-word">and</span> <span class="nowrap-word">knees</span> <span class="nowrap-word">and</span> <span class="nowrap-word">started</span></div>
+                <div class="zh-text" data-en="his hands and knees and started">他跪在地上，開始</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(22)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_23" onclick="clickPlayDictation(23)">
+              <div>
+                <div class="sentence-index">#23</div>
+                <div class="sentence-text"><span class="nowrap-word">searching</span> <span class="nowrap-word">around</span> <span class="nowrap-word">for</span> <span class="nowrap-word">his</span> <span class="nowrap-word">precious</span> <span class="nowrap-word">treasures.</span></div>
+                <div class="zh-text" data-en="searching around for his precious treasures.">到處尋找他的珍貴寶藏。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(23)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_24" onclick="clickPlayDictation(24)">
+              <div>
+                <div class="sentence-index">#24</div>
+                <div class="sentence-text"><span class="nowrap-word">But</span> <span class="nowrap-word">what</span> <span class="nowrap-word">was</span> <span class="nowrap-word">this?</span></div>
+                <div class="zh-text" data-en="But what was this?">但這是什麼？</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(24)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_25" onclick="clickPlayDictation(25)">
+              <div>
+                <div class="sentence-index">#25</div>
+                <div class="sentence-text"><span class="nowrap-word">They</span> <span class="nowrap-word">were</span> <span class="nowrap-word">all</span> <span class="nowrap-word">sinking</span></div>
+                <div class="zh-text" data-en="They were all sinking">他們全都沉下去了。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(25)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_26" onclick="clickPlayDictation(26)">
+              <div>
+                <div class="sentence-index">#26</div>
+                <div class="sentence-text"><span class="nowrap-word">into</span> <span class="nowrap-word">the</span> <span class="nowrap-word">soil!</span></div>
+                <div class="zh-text" data-en="into the soil!">埋入土壤！</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(26)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_27" onclick="clickPlayDictation(27)">
+              <div>
+                <div class="sentence-index">#27</div>
+                <div class="sentence-text"><span class="nowrap-word">He</span> <span class="nowrap-word">could</span> <span class="nowrap-word">actually</span> <span class="nowrap-word">see</span> <span class="nowrap-word">them</span> <span class="nowrap-word">wriggling</span> <span class="nowrap-word">and</span> <span class="nowrap-word">twisting</span> <span class="nowrap-word">as</span> <span class="nowrap-word">they</span> <span class="nowrap-word">burrowed</span></div>
+                <div class="zh-text" data-en="He could actually see them wriggling and twisting as they burrowed">他真的可以看到牠們在鑽洞時扭來扭去。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(27)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_28" onclick="clickPlayDictation(28)">
+              <div>
+                <div class="sentence-index">#28</div>
+                <div class="sentence-text"><span class="nowrap-word">their</span> <span class="nowrap-word">way</span> <span class="nowrap-word">downward</span> <span class="nowrap-word">into</span> <span class="nowrap-word">the</span> <span class="nowrap-word">hard</span> <span class="nowrap-word">earth,</span> <span class="nowrap-word">and</span> <span class="nowrap-word">at</span> <span class="nowrap-word">once</span> <span class="nowrap-word">he</span></div>
+                <div class="zh-text" data-en="their way downward into the hard earth, and at once he">朝下鑽入堅硬的土壤中，他立刻</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(28)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_29" onclick="clickPlayDictation(29)">
+              <div>
+                <div class="sentence-index">#29</div>
+                <div class="sentence-text"><span class="nowrap-word">reached</span> <span class="nowrap-word">out</span> <span class="nowrap-word">a</span> <span class="nowrap-word">hand</span> <span class="nowrap-word">to</span> <span class="nowrap-word">pick</span> <span class="nowrap-word">some</span> <span class="nowrap-word">of</span> <span class="nowrap-word">them</span> <span class="nowrap-word">up</span> <span class="nowrap-word">before</span></div>
+                <div class="zh-text" data-en="reached out a hand to pick some of them up before">伸手拿起其中一些，然後</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(29)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_30" onclick="clickPlayDictation(30)">
+              <div>
+                <div class="sentence-index">#30</div>
+                <div class="sentence-text"><span class="nowrap-word">it</span> <span class="nowrap-word">was</span> <span class="nowrap-word">too</span> <span class="nowrap-word">late,</span> <span class="nowrap-word">but</span> <span class="nowrap-word">they</span> <span class="nowrap-word">disappeared</span> <span class="nowrap-word">right</span> <span class="nowrap-word">under</span> <span class="nowrap-word">his</span> <span class="nowrap-word">fingers.</span></div>
+                <div class="zh-text" data-en="it was too late, but they disappeared right under his fingers.">為時已晚，但它們就在他的指尖下消失了。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(30)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_31" onclick="clickPlayDictation(31)">
+              <div>
+                <div class="sentence-index">#31</div>
+                <div class="sentence-text"><span class="nowrap-word">He</span> <span class="nowrap-word">went</span> <span class="nowrap-word">after</span> <span class="nowrap-word">some</span> <span class="nowrap-word">others,</span></div>
+                <div class="zh-text" data-en="He went after some others,">他追著其他人，</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(31)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_32" onclick="clickPlayDictation(32)">
+              <div>
+                <div class="sentence-index">#32</div>
+                <div class="sentence-text"><span class="nowrap-word">and</span> <span class="nowrap-word">the</span> <span class="nowrap-word">same</span> <span class="nowrap-word">thing</span> <span class="nowrap-word">happened!</span></div>
+                <div class="zh-text" data-en="and the same thing happened!">結果發生了同樣的事情！</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(32)">▶</button>
+            </div>
+          </div></div>
+    </main>
+  </div>
+
+  <script>
+    let partAVocab = []; 
+    let partBText = "";
+    let partCText = "";
+    let highlightedWords = []; // Array to store highlighted/wrong words for W mode
+
+    let currentTab = 'tab1';
+    let isPlaying = false;
+    let isPaused = false;
+    let isReviewPhase = false; 
+    let playIndex = 0;
+    let queue = [];
+    let timerInterval = null;
+    let totalTimerSeconds = 0;
+    let remainingSeconds = 0;
+    let wakeUpTimeout = null; 
+    let isOnlyHighlighted = false;
+    
+    // Cycle modes matching exact user labels: 'Chi' -> 'Eng' -> 'C+E' -> 'Blank'
+    const displayModes = [
+      { id: 'C', label: 'Chi' },
+      { id: 'E', label: 'Eng' },
+      { id: 'EC', label: 'C+E' },
+      { id: 'Blank', label: 'Blank' }
+    ];
+    let displayModeIndex = 0;
+
+    let wakeLock = null; 
+    let currentSpeechId = 0; 
+    let isTranslating = false; 
+
+    let availableVoices = [];
+    let selectedVoiceURI = localStorage.getItem('fixedDictationVoiceURI') || '';
+
+    const translationCache = {};
+    const synth = window.speechSynthesis;
+
+    const pauseIconSvg = `<svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><rect x="5" y="3" width="5" height="18" rx="1.5"/><rect x="14" y="3" width="5" height="18" rx="1.5"/></svg>`;
+    const playIconSvg = `<svg viewBox="0 0 24 24" fill="#ffffff" xmlns="http://www.w3.org/2000/svg"><path d="M8 5v14l11-7z"/></svg>`;
+
+    const maleKeywords = [
+      'david', 'mark', 'george', 'daniel', 'richard', 'james', 'thomas', 'guy', 'male', 
+      'alex', 'fred', 'bruce', 'paul', 'john', 'michael', 'steven', 'peter', 'tom', 'sam',
+      'oliver', 'harry', 'jack', 'jacob', 'charlie', 'william', 'ryan', 'noah',
+      'liam', 'mason', 'ethan', 'benjamin', 'lucas', 'henry', 'alexander', 'sebas', 'matthew'
+    ];
+
+    const protectedPhrases = [
+      "at the bottom of", "at the end of", "at the top of", "in addition to", "in accordance with",
+      "in the middle of", "look forward to", "on behalf of", "on top of", "a couple of",
+      "a lot of", "a number of", "ahead of", "along with", "apart from", "as far as",
+      "as long as", "as soon as", "as well as", "back and forth", "because of", "catch up with",
+      "close to", "come up with", "due to", "except for", "far away from", "for example",
+      "for instance", "get along with", "get rid of", "in favor of", "in front of", "in order to",
+      "instead of", "keep up with", "look after", "look down on", "look for", "look up to",
+      "next to", "other than", "out of", "run out of", "so as to", "such as", "take care of",
+      "thanks to", "together with", "up to"
+    ];
+
+    function extractTranslation(text) {
+      if (!text) return { en: "", zh: "" };
+      
+      const match = text.match(/^(.*?)\s*[\(\（]([^\)\）]+)[\)\）]\s*$/);
+      if (match) {
+        return { en: match[1].trim(), zh: match[2].trim() };
+      }
+
+      const cleanEn = text.trim();
+      return { en: cleanEn, zh: translationCache[cleanEn.toLowerCase()] || "" };
+    }
+
+    async function fetchOnlineTranslation(text) {
+      if (!text || !text.trim()) return "";
+      const cleanText = text.trim();
+      const lowerKey = cleanText.toLowerCase();
+
+      if (translationCache[lowerKey]) {
+        return translationCache[lowerKey];
+      }
+
+      try {
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(cleanText)}&langpair=en|zh-TW`;
+        const response = await fetch(url);
+        const data = await response.json();
+        
+        if (data && data.responseData && data.responseData.translatedText) {
+          let translated = data.responseData.translatedText;
+          translationCache[lowerKey] = translated;
+          return translated;
+        }
+      } catch (err) {
+        console.warn('MyMemory translation failed:', err);
+      }
+      return "";
+    }
+
+    async function preloadAllTranslations() {
+      const exportBtn = document.querySelector('.btn-export');
+      let neededSet = new Set();
+      
+      partAVocab.forEach(w => {
+         const ext = extractTranslation(w);
+         if (!ext.zh && ext.en) neededSet.add(ext.en.trim());
+      });
+      
+      [partBText, partCText].forEach(text => {
+         buildDictationQueue(text).forEach(q => {
+           if (q.type === 'sentence') {
+             const ext = extractTranslation(q.text);
+             if (!ext.zh && ext.en) neededSet.add(ext.en.trim());
+           }
+         });
+      });
+      
+      let needed = Array.from(neededSet).filter(en => !translationCache[en.toLowerCase()]);
+      
+      if (needed.length === 0) {
+        updateActiveTranslations();
+        return;
+      }
+
+      isTranslating = true;
+      if (exportBtn) {
+        exportBtn.textContent = `⏳ Translating...`;
+      }
+
+      for (let i = 0; i < needed.length; i++) {
+        if (exportBtn) exportBtn.textContent = `⏳ Translating (${needed.length - i})`;
+        await fetchOnlineTranslation(needed[i]);
+        await new Promise(r => setTimeout(r, 400));
+        updateActiveTranslations();
+      }
+
+      isTranslating = false;
+      if (exportBtn) {
+        exportBtn.textContent = "📥 Export HTML";
+      }
+      updateActiveTranslations();
+    }
+
+    function updateActiveTranslations() {
+      const zhElements = document.querySelectorAll('.zh-text[data-en]');
+      for (const el of zhElements) {
+        const enText = el.getAttribute('data-en');
+        if (enText && !el.textContent.trim()) {
+          const zh = translationCache[enText.toLowerCase()];
+          if (zh) el.textContent = zh;
+        }
+      }
+    }
+
+    function isMaleVoice(voice) {
+      const name = voice.name.toLowerCase();
+      return maleKeywords.some(keyword => name.includes(keyword));
+    }
+
+    function populateVoices() {
+      if (!synth) return;
+      
+      const voices = synth.getVoices();
+      if (!voices || voices.length === 0) return;
+
+      const englishOnlyCheck = document.getElementById('englishOnlyCheck');
+      const filterEnglish = englishOnlyCheck ? englishOnlyCheck.checked : true;
+
+      let filteredVoices = voices;
+
+      if (filterEnglish) {
+        filteredVoices = voices.filter(v => v.lang.startsWith('en'));
+      }
+
+      filteredVoices.sort((a, b) => {
+        if (a.lang < b.lang) return -1;
+        if (a.lang > b.lang) return 1;
+        return a.name.localeCompare(b.name);
+      });
+
+      availableVoices = filteredVoices;
+
+      const voiceSelect = document.getElementById('voiceSelect');
+      if (!voiceSelect) return;
+
+      voiceSelect.innerHTML = '';
+      
+      availableVoices.forEach((voice) => {
+        const option = document.createElement('option');
+        const genderTag = isMaleVoice(voice) ? '👨' : '👩';
+        option.textContent = `${genderTag} ${voice.name} (${voice.lang})`;
+        option.value = voice.voiceURI;
+
+        if (selectedVoiceURI && voice.voiceURI === selectedVoiceURI) {
+          option.selected = true;
+        }
+        voiceSelect.appendChild(option);
+      });
+
+      if (!voiceSelect.value && availableVoices.length > 0) {
+        voiceSelect.value = availableVoices[0].voiceURI;
+        selectedVoiceURI = availableVoices[0].voiceURI;
+        localStorage.setItem('fixedDictationVoiceURI', selectedVoiceURI);
+      }
+    }
+
+    function changeVoice() {
+      const voiceSelect = document.getElementById('voiceSelect');
+      if (voiceSelect) {
+        selectedVoiceURI = voiceSelect.value;
+        localStorage.setItem('fixedDictationVoiceURI', selectedVoiceURI);
+      }
+    }
+
+    function scrollToTop() {
+      const mainContent = document.getElementById('mainContent');
+      if (mainContent) {
+        mainContent.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function copyTextToClipboard(textToCopy, successCallback) {
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+          if (successCallback) successCallback();
+        }).catch(() => {
+          fallbackCopyText(textToCopy, successCallback);
+        });
+      } else {
+        fallbackCopyText(textToCopy, successCallback);
+      }
+    }
+
+    function fallbackCopyText(textToCopy, successCallback) {
+      const textArea = document.createElement("textarea");
+      textArea.value = textToCopy;
+      textArea.style.position = "fixed";
+      textArea.style.top = "0";
+      textArea.style.left = "0";
+      textArea.style.width = "2em";
+      textArea.style.height = "2em";
+      textArea.style.padding = "0";
+      textArea.style.border = "none";
+      textArea.style.outline = "none";
+      textArea.style.boxShadow = "none";
+      textArea.style.background = "transparent";
+      document.body.appendChild(textArea);
+      textArea.focus();
+      textArea.select();
+
+      try {
+        const successful = document.execCommand('copy');
+        if (successful && successCallback) {
+          successCallback();
+        }
+      } catch (err) {
+        console.error('Fallback copy failed:', err);
+      }
+      document.body.removeChild(textArea);
+    }
+
+    function copyCurrentContent(btnElement) {
+      let copyText = "";
+      const currentMode = displayModes[displayModeIndex].id;
+
+      const shouldIncludeEn = (currentMode === 'E' || currentMode === 'EC' || currentMode === 'Blank');
+      const shouldIncludeZh = (currentMode === 'C' || currentMode === 'EC' || currentMode === 'Blank');
+
+      if (currentTab === 'tab1') {
+        let rawEnList = [];
+        let rawZhList = [];
+
+        partAVocab.forEach((wordRaw) => {
+          const { en, zh } = extractTranslation(wordRaw);
+          if (en) rawEnList.push(en);
+          if (zh) rawZhList.push(zh);
+        });
+
+        function chunkIntoRows(arr, itemsPerRow = 3) {
+          let rows = [];
+          for (let i = 0; i < arr.length; i += itemsPerRow) {
+            let chunk = arr.slice(i, i + itemsPerRow);
+            rows.push(chunk.join("\t"));
+          }
+          return rows.join("\n");
+        }
+
+        let parts = [];
+        if (shouldIncludeEn && rawEnList.length > 0) {
+          parts.push("=== English ===\n" + chunkIntoRows(rawEnList, 3));
+        }
+        if (shouldIncludeZh && rawZhList.length > 0) {
+          parts.push("=== Chinese ===\n" + chunkIntoRows(rawZhList, 3));
+        }
+        copyText = parts.join("\n\n");
+      } else {
+        let rawText = (currentTab === 'tab2') ? partBText : partCText;
+        let dictQueue = buildDictationQueue(rawText);
+        
+        let enParagraphs = [];
+        let zhParagraphs = [];
+
+        let currentEnSentences = [];
+        let currentZhSentences = [];
+
+        dictQueue.forEach(item => {
+          if (item.type === 'break') {
+            if (currentEnSentences.length > 0) {
+              enParagraphs.push(currentEnSentences.join(" "));
+              currentEnSentences = [];
+            }
+            if (currentZhSentences.length > 0) {
+              zhParagraphs.push(currentZhSentences.join(" "));
+              currentZhSentences = [];
+            }
+          } else if (item.type === 'sentence') {
+            const { en, zh } = extractTranslation(item.text);
+            let finalZh = zh;
+            if (!finalZh && translationCache[en.toLowerCase()]) {
+              finalZh = translationCache[en.toLowerCase()];
+            }
+
+            if (en) currentEnSentences.push(en);
+            if (finalZh) currentZhSentences.push(finalZh);
+          }
+        });
+
+        if (currentEnSentences.length > 0) {
+          enParagraphs.push(currentEnSentences.join(" "));
+        }
+        if (currentZhSentences.length > 0) {
+          zhParagraphs.push(currentZhSentences.join(" "));
+        }
+
+        let parts = [];
+        if (shouldIncludeEn && enParagraphs.length > 0) {
+          parts.push("=== English ===\n" + enParagraphs.join("\n\n"));
+        }
+        if (shouldIncludeZh && zhParagraphs.length > 0) {
+          parts.push("=== Chinese ===\n" + zhParagraphs.join("\n\n"));
+        }
+        copyText = parts.join("\n\n");
+      }
+
+      if (copyText) {
+        copyTextToClipboard(copyText, () => {
+          if (btnElement) {
+            const originalText = btnElement.textContent;
+            btnElement.textContent = "Copied!";
+            setTimeout(() => {
+              btnElement.textContent = originalText;
+            }, 1500);
+          }
+        });
+      }
+    }
+
+    async function requestWakeLock() {
+      try {
+        if ('wakeLock' in navigator) {
+          wakeLock = await navigator.wakeLock.request('screen');
+        }
+      } catch (err) {
+        console.warn(`Wake Lock error: ${err.name}, ${err.message}`);
+      }
+    }
+
+    async function releaseWakeLock() {
+      if (wakeLock !== null) {
+        try {
+          await wakeLock.release();
+          wakeLock = null;
+        } catch (err) {
+          console.warn(`Wake Lock release error: ${err.name}, ${err.message}`);
+        }
+      }
+    }
+
+    document.addEventListener('visibilitychange', async () => {
+      if (wakeLock !== null && document.visibilityState === 'visible' && isPlaying) {
+        await requestWakeLock();
+      }
+    });
+
+    function toggleDisplayMode() {
+      displayModeIndex = (displayModeIndex + 1) % displayModes.length;
+      updateDisplayModeUI();
+    }
+
+    function updateDisplayModeUI() {
+      const btn = document.getElementById('displayModeBtn');
+      const mainContent = document.getElementById('mainContent');
+      const currentModeObj = displayModes[displayModeIndex];
+
+      if (btn) {
+        btn.textContent = currentModeObj.label;
+      }
+
+      if (mainContent) {
+        mainContent.classList.remove('mode-E', 'mode-EC', 'mode-C', 'mode-Blank');
+        mainContent.classList.add('mode-' + currentModeObj.id);
+      }
+    }
+
+    function toggleSidebarMenu() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileOverlay');
+      if (!sidebar) return;
+
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('open');
+        if (overlay) overlay.classList.toggle('open');
+      } else {
+        sidebar.classList.toggle('collapsed');
+      }
+    }
+
+    function closeSidebarMenu() {
+      const sidebar = document.getElementById('sidebar');
+      const overlay = document.getElementById('mobileOverlay');
+      if (sidebar) sidebar.classList.remove('open');
+      if (overlay) overlay.classList.remove('open');
+    }
+
+    function countWords(text) {
+      if (!text) return 0;
+      const cleanText = text.replace(/[^a-zA-Z0-9\s'-]/g, ' ').trim();
+      if (!cleanText) return 0;
+      return cleanText.split(/\s+/).filter(Boolean).length;
+    }
+
+    function convertPunctuationToSpeech(text) {
+      if (!text) return "";
+
+      let spoken = text
+        .replace(/,/g, " ~PAUSE2~ comma ~PAUSE2~ ")
+        .replace(/\./g, " ~PAUSE2~ full stop ~PAUSE2~ ")
+        .replace(/\?/g, " ~PAUSE2~ question mark ~PAUSE2~ ")
+        .replace(/!/g, " ~PAUSE2~ exclamation mark ~PAUSE2~ ")
+        .replace(/;/g, " ~PAUSE2~ semicolon ~PAUSE2~ ")
+        .replace(/:/g, " ~PAUSE2~ colon ~PAUSE2~ ")
+        .replace(/(^|\s)['‘](?=[a-zA-Z])/g, "$1 ~PAUSE2~ open quotation mark ~PAUSE2~ ")
+        .replace(/['’](\s|$)/g, " ~PAUSE2~ close quotation mark ~PAUSE2~ $1")
+        .replace(/["“”]/g, " ~PAUSE2~ open quotation mark ~PAUSE2~ ")
+        .replace(/\(/g, " ~PAUSE2~ open bracket ~PAUSE2~ ") 
+        .replace(/\)/g, " ~PAUSE2~ close bracket ~PAUSE2~ ")
+        .replace(/—/g, " ~PAUSE2~ dash ~PAUSE2~ ")
+        .replace(/-/g, " ~PAUSE2~ hyphen ~PAUSE2~ ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      return spoken;
+    }
+
+    function splitWordsIntoParts(words, numParts) {
+      const totalWords = words.length;
+      const baseSize = Math.floor(totalWords / numParts);
+      const remainder = totalWords % numParts;
+      const parts = [];
+      let currentIndex = 0;
+
+      for (let i = 0; i < numParts; i++) {
+        const size = baseSize + (i < remainder ? 1 : 0);
+        const chunk = words.slice(currentIndex, currentIndex + size);
+        if (chunk.length > 0) {
+          parts.push(chunk.join(" "));
+        }
+        currentIndex += size;
+      }
+      return parts;
+    }
+
+    function buildDictationQueue(rawText) {
+      if (!rawText || !rawText.trim()) return [];
+      
+      const rawLines = rawText.split('\n');
+      const queueList = [];
+      let globalIndex = 0;
+      let breakCount = 0;
+      let hasAddedContent = false;
+
+      rawLines.forEach(line => {
+        const trimmedLine = line.trim();
+        
+        if (!trimmedLine) {
+          if (hasAddedContent) {
+            breakCount++;
+            queueList.push({ type: 'break', text: 'Next Paragraph', breakId: breakCount });
+          }
+          return;
+        }
+
+        let lineHasContent = false;
+        let sentences = trimmedLine.match(/[^.!?;]+[.!?;]*['”’)]*\s*/g) || [trimmedLine];
+
+        sentences.forEach(s => {
+          let clause = s.trim();
+          if (!clause) return;
+
+          // Discard lines/sentences that consist solely of punctuation marks
+          if (/^[^a-zA-Z0-9]+$/.test(clause)) {
+            return;
+          }
+
+          lineHasContent = true;
+          let phraseMap = [];
+          let tempClause = clause;
+
+          protectedPhrases.forEach((phrase) => {
+            const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
+            tempClause = tempClause.replace(regex, (match) => {
+              const placeholder = `__PHRASE_${phraseMap.length}__`;
+              phraseMap.push({ placeholder, text: match });
+              return placeholder;
+            });
+          });
+
+          let tokens = tempClause.split(/\s+/).filter(Boolean);
+          let wCount = countWords(clause);
+
+          let targetParts = 1;
+          if (wCount > 20) {
+            targetParts = 4;
+          } else if (wCount > 12) {
+            targetParts = 3;
+          } else if (wCount > 6) {
+            targetParts = 2;
+          }
+
+          if (targetParts === 1) {
+            globalIndex++;
+            queueList.push({ type: 'sentence', text: clause, index: globalIndex });
+          } else {
+            let splitChunks = splitWordsIntoParts(tokens, targetParts);
+            splitChunks.forEach(chunkText => {
+              let restored = chunkText;
+              phraseMap.forEach(item => {
+                restored = restored.replace(item.placeholder, item.text);
+              });
+
+              if (restored.trim()) {
+                globalIndex++;
+                queueList.push({ type: 'sentence', text: restored.trim(), index: globalIndex });
+              }
+            });
+          }
+        });
+
+        if (lineHasContent) {
+          hasAddedContent = true;
+        }
+      });
+
+      const cleaned = [];
+      queueList.forEach(item => {
+        if (item.type === 'break' && cleaned.length > 0 && cleaned[cleaned.length - 1].type === 'break') {
+          return;
+        }
+        cleaned.push(item);
+      });
+
+      if (cleaned.length > 0 && cleaned[cleaned.length - 1].type === 'break') {
+        cleaned.pop();
+      }
+
+      let reIdx = 0;
+      cleaned.forEach(item => {
+        if (item.type === 'sentence') {
+          reIdx++;
+          item.index = reIdx;
+        }
+      });
+
+      return cleaned;
+    }
+
+    function handleFileImport(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const fileContent = e.target.result;
+        const editor = document.getElementById('rawTextEditor');
+        if (editor) {
+          editor.value = fileContent;
+        }
+        parseAndApplyFullText(fileContent);
+        event.target.value = '';
+      };
+      reader.readAsText(file);
+    }
+
+    function parseAndApplyFullText(fullText) {
+      displayModeIndex = 0;
+
+      if (!fullText || !fullText.trim()) {
+        partAVocab = [];
+        partBText = "";
+        partCText = "";
+        highlightedWords = [];
+        document.getElementById('appMainTitle').innerHTML = '<span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School English Dictation';
+        document.getElementById('browserWindowTitle').textContent = "Happy Primary School English Dictation";
+        renderTab();
+        checkAndResolveSameNamePdf();
+        return;
+      }
+
+      const lines = fullText.split('\n');
+      const lowerFullText = fullText.toLowerCase();
+      
+      const hasHeaders = lowerFullText.includes('part a') || 
+                         lowerFullText.includes('part b') || 
+                         lowerFullText.includes('part c') || 
+                         lowerFullText.includes('vocabulary') || 
+                         lowerFullText.includes('passage') || 
+                         lowerFullText.includes('unseen') ||
+                         lowerFullText.includes('highlight');
+
+      let currentSection = hasHeaders ? 'header' : 'partA';
+      
+      let headerLines = [];
+      let parsedPartA = [];
+      let parsedPartB = [];
+      let parsedPartC = [];
+      let parsedHighlight = [];
+
+      lines.forEach(line => {
+        const trimmed = line.trim();
+        const lower = trimmed.toLowerCase();
+
+        if (lower.includes('date of dictation')) {
+          return;
+        }
+
+        if (lower.startsWith('part a') || lower === 'part a' || lower.includes('vocabulary')) {
+          currentSection = 'partA';
+          return;
+        }
+        if (lower.startsWith('part b') || lower === 'part b' || lower.includes('passage')) {
+          currentSection = 'partB';
+          return;
+        }
+        if (lower.startsWith('part c') || lower === 'part c' || lower.includes('unseen')) {
+          currentSection = 'partC';
+          return;
+        }
+        if (lower.includes('highlight') || lower.includes('重點詞語') || lower.includes('高亮詞語')) {
+          currentSection = 'highlight';
+          return;
+        }
+
+        if (currentSection === 'header') {
+          if (trimmed) headerLines.push(trimmed);
+        } else if (currentSection === 'partA') {
+          if (trimmed) {
+            let cleanLine = trimmed.replace(/^\d+[\.\)]\s*/, '');
+            let items = cleanLine.split(/[\t,]+/).map(w => w.trim()).filter(Boolean);
+            items.forEach(w => parsedPartA.push(w));
+          }
+        } else if (currentSection === 'partB') {
+          if (trimmed) parsedPartB.push(trimmed);
+        } else if (currentSection === 'partC') {
+          if (trimmed) parsedPartC.push(trimmed);
+        } else if (currentSection === 'highlight') {
+          if (trimmed) {
+            let items = trimmed.split(/[\t,]+/).map(w => w.trim()).filter(Boolean);
+            items.forEach(w => parsedHighlight.push(w));
+          }
+        }
+      });
+
+      if (headerLines.length > 0) {
+        headerLines[0] = headerLines[0].replace(/^.*?School/i, 'Happy Primary School');
+        
+        if (/\([^\)]*\d+[/\-]\d+[^\)]*\)/.test(headerLines[0])) {
+          headerLines[0] = headerLines[0].replace(/\s*(\([^\)]*\d+[/\-]\d+[^\)]*\))/, '<br>$1');
+        } else if (/\([^\)]*Division[^\)]*\)/i.test(headerLines[0])) {
+          headerLines[0] = headerLines[0].replace(/\s*(\([^\)]*Division[^\)]*\))/i, '<br>$1');
+        }
+
+        if (headerLines[0].startsWith('Happy')) {
+          headerLines[0] = '<span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>' + headerLines[0].substring(1);
+        }
+        
+        const titleHtml = headerLines.join('<br>');
+        const plainTitleText = headerLines.join(' ').replace(/<[^>]*>/g, '');
+        document.getElementById('appMainTitle').innerHTML = titleHtml;
+        document.getElementById('browserWindowTitle').textContent = plainTitleText;
+      } else {
+        document.getElementById('appMainTitle').innerHTML = '<span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School English Dictation';
+        document.getElementById('browserWindowTitle').textContent = "Happy Primary School English Dictation";
+      }
+
+      partAVocab = parsedPartA;
+      partBText = parsedPartB.join('\n\n');
+      partCText = parsedPartC.join('\n\n');
+      highlightedWords = parsedHighlight;
+
+      renderTab();
+      preloadAllTranslations();
+      checkAndResolveSameNamePdf();
+    }
+
+    function refreshContentFromEditor() {
+      const editor = document.getElementById('rawTextEditor');
+      if (editor) {
+        parseAndApplyFullText(editor.value);
+      }
+      closeSidebarMenu();
+    }
+
+    function exportCurrentAppAsHTML() {
+      try {
+        const editor = document.getElementById('rawTextEditor');
+        const currentContent = editor ? editor.value : '';
+
+        const clonedHtml = document.documentElement.cloneNode(true);
+        const clonedBody = clonedHtml.querySelector('body');
+        
+        clonedBody.classList.add('exported-app');
+
+        const existingAutoScripts = clonedHtml.querySelectorAll('#autoLoadScript');
+        existingAutoScripts.forEach(el => el.remove());
+
+        const clonedEditorSec = clonedHtml.querySelector('#editorSection');
+        if (clonedEditorSec) {
+          clonedEditorSec.style.display = 'none';
+        }
+
+        const clonedTextArea = clonedHtml.querySelector('#rawTextEditor');
+        if (clonedTextArea) {
+          clonedTextArea.textContent = currentContent;
+        }
+        
+        const clonedExportBtn = clonedHtml.querySelector('.btn-export');
+        if (clonedExportBtn) {
+          clonedExportBtn.textContent = "📥 Export HTML";
+        }
+
+        const vocabDelayVal = document.getElementById('vocabDelayInput')?.value || "10";
+        const vocabSpeedVal = document.getElementById('vocabVoiceSpeedSelect')?.value || "0.38";
+        const secPerWordVal = document.getElementById('secPerWordInput')?.value || "2.8";
+        const passageSpeedVal = document.getElementById('voiceSpeedSelect')?.value || "0.3";
+
+        const clonedVDelay = clonedHtml.querySelector('#vocabDelayInput');
+        if (clonedVDelay) clonedVDelay.setAttribute('value', vocabDelayVal);
+
+        const clonedVSpeedOpts = clonedHtml.querySelectorAll('#vocabVoiceSpeedSelect option');
+        clonedVSpeedOpts.forEach(opt => {
+          if (opt.value === vocabSpeedVal) opt.setAttribute('selected', 'selected');
+          else opt.removeAttribute('selected');
+        });
+
+        const clonedPSec = clonedHtml.querySelector('#secPerWordInput');
+        if (clonedPSec) clonedPSec.setAttribute('value', secPerWordVal);
+
+        const clonedPSpeedOpts = clonedHtml.querySelectorAll('#voiceSpeedSelect option');
+        clonedPSpeedOpts.forEach(opt => {
+          if (opt.value === passageSpeedVal) opt.setAttribute('selected', 'selected');
+          else opt.removeAttribute('selected');
+        });
+
+        let scriptTag = document.createElement('script');
+        scriptTag.id = 'autoLoadScript';
+        clonedHtml.querySelector('body').appendChild(scriptTag);
+
+        scriptTag.textContent = `
+          document.addEventListener('DOMContentLoaded', function() {
+            const savedCache = ${JSON.stringify(translationCache)};
+            Object.assign(translationCache, savedCache);
+
+            const vDelay = document.getElementById('vocabDelayInput');
+            if (vDelay) vDelay.value = "${vocabDelayVal}";
+            const vSpeed = document.getElementById('vocabVoiceSpeedSelect');
+            if (vSpeed) vSpeed.value = "${vocabSpeedVal}";
+            const pSec = document.getElementById('secPerWordInput');
+            if (pSec) pSec.value = "${secPerWordVal}";
+            const pSpeed = document.getElementById('voiceSpeedSelect');
+            if (pSpeed) pSpeed.value = "${passageSpeedVal}";
+
+            const editor = document.getElementById('rawTextEditor');
+            if (editor && editor.value.trim()) {
+              parseAndApplyFullText(editor.value);
+            }
+          });
+        `;
+
+        let htmlContent = "<!DOCTYPE html>\n" + clonedHtml.outerHTML;
+        const fileName = "P4E_2627D3.html";
+
+        const blob = new Blob([htmlContent], { type: "text/html;charset=utf-8" });
+        const blobUrl = URL.createObjectURL(blob);
+        
+        const downloadAnchor = document.createElement("a");
+        downloadAnchor.href = blobUrl;
+        downloadAnchor.download = fileName;
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        document.body.removeChild(downloadAnchor);
+
+        setTimeout(() => {
+          URL.revokeObjectURL(blobUrl);
+        }, 1000);
+      } catch (err) {
+        console.error("Export Error:", err);
+        alert("Error exporting HTML file.");
+      }
+    }
+
+    function renderTab() {
+      resetPlayback();
+
+      const area = document.getElementById('contentArea');
+      const vocabToolbar = document.getElementById('vocabToolbar');
+      const dictationToolbar = document.getElementById('dictationToolbar');
+      const dictationTagBtn = document.getElementById('dictationTagBtn');
+
+      if (!area) return;
+
+      if (currentTab === 'tab1') {
+        if (vocabToolbar) vocabToolbar.classList.remove('hidden');
+        if (dictationToolbar) dictationToolbar.classList.add('hidden');
+        renderVocabGrid(area);
+      } else {
+        if (vocabToolbar) vocabToolbar.classList.add('hidden');
+        if (dictationToolbar) dictationToolbar.classList.remove('hidden');
+
+        if (dictationTagBtn) {
+          dictationTagBtn.textContent = (currentTab === 'tab2') ? 'Passage' : 'Unseen';
+        }
+
+        let rawText = (currentTab === 'tab2') ? partBText : partCText;
+        renderDictation(area, rawText);
+      }
+
+      updateActiveTranslations();
+    }
+
+    function renderVocabGrid(container) {
+      if (!partAVocab || partAVocab.length === 0) {
+        container.innerHTML = '<div class="empty-prompt">(Currently empty. Paste or load content in the left menu.)</div>';
+        return;
+      }
+
+      let html = '<div class="words-grid">';
+      partAVocab.forEach((wordRaw, idx) => {
+        const { en, zh } = extractTranslation(wordRaw);
+        html += `
+          <div class="word-card" id="card_${idx}" onclick="clickPlayVocab(${idx})">
+            <div class="word-index">#${idx + 1}</div>
+            <div class="word-text" title="${en}">${en}</div>
+            <div class="zh-text" data-en="${en}">${zh}</div>
+            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(${idx})">▶</button>
+          </div>
+        `;
+      });
+      html += '</div>';
+      container.innerHTML = html;
+      updateDisplayModeUI();
+    }
+
+    function renderDictation(container, rawText) {
+      const queueList = buildDictationQueue(rawText);
+      if (!queueList || queueList.length === 0) {
+        container.innerHTML = '<div class="empty-prompt">(Currently empty. Paste or load content in the left menu.)</div>';
+        return;
+      }
+
+      let html = '<div class="dictation-list" id="dictationList">';
+
+      queueList.forEach(item => {
+        if (item.type === 'break') {
+          html += `<div class="paragraph-break" id="break_${item.breakId}">--- Next Paragraph ---</div>`;
+        } else if (item.type === 'sentence') {
+          const { en, zh } = extractTranslation(item.text);
+          let formattedText = en.split(' ').map(w => `<span class="nowrap-word">${w}</span>`).join(' ');
+
+          html += `
+            <div class="dictation-row" id="dcard_${item.index}" onclick="clickPlayDictation(${item.index})">
+              <div>
+                <div class="sentence-index">#${item.index}</div>
+                <div class="sentence-text">${formattedText}</div>
+                <div class="zh-text" data-en="${en}">${zh}</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(${item.index})">▶</button>
+            </div>
+          `;
+        }
+      });
+
+      html += '</div>';
+      container.innerHTML = html;
+      updateDisplayModeUI();
+    }
+
+    let resolvedPdfUrl = "";
+    let isPdfViewerOpen = false;
+
+    async function checkAndResolveSameNamePdf() {
+      const pdfBtn = document.getElementById('pdfViewerBtn');
+      if (pdfBtn) pdfBtn.style.display = 'none';
+
+      try {
+        let candidateNames = [];
+        let path = window.location.pathname;
+        let filename = path.substring(path.lastIndexOf('/') + 1);
+
+        if (filename && filename !== "" && filename !== "index.html") {
+          let baseName = decodeURIComponent(filename.replace(/\.[^/.]+$/, ""));
+          if (baseName) candidateNames.push(baseName + ".pdf");
+        }
+
+        const mainTitleEl = document.getElementById('appMainTitle');
+        const titleText = mainTitleEl ? mainTitleEl.textContent : "";
+
+        if (titleText) {
+          let t = titleText.trim();
+          let gradeMatch = t.match(/P[456]/i) || t.match(/([456])\s*grade/i);
+          let grade = gradeMatch ? gradeMatch[0].toUpperCase().replace(/\s+/g, '') : "";
+          if (grade.length === 1) grade = "P" + grade;
+
+          let dMatch = t.match(/D\d+/i) || t.match(/dictation\s*(\d+)/i);
+          let dNum = "";
+          if (dMatch) {
+            dNum = dMatch[0].toUpperCase().replace(/\s+/g, '');
+            if (!dNum.startsWith('D')) dNum = 'D' + dNum.replace(/\D/g, '');
+          }
+
+          if (grade && dNum) {
+            let titlePdf = `${grade}E_${dNum}.pdf`;
+            if (!candidateNames.includes(titlePdf)) candidateNames.push(titlePdf);
+          }
+        }
+
+        if (candidateNames.length === 0) return;
+
+        for (let pdfName of candidateNames) {
+          let exists = await probePdfExistence(pdfName);
+          if (exists) {
+            resolvedPdfUrl = pdfName;
+            showPdfButton(pdfName);
+            return;
+          }
+        }
+
+      } catch (err) {
+        console.warn("PDF check error:", err);
+      }
+    }
+
+    async function probePdfExistence(url) {
+      try {
+        let res = await fetch(url, { method: 'HEAD' });
+        if (res.ok) return true;
+        if (res.status === 404) return false;
+      } catch (e) {}
+
+      try {
+        const controller = new AbortController();
+        let res = await fetch(url, { method: 'GET', signal: controller.signal });
+        if (res.ok) {
+          controller.abort();
+          return true;
+        }
+      } catch (e) {}
+      
+      return new Promise((resolve) => {
+        let xhr = new XMLHttpRequest();
+        xhr.open('HEAD', url, true);
+        xhr.onload = function() {
+          if (xhr.status >= 200 && xhr.status < 300) resolve(true);
+          else resolve(false);
+        };
+        xhr.onerror = function() {
+          resolve(false);
+        };
+        try { xhr.send(); } catch(err) { resolve(false); }
+      });
+    }
+
+    function showPdfButton(pdfName) {
+      const pdfBtn = document.getElementById('pdfViewerBtn');
+      if (pdfBtn) {
+        pdfBtn.style.display = 'inline-block';
+        pdfBtn.title = `View corresponding PDF file (${pdfName})`;
+      }
+    }
+
+    function togglePdfViewer() {
+      if (!resolvedPdfUrl) return;
+
+      const area = document.getElementById('contentArea');
+      const vocabToolbar = document.getElementById('vocabToolbar');
+      const dictationToolbar = document.getElementById('dictationToolbar');
+
+      if (!isPdfViewerOpen) {
+        isPdfViewerOpen = true;
+        if (vocabToolbar) vocabToolbar.classList.add('hidden');
+        if (dictationToolbar) dictationToolbar.classList.add('hidden');
+
+        const isOnline = window.location.protocol.startsWith('http');
+        const absolutePdfUrl = new URL(resolvedPdfUrl, window.location.href).href;
+        const viewerUrl = isOnline ? `https://docs.google.com/gview?url=${encodeURIComponent(absolutePdfUrl)}&embedded=true` : resolvedPdfUrl;
+
+        area.innerHTML = `
+          <div style="display: flex; flex-direction: column; height: calc(100vh - 120px); width: 100%; background: #ffffff; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <div style="background: #e65100; color: #ffffff; padding: 10px 16px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+              <span style="font-weight: bold; font-size: 1.05rem;">📄 Corresponding PDF File Preview (${resolvedPdfUrl})</span>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <a href="${resolvedPdfUrl}" target="_blank" style="background: #ffffff; color: #e65100; text-decoration: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; font-size: 0.9rem;">Open PDF in New Window</a>
+                <button onclick="closePdfViewer()" style="background: #ffffff; color: #d32f2f; border: none; padding: 6px 14px; border-radius: 6px; font-weight: bold; cursor: pointer;">✖ Close</button>
+              </div>
+            </div>
+            <div style="flex: 1; position: relative; background: #525659; overflow-y: auto; -webkit-overflow-scrolling: touch;">
+              <iframe src="${viewerUrl}" style="width: 100%; height: 100%; border: none; display: block;" allowfullscreen>
+                <object data="${resolvedPdfUrl}" type="application/pdf" style="width: 100%; height: 100%;">
+                  <embed src="${resolvedPdfUrl}" type="application/pdf" style="width: 100%; height: 100%;" />
+                </object>
+              </iframe>
+            </div>
+          </div>
+        `;
+        if (window.innerWidth <= 768) {
+          closeSidebarMenu();
+        }
+      } else {
+        closePdfViewer();
+      }
+    }
+
+    function closePdfViewer() {
+      isPdfViewerOpen = false;
+      renderTab();
+    }
+
+    function switchTab(tabId, element) {
+      currentTab = tabId;
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      if (element) {
+        element.classList.add('active');
+      } else {
+        const btn = document.getElementById('btn_' + tabId);
+        if (btn) btn.classList.add('active');
+      }
+      renderTab();
+      if (window.innerWidth <= 768) {
+        closeSidebarMenu();
+      }
+    }
+
+    function delayPromise(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    function getSelectedSpeechRate() {
+      let speedSelect = null;
+      if (currentTab === 'tab1') {
+        speedSelect = document.getElementById('vocabVoiceSpeedSelect');
+      } else {
+        speedSelect = document.getElementById('voiceSpeedSelect');
+      }
+      return speedSelect ? (parseFloat(speedSelect.value) || 0.6) : 0.75;
+    }
+
+    function speakText(text, isIntroOrEnding, onEndCallback) {
+      if (!synth) {
+        if (onEndCallback) onEndCallback();
+        return;
+      }
+
+      currentSpeechId++;
+      const mySpeechId = currentSpeechId;
+      
+      try { synth.cancel(); } catch(e){}
+      if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+
+      let preparedText = isIntroOrEnding ? text : extractTranslation(text).en;
+      if (!isIntroOrEnding && (currentTab === 'tab2' || currentTab === 'tab3')) {
+        preparedText = convertPunctuationToSpeech(preparedText);
+      }
+
+      const segments = preparedText.split('~PAUSE2~').map(s => s.trim()).filter(Boolean);
+
+      if (segments.length === 0) {
+        if (onEndCallback) onEndCallback();
+        return;
+      }
+
+      const currentRate = getSelectedSpeechRate();
+
+      const voices = synth.getVoices();
+      let targetVoice = null;
+      if (selectedVoiceURI) {
+        targetVoice = voices.find(v => v.voiceURI === selectedVoiceURI);
+      }
+      if (!targetVoice && availableVoices.length > 0) {
+        targetVoice = availableVoices[0];
+      }
+
+      (async () => {
+        for (let i = 0; i < segments.length; i++) {
+          if (mySpeechId !== currentSpeechId) return;
+
+          const segText = segments[i].replace(/[\u2070-\u209F\u00B2\u00B3\u00B9]/g, '');
+          if (!segText) continue;
+
+          await new Promise((resolve) => {
+            const utterance = new SpeechSynthesisUtterance(segText);
+            utterance.lang = 'en-US';
+            if (targetVoice) utterance.voice = targetVoice;
+            utterance.rate = currentRate;
+
+            utterance.onend = () => resolve();
+            utterance.onerror = () => resolve();
+
+            synth.speak(utterance);
+          });
+
+          if (mySpeechId !== currentSpeechId) return;
+
+          if (i < segments.length - 1) {
+            await delayPromise(2000);
+          }
+        }
+
+        if (mySpeechId === currentSpeechId && onEndCallback) {
+          onEndCallback();
+        }
+      })();
+    }
+
+    function startTimer(seconds, onFinish) {
+      clearInterval(timerInterval);
+      totalTimerSeconds = Math.round(seconds);
+      remainingSeconds = totalTimerSeconds;
+      updateTimerDisplay();
+
+      timerInterval = setInterval(() => {
+        if (isPaused) return;
+        remainingSeconds--;
+        updateTimerDisplay();
+        if (remainingSeconds <= 0) {
+          clearInterval(timerInterval);
+          if (onFinish) onFinish();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      const pie = document.getElementById('timerPie');
+
+      if (remainingSeconds > 0 && totalTimerSeconds > 0) {
+        const pct = (remainingSeconds / totalTimerSeconds) * 100;
+        if (pie) pie.style.background = `conic-gradient(#3b82f6 ${pct}%, #e5e7eb ${pct}%)`;
+      } else {
+        if (pie) pie.style.background = `conic-gradient(#3b82f6 0%, #e5e7eb 0%)`;
+      }
+    }
+
+    function getCurrentTabTitle() {
+      if (currentTab === 'tab1') return 'Vocabulary';
+      if (currentTab === 'tab2') return 'Passage';
+      if (currentTab === 'tab3') return 'Unseen';
+      return 'Dictation';
+    }
+
+    function startAutoPlay(onlyHighlighted = false) {
+      resetPlayback();
+      isPlaying = true;
+      isPaused = false;
+      isReviewPhase = false;
+      isOnlyHighlighted = onlyHighlighted;
+
+      const goText = document.getElementById('goBtnText');
+      const wrongGoText = document.getElementById('wrongGoBtnText');
+
+      if (onlyHighlighted) {
+        if (wrongGoText) wrongGoText.textContent = 'A';
+      } else {
+        if (goText) goText.textContent = 'A';
+      }
+
+      requestWakeLock();
+
+      if (currentTab === 'tab1') {
+        queue = partAVocab;
+      } else {
+        let rawText = (currentTab === 'tab2') ? partBText : partCText;
+        queue = buildDictationQueue(rawText).filter(q => q.type === 'sentence' || q.type === 'break');
+      }
+
+      if (onlyHighlighted) {
+        if (!highlightedWords || highlightedWords.length === 0) {
+          alert("No highlighted/mistake words found.");
+          resetPlayback();
+          return;
+        }
+        queue = queue.filter(item => {
+          const text = (currentTab === 'tab1') ? item : item.text;
+          if (!text) return false;
+          return highlightedWords.some(hw => text.toLowerCase().includes(hw.toLowerCase()));
+        });
+      }
+
+      playIndex = 0;
+      if (queue.length === 0) {
+        releaseWakeLock();
+        return;
+      }
+
+      const tabTitle = getCurrentTabTitle();
+      speakText(`Attention students, we will now start ${tabTitle}. Please get ready.`, true, () => {
+        if (!isPlaying) return;
+        startTimer(6, () => {
+          if (!isPlaying) return;
+          if (currentTab === 'tab1') {
+            playNextVocabStep();
+          } else {
+            playNextDictationStep();
+          }
+        });
+      });
+    }
+
+    function playNextVocabStep() {
+      if (!isPlaying) return;
+
+      if (playIndex >= queue.length) {
+        if (!isReviewPhase) {
+          isReviewPhase = true;
+          playIndex = 0;
+          
+          startTimer(4, () => {
+            if (!isPlaying) return;
+            speakText("I have finished reading all items. Now reading all items once for final review.", true, () => {
+              if (!isPlaying) return;
+              startTimer(4, () => {
+                if (!isPlaying) return;
+                playNextVocabStep();
+              });
+            });
+          });
+        } else {
+          speakText("End of vocabulary dictation. Please check your spelling.", true, () => {
+            resetPlayback();
+          });
+        }
+        return;
+      }
+
+      const currentWord = queue[playIndex];
+      const originalIdx = partAVocab.indexOf(currentWord);
+      highlightVocabCard(originalIdx !== -1 ? originalIdx : playIndex);
+
+      if (isReviewPhase) {
+        speakText(currentWord, false, () => {
+          if (!isPlaying) return;
+          startTimer(2, () => {
+            if (!isPlaying) return;
+            playIndex++;
+            playNextVocabStep();
+          });
+        });
+      } else {
+        const vocabDelayInput = document.getElementById('vocabDelayInput');
+        const customDelay = vocabDelayInput ? (parseFloat(vocabDelayInput.value) || 10) : 10;
+
+        speakText(currentWord, false, () => {
+          if (!isPlaying) return;
+          startTimer(5, () => {
+            if (!isPlaying) return;
+            speakText(currentWord, false, () => {
+              if (!isPlaying) return;
+              startTimer(customDelay, () => {
+                if (!isPlaying) return;
+                playIndex++;
+                playNextVocabStep();
+              });
+            });
+          });
+        });
+      }
+    }
+
+    function highlightVocabCard(idx) {
+      document.querySelectorAll('.word-card').forEach(c => c.classList.remove('active-reading'));
+      const card = document.getElementById(`card_${idx}`);
+      if (card) {
+        card.classList.add('active-reading');
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function clickPlayVocab(idx) {
+      highlightVocabCard(idx);
+      if (!partAVocab || !partAVocab[idx]) return;
+      const wordItem = partAVocab[idx];
+
+      if (isPlaying) {
+        if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+        clearInterval(timerInterval);
+        queue = isOnlyHighlighted ? partAVocab.filter(w => highlightedWords.some(hw => w.toLowerCase().includes(hw.toLowerCase()))) : partAVocab;
+        playIndex = queue.indexOf(wordItem);
+        if (playIndex === -1) playIndex = 0;
+        playNextVocabStep();
+      } else {
+        if (synth) {
+          synth.cancel();
+          const emptyUtter = new SpeechSynthesisUtterance('');
+          synth.speak(emptyUtter);
+        }
+        speakText(wordItem, false, null);
+      }
+    }
+
+    function playNextDictationStep() {
+      if (!isPlaying) return;
+
+      if (playIndex >= queue.length) {
+        if (!isReviewPhase) {
+          isReviewPhase = true;
+          playIndex = 0;
+          
+          startTimer(4, () => {
+            if (!isPlaying) return;
+            speakText("I have finished reading the passage. Now reading the complete text once for review.", true, () => {
+              if (!isPlaying) return;
+              startTimer(4, () => {
+                if (!isPlaying) return;
+                playNextDictationStep();
+              });
+            });
+          });
+        } else {
+          speakText("Dictation is now finished. Please spend 2 minutes checking your work carefully.", true, () => {
+            resetPlayback();
+          });
+        }
+        return;
+      }
+
+      const item = queue[playIndex];
+
+      if (item.type === 'break') {
+        highlightDictationCard(`break_${item.breakId}`);
+        startTimer(2, () => {
+          if (!isPlaying) return;
+          speakText("Next paragraph", true, () => {
+            if (!isPlaying) return;
+            startTimer(2, () => {
+              if (!isPlaying) return;
+              playIndex++;
+              playNextDictationStep();
+            });
+          });
+        });
+        return;
+      }
+
+      highlightDictationCard(`dcard_${item.index}`);
+
+      if (isReviewPhase) {
+        speakText(item.text, false, () => {
+          if (!isPlaying) return;
+          startTimer(2, () => {
+            if (!isPlaying) return;
+            playIndex++;
+            playNextDictationStep();
+          });
+        });
+      } else {
+        const secPerWordInput = document.getElementById('secPerWordInput');
+        const secPerWord = secPerWordInput ? (parseFloat(secPerWordInput.value) || 2.8) : 2.8;
+        const wordCount = countWords(extractTranslation(item.text).en) || 1;
+        
+        const pauseSec = Math.max(Math.round(wordCount * secPerWord), 4);
+
+        speakText(item.text, false, () => {
+          if (!isPlaying) return;
+          startTimer(pauseSec, () => {
+            if (!isPlaying) return;
+            speakText(item.text, false, () => {
+              if (!isPlaying) return;
+              startTimer(pauseSec + 3, () => {
+                if (!isPlaying) return;
+                playIndex++;
+                playNextDictationStep();
+              });
+            });
+          });
+        });
+      }
+    }
+
+    function highlightDictationCard(cardId) {
+      document.querySelectorAll('.dictation-row, .paragraph-break').forEach(c => c.classList.remove('active-reading'));
+      const card = document.getElementById(cardId);
+      if (card) {
+        card.classList.add('active-reading');
+        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+
+    function clickPlayDictation(index) {
+      highlightDictationCard(`dcard_${index}`);
+      let rawText = (currentTab === 'tab2') ? partBText : partCText;
+      let dictQueue = buildDictationQueue(rawText).filter(q => q.type === 'sentence' || q.type === 'break');
+
+      if (isPlaying) {
+        if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+        clearInterval(timerInterval);
+        if (isOnlyHighlighted) {
+          dictQueue = dictQueue.filter(item => item.type === 'sentence' && highlightedWords.some(hw => item.text.toLowerCase().includes(hw.toLowerCase())));
+        }
+        queue = dictQueue;
+        playIndex = dictQueue.findIndex(q => q.index === index);
+        if (playIndex !== -1) {
+          playNextDictationStep();
+        }
+      } else {
+        if (synth) {
+          synth.cancel();
+          const emptyUtter = new SpeechSynthesisUtterance('');
+          synth.speak(emptyUtter);
+        }
+        const item = dictQueue.find(q => q.index === index);
+        if (item) {
+          speakText(item.text, false, null); 
+        }
+      }
+    }
+
+    function togglePauseResume() {
+      if (!isPlaying || !synth) return;
+      const btn = document.getElementById('pauseResumeBtn');
+      isPaused = !isPaused;
+      
+      if (isPaused) {
+        synth.pause();
+        if (btn) {
+          btn.innerHTML = playIconSvg;
+          btn.classList.add('is-paused');
+          btn.title = 'Resume';
+        }
+      } else {
+        synth.resume();
+        if (btn) {
+          btn.innerHTML = pauseIconSvg;
+          btn.classList.remove('is-paused');
+          btn.title = 'Pause';
+        }
+      }
+    }
+
+    function resetPlayback() {
+      isPlaying = false;
+      isPaused = false;
+      isReviewPhase = false;
+      isOnlyHighlighted = false;
+      playIndex = 0;
+      currentSpeechId++;
+
+      const goText = document.getElementById('goBtnText');
+      if (goText) goText.textContent = 'GO';
+
+      const wrongGoText = document.getElementById('wrongGoBtnText');
+      if (wrongGoText) wrongGoText.textContent = 'W';
+
+      releaseWakeLock();
+
+      const btn = document.getElementById('pauseResumeBtn');
+      if (btn) {
+        btn.innerHTML = pauseIconSvg;
+        btn.classList.remove('is-paused');
+        btn.title = 'Pause';
+      }
+
+      if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+      clearInterval(timerInterval);
+      remainingSeconds = 0;
+      totalTimerSeconds = 0;
+      updateTimerDisplay();
+      if (synth) synth.cancel();
+      document.querySelectorAll('.active-reading').forEach(c => c.classList.remove('active-reading'));
+    }
+
+    let secretHClickCount = 0;
+    let secretHClickTimer = null;
+
+    function handleSecretHClick(e) {
+      if (e) e.stopPropagation();
+      secretHClickCount++;
+      
+      clearTimeout(secretHClickTimer);
+      secretHClickTimer = setTimeout(() => {
+        secretHClickCount = 0;
+      }, 3000);
+
+      if (secretHClickCount >= 5) {
+        secretHClickCount = 0;
+        window.location.href = 'https://tonyymlee.github.io/pdictation/eng/aie_d.html';
+      }
+    }
+
+    function initSecretHLink() {
+      const trigger = document.getElementById('secretHTrigger');
+      if (!trigger) return;
+      trigger.addEventListener('click', handleSecretHClick);
+    }
+
+    function autoInitApp() {
+      initSecretHLink();
+      if (synth) {
+        populateVoices();
+        synth.onvoiceschanged = () => {
+          populateVoices();
+        };
+      }
+
+      const mainContent = document.getElementById('mainContent');
+      if (mainContent) {
+        mainContent.addEventListener('scroll', () => {
+          const toolbars = document.querySelectorAll('.toolbar-card');
+          if (mainContent.scrollTop > 0) {
+            toolbars.forEach(tb => tb.classList.add('is-scrolled'));
+          } else {
+            toolbars.forEach(tb => tb.classList.remove('is-scrolled'));
+          }
+        });
+      }
+
+      updateDisplayModeUI();
+      switchTab('tab1', document.getElementById('btn_tab1'));
+      checkAndResolveSameNamePdf();
+    }
+
+    document.addEventListener('DOMContentLoaded', autoInitApp);
+    window.onload = autoInitApp;
+  </script>
+
+<script id="autoLoadScript">
+          document.addEventListener('DOMContentLoaded', function() {
+            const savedCache = {"emerge bristly murmur hobble beckon creaky musty luminous   clutch   rustling   stale   crouch   froth   fabulous":"冒出 粗糙的 低語 跛行 招手 吱吱作響的 霉味 閃亮的 緊握 沙沙作響的 乏味的 蹲下 泡沫的 精彩的","the next moment, james was running":"下一刻，詹姆斯就跑了起來。","back toward the house as":"往房子方向走回去，","fast as he could go.":"他能跑多快就多快。","he would do it all in the":"他會把所有事情都","kitchen, he told himself—if only he":"廚房，他心想——如果他","could get in there without aunt":"沒有阿姨的幫忙，我可能進不去那裡。","sponge and aunt spiker seeing him.":"海綿和尖刺阿姨正在看他。","he was terribly excited.":"他非常興奮。","he flew through the long grass and the stinging-nettles, not caring":"他穿過茂密的草叢和蕁麻，毫不在意。","whether he got stung or not on his bare knees, and":"他光著的膝蓋有沒有被叮到，還有","in the distance he could see aunt sponge and aunt":"他在遠處可以看到史龐吉姑姑和","spiker sitting in their chairs with their backs toward him.":"尖刺者坐在椅子上，背對著他。","he swerved away from them so as to go around the other side of":"他轉向避開他們，繞到另一邊。","the house, but then suddenly, just as he was passing underneath":"房子，但就在他經過下方時，突然間，","the old peach tree that stood in the middle of the garden, his foot":"那棵矗立在花園中央的老桃樹，他的腳","slipped and he fell flat on his face in the grass.":"他滑倒了，臉朝下摔在草地上。","the paper bag burst open as":"紙袋突然爆開，","it hit the ground and the":"它撞到地面，然後","thousands of tiny green things":"成千上萬的小綠色東西","were scattered in all directions.":"散落在四面八方。","james immediately picked himself up onto":"詹姆斯立刻爬起來，","his hands and knees and started":"他跪在地上，開始","searching around for his precious treasures.":"到處尋找他的珍貴寶藏。","but what was this?":"但這是什麼？","emerge":"出現","they were all sinking":"他們全都沉下去了。","bristly":"粗糙的","into the soil!":"埋入土壤！","murmur":"潺潺","he could actually see them wriggling and twisting as they burrowed":"他真的可以看到牠們在鑽洞時扭來扭去。","hobble":"跛行","their way downward into the hard earth, and at once he":"朝下鑽入堅硬的土壤中，他立刻","beckon":"招手","reached out a hand to pick some of them up before":"伸手拿起其中一些，然後","creaky":"吱吱作響","it was too late, but they disappeared right under his fingers.":"為時已晚，但它們就在他的指尖下消失了。","musty":"霉味","he went after some others,":"他追著其他人，","luminous":"明亮","clutch":"clutch","and the same thing happened!":"結果發生了同樣的事情！","rustling":"沙沙聲","stale":"(食物)不新鮮/(笑話/新聞)沒新意/(對人)厭倦","crouch":"蹲下","froth":"泡沫","fabulous":"超棒"};
+            Object.assign(translationCache, savedCache);
+
+            const vDelay = document.getElementById('vocabDelayInput');
+            if (vDelay) vDelay.value = "10";
+            const vSpeed = document.getElementById('vocabVoiceSpeedSelect');
+            if (vSpeed) vSpeed.value = "0.38";
+            const pSec = document.getElementById('secPerWordInput');
+            if (pSec) pSec.value = "2.8";
+            const pSpeed = document.getElementById('voiceSpeedSelect');
+            if (pSpeed) pSpeed.value = "0.3";
+
+            const editor = document.getElementById('rawTextEditor');
+            if (editor && editor.value.trim()) {
+              parseAndApplyFullText(editor.value);
+            }
+          });
+        </script></body></html>
