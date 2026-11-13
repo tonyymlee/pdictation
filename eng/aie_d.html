@@ -566,6 +566,7 @@
     }
 
     .word-card.active-reading .word-text { color: #d32f2f !important; }
+    .hl-word { color: #db183c !important; font-weight: bold; }
 
     .word-index {
       position: absolute;
@@ -895,6 +896,8 @@
     let partBText = "";
     let partCText = "";
     let highlightedWords = []; // Array to store highlighted/wrong words for W mode
+    let customDontCutWords = []; // Array to store 'Don't cutline word' entries
+    let explainWordsMap = {}; // Map of lowercased word -> custom explanation from 'Explain word'
 
     let currentTab = 'tab1';
     let isPlaying = false;
@@ -949,16 +952,66 @@
       "thanks to", "together with", "up to"
     ];
 
+    function normalizeExplainKey(str) {
+      return (str || "").replace(/[\s\u00A0]+/g, ' ').trim().toLowerCase();
+    }
+
+    function parseExplainLine(lineStr) {
+      if (!lineStr) return null;
+      // Prefer spaced dash (e.g. "luminous clutch - 發光的一群" or "Stinging-nettles - 蕁麻") or colon/tab
+      let m = lineStr.match(/^(.+?)\s+[-–—−‐‑‒―]+\s+(.+)$/) ||
+              lineStr.match(/^(.+?)\s*[:：\t]\s*(.+)$/) ||
+              lineStr.match(/^(.+?)\s*[-–—−‐‑‒―]\s*(.+)$/);
+      if (m) {
+        return { key: normalizeExplainKey(m[1]), val: m[2].trim() };
+      }
+      return null;
+    }
+
     function extractTranslation(text) {
       if (!text) return { en: "", zh: "" };
       
       const match = text.match(/^(.*?)\s*[\(\（]([^\)\）]+)[\)\）]\s*$/);
       if (match) {
-        return { en: match[1].trim(), zh: match[2].trim() };
+        const enPart = match[1].trim();
+        const inlineZh = match[2].trim();
+        const customExplain = explainWordsMap[normalizeExplainKey(enPart)];
+        return { en: enPart, zh: customExplain || inlineZh };
       }
 
       const cleanEn = text.trim();
-      return { en: cleanEn, zh: translationCache[cleanEn.toLowerCase()] || "" };
+      const normKey = normalizeExplainKey(cleanEn);
+      return { en: cleanEn, zh: explainWordsMap[normKey] || translationCache[normKey] || "" };
+    }
+
+    function formatHighlightedText(enText, useNowrap = false) {
+      if (!enText) return "";
+      const escapeHtml = (str) => str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const validHighlights = (highlightedWords || []).filter(Boolean).sort((a, b) => b.length - a.length);
+
+      const highlightPart = (segment) => {
+        if (validHighlights.length === 0) return escapeHtml(segment);
+        const pattern = validHighlights.map(hw => hw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+        const regex = new RegExp(`(^|[^a-zA-Z0-9'-])(${pattern})(?=$|[^a-zA-Z0-9'-])`, 'gi');
+        let result = "";
+        let lastIdx = 0;
+        let match;
+        while ((match = regex.exec(segment)) !== null) {
+          const prefix = match[1];
+          const matchedWord = match[2];
+          const startOfMatch = match.index + prefix.length;
+          result += escapeHtml(segment.slice(lastIdx, startOfMatch));
+          result += `<span class="hl-word">${escapeHtml(matchedWord)}</span>`;
+          lastIdx = startOfMatch + matchedWord.length;
+        }
+        result += escapeHtml(segment.slice(lastIdx));
+        return result;
+      };
+
+      if (useNowrap) {
+        return enText.split(' ').map(w => `<span class="nowrap-word">${highlightPart(w)}</span>`).join(' ');
+      }
+      return highlightPart(enText);
     }
 
     async function fetchOnlineTranslation(text) {
@@ -1034,9 +1087,14 @@
       const zhElements = document.querySelectorAll('.zh-text[data-en]');
       for (const el of zhElements) {
         const enText = el.getAttribute('data-en');
-        if (enText && !el.textContent.trim()) {
-          const zh = translationCache[enText.toLowerCase()];
-          if (zh) el.textContent = zh;
+        if (enText) {
+          const normKey = normalizeExplainKey(enText);
+          if (explainWordsMap[normKey]) {
+            el.textContent = explainWordsMap[normKey];
+          } else if (!el.textContent.trim()) {
+            const zh = translationCache[normKey] || translationCache[enText.toLowerCase()];
+            if (zh) el.textContent = zh;
+          }
         }
       }
     }
@@ -1345,42 +1403,63 @@
       const totalWords = words.length;
       const baseSize = Math.floor(totalWords / numParts);
       const remainder = totalWords % numParts;
-      const parts = [];
+      const chunks = [];
       let currentIndex = 0;
 
       for (let i = 0; i < numParts; i++) {
         const size = baseSize + (i < remainder ? 1 : 0);
         const chunk = words.slice(currentIndex, currentIndex + size);
         if (chunk.length > 0) {
-          parts.push(chunk.join(" "));
+          chunks.push(chunk);
         }
         currentIndex += size;
       }
-      return parts;
+
+      // If a protected phrase placeholder lands right at the start of the next chunk (the split boundary),
+      // move it to the end of the preceding chunk so it stays at the end of the first sentence.
+      for (let i = 0; i < chunks.length - 1; i++) {
+        if (chunks[i + 1].length > 1 && /^__PHRASE_\d+__/.test(chunks[i + 1][0])) {
+          chunks[i].push(chunks[i + 1].shift());
+        }
+      }
+
+      return chunks.filter(c => c.length > 0).map(c => c.join(" "));
     }
 
     function buildDictationQueue(rawText) {
       if (!rawText || !rawText.trim()) return [];
       
-      const rawLines = rawText.split('\n');
+      // Group consecutive non-empty lines into paragraphs so wrapped lines in .txt files join naturally,
+      // while blank lines still create 'Next Paragraph' breaks.
+      const paragraphs = [];
+      let currentParaLines = [];
+      rawText.split(/\r?\n/).forEach(line => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) {
+          if (currentParaLines.length > 0) {
+            paragraphs.push(currentParaLines.join(' '));
+            currentParaLines = [];
+          }
+        } else {
+          currentParaLines.push(trimmedLine);
+        }
+      });
+      if (currentParaLines.length > 0) {
+        paragraphs.push(currentParaLines.join(' '));
+      }
+
       const queueList = [];
       let globalIndex = 0;
       let breakCount = 0;
-      let hasAddedContent = false;
 
-      rawLines.forEach(line => {
-        const trimmedLine = line.trim();
-        
-        if (!trimmedLine) {
-          if (hasAddedContent) {
-            breakCount++;
-            queueList.push({ type: 'break', text: 'Next Paragraph', breakId: breakCount });
-          }
-          return;
+      paragraphs.forEach((paraText, pIdx) => {
+        if (pIdx > 0) {
+          breakCount++;
+          queueList.push({ type: 'break', text: 'Next Paragraph', breakId: breakCount });
         }
 
         let lineHasContent = false;
-        let sentences = trimmedLine.match(/[^.!?;]+[.!?;]*['”’)]*\s*/g) || [trimmedLine];
+        let sentences = paraText.match(/[^.!?;,]+[.!?;,]*['”’)]*\s*/g) || [paraText];
 
         sentences.forEach(s => {
           let clause = s.trim();
@@ -1395,8 +1474,13 @@
           let phraseMap = [];
           let tempClause = clause;
 
-          protectedPhrases.forEach((phrase) => {
-            const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
+          const allProtectedPhrases = [...customDontCutWords, ...protectedPhrases]
+            .filter(Boolean)
+            .sort((a, b) => b.length - a.length);
+
+          allProtectedPhrases.forEach((phrase) => {
+            const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`\\b${escaped}\\b`, 'gi');
             tempClause = tempClause.replace(regex, (match) => {
               const placeholder = `__PHRASE_${phraseMap.length}__`;
               phraseMap.push({ placeholder, text: match });
@@ -1435,9 +1519,6 @@
           }
         });
 
-        if (lineHasContent) {
-          hasAddedContent = true;
-        }
       });
 
       const cleaned = [];
@@ -1487,6 +1568,8 @@
         partBText = "";
         partCText = "";
         highlightedWords = [];
+        customDontCutWords = [];
+        explainWordsMap = {};
         document.getElementById('appMainTitle').innerHTML = '<span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School English Dictation';
         document.getElementById('browserWindowTitle').textContent = "Happy Primary School English Dictation";
         renderTab();
@@ -1494,16 +1577,21 @@
         return;
       }
 
-      const lines = fullText.split('\n');
+      const lines = fullText.split(/\r?\n/);
       const lowerFullText = fullText.toLowerCase();
       
-      const hasHeaders = lowerFullText.includes('part a') || 
-                         lowerFullText.includes('part b') || 
-                         lowerFullText.includes('part c') || 
-                         lowerFullText.includes('vocabulary') || 
-                         lowerFullText.includes('passage') || 
-                         lowerFullText.includes('unseen') ||
-                         lowerFullText.includes('highlight');
+      const rePartA = /^part\s*a(?:\s*[\(（][^\)）]*[\)）])?(?:\s*[:：\-–—]\s*(.*))?$|^vocabulary(?:\s*[\(（][^\)）]*[\)）])?(?:\s*[:：\-–—]\s*(.*))?$/i;
+      const rePartB = /^part\s*b(?:\s*[\(（][^\)）]*[\)）])?(?:\s*[:：\-–—]\s*(.*))?$|^passage(?:\s*[\(（][^\)）]*[\)）])?(?:\s*[:：\-–—]\s*(.*))?$/i;
+      const rePartC = /^part\s*c(?:\s*[\(（][^\)）]*[\)）])?(?:\s*[:：\-–—]\s*(.*))?$|^unseen(?:\s+(?:dictation|passage|part|section|session))?(?:\s*[\(（][^\)）]*[\)）])?(?:\s*[:：\-–—]\s*(.*))?$/i;
+
+      const hasHeaders = lines.some(l => {
+        const t = l.trim();
+        const low = t.toLowerCase();
+        return rePartA.test(t) || rePartB.test(t) || rePartC.test(t) ||
+               low.startsWith('highlight') || low.includes('highlighted word') ||
+               low.startsWith('explain word') || low === 'explain' ||
+               low.startsWith("don't cutline") || low.startsWith("dont cutline") || low.startsWith("don’t cutline");
+      });
 
       let currentSection = hasHeaders ? 'header' : 'partA';
       
@@ -1512,6 +1600,8 @@
       let parsedPartB = [];
       let parsedPartC = [];
       let parsedHighlight = [];
+      let parsedDontCut = [];
+      let parsedExplain = {};
 
       lines.forEach(line => {
         const trimmed = line.trim();
@@ -1521,20 +1611,42 @@
           return;
         }
 
-        if (lower.startsWith('part a') || lower === 'part a' || lower.includes('vocabulary')) {
+        if (rePartA.test(trimmed)) {
           currentSection = 'partA';
           return;
         }
-        if (lower.startsWith('part b') || lower === 'part b' || lower.includes('passage')) {
+        if (rePartB.test(trimmed)) {
           currentSection = 'partB';
           return;
         }
-        if (lower.startsWith('part c') || lower === 'part c' || lower.includes('unseen')) {
+        if (rePartC.test(trimmed)) {
           currentSection = 'partC';
           return;
         }
-        if (lower.includes('highlight') || lower.includes('重點詞語') || lower.includes('高亮詞語')) {
+        if (lower.startsWith('highlight') || lower.includes('highlighted word') || lower.includes('重點詞語') || lower.includes('高亮詞語')) {
           currentSection = 'highlight';
+          const inlinePart = trimmed.replace(/^(?:highlighted\s+words?|highlight|重點詞語|高亮詞語)\s*[:：]?\s*/i, '').trim();
+          if (inlinePart) {
+            const sep = /[	,]/.test(inlinePart) ? /[	,]+/ : /\s+/;
+            inlinePart.split(sep).map(w => w.trim()).filter(Boolean).forEach(w => parsedHighlight.push(w));
+          }
+          return;
+        }
+        if (lower.startsWith("don't cutline") || lower.startsWith("dont cutline") || lower.startsWith("don’t cutline")) {
+          currentSection = 'dontCut';
+          const inlinePart = trimmed.replace(/^don['’]?t\s+cutline(?:\s+words?)?\s*[:：]?\s*/i, '').trim();
+          if (inlinePart) {
+            inlinePart.split(/[\t,]+/).map(w => w.trim()).filter(Boolean).forEach(w => parsedDontCut.push(w));
+          }
+          return;
+        }
+        if (lower.startsWith('explain word') || lower === 'explain' || lower.includes('詞語解釋')) {
+          currentSection = 'explain';
+          const inlinePart = trimmed.replace(/^(?:explain\s+words?|explain|詞語解釋)\s*[:：]?\s*/i, '').trim();
+          if (inlinePart) {
+            const parsed = parseExplainLine(inlinePart);
+            if (parsed) parsedExplain[parsed.key] = parsed.val;
+          }
           return;
         }
 
@@ -1547,13 +1659,24 @@
             items.forEach(w => parsedPartA.push(w));
           }
         } else if (currentSection === 'partB') {
-          if (trimmed) parsedPartB.push(trimmed);
+          parsedPartB.push(trimmed);
         } else if (currentSection === 'partC') {
-          if (trimmed) parsedPartC.push(trimmed);
+          parsedPartC.push(trimmed);
         } else if (currentSection === 'highlight') {
           if (trimmed) {
-            let items = trimmed.split(/[\t,]+/).map(w => w.trim()).filter(Boolean);
+            const sep = /[\t,]/.test(trimmed) ? /[\t,]+/ : /\s+/;
+            let items = trimmed.split(sep).map(w => w.trim()).filter(Boolean);
             items.forEach(w => parsedHighlight.push(w));
+          }
+        } else if (currentSection === 'dontCut') {
+          if (trimmed) {
+            let items = trimmed.split(/[\t,]+/).map(w => w.trim()).filter(Boolean);
+            items.forEach(w => parsedDontCut.push(w));
+          }
+        } else if (currentSection === 'explain') {
+          if (trimmed) {
+            const parsed = parseExplainLine(trimmed);
+            if (parsed) parsedExplain[parsed.key] = parsed.val;
           }
         }
       });
@@ -1581,9 +1704,12 @@
       }
 
       partAVocab = parsedPartA;
-      partBText = parsedPartB.join('\n\n');
-      partCText = parsedPartC.join('\n\n');
+      partBText = parsedPartB.join('\n').trim();
+      partCText = parsedPartC.join('\n').trim();
       highlightedWords = parsedHighlight;
+      customDontCutWords = parsedDontCut;
+      explainWordsMap = parsedExplain;
+      Object.assign(translationCache, parsedExplain);
 
       renderTab();
       preloadAllTranslations();
@@ -1737,7 +1863,7 @@
         html += `
           <div class="word-card" id="card_${idx}" onclick="clickPlayVocab(${idx})">
             <div class="word-index">#${idx + 1}</div>
-            <div class="word-text" title="${en}">${en}</div>
+            <div class="word-text" title="${en}">${formatHighlightedText(en, false)}</div>
             <div class="zh-text" data-en="${en}">${zh}</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(${idx})">▶</button>
           </div>
@@ -1762,7 +1888,7 @@
           html += `<div class="paragraph-break" id="break_${item.breakId}">--- Next Paragraph ---</div>`;
         } else if (item.type === 'sentence') {
           const { en, zh } = extractTranslation(item.text);
-          let formattedText = en.split(' ').map(w => `<span class="nowrap-word">${w}</span>`).join(' ');
+          let formattedText = formatHighlightedText(en, true);
 
           html += `
             <div class="dictation-row" id="dcard_${item.index}" onclick="clickPlayDictation(${item.index})">

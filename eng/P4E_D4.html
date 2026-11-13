@@ -565,6 +565,7 @@
     }
 
     .word-card.active-reading .word-text { color: #d32f2f !important; }
+    .hl-word { color: #db183c !important; font-weight: bold; }
 
     .word-index {
       position: absolute;
@@ -772,7 +773,7 @@
         </svg>
       </button>
 
-      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">Chi</button>
+      <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="Toggle View Mode">C+E</button>
       
       <div class="timer-clock-box" title="Remaining Time">
         <div class="timer-pie" id="timerPie" style="background: conic-gradient(rgb(59, 130, 246) 0%, rgb(229, 231, 235) 0%);"></div>
@@ -802,10 +803,10 @@
           <button class="tab-btn" id="btn_tab1" onclick="switchTab('tab1', this)">
             <span class="tab-icon">🔤</span> Vocabulary
           </button>
-          <button class="tab-btn active" id="btn_tab2" onclick="switchTab('tab2', this)">
+          <button class="tab-btn" id="btn_tab2" onclick="switchTab('tab2', this)">
             <span class="tab-icon">📖</span> Passage
           </button>
-          <button class="tab-btn" id="btn_tab3" onclick="switchTab('tab3', this)">
+          <button class="tab-btn active" id="btn_tab3" onclick="switchTab('tab3', this)">
             <span class="tab-icon">🎯</span> Unseen
           </button>
         </div>
@@ -832,20 +833,41 @@ Primary 4 Dictation 4 scope
 Date of Dictation: 19th November,2026 (Thursday) 
 
 Part A: Vocabulary (15% @3, Sp.-3 P./C.-1)
-emerge	bristly	murmur	hobble	
-beckon	creaky	musty	luminous   
-clutch	rustling	stale	crouch	froth	fabulous   	
+emerge	bristly	murmur	
+hobble	beckon	creaky	
+musty	luminous   clutch	
+rustling	stale	crouch	
+froth	fabulous   	
 
 Part B: James and the Giant Peach (Chapter 5)(Pp.13-15)(70% @3, Sp.-3 P./C.-1)
 
 THE NEXT MOMENT, James was running back toward the house as fast as he could go. He would do it all in the kitchen, he told himself—if only he could get in there without Aunt Sponge and Aunt Spiker seeing him. He was terribly excited. He flew through the long grass and the stinging-nettles, not caring whether he got stung or not on his bare knees, and in the distance he could see Aunt Sponge and Aunt Spiker sitting in their chairs with their backs toward him. He swerved away from them so as to go around the other side of the house, but then suddenly, just as he was passing underneath the old peach tree that stood in the middle of the garden, his foot slipped and he fell flat on his face in the grass. The paper bag burst open as it hit the ground and the thousands of tiny green things were scattered in all directions.
-James immediately picked himself up onto his hands and knees and started searching around for his precious treasures. But what was this? They were all sinking into the soil! He could actually see them wriggling and twisting as they burrowed their way downward into the hard earth, and at once he reached out a hand to pick some of them up before it was too late, but they disappeared right under his fingers. He went after some others, and the same thing happened!</textarea>
+
+James immediately picked himself up onto his hands and knees and started searching around for his precious treasures. But what was this? They were all sinking into the soil! He could actually see them wriggling and twisting as they burrowed their way downward into the hard earth, and at once he reached out a hand to pick some of them up before it was too late, but they disappeared right under his fingers. He went after some others, and the same thing happened!
+
+
+Don't cutline word
+Aunt Sponge
+Aunt Spiker
+
+
+Highlighted word
+Spiker Sponge Stinging-nettles
+
+Explain word
+Stale - 不新鮮的, 發霉的
+emerge - 出現
+luminous clutch - 發光的一群
+
+unseen
+A new study has found that children in Hong Kong have grown taller and heavier over the last 30 years. This is because children now have better food and lifestyles that help them grow in a healthy way.
+</textarea>
         <button class="btn-action" onclick="refreshContentFromEditor()">🔄 Update Content</button>
         <button class="btn-export" onclick="exportCurrentAppAsHTML()">📥 Export HTML</button>
       </div>
     </aside>
 
-    <main id="mainContent" class="mode-C">
+    <main id="mainContent" class="mode-EC">
       <div class="toolbar-card hidden" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
@@ -871,7 +893,7 @@ James immediately picked himself up onto his hands and knees and started searchi
 
       <div class="toolbar-card" id="dictationToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="Back to Top">Passage</button>
+          <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="Back to Top">Unseen</button>
           <span class="toolbar-options">
             <label>I: <input type="number" id="secPerWordInput" value="2.8" min="0.5" step="0.1" max="99"> s</label>
             <label>S: 
@@ -896,8 +918,8 @@ James immediately picked himself up onto his hands and knees and started searchi
             <div class="dictation-row" id="dcard_1" onclick="clickPlayDictation(1)">
               <div>
                 <div class="sentence-index">#1</div>
-                <div class="sentence-text"><span class="nowrap-word">THE</span> <span class="nowrap-word">NEXT</span> <span class="nowrap-word">MOMENT,</span> <span class="nowrap-word">James</span> <span class="nowrap-word">was</span> <span class="nowrap-word">running</span></div>
-                <div class="zh-text" data-en="THE NEXT MOMENT, James was running">下一刻，詹姆斯就跑了起來。</div>
+                <div class="sentence-text"><span class="nowrap-word">A</span> <span class="nowrap-word">new</span> <span class="nowrap-word">study</span> <span class="nowrap-word">has</span> <span class="nowrap-word">found</span> <span class="nowrap-word">that</span> <span class="nowrap-word">children</span></div>
+                <div class="zh-text" data-en="A new study has found that children">一項新研究發現，兒童</div>
               </div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(1)">▶</button>
             </div>
@@ -905,8 +927,8 @@ James immediately picked himself up onto his hands and knees and started searchi
             <div class="dictation-row" id="dcard_2" onclick="clickPlayDictation(2)">
               <div>
                 <div class="sentence-index">#2</div>
-                <div class="sentence-text"><span class="nowrap-word">back</span> <span class="nowrap-word">toward</span> <span class="nowrap-word">the</span> <span class="nowrap-word">house</span> <span class="nowrap-word">as</span></div>
-                <div class="zh-text" data-en="back toward the house as">往房子方向走回去，</div>
+                <div class="sentence-text"><span class="nowrap-word">in</span> <span class="nowrap-word">Hong</span> <span class="nowrap-word">Kong</span> <span class="nowrap-word">have</span> <span class="nowrap-word">grown</span> <span class="nowrap-word">taller</span> <span class="nowrap-word">and</span></div>
+                <div class="zh-text" data-en="in Hong Kong have grown taller and">在香港長得更高了，而且</div>
               </div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(2)">▶</button>
             </div>
@@ -914,8 +936,8 @@ James immediately picked himself up onto his hands and knees and started searchi
             <div class="dictation-row" id="dcard_3" onclick="clickPlayDictation(3)">
               <div>
                 <div class="sentence-index">#3</div>
-                <div class="sentence-text"><span class="nowrap-word">fast</span> <span class="nowrap-word">as</span> <span class="nowrap-word">he</span> <span class="nowrap-word">could</span> <span class="nowrap-word">go.</span></div>
-                <div class="zh-text" data-en="fast as he could go.">他能跑多快就多快。</div>
+                <div class="sentence-text"><span class="nowrap-word">heavier</span> <span class="nowrap-word">over</span> <span class="nowrap-word">the</span> <span class="nowrap-word">last</span> <span class="nowrap-word">30</span> <span class="nowrap-word">years.</span></div>
+                <div class="zh-text" data-en="heavier over the last 30 years.">在過去 30 年間變得更重。</div>
               </div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(3)">▶</button>
             </div>
@@ -923,8 +945,8 @@ James immediately picked himself up onto his hands and knees and started searchi
             <div class="dictation-row" id="dcard_4" onclick="clickPlayDictation(4)">
               <div>
                 <div class="sentence-index">#4</div>
-                <div class="sentence-text"><span class="nowrap-word">He</span> <span class="nowrap-word">would</span> <span class="nowrap-word">do</span> <span class="nowrap-word">it</span> <span class="nowrap-word">all</span> <span class="nowrap-word">in</span> <span class="nowrap-word">the</span></div>
-                <div class="zh-text" data-en="He would do it all in the">他會把所有事情都</div>
+                <div class="sentence-text"><span class="nowrap-word">This</span> <span class="nowrap-word">is</span> <span class="nowrap-word">because</span> <span class="nowrap-word">children</span> <span class="nowrap-word">now</span> <span class="nowrap-word">have</span></div>
+                <div class="zh-text" data-en="This is because children now have">這是因為現在的孩子們有</div>
               </div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(4)">▶</button>
             </div>
@@ -932,8 +954,8 @@ James immediately picked himself up onto his hands and knees and started searchi
             <div class="dictation-row" id="dcard_5" onclick="clickPlayDictation(5)">
               <div>
                 <div class="sentence-index">#5</div>
-                <div class="sentence-text"><span class="nowrap-word">kitchen,</span> <span class="nowrap-word">he</span> <span class="nowrap-word">told</span> <span class="nowrap-word">himself—if</span> <span class="nowrap-word">only</span> <span class="nowrap-word">he</span></div>
-                <div class="zh-text" data-en="kitchen, he told himself—if only he">廚房，他心想——如果他</div>
+                <div class="sentence-text"><span class="nowrap-word">better</span> <span class="nowrap-word">food</span> <span class="nowrap-word">and</span> <span class="nowrap-word">lifestyles</span> <span class="nowrap-word">that</span> <span class="nowrap-word">help</span></div>
+                <div class="zh-text" data-en="better food and lifestyles that help">更好的飲食和生活方式，有助於</div>
               </div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(5)">▶</button>
             </div>
@@ -941,244 +963,10 @@ James immediately picked himself up onto his hands and knees and started searchi
             <div class="dictation-row" id="dcard_6" onclick="clickPlayDictation(6)">
               <div>
                 <div class="sentence-index">#6</div>
-                <div class="sentence-text"><span class="nowrap-word">could</span> <span class="nowrap-word">get</span> <span class="nowrap-word">in</span> <span class="nowrap-word">there</span> <span class="nowrap-word">without</span> <span class="nowrap-word">Aunt</span></div>
-                <div class="zh-text" data-en="could get in there without Aunt">沒有阿姨的幫忙，我可能進不去那裡。</div>
+                <div class="sentence-text"><span class="nowrap-word">them</span> <span class="nowrap-word">grow</span> <span class="nowrap-word">in</span> <span class="nowrap-word">a</span> <span class="nowrap-word">healthy</span> <span class="nowrap-word">way.</span></div>
+                <div class="zh-text" data-en="them grow in a healthy way.">讓他們健康成長。</div>
               </div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(6)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_7" onclick="clickPlayDictation(7)">
-              <div>
-                <div class="sentence-index">#7</div>
-                <div class="sentence-text"><span class="nowrap-word">Sponge</span> <span class="nowrap-word">and</span> <span class="nowrap-word">Aunt</span> <span class="nowrap-word">Spiker</span> <span class="nowrap-word">seeing</span> <span class="nowrap-word">him.</span></div>
-                <div class="zh-text" data-en="Sponge and Aunt Spiker seeing him.">海綿和尖刺阿姨正在看他。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(7)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_8" onclick="clickPlayDictation(8)">
-              <div>
-                <div class="sentence-index">#8</div>
-                <div class="sentence-text"><span class="nowrap-word">He</span> <span class="nowrap-word">was</span> <span class="nowrap-word">terribly</span> <span class="nowrap-word">excited.</span></div>
-                <div class="zh-text" data-en="He was terribly excited.">他非常興奮。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(8)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_9" onclick="clickPlayDictation(9)">
-              <div>
-                <div class="sentence-index">#9</div>
-                <div class="sentence-text"><span class="nowrap-word">He</span> <span class="nowrap-word">flew</span> <span class="nowrap-word">through</span> <span class="nowrap-word">the</span> <span class="nowrap-word">long</span> <span class="nowrap-word">grass</span> <span class="nowrap-word">and</span> <span class="nowrap-word">the</span> <span class="nowrap-word">stinging-nettles,</span> <span class="nowrap-word">not</span> <span class="nowrap-word">caring</span></div>
-                <div class="zh-text" data-en="He flew through the long grass and the stinging-nettles, not caring">他穿過茂密的草叢和蕁麻，毫不在意。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(9)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_10" onclick="clickPlayDictation(10)">
-              <div>
-                <div class="sentence-index">#10</div>
-                <div class="sentence-text"><span class="nowrap-word">whether</span> <span class="nowrap-word">he</span> <span class="nowrap-word">got</span> <span class="nowrap-word">stung</span> <span class="nowrap-word">or</span> <span class="nowrap-word">not</span> <span class="nowrap-word">on</span> <span class="nowrap-word">his</span> <span class="nowrap-word">bare</span> <span class="nowrap-word">knees,</span> <span class="nowrap-word">and</span></div>
-                <div class="zh-text" data-en="whether he got stung or not on his bare knees, and">他光著的膝蓋有沒有被叮到，還有</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(10)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_11" onclick="clickPlayDictation(11)">
-              <div>
-                <div class="sentence-index">#11</div>
-                <div class="sentence-text"><span class="nowrap-word">in</span> <span class="nowrap-word">the</span> <span class="nowrap-word">distance</span> <span class="nowrap-word">he</span> <span class="nowrap-word">could</span> <span class="nowrap-word">see</span> <span class="nowrap-word">Aunt</span> <span class="nowrap-word">Sponge</span> <span class="nowrap-word">and</span> <span class="nowrap-word">Aunt</span></div>
-                <div class="zh-text" data-en="in the distance he could see Aunt Sponge and Aunt">他在遠處可以看到史龐吉姑姑和</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(11)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_12" onclick="clickPlayDictation(12)">
-              <div>
-                <div class="sentence-index">#12</div>
-                <div class="sentence-text"><span class="nowrap-word">Spiker</span> <span class="nowrap-word">sitting</span> <span class="nowrap-word">in</span> <span class="nowrap-word">their</span> <span class="nowrap-word">chairs</span> <span class="nowrap-word">with</span> <span class="nowrap-word">their</span> <span class="nowrap-word">backs</span> <span class="nowrap-word">toward</span> <span class="nowrap-word">him.</span></div>
-                <div class="zh-text" data-en="Spiker sitting in their chairs with their backs toward him.">尖刺者坐在椅子上，背對著他。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(12)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_13" onclick="clickPlayDictation(13)">
-              <div>
-                <div class="sentence-index">#13</div>
-                <div class="sentence-text"><span class="nowrap-word">He</span> <span class="nowrap-word">swerved</span> <span class="nowrap-word">away</span> <span class="nowrap-word">from</span> <span class="nowrap-word">them</span> <span class="nowrap-word">so</span> <span class="nowrap-word">as</span> <span class="nowrap-word">to</span> <span class="nowrap-word">go</span> <span class="nowrap-word">around</span> <span class="nowrap-word">the</span> <span class="nowrap-word">other</span> <span class="nowrap-word">side</span> <span class="nowrap-word">of</span></div>
-                <div class="zh-text" data-en="He swerved away from them so as to go around the other side of">他轉向避開他們，繞到另一邊。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(13)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_14" onclick="clickPlayDictation(14)">
-              <div>
-                <div class="sentence-index">#14</div>
-                <div class="sentence-text"><span class="nowrap-word">the</span> <span class="nowrap-word">house,</span> <span class="nowrap-word">but</span> <span class="nowrap-word">then</span> <span class="nowrap-word">suddenly,</span> <span class="nowrap-word">just</span> <span class="nowrap-word">as</span> <span class="nowrap-word">he</span> <span class="nowrap-word">was</span> <span class="nowrap-word">passing</span> <span class="nowrap-word">underneath</span></div>
-                <div class="zh-text" data-en="the house, but then suddenly, just as he was passing underneath">房子，但就在他經過下方時，突然間，</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(14)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_15" onclick="clickPlayDictation(15)">
-              <div>
-                <div class="sentence-index">#15</div>
-                <div class="sentence-text"><span class="nowrap-word">the</span> <span class="nowrap-word">old</span> <span class="nowrap-word">peach</span> <span class="nowrap-word">tree</span> <span class="nowrap-word">that</span> <span class="nowrap-word">stood</span> <span class="nowrap-word">in</span> <span class="nowrap-word">the</span> <span class="nowrap-word">middle</span> <span class="nowrap-word">of</span> <span class="nowrap-word">the</span> <span class="nowrap-word">garden,</span> <span class="nowrap-word">his</span> <span class="nowrap-word">foot</span></div>
-                <div class="zh-text" data-en="the old peach tree that stood in the middle of the garden, his foot">那棵矗立在花園中央的老桃樹，他的腳</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(15)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_16" onclick="clickPlayDictation(16)">
-              <div>
-                <div class="sentence-index">#16</div>
-                <div class="sentence-text"><span class="nowrap-word">slipped</span> <span class="nowrap-word">and</span> <span class="nowrap-word">he</span> <span class="nowrap-word">fell</span> <span class="nowrap-word">flat</span> <span class="nowrap-word">on</span> <span class="nowrap-word">his</span> <span class="nowrap-word">face</span> <span class="nowrap-word">in</span> <span class="nowrap-word">the</span> <span class="nowrap-word">grass.</span></div>
-                <div class="zh-text" data-en="slipped and he fell flat on his face in the grass.">他滑倒了，臉朝下摔在草地上。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(16)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_17" onclick="clickPlayDictation(17)">
-              <div>
-                <div class="sentence-index">#17</div>
-                <div class="sentence-text"><span class="nowrap-word">The</span> <span class="nowrap-word">paper</span> <span class="nowrap-word">bag</span> <span class="nowrap-word">burst</span> <span class="nowrap-word">open</span> <span class="nowrap-word">as</span></div>
-                <div class="zh-text" data-en="The paper bag burst open as">紙袋突然爆開，</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(17)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_18" onclick="clickPlayDictation(18)">
-              <div>
-                <div class="sentence-index">#18</div>
-                <div class="sentence-text"><span class="nowrap-word">it</span> <span class="nowrap-word">hit</span> <span class="nowrap-word">the</span> <span class="nowrap-word">ground</span> <span class="nowrap-word">and</span> <span class="nowrap-word">the</span></div>
-                <div class="zh-text" data-en="it hit the ground and the">它撞到地面，然後</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(18)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_19" onclick="clickPlayDictation(19)">
-              <div>
-                <div class="sentence-index">#19</div>
-                <div class="sentence-text"><span class="nowrap-word">thousands</span> <span class="nowrap-word">of</span> <span class="nowrap-word">tiny</span> <span class="nowrap-word">green</span> <span class="nowrap-word">things</span></div>
-                <div class="zh-text" data-en="thousands of tiny green things">成千上萬的小綠色東西</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(19)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_20" onclick="clickPlayDictation(20)">
-              <div>
-                <div class="sentence-index">#20</div>
-                <div class="sentence-text"><span class="nowrap-word">were</span> <span class="nowrap-word">scattered</span> <span class="nowrap-word">in</span> <span class="nowrap-word">all</span> <span class="nowrap-word">directions.</span></div>
-                <div class="zh-text" data-en="were scattered in all directions.">散落在四面八方。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(20)">▶</button>
-            </div>
-          <div class="paragraph-break" id="break_1">--- Next Paragraph ---</div>
-            <div class="dictation-row" id="dcard_21" onclick="clickPlayDictation(21)">
-              <div>
-                <div class="sentence-index">#21</div>
-                <div class="sentence-text"><span class="nowrap-word">James</span> <span class="nowrap-word">immediately</span> <span class="nowrap-word">picked</span> <span class="nowrap-word">himself</span> <span class="nowrap-word">up</span> <span class="nowrap-word">onto</span></div>
-                <div class="zh-text" data-en="James immediately picked himself up onto">詹姆斯立刻爬起來，</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(21)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_22" onclick="clickPlayDictation(22)">
-              <div>
-                <div class="sentence-index">#22</div>
-                <div class="sentence-text"><span class="nowrap-word">his</span> <span class="nowrap-word">hands</span> <span class="nowrap-word">and</span> <span class="nowrap-word">knees</span> <span class="nowrap-word">and</span> <span class="nowrap-word">started</span></div>
-                <div class="zh-text" data-en="his hands and knees and started">他跪在地上，開始</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(22)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_23" onclick="clickPlayDictation(23)">
-              <div>
-                <div class="sentence-index">#23</div>
-                <div class="sentence-text"><span class="nowrap-word">searching</span> <span class="nowrap-word">around</span> <span class="nowrap-word">for</span> <span class="nowrap-word">his</span> <span class="nowrap-word">precious</span> <span class="nowrap-word">treasures.</span></div>
-                <div class="zh-text" data-en="searching around for his precious treasures.">到處尋找他的珍貴寶藏。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(23)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_24" onclick="clickPlayDictation(24)">
-              <div>
-                <div class="sentence-index">#24</div>
-                <div class="sentence-text"><span class="nowrap-word">But</span> <span class="nowrap-word">what</span> <span class="nowrap-word">was</span> <span class="nowrap-word">this?</span></div>
-                <div class="zh-text" data-en="But what was this?">但這是什麼？</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(24)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_25" onclick="clickPlayDictation(25)">
-              <div>
-                <div class="sentence-index">#25</div>
-                <div class="sentence-text"><span class="nowrap-word">They</span> <span class="nowrap-word">were</span> <span class="nowrap-word">all</span> <span class="nowrap-word">sinking</span></div>
-                <div class="zh-text" data-en="They were all sinking">他們全都沉下去了。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(25)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_26" onclick="clickPlayDictation(26)">
-              <div>
-                <div class="sentence-index">#26</div>
-                <div class="sentence-text"><span class="nowrap-word">into</span> <span class="nowrap-word">the</span> <span class="nowrap-word">soil!</span></div>
-                <div class="zh-text" data-en="into the soil!">埋入土壤！</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(26)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_27" onclick="clickPlayDictation(27)">
-              <div>
-                <div class="sentence-index">#27</div>
-                <div class="sentence-text"><span class="nowrap-word">He</span> <span class="nowrap-word">could</span> <span class="nowrap-word">actually</span> <span class="nowrap-word">see</span> <span class="nowrap-word">them</span> <span class="nowrap-word">wriggling</span> <span class="nowrap-word">and</span> <span class="nowrap-word">twisting</span> <span class="nowrap-word">as</span> <span class="nowrap-word">they</span> <span class="nowrap-word">burrowed</span></div>
-                <div class="zh-text" data-en="He could actually see them wriggling and twisting as they burrowed">他真的可以看到牠們在鑽洞時扭來扭去。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(27)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_28" onclick="clickPlayDictation(28)">
-              <div>
-                <div class="sentence-index">#28</div>
-                <div class="sentence-text"><span class="nowrap-word">their</span> <span class="nowrap-word">way</span> <span class="nowrap-word">downward</span> <span class="nowrap-word">into</span> <span class="nowrap-word">the</span> <span class="nowrap-word">hard</span> <span class="nowrap-word">earth,</span> <span class="nowrap-word">and</span> <span class="nowrap-word">at</span> <span class="nowrap-word">once</span> <span class="nowrap-word">he</span></div>
-                <div class="zh-text" data-en="their way downward into the hard earth, and at once he">朝下鑽入堅硬的土壤中，他立刻</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(28)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_29" onclick="clickPlayDictation(29)">
-              <div>
-                <div class="sentence-index">#29</div>
-                <div class="sentence-text"><span class="nowrap-word">reached</span> <span class="nowrap-word">out</span> <span class="nowrap-word">a</span> <span class="nowrap-word">hand</span> <span class="nowrap-word">to</span> <span class="nowrap-word">pick</span> <span class="nowrap-word">some</span> <span class="nowrap-word">of</span> <span class="nowrap-word">them</span> <span class="nowrap-word">up</span> <span class="nowrap-word">before</span></div>
-                <div class="zh-text" data-en="reached out a hand to pick some of them up before">伸手拿起其中一些，然後</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(29)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_30" onclick="clickPlayDictation(30)">
-              <div>
-                <div class="sentence-index">#30</div>
-                <div class="sentence-text"><span class="nowrap-word">it</span> <span class="nowrap-word">was</span> <span class="nowrap-word">too</span> <span class="nowrap-word">late,</span> <span class="nowrap-word">but</span> <span class="nowrap-word">they</span> <span class="nowrap-word">disappeared</span> <span class="nowrap-word">right</span> <span class="nowrap-word">under</span> <span class="nowrap-word">his</span> <span class="nowrap-word">fingers.</span></div>
-                <div class="zh-text" data-en="it was too late, but they disappeared right under his fingers.">為時已晚，但它們就在他的指尖下消失了。</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(30)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_31" onclick="clickPlayDictation(31)">
-              <div>
-                <div class="sentence-index">#31</div>
-                <div class="sentence-text"><span class="nowrap-word">He</span> <span class="nowrap-word">went</span> <span class="nowrap-word">after</span> <span class="nowrap-word">some</span> <span class="nowrap-word">others,</span></div>
-                <div class="zh-text" data-en="He went after some others,">他追著其他人，</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(31)">▶</button>
-            </div>
-          
-            <div class="dictation-row" id="dcard_32" onclick="clickPlayDictation(32)">
-              <div>
-                <div class="sentence-index">#32</div>
-                <div class="sentence-text"><span class="nowrap-word">and</span> <span class="nowrap-word">the</span> <span class="nowrap-word">same</span> <span class="nowrap-word">thing</span> <span class="nowrap-word">happened!</span></div>
-                <div class="zh-text" data-en="and the same thing happened!">結果發生了同樣的事情！</div>
-              </div>
-              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(32)">▶</button>
             </div>
           </div></div>
     </main>
@@ -1189,6 +977,8 @@ James immediately picked himself up onto his hands and knees and started searchi
     let partBText = "";
     let partCText = "";
     let highlightedWords = []; // Array to store highlighted/wrong words for W mode
+    let customDontCutWords = []; // Array to store 'Don't cutline word' entries
+    let explainWordsMap = {}; // Map of lowercased word -> custom explanation from 'Explain word'
 
     let currentTab = 'tab1';
     let isPlaying = false;
@@ -1243,16 +1033,66 @@ James immediately picked himself up onto his hands and knees and started searchi
       "thanks to", "together with", "up to"
     ];
 
+    function normalizeExplainKey(str) {
+      return (str || "").replace(/[\s\u00A0]+/g, ' ').trim().toLowerCase();
+    }
+
+    function parseExplainLine(lineStr) {
+      if (!lineStr) return null;
+      // Prefer spaced dash (e.g. "luminous clutch - 發光的一群" or "Stinging-nettles - 蕁麻") or colon/tab
+      let m = lineStr.match(/^(.+?)\s+[-–—−‐‑‒―]+\s+(.+)$/) ||
+              lineStr.match(/^(.+?)\s*[:：\t]\s*(.+)$/) ||
+              lineStr.match(/^(.+?)\s*[-–—−‐‑‒―]\s*(.+)$/);
+      if (m) {
+        return { key: normalizeExplainKey(m[1]), val: m[2].trim() };
+      }
+      return null;
+    }
+
     function extractTranslation(text) {
       if (!text) return { en: "", zh: "" };
       
       const match = text.match(/^(.*?)\s*[\(\（]([^\)\）]+)[\)\）]\s*$/);
       if (match) {
-        return { en: match[1].trim(), zh: match[2].trim() };
+        const enPart = match[1].trim();
+        const inlineZh = match[2].trim();
+        const customExplain = explainWordsMap[normalizeExplainKey(enPart)];
+        return { en: enPart, zh: customExplain || inlineZh };
       }
 
       const cleanEn = text.trim();
-      return { en: cleanEn, zh: translationCache[cleanEn.toLowerCase()] || "" };
+      const normKey = normalizeExplainKey(cleanEn);
+      return { en: cleanEn, zh: explainWordsMap[normKey] || translationCache[normKey] || "" };
+    }
+
+    function formatHighlightedText(enText, useNowrap = false) {
+      if (!enText) return "";
+      const escapeHtml = (str) => str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+      const validHighlights = (highlightedWords || []).filter(Boolean).sort((a, b) => b.length - a.length);
+
+      const highlightPart = (segment) => {
+        if (validHighlights.length === 0) return escapeHtml(segment);
+        const pattern = validHighlights.map(hw => hw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+        const regex = new RegExp(`(^|[^a-zA-Z0-9'-])(${pattern})(?=$|[^a-zA-Z0-9'-])`, 'gi');
+        let result = "";
+        let lastIdx = 0;
+        let match;
+        while ((match = regex.exec(segment)) !== null) {
+          const prefix = match[1];
+          const matchedWord = match[2];
+          const startOfMatch = match.index + prefix.length;
+          result += escapeHtml(segment.slice(lastIdx, startOfMatch));
+          result += `<span class="hl-word">${escapeHtml(matchedWord)}</span>`;
+          lastIdx = startOfMatch + matchedWord.length;
+        }
+        result += escapeHtml(segment.slice(lastIdx));
+        return result;
+      };
+
+      if (useNowrap) {
+        return enText.split(' ').map(w => `<span class="nowrap-word">${highlightPart(w)}</span>`).join(' ');
+      }
+      return highlightPart(enText);
     }
 
     async function fetchOnlineTranslation(text) {
@@ -1328,9 +1168,14 @@ James immediately picked himself up onto his hands and knees and started searchi
       const zhElements = document.querySelectorAll('.zh-text[data-en]');
       for (const el of zhElements) {
         const enText = el.getAttribute('data-en');
-        if (enText && !el.textContent.trim()) {
-          const zh = translationCache[enText.toLowerCase()];
-          if (zh) el.textContent = zh;
+        if (enText) {
+          const normKey = normalizeExplainKey(enText);
+          if (explainWordsMap[normKey]) {
+            el.textContent = explainWordsMap[normKey];
+          } else if (!el.textContent.trim()) {
+            const zh = translationCache[normKey] || translationCache[enText.toLowerCase()];
+            if (zh) el.textContent = zh;
+          }
         }
       }
     }
@@ -1639,42 +1484,63 @@ James immediately picked himself up onto his hands and knees and started searchi
       const totalWords = words.length;
       const baseSize = Math.floor(totalWords / numParts);
       const remainder = totalWords % numParts;
-      const parts = [];
+      const chunks = [];
       let currentIndex = 0;
 
       for (let i = 0; i < numParts; i++) {
         const size = baseSize + (i < remainder ? 1 : 0);
         const chunk = words.slice(currentIndex, currentIndex + size);
         if (chunk.length > 0) {
-          parts.push(chunk.join(" "));
+          chunks.push(chunk);
         }
         currentIndex += size;
       }
-      return parts;
+
+      // If a protected phrase placeholder lands right at the start of the next chunk (the split boundary),
+      // move it to the end of the preceding chunk so it stays at the end of the first sentence.
+      for (let i = 0; i < chunks.length - 1; i++) {
+        if (chunks[i + 1].length > 1 && /^__PHRASE_\d+__/.test(chunks[i + 1][0])) {
+          chunks[i].push(chunks[i + 1].shift());
+        }
+      }
+
+      return chunks.filter(c => c.length > 0).map(c => c.join(" "));
     }
 
     function buildDictationQueue(rawText) {
       if (!rawText || !rawText.trim()) return [];
       
-      const rawLines = rawText.split('\n');
+      // Group consecutive non-empty lines into paragraphs so wrapped lines in .txt files join naturally,
+      // while blank lines still create 'Next Paragraph' breaks.
+      const paragraphs = [];
+      let currentParaLines = [];
+      rawText.split(/\r?\n/).forEach(line => {
+        const trimmedLine = line.trim();
+        if (!trimmedLine) {
+          if (currentParaLines.length > 0) {
+            paragraphs.push(currentParaLines.join(' '));
+            currentParaLines = [];
+          }
+        } else {
+          currentParaLines.push(trimmedLine);
+        }
+      });
+      if (currentParaLines.length > 0) {
+        paragraphs.push(currentParaLines.join(' '));
+      }
+
       const queueList = [];
       let globalIndex = 0;
       let breakCount = 0;
-      let hasAddedContent = false;
 
-      rawLines.forEach(line => {
-        const trimmedLine = line.trim();
-        
-        if (!trimmedLine) {
-          if (hasAddedContent) {
-            breakCount++;
-            queueList.push({ type: 'break', text: 'Next Paragraph', breakId: breakCount });
-          }
-          return;
+      paragraphs.forEach((paraText, pIdx) => {
+        if (pIdx > 0) {
+          breakCount++;
+          queueList.push({ type: 'break', text: 'Next Paragraph', breakId: breakCount });
         }
 
         let lineHasContent = false;
-        let sentences = trimmedLine.match(/[^.!?;]+[.!?;]*['”’)]*\s*/g) || [trimmedLine];
+        let sentences = paraText.match(/[^.!?;,]+[.!?;,]*['”’)]*\s*/g) || [paraText];
 
         sentences.forEach(s => {
           let clause = s.trim();
@@ -1689,8 +1555,13 @@ James immediately picked himself up onto his hands and knees and started searchi
           let phraseMap = [];
           let tempClause = clause;
 
-          protectedPhrases.forEach((phrase) => {
-            const regex = new RegExp(`\\b${phrase}\\b`, 'gi');
+          const allProtectedPhrases = [...customDontCutWords, ...protectedPhrases]
+            .filter(Boolean)
+            .sort((a, b) => b.length - a.length);
+
+          allProtectedPhrases.forEach((phrase) => {
+            const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            const regex = new RegExp(`\\b${escaped}\\b`, 'gi');
             tempClause = tempClause.replace(regex, (match) => {
               const placeholder = `__PHRASE_${phraseMap.length}__`;
               phraseMap.push({ placeholder, text: match });
@@ -1729,9 +1600,6 @@ James immediately picked himself up onto his hands and knees and started searchi
           }
         });
 
-        if (lineHasContent) {
-          hasAddedContent = true;
-        }
       });
 
       const cleaned = [];
@@ -1781,6 +1649,8 @@ James immediately picked himself up onto his hands and knees and started searchi
         partBText = "";
         partCText = "";
         highlightedWords = [];
+        customDontCutWords = [];
+        explainWordsMap = {};
         document.getElementById('appMainTitle').innerHTML = '<span id="secretHTrigger" style="cursor: default; user-select: none;" onclick="handleSecretHClick(event)">H</span>appy Primary School English Dictation';
         document.getElementById('browserWindowTitle').textContent = "Happy Primary School English Dictation";
         renderTab();
@@ -1788,16 +1658,21 @@ James immediately picked himself up onto his hands and knees and started searchi
         return;
       }
 
-      const lines = fullText.split('\n');
+      const lines = fullText.split(/\r?\n/);
       const lowerFullText = fullText.toLowerCase();
       
-      const hasHeaders = lowerFullText.includes('part a') || 
-                         lowerFullText.includes('part b') || 
-                         lowerFullText.includes('part c') || 
-                         lowerFullText.includes('vocabulary') || 
-                         lowerFullText.includes('passage') || 
-                         lowerFullText.includes('unseen') ||
-                         lowerFullText.includes('highlight');
+      const rePartA = /^part\s*a(?:\s*[\(（][^\)）]*[\)）])?(?:\s*[:：\-–—]\s*(.*))?$|^vocabulary(?:\s*[\(（][^\)）]*[\)）])?(?:\s*[:：\-–—]\s*(.*))?$/i;
+      const rePartB = /^part\s*b(?:\s*[\(（][^\)）]*[\)）])?(?:\s*[:：\-–—]\s*(.*))?$|^passage(?:\s*[\(（][^\)）]*[\)）])?(?:\s*[:：\-–—]\s*(.*))?$/i;
+      const rePartC = /^part\s*c(?:\s*[\(（][^\)）]*[\)）])?(?:\s*[:：\-–—]\s*(.*))?$|^unseen(?:\s+(?:dictation|passage|part|section|session))?(?:\s*[\(（][^\)）]*[\)）])?(?:\s*[:：\-–—]\s*(.*))?$/i;
+
+      const hasHeaders = lines.some(l => {
+        const t = l.trim();
+        const low = t.toLowerCase();
+        return rePartA.test(t) || rePartB.test(t) || rePartC.test(t) ||
+               low.startsWith('highlight') || low.includes('highlighted word') ||
+               low.startsWith('explain word') || low === 'explain' ||
+               low.startsWith("don't cutline") || low.startsWith("dont cutline") || low.startsWith("don’t cutline");
+      });
 
       let currentSection = hasHeaders ? 'header' : 'partA';
       
@@ -1806,6 +1681,8 @@ James immediately picked himself up onto his hands and knees and started searchi
       let parsedPartB = [];
       let parsedPartC = [];
       let parsedHighlight = [];
+      let parsedDontCut = [];
+      let parsedExplain = {};
 
       lines.forEach(line => {
         const trimmed = line.trim();
@@ -1815,20 +1692,42 @@ James immediately picked himself up onto his hands and knees and started searchi
           return;
         }
 
-        if (lower.startsWith('part a') || lower === 'part a' || lower.includes('vocabulary')) {
+        if (rePartA.test(trimmed)) {
           currentSection = 'partA';
           return;
         }
-        if (lower.startsWith('part b') || lower === 'part b' || lower.includes('passage')) {
+        if (rePartB.test(trimmed)) {
           currentSection = 'partB';
           return;
         }
-        if (lower.startsWith('part c') || lower === 'part c' || lower.includes('unseen')) {
+        if (rePartC.test(trimmed)) {
           currentSection = 'partC';
           return;
         }
-        if (lower.includes('highlight') || lower.includes('重點詞語') || lower.includes('高亮詞語')) {
+        if (lower.startsWith('highlight') || lower.includes('highlighted word') || lower.includes('重點詞語') || lower.includes('高亮詞語')) {
           currentSection = 'highlight';
+          const inlinePart = trimmed.replace(/^(?:highlighted\s+words?|highlight|重點詞語|高亮詞語)\s*[:：]?\s*/i, '').trim();
+          if (inlinePart) {
+            const sep = /[	,]/.test(inlinePart) ? /[	,]+/ : /\s+/;
+            inlinePart.split(sep).map(w => w.trim()).filter(Boolean).forEach(w => parsedHighlight.push(w));
+          }
+          return;
+        }
+        if (lower.startsWith("don't cutline") || lower.startsWith("dont cutline") || lower.startsWith("don’t cutline")) {
+          currentSection = 'dontCut';
+          const inlinePart = trimmed.replace(/^don['’]?t\s+cutline(?:\s+words?)?\s*[:：]?\s*/i, '').trim();
+          if (inlinePart) {
+            inlinePart.split(/[\t,]+/).map(w => w.trim()).filter(Boolean).forEach(w => parsedDontCut.push(w));
+          }
+          return;
+        }
+        if (lower.startsWith('explain word') || lower === 'explain' || lower.includes('詞語解釋')) {
+          currentSection = 'explain';
+          const inlinePart = trimmed.replace(/^(?:explain\s+words?|explain|詞語解釋)\s*[:：]?\s*/i, '').trim();
+          if (inlinePart) {
+            const parsed = parseExplainLine(inlinePart);
+            if (parsed) parsedExplain[parsed.key] = parsed.val;
+          }
           return;
         }
 
@@ -1841,13 +1740,24 @@ James immediately picked himself up onto his hands and knees and started searchi
             items.forEach(w => parsedPartA.push(w));
           }
         } else if (currentSection === 'partB') {
-          if (trimmed) parsedPartB.push(trimmed);
+          parsedPartB.push(trimmed);
         } else if (currentSection === 'partC') {
-          if (trimmed) parsedPartC.push(trimmed);
+          parsedPartC.push(trimmed);
         } else if (currentSection === 'highlight') {
           if (trimmed) {
-            let items = trimmed.split(/[\t,]+/).map(w => w.trim()).filter(Boolean);
+            const sep = /[\t,]/.test(trimmed) ? /[\t,]+/ : /\s+/;
+            let items = trimmed.split(sep).map(w => w.trim()).filter(Boolean);
             items.forEach(w => parsedHighlight.push(w));
+          }
+        } else if (currentSection === 'dontCut') {
+          if (trimmed) {
+            let items = trimmed.split(/[\t,]+/).map(w => w.trim()).filter(Boolean);
+            items.forEach(w => parsedDontCut.push(w));
+          }
+        } else if (currentSection === 'explain') {
+          if (trimmed) {
+            const parsed = parseExplainLine(trimmed);
+            if (parsed) parsedExplain[parsed.key] = parsed.val;
           }
         }
       });
@@ -1875,9 +1785,12 @@ James immediately picked himself up onto his hands and knees and started searchi
       }
 
       partAVocab = parsedPartA;
-      partBText = parsedPartB.join('\n\n');
-      partCText = parsedPartC.join('\n\n');
+      partBText = parsedPartB.join('\n').trim();
+      partCText = parsedPartC.join('\n').trim();
       highlightedWords = parsedHighlight;
+      customDontCutWords = parsedDontCut;
+      explainWordsMap = parsedExplain;
+      Object.assign(translationCache, parsedExplain);
 
       renderTab();
       preloadAllTranslations();
@@ -2031,7 +1944,7 @@ James immediately picked himself up onto his hands and knees and started searchi
         html += `
           <div class="word-card" id="card_${idx}" onclick="clickPlayVocab(${idx})">
             <div class="word-index">#${idx + 1}</div>
-            <div class="word-text" title="${en}">${en}</div>
+            <div class="word-text" title="${en}">${formatHighlightedText(en, false)}</div>
             <div class="zh-text" data-en="${en}">${zh}</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(${idx})">▶</button>
           </div>
@@ -2056,7 +1969,7 @@ James immediately picked himself up onto his hands and knees and started searchi
           html += `<div class="paragraph-break" id="break_${item.breakId}">--- Next Paragraph ---</div>`;
         } else if (item.type === 'sentence') {
           const { en, zh } = extractTranslation(item.text);
-          let formattedText = en.split(' ').map(w => `<span class="nowrap-word">${w}</span>`).join(' ');
+          let formattedText = formatHighlightedText(en, true);
 
           html += `
             <div class="dictation-row" id="dcard_${item.index}" onclick="clickPlayDictation(${item.index})">
@@ -2723,7 +2636,7 @@ James immediately picked himself up onto his hands and knees and started searchi
 
 <script id="autoLoadScript">
           document.addEventListener('DOMContentLoaded', function() {
-            const savedCache = {"emerge bristly murmur hobble beckon creaky musty luminous   clutch   rustling   stale   crouch   froth   fabulous":"冒出 粗糙的 低語 跛行 招手 吱吱作響的 霉味 閃亮的 緊握 沙沙作響的 乏味的 蹲下 泡沫的 精彩的","the next moment, james was running":"下一刻，詹姆斯就跑了起來。","back toward the house as":"往房子方向走回去，","fast as he could go.":"他能跑多快就多快。","he would do it all in the":"他會把所有事情都","kitchen, he told himself—if only he":"廚房，他心想——如果他","could get in there without aunt":"沒有阿姨的幫忙，我可能進不去那裡。","sponge and aunt spiker seeing him.":"海綿和尖刺阿姨正在看他。","he was terribly excited.":"他非常興奮。","he flew through the long grass and the stinging-nettles, not caring":"他穿過茂密的草叢和蕁麻，毫不在意。","whether he got stung or not on his bare knees, and":"他光著的膝蓋有沒有被叮到，還有","in the distance he could see aunt sponge and aunt":"他在遠處可以看到史龐吉姑姑和","spiker sitting in their chairs with their backs toward him.":"尖刺者坐在椅子上，背對著他。","he swerved away from them so as to go around the other side of":"他轉向避開他們，繞到另一邊。","the house, but then suddenly, just as he was passing underneath":"房子，但就在他經過下方時，突然間，","the old peach tree that stood in the middle of the garden, his foot":"那棵矗立在花園中央的老桃樹，他的腳","slipped and he fell flat on his face in the grass.":"他滑倒了，臉朝下摔在草地上。","the paper bag burst open as":"紙袋突然爆開，","it hit the ground and the":"它撞到地面，然後","thousands of tiny green things":"成千上萬的小綠色東西","were scattered in all directions.":"散落在四面八方。","james immediately picked himself up onto":"詹姆斯立刻爬起來，","his hands and knees and started":"他跪在地上，開始","searching around for his precious treasures.":"到處尋找他的珍貴寶藏。","but what was this?":"但這是什麼？","emerge":"出現","they were all sinking":"他們全都沉下去了。","bristly":"粗糙的","into the soil!":"埋入土壤！","murmur":"潺潺","he could actually see them wriggling and twisting as they burrowed":"他真的可以看到牠們在鑽洞時扭來扭去。","hobble":"跛行","their way downward into the hard earth, and at once he":"朝下鑽入堅硬的土壤中，他立刻","beckon":"招手","reached out a hand to pick some of them up before":"伸手拿起其中一些，然後","creaky":"吱吱作響","it was too late, but they disappeared right under his fingers.":"為時已晚，但它們就在他的指尖下消失了。","musty":"霉味","he went after some others,":"他追著其他人，","luminous":"明亮","clutch":"clutch","and the same thing happened!":"結果發生了同樣的事情！","rustling":"沙沙聲","stale":"(食物)不新鮮/(笑話/新聞)沒新意/(對人)厭倦","crouch":"蹲下","froth":"泡沫","fabulous":"超棒"};
+            const savedCache = {"stale":"不新鮮的, 發霉的","emerge":"出現","luminous clutch":"發光的一群","bristly":"粗糙","murmur":"潺潺","hobble":"跛行","beckon":"招手","creaky":"吱吱作響","musty":"霉味","rustling":"沙沙聲","crouch":"蹲下","froth":"泡沫","fabulous":"超棒","the next moment,":"下一刻，","james was running back toward":"詹姆斯正跑回","the house as fast":"盡快離開房子","as he could go.":"他能走多快就走多快。","he would do it":"他會這麼做。","all in the kitchen,":"都在廚房裡，","he told himself—if only he":"他心想——要是他","could get in there without aunt sponge":"不用經過海綿姑姑的同意就能進去","and aunt spiker seeing him.":"而史派克姑姑正看著他。","he was terribly excited.":"他非常興奮。","he flew through the long":"他飛越了漫長的","grass and the stinging-nettles,":"草和蕁麻，","not caring whether he got stung":"不在乎自己是否被叮到","or not on his bare knees,":"或者不是跪在地上，","and in the distance he":"而在遠處，他","could see aunt sponge and aunt spiker":"可以看到海綿姑姑和尖刺姑姑","sitting in their chairs with":"坐在椅子上，","their backs toward him.":"背對著他。","he swerved away from them so as to":"他轉向避開他們，以便","go around the other":"繞到另一邊去","side of the house,":"房子的側邊，","but then suddenly,":"但突然間，","just as he was passing":"就在他經過的時候","underneath the old peach tree":"在老桃樹下","that stood in the middle of the garden,":"那棵樹就站在花園中央，","his foot slipped and he":"他的腳滑了一下，他","fell flat on his":"完全失敗","face in the grass.":"臉朝著草地。","the paper bag burst open as":"紙袋破裂，","it hit the ground and the":"它撞到地面，然後","thousands of tiny green things":"成千上萬的小綠色東西","were scattered in all directions.":"散落在四面八方。","james immediately picked himself up onto":"詹姆斯立刻爬起來，","his hands and knees and started":"他跪在地上，開始","searching around for his precious treasures.":"到處尋找他的珍貴寶藏。","but what was this?":"但這是什麼？","they were all sinking":"他們全都沉下去了。","into the soil!":"埋入土壤！","he could actually see them wriggling":"他真的能看到牠們在扭動。","and twisting as they burrowed their":"牠們在鑽洞時扭動身體，","way downward into the hard earth,":"深入堅硬的地面，","and at once he reached out a":"他立刻伸手","hand to pick some of them":"親手挑選其中一些","up before it was too late,":"在為時已晚之前，","but they disappeared right":"但它們馬上就消失了","under his fingers.":"在他的指尖下。","he went after some others,":"他追著其他人，","and the same thing happened!":"結果發生了同樣的事情！","a new study has found that children":"一項新研究發現，兒童","in hong kong have grown taller and":"在香港長得更高了，而且","heavier over the last 30 years.":"在過去 30 年間變得更重。","this is because children now have":"這是因為現在的孩子們有","better food and lifestyles that help":"更好的飲食和生活方式，有助於","them grow in a healthy way.":"讓他們健康成長。"};
             Object.assign(translationCache, savedCache);
 
             const vDelay = document.getElementById('vocabDelayInput');
