@@ -148,7 +148,7 @@
       background: #8b75f3 !important;
     }
 
-    /* 💚 GO 播放按鈕圖示樣式 */
+    /* 💚 GO / 半 播放按鈕圖示樣式 */
     .btn-play-icon { 
       background-color: #2e7d32; 
       color: #ffffff; 
@@ -157,6 +157,17 @@
     }
     .btn-play-icon:hover { 
       background-color: #1b5e20; 
+    }
+
+    /* 🩵 全背默專用播放按鈕樣式 (背默課文段落專用) */
+    .btn-full-recite-icon {
+      background-color: #77bdf7 !important;
+      color: #ffffff !important;
+      cursor: pointer !important;
+      font-size: 1.35rem !important;
+    }
+    .btn-full-recite-icon:hover {
+      background-color: #5caee8 !important;
     }
 
     /* 🔴 錯詞專用播放按鈕樣式 */
@@ -236,7 +247,13 @@
       color: rgba(255, 255, 255, 0.22) !important;
     }
 
-    /* ⏱ 動態圖形倒數時鐘樣式 */
+    /* ⏱ 動態圖形倒數時鐘與數位計時器樣式 */
+    .timer-container {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .timer-clock-box {
       display: inline-flex;
       align-items: center;
@@ -271,6 +288,22 @@
       background: #000000;
       border-radius: 50%;
       transform: translate(-50%, -50%);
+    }
+
+    .digital-timer-box {
+      display: none;
+      background: #000000;
+      color: #a3e635;
+      font-family: 'Consolas', 'Courier New', monospace !important;
+      font-size: 1.1rem;
+      font-weight: bold;
+      padding: 4px 10px;
+      border-radius: 6px;
+      border: 2px solid #2d6a4f;
+      min-width: 65px;
+      text-align: center;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.5);
+      letter-spacing: 1px;
     }
 
     .btn-action {
@@ -873,13 +906,18 @@
         </svg>
       </button>
 
-      <!-- 💚 GO 播放按鈕 -->
-      <button class="btn-icon btn-play-icon" onclick="startAutoPlay(false)" title="自動播放">
+      <!-- 💚 GO / 半 播放按鈕 -->
+      <button class="btn-icon btn-play-icon" onclick="startAutoPlay(false, false)" title="自動播放">
         <span id="goBtnText">開</span>
       </button>
 
+      <!-- 🩵 全背默播放按鈕 (僅在背默課文段落顯示) -->
+      <button class="btn-icon btn-full-recite-icon hidden" id="fullReciteBtn" onclick="startAutoPlay(false, true)" title="全背默播放（不顯示及不讀每句首兩字）">
+        <span id="fullGoBtnText">全</span>
+      </button>
+
       <!-- 🔴 錯詞專用播放按鈕 -->
-      <button class="btn-icon btn-highlight-play-icon" onclick="startAutoPlay(true)" title="播放高亮/重點詞語">
+      <button class="btn-icon btn-highlight-play-icon" onclick="startAutoPlay(true, false)" title="播放高亮/重點詞語">
         <span id="wrongGoBtnText">錯</span>
       </button>
 
@@ -900,8 +938,12 @@
       <button class="btn-hdr-opt btn-lang-opt" id="langSwitchBtn" onclick="toggleLanguage()" title="切換朗讀語言">普</button>
       <button class="btn-hdr-opt btn-mode-opt" id="displayModeBtn" onclick="toggleDisplayMode()" title="切換顯示模式">拼</button>
       
-      <div class="timer-clock-box" title="剩餘時間倒數">
-        <div class="timer-pie" id="timerPie"></div>
+      <!-- ⏱ 動態圖形倒數時鐘與數位計時器 -->
+      <div class="timer-container">
+        <div class="timer-clock-box" title="剩餘時間倒數">
+          <div class="timer-pie" id="timerPie"></div>
+        </div>
+        <div class="digital-timer-box" id="digitalTimerDisplay" title="數位剩餘時間">0:00</div>
       </div>
     </div>
   </header>
@@ -937,7 +979,6 @@
           <button class="tab-btn" id="btn_tab4" onclick="switchTab('tab4', this)">
             <span class="tab-icon">✍</span> 聽寫課文段落
           </button>
-
           <!-- 背默課文段落 -->
           <button class="tab-btn" id="btn_tab5" onclick="switchTab('tab5', this)">
             <span class="tab-icon">💾</span> 背默課文段落
@@ -1081,9 +1122,11 @@
     let idiomWords = [];
     let customProtectedWords = [];
     let highlightedWords = []; 
-    let highlightedPinyinMap = {}; // { word: [charsToHighlightPinyin] }
+    let highlightedPinyinMap = {}; 
     let rawDictationText = "";
     let rawReciteText = ""; 
+    let isRecitePromptMode = false; 
+    let isFullReciteMode = false; // false = 半/自 (保留首2字), true = 全/自 (隱藏首2字)
 
     function getItemText(it) { return typeof it === 'object' && it !== null ? it.text : it; }
 
@@ -1626,22 +1669,10 @@
         ...customProtectedWords
       ])).sort((a, b) => b.length - a.length);
 
-      let textBuffer = "";
-
-      const flushBuffer = () => {
-        if (textBuffer.trim()) {
-          const res = processTextChunkToQueue(autoConvertCharacters(textBuffer.trim()), globalIndex, allVocabWords);
-          queueList.push(...res.queueList);
-          globalIndex = res.globalIndexCounter;
-          textBuffer = "";
-        }
-      };
-
       rawLines.forEach(line => {
         const trimmedLine = autoConvertCharacters(line.trim());
 
         if (!trimmedLine || trimmedLine === '下一個自然段') {
-          flushBuffer();
           if (queueList.length > 0 && queueList[queueList.length - 1].type !== 'break' && queueList[queueList.length - 1].type !== 'title') {
             queueList.push({ type: 'break', text: '下一個自然段' });
           }
@@ -1649,14 +1680,14 @@
         }
 
         if (trimmedLine.startsWith('《') || trimmedLine.includes('課') || (trimmedLine.includes('第') && trimmedLine.includes('段'))) {
-          flushBuffer();
           queueList.push({ type: 'title', text: trimmedLine });
           return;
         }
 
-        textBuffer += trimmedLine;
+        const res = processTextChunkToQueue(trimmedLine, globalIndex, allVocabWords);
+        queueList.push(...res.queueList);
+        globalIndex = res.globalIndexCounter;
       });
-      flushBuffer();
 
       const cleanedQueueList = [];
       const trailingPuncts = "。,.，！？?；;：:」』》〉）)─—-…";
@@ -2066,12 +2097,57 @@
       }
     }
 
+    function updateTimerVisibilityForTab() {
+      const timerEl = document.querySelector('.timer-container');
+      const digitalEl = document.getElementById('digitalTimerDisplay');
+
+      if (currentTab === 'tab5') {
+        if (timerEl) timerEl.style.display = isPlaying ? 'flex' : 'none';
+        if (digitalEl) digitalEl.style.display = isRecitePromptMode ? 'block' : 'none';
+      } else {
+        if (timerEl) timerEl.style.display = 'flex';
+        if (digitalEl) digitalEl.style.display = 'none';
+      }
+    }
+
+    function updatePlayButtonsForTab() {
+      const goText = document.getElementById('goBtnText');
+      const fullReciteBtn = document.getElementById('fullReciteBtn');
+      const fullGoText = document.getElementById('fullGoBtnText');
+      const wrongGoText = document.getElementById('wrongGoBtnText');
+
+      if (currentTab === 'tab5') {
+        if (goText) {
+          goText.textContent = (isPlaying && !isOnlyHighlighted && !isFullReciteMode) ? '自' : '半';
+        }
+        if (fullReciteBtn) {
+          fullReciteBtn.classList.remove('hidden');
+        }
+        if (fullGoText) {
+          fullGoText.textContent = (isPlaying && !isOnlyHighlighted && isFullReciteMode) ? '自' : '全';
+        }
+      } else {
+        if (goText) {
+          goText.textContent = (isPlaying && !isOnlyHighlighted) ? '自' : '開';
+        }
+        if (fullReciteBtn) {
+          fullReciteBtn.classList.add('hidden');
+        }
+      }
+
+      if (wrongGoText) {
+        wrongGoText.textContent = (isPlaying && isOnlyHighlighted) ? '自' : '錯';
+      }
+    }
+
     function renderTab() {
       resetPlayback();
       updateHeaderSubtitle();
+      updateTimerVisibilityForTab();
+      updatePlayButtonsForTab();
       
       if (currentTab === 'tab1' || currentTab === 'tab3' || currentTab === 'tab4' || currentTab === 'tab5') {
-        displayMode = 'pinyin';
+        displayMode = 'pinyin'; // Tab5 default to Pinyin
       } else if (currentTab === 'tab2') {
         displayMode = 'blank';
       }
@@ -2258,6 +2334,38 @@
       updateDisplayModeUI();
     }
 
+    /* 生成背默提示版本的文本（半背默：前2字顯示，其餘轉為圓圈 ⭕；全背默：全部轉為圓圈 ⭕） */
+    function getRecitePromptHtml(cleanText, dynamicPinyin) {
+      let charArr = Array.from(cleanText);
+      let pyParts = dynamicPinyin.split(/\s+/);
+
+      let textHtml = "";
+      let pinyinHtml = "";
+
+      let charCount = 0;
+
+      for (let i = 0; i < charArr.length; i++) {
+        let ch = charArr[i];
+        let py = pyParts[i] || "";
+
+        if (/[一-龥]/.test(ch)) {
+          charCount++;
+          if (!isFullReciteMode && charCount <= 2) {
+            textHtml += getHighlightedWordHtml(ch);
+            pinyinHtml += (pinyinHtml ? " " : "") + getHighlightedPinyinHtml(ch, py);
+          } else {
+            textHtml += "⭕";
+            pinyinHtml += (pinyinHtml ? " " : "") + "⭕";
+          }
+        } else {
+          // 標點符號在第二階段替換為圓圈
+          textHtml += "⭕";
+        }
+      }
+
+      return { textHtml, pinyinHtml };
+    }
+
     function renderRecite(container) {
       const queueList = buildReciteQueue();
       if (!queueList || queueList.length === 0) {
@@ -2275,8 +2383,16 @@
         } else if (item.type === 'sentence') {
           const cleanText = autoConvertCharacters(item.text.replace(/\s+/g, ''));
           const dynamicPinyin = getDynamicPinyin(cleanText);
-          const sentenceHtml = getHighlightedWordHtml(cleanText);
-          const sentencePinyinHtml = getHighlightedPinyinHtml(cleanText, dynamicPinyin);
+          
+          let sentenceHtml, sentencePinyinHtml;
+          if (isRecitePromptMode) {
+            let res = getRecitePromptHtml(cleanText, dynamicPinyin);
+            sentenceHtml = res.textHtml;
+            sentencePinyinHtml = res.pinyinHtml;
+          } else {
+            sentenceHtml = getHighlightedWordHtml(cleanText);
+            sentencePinyinHtml = getHighlightedPinyinHtml(cleanText, dynamicPinyin);
+          }
 
           html += `
             <div class="dictation-row" id="rcard_${item.index}" onclick="clickPlayRecite(${item.index})">
@@ -2299,6 +2415,7 @@
     async function checkAndResolveSameNamePdf() {
       const pdfBtn = document.getElementById('pdfViewerBtn');
       if (pdfBtn) pdfBtn.style.display = 'none';
+      if (window.location.protocol === 'file:') return;
 
       try {
         let candidateNames = [];
@@ -2460,90 +2577,109 @@
         return;
       }
 
-      synth.cancel();
-
-      const utterance = new SpeechSynthesisUtterance(safeText);
-
-      if (!availableVoices || availableVoices.length === 0) {
-        availableVoices = synth.getVoices() || [];
+      const wasSpeaking = synth.speaking || synth.pending;
+      if (wasSpeaking) {
+        synth.cancel();
       }
-
-      const voiceSelect = document.getElementById('voiceSelect');
-      const selectedName = (voiceSelect && voiceSelect.value) ? voiceSelect.value : userSelectedVoiceName;
-      let chosenVoice = null;
-      
-      if (selectedName) {
-        chosenVoice = availableVoices.find(v => v.name === selectedName);
-      }
-
-      if (!chosenVoice) {
-        if (currentLang === 'zh-TW') {
-          chosenVoice = availableVoices.find(v => 
-            v.lang === 'zh-TW' || v.lang === 'zh_TW' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-tw')) || v.name.includes('國語') || v.name.includes('Taiwan') || v.name.includes('Mei-Jia')
-          );
-        } else if (currentLang === 'zh-CN') {
-          chosenVoice = availableVoices.find(v => 
-            v.lang === 'zh-CN' || v.lang === 'zh_CN' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-cn')) || v.name.includes('普通話') || v.name.includes('Mandarin') || v.name.includes('Ting-Ting')
-          );
-        } else {
-          chosenVoice = availableVoices.find(v => 
-            v.lang === 'zh-HK' || v.lang === 'zh_HK' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-hk')) || v.name.includes('廣東話') || v.name.includes('Cantonese') || v.name.includes('Sin-Ji') || (v.name && v.name.toLowerCase().includes('hong kong'))
-          );
-        }
-      }
-
-      if (chosenVoice) {
-        utterance.voice = chosenVoice;
-        if (chosenVoice.lang) utterance.lang = chosenVoice.lang;
-      } else {
-        utterance.lang = currentLang;
-      }
-
-      let activeRate = 0.82;
-      const vocabSpeedSel = document.getElementById('vocabSpeedSelect');
-      const dictSpeedSel = document.getElementById('dictationSpeedSelect');
-      
-      if ((currentTab === 'tab4' || currentTab === 'tab5') && dictSpeedSel) {
-        activeRate = parseFloat(dictSpeedSel.value) || 0.7;
-      } else if (vocabSpeedSel) {
-        activeRate = parseFloat(vocabSpeedSel.value) || 0.82;
-      }
-      
-      utterance.rate = activeRate;
-
-      utterance.onend = () => { 
-        if (onEndCallback) onEndCallback(); 
-      };
-      utterance.onerror = (e) => { 
-        console.error("SpeechSynthesis error:", e);
-        if (onEndCallback) onEndCallback(); 
-      };
 
       wakeUpTimeout = setTimeout(() => {
-        synth.speak(utterance);
+        const freshVoices = synth.getVoices() || [];
+        if (freshVoices.length > 0) {
+          availableVoices = freshVoices;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(safeText);
+
+        const voiceSelect = document.getElementById('voiceSelect');
+        const selectedName = (voiceSelect && voiceSelect.value) ? voiceSelect.value : userSelectedVoiceName;
+        let chosenVoice = null;
+        
+        if (selectedName) {
+          chosenVoice = availableVoices.find(v => v.name === selectedName);
+        }
+
+        if (!chosenVoice) {
+          if (currentLang === 'zh-TW') {
+            chosenVoice = availableVoices.find(v => 
+              v.lang === 'zh-TW' || v.lang === 'zh_TW' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-tw')) || v.name.includes('國語') || v.name.includes('Taiwan') || v.name.includes('Mei-Jia')
+            );
+          } else if (currentLang === 'zh-CN') {
+            chosenVoice = availableVoices.find(v => 
+              v.lang === 'zh-CN' || v.lang === 'zh_CN' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-cn')) || v.name.includes('普通話') || v.name.includes('Mandarin') || v.name.includes('Ting-Ting')
+            );
+          } else {
+            chosenVoice = availableVoices.find(v => 
+              v.lang === 'zh-HK' || v.lang === 'zh_HK' || (v.lang && v.lang.replace('_', '-').toLowerCase().includes('zh-hk')) || v.name.includes('廣東話') || v.name.includes('Cantonese') || v.name.includes('Sin-Ji') || (v.name && v.name.toLowerCase().includes('hong kong'))
+            );
+          }
+        }
+
+        if (chosenVoice) {
+          utterance.voice = chosenVoice;
+          if (chosenVoice.lang) utterance.lang = chosenVoice.lang;
+        } else {
+          utterance.lang = currentLang;
+        }
+
+        let activeRate = 0.82;
+        const vocabSpeedSel = document.getElementById('vocabSpeedSelect');
+        const dictSpeedSel = document.getElementById('dictationSpeedSelect');
+        
+        if ((currentTab === 'tab4' || currentTab === 'tab5') && dictSpeedSel) {
+          activeRate = parseFloat(dictSpeedSel.value) || 0.7;
+        } else if (vocabSpeedSel) {
+          activeRate = parseFloat(vocabSpeedSel.value) || 0.82;
+        }
+        
+        utterance.rate = activeRate;
+
+        let callbackFired = false;
+        const finishOnce = () => {
+          if (callbackFired) return;
+          callbackFired = true;
+          clearTimeout(safetyTimeout);
+          if (onEndCallback) onEndCallback();
+        };
 
         const safetyTimeout = setTimeout(() => {
           if (synth && synth.speaking) {
             synth.cancel();
           }
-          if (onEndCallback) {
-            onEndCallback();
-            onEndCallback = null;
-          }
-        }, Math.max(text.length * 400 + 4000, 6000));
+          finishOnce();
+        }, Math.max(safeText.length * 400 + 4000, 6000));
 
-        const originalCallback = onEndCallback;
-        onEndCallback = function() {
-          clearTimeout(safetyTimeout);
-          if (originalCallback) originalCallback();
+        utterance.onend = () => { 
+          finishOnce();
         };
-      }, 120); 
+
+        utterance.onerror = (e) => { 
+          if (e && (e.error === 'interrupted' || e.error === 'canceled')) {
+            clearTimeout(safetyTimeout);
+            return;
+          }
+          console.warn("SpeechSynthesis error:", e ? e.error : e);
+          if (utterance.voice) {
+            const fallbackUtterance = new SpeechSynthesisUtterance(safeText);
+            fallbackUtterance.lang = currentLang;
+            fallbackUtterance.rate = activeRate;
+            fallbackUtterance.onend = finishOnce;
+            fallbackUtterance.onerror = finishOnce;
+            synth.speak(fallbackUtterance);
+          } else {
+            finishOnce();
+          }
+        };
+
+        if (synth.paused) {
+          synth.resume();
+        }
+        synth.speak(utterance);
+      }, wasSpeaking ? 80 : 20); 
     }
 
     let manualPlayId = 0;
 
     function playSingleWord(word) {
-      if (synth) synth.cancel();
       if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
       if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
 
@@ -2559,7 +2695,7 @@
             speakText(word, null);
           }, 3000);
         });
-      }, 1000);
+      }, 200);
     }
 
     let dictationManualPlayId = 0;
@@ -2601,7 +2737,35 @@
             }, true, currentId);
           }, 3000);
         }, true, currentId);
-      }, 1000);
+      }, 200);
+    }
+
+    let reciteManualPlayId = 0;
+
+    function playSingleReciteSentence(text, index) {
+      if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+      if (singlePlayTimeout1) clearTimeout(singlePlayTimeout1);
+      if (singlePlayTimeout2) clearTimeout(singlePlayTimeout2);
+      if (punctTimer) clearTimeout(punctTimer);
+      clearInterval(timerInterval);
+
+      if (index !== undefined) {
+        highlightReciteCard(`rcard_${index}`);
+      }
+
+      reciteManualPlayId++;
+      const currentId = reciteManualPlayId;
+
+      // 讀該句第一次
+      speakSentenceWithPunctuation(text, () => {
+        if (currentId !== reciteManualPlayId) return;
+        // 等待 3 秒
+        singlePlayTimeout1 = setTimeout(() => {
+          if (currentId !== reciteManualPlayId) return;
+          // 讀該句第二次
+          speakSentenceWithPunctuation(text, null, true, currentId);
+        }, 3000);
+      }, true, currentId);
     }
 
     function startTimer(seconds, onFinish) {
@@ -2623,12 +2787,21 @@
 
     function updateTimerDisplay() {
       const pie = document.getElementById('timerPie');
+      const digitalDisplay = document.getElementById('digitalTimerDisplay');
 
       if (remainingSeconds > 0 && totalTimerSeconds > 0) {
         const pct = (remainingSeconds / totalTimerSeconds) * 100;
         if (pie) pie.style.background = `conic-gradient(#3b82f6 ${pct}%, #e5e7eb ${pct}%)`;
+        
+        // 更新數位倒數時鐘 (MM:SS 格式)
+        const mins = Math.floor(remainingSeconds / 60);
+        const secs = remainingSeconds % 60;
+        if (digitalDisplay) {
+          digitalDisplay.textContent = `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+        }
       } else {
         if (pie) pie.style.background = `conic-gradient(#3b82f6 0%, #e5e7eb 0%)`;
+        if (digitalDisplay) digitalDisplay.textContent = "0:00";
       }
     }
 
@@ -2641,21 +2814,15 @@
       return '課文詞語';
     }
 
-    function startAutoPlay(onlyHighlighted = false) {
+    function startAutoPlay(onlyHighlighted = false, fullRecite = false) {
       resetPlayback();
       isPlaying = true;
       isPaused = false;
       isReviewPhase = false;
       isOnlyHighlighted = onlyHighlighted;
+      isFullReciteMode = fullRecite;
       
-      const goText = document.getElementById('goBtnText');
-      const wrongGoText = document.getElementById('wrongGoBtnText');
-
-      if (onlyHighlighted) {
-        if (wrongGoText) wrongGoText.textContent = '自';
-      } else {
-        if (goText) goText.textContent = '自';
-      }
+      updatePlayButtonsForTab();
 
       requestWakeLock();
 
@@ -2706,6 +2873,78 @@
       });
     }
 
+    /* 獲取句子的前 2 個漢字 */
+    function getFirstTwoChars(text) {
+      let chars = Array.from(autoConvertCharacters(text.replace(/\s+/g, '')));
+      let result = "";
+      for (let ch of chars) {
+        if (/[一-龥]/.test(ch)) {
+          result += ch;
+          if (result.length >= 2) break;
+        }
+      }
+      return result || text.substring(0, 2);
+    }
+
+    /* 處理階段二的兩次回放邏輯 */
+    function playRecitePromptSequence(item, sentenceOrderNum, onComplete) {
+      const firstTwo = getFirstTwoChars(item.text);
+      const total = countChineseChars(item.text);
+      
+      const secPerCharInput = document.getElementById('secPerCharInput');
+      const secPerChar = secPerCharInput ? (parseFloat(secPerCharInput.value) || 2.3) : 2.3;
+      const wordWriteTime = Math.max(1, Math.round(total * secPerChar));
+
+      function doRound(roundNum, roundCb) {
+        if (!isPlaying) return;
+        if (isFullReciteMode) {
+          // 全背默模式：不讀每句首兩字 -> 讀「第 n 句，全句」-> 等 1 秒 -> 讀「總字數」-> 等 (總字數 × 每字時間 + 3) 秒
+          speakText(`第${sentenceOrderNum}句，全句`, () => {
+            if (!isPlaying) return;
+            startTimer(1, () => {
+              if (!isPlaying) return;
+              speakText(`${total}個字`, () => {
+                if (!isPlaying) return;
+                startTimer(wordWriteTime + 3, () => {
+                  if (!isPlaying) return;
+                  roundCb();
+                });
+              });
+            });
+          });
+        } else {
+          // 半背默模式：讀首2字 -> 等2秒 -> 全句 -> 等1秒 -> X個字 -> 等候 (總字數 × 每字時間)
+          speakText(firstTwo, () => {
+            if (!isPlaying) return;
+            startTimer(2, () => {
+              if (!isPlaying) return;
+              speakText("全句", () => {
+                if (!isPlaying) return;
+                startTimer(1, () => {
+                  if (!isPlaying) return;
+                  speakText(`${total}個字`, () => {
+                    if (!isPlaying) return;
+                    startTimer(wordWriteTime, () => {
+                      if (!isPlaying) return;
+                      roundCb();
+                    });
+                  });
+                });
+              });
+            });
+          });
+        }
+      }
+
+      doRound(1, () => {
+        if (!isPlaying) return;
+        doRound(2, () => {
+          if (!isPlaying) return;
+          onComplete();
+        });
+      });
+    }
+
     function startRecitePlay(onlyHighlighted, startFromIndex = 0) {
       let fullQueue = buildReciteQueue();
       let sentenceItems = fullQueue.filter(q => q.type === 'sentence');
@@ -2726,6 +2965,9 @@
         releaseWakeLock();
         return;
       }
+
+      // 自動模式第一階段開始時即顯示圓形時鐘
+      updateTimerVisibilityForTab();
 
       const secPerCharInput = document.getElementById('secPerCharInput');
       const secPerChar = secPerCharInput ? (parseFloat(secPerCharInput.value) || 0.7) : 0.7;
@@ -2756,21 +2998,25 @@
         }
       }
 
+      // 第一階段：正常完整朗讀每一句
       function speakNextReciteSentence() {
         if (!isPlaying) return;
         if (reciteIdx >= sentenceItems.length) {
+          // 第一次讀完所有句子，切換至背默提示模式 (第二階段)
+          isRecitePromptMode = true;
+          const area = document.getElementById('contentArea');
+          if (area) renderRecite(area); // 重新繪製 UI 為半背默(前2字+圓圈)或全背默(全圓圈)
+          
+          // 打開計時器面板 (圓形時鐘 + 數位計時器)
+          updateTimerVisibilityForTab();
+
           const annText = `同學,現在請開始背默課文, 背默課文總共有 ${totalSentences}句,背默課文 時間是 ${totalMinutes}分鐘`;
           speakText(annText, () => {
             if (!isPlaying) return;
-            startTimer(totalSeconds, () => {
-              if (!isPlaying) return;
-              startTimer(3, () => {
-                if (!isPlaying) return;
-                speakText("時間到了, 請檢查, 然後交默書, 謝謝", () => {
-                  resetPlayback();
-                });
-              });
-            });
+            
+            // 開始第二階段：跳至新邏輯
+            reciteIdx = 0;
+            speakNextRecitePromptSentence();
           });
           return;
         }
@@ -2801,6 +3047,43 @@
             reciteIdx++;
             speakNextReciteSentence();
           });
+        });
+      }
+
+      // 第二階段：啟動 2 輪回放 (包含讀字數及中間延遲)
+      function speakNextRecitePromptSentence() {
+        if (!isPlaying) return;
+        if (reciteIdx >= sentenceItems.length) {
+          speakText("時間到了, 請檢查, 然後交默書, 謝謝", () => {
+            resetPlayback(true); // 傳入 true 保留圓圈效果不重設 UI
+          });
+          return;
+        }
+
+        const item = sentenceItems[reciteIdx];
+        highlightReciteCard(`rcard_${item.index}`);
+
+        playRecitePromptSequence(item, reciteIdx + 1, () => {
+          if (!isPlaying) return;
+
+          // 處理手動點擊 (無縫銜接到下一句)
+          if (pendingJumpIndex !== null) {
+              let foundIdx = sentenceItems.findIndex(i => i.index === pendingJumpIndex);
+              if (foundIdx === -1) {
+                  let allItems = buildReciteQueue().filter(q => q.type === 'sentence');
+                  let clickedItem = allItems.find(q => q.index === pendingJumpIndex);
+                  let originalQIndex = allItems.indexOf(clickedItem);
+                  foundIdx = sentenceItems.findIndex(qItem => allItems.indexOf(qItem) > originalQIndex);
+                  if (foundIdx === -1) foundIdx = sentenceItems.length;
+              }
+              reciteIdx = foundIdx;
+              pendingJumpIndex = null;
+              speakNextRecitePromptSentence();
+              return;
+          }
+
+          reciteIdx++;
+          speakNextRecitePromptSentence();
         });
       }
 
@@ -3079,7 +3362,8 @@
 
       let tokenIdx = 0;
       function step() {
-        if (isManual && playId !== null && playId !== dictationManualPlayId) {
+        const activeManualId = (currentTab === 'tab5') ? reciteManualPlayId : dictationManualPlayId;
+        if (isManual && playId !== null && playId !== activeManualId) {
             isSpeakingSentence = false;
             return;
         }
@@ -3103,9 +3387,11 @@
           punctTimer = setTimeout(() => {
             if (isManual) {
               setTimeout(() => {
-                if (playId !== null && playId !== dictationManualPlayId) return;
+                const curManualId = (currentTab === 'tab5') ? reciteManualPlayId : dictationManualPlayId;
+                if (playId !== null && playId !== curManualId) return;
                 speakText(tok.val, () => {
-                  if (playId !== null && playId !== dictationManualPlayId) return;
+                  const curManualIdAfter = (currentTab === 'tab5') ? reciteManualPlayId : dictationManualPlayId;
+                  if (playId !== null && playId !== curManualIdAfter) return;
                   setTimeout(step, 2000);
                 });
               }, 2000);
@@ -3179,7 +3465,8 @@
     function clickPlayRecite(index) {
       if (isPlaying) {
           highlightReciteCard(`rcard_${index}`);
-          if (isSpeakingSentence) {
+          // 如果處於背默發聲模式中或正發音，我們僅設定跳轉 index 讓當下進度結束後無縫銜接
+          if (isSpeakingSentence || isRecitePromptMode) {
               pendingJumpIndex = index;
           } else {
               if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
@@ -3192,17 +3479,13 @@
           }
           return;
       }
-      
-      resetPlayback();
-      isPlaying = true;
-      isPaused = false;
-      isReviewPhase = false;
-      requestWakeLock();
 
-      const goText = document.getElementById('goBtnText');
-      if (goText) goText.textContent = '自';
-
-      startRecitePlay(false, index);
+      // 自動模式未啟動（或已結束）時，不重新啟動自動模式；保留圓圈顯示，讀該句一次、等3秒、再讀第二次
+      const allQueue = buildReciteQueue().filter(q => q.type === 'sentence');
+      const item = allQueue.find(q => q.index === index);
+      if (item) {
+        playSingleReciteSentence(item.text, index);
+      }
     }
 
     function togglePauseResume() {
@@ -3227,11 +3510,18 @@
       }
     }
 
-    function resetPlayback() {
+    // 加入 keepCircles 控制變量
+    function resetPlayback(keepCircles = false) {
       isPlaying = false;
       isPaused = false;
       isReviewPhase = false;
       isOnlyHighlighted = false;
+      
+      if (!keepCircles) {
+        isRecitePromptMode = false;
+        isFullReciteMode = false;
+      }
+      
       playIndex = 0;
       isSpeakingSentence = false;
       pendingJumpIndex = null;
@@ -3239,12 +3529,9 @@
       manualDictationQueue = [];
       isManualDictationPlaying = false;
       if (typeof dictationManualPlayId !== 'undefined') dictationManualPlayId++;
+      if (typeof reciteManualPlayId !== 'undefined') reciteManualPlayId++;
 
-      const goText = document.getElementById('goBtnText');
-      if (goText) goText.textContent = '開';
-
-      const wrongGoText = document.getElementById('wrongGoBtnText');
-      if (wrongGoText) wrongGoText.textContent = '錯';
+      updatePlayButtonsForTab();
 
       releaseWakeLock();
 
@@ -3264,8 +3551,18 @@
       remainingSeconds = 0;
       totalTimerSeconds = 0;
       updateTimerDisplay();
+
+      // 前四個單元保持顯示圓形時鐘；背默模式 (tab5) 隱藏整個計時器面板
+      updateTimerVisibilityForTab();
+
       if (synth) synth.cancel();
       document.querySelectorAll('.active-reading').forEach(c => c.classList.remove('active-reading'));
+
+      // 重設 UI
+      const area = document.getElementById('contentArea');
+      if (area && currentTab === 'tab5') {
+        renderRecite(area);
+      }
     }
 
     let availableVoices = [];
