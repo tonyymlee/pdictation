@@ -3013,7 +3013,7 @@
           // 打開計時器面板 (圓形時鐘 + 數位計時器)
           updateTimerVisibilityForTab();
 
-          const annText = `同學,現在請開始背默課文, 背默課文總共有 ${totalSentences}句,背默課文 時間是 ${totalMinutes}分鐘`;
+          const annText = `同學,現在請開始背默課文, 背默課文總共有 ${totalSentences}句,背默課文 時間是 ${totalMinutes*5}分鐘`;
           speakText(annText, () => {
             if (!isPlaying) return;
             
