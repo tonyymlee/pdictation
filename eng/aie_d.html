@@ -566,7 +566,7 @@
     }
 
     .word-card.active-reading .word-text { color: #d32f2f !important; }
-    .hl-word { color: #db183c !important; font-weight: bold; }
+    .hl-word, .zh-text.hl-word { color: #db183c !important; font-weight: bold; }
 
     .word-index {
       position: absolute;
@@ -984,6 +984,15 @@
       return { en: cleanEn, zh: explainWordsMap[normKey] || translationCache[normKey] || "" };
     }
 
+    function isTextHighlighted(enText) {
+      if (!enText || !highlightedWords || highlightedWords.length === 0) return false;
+      const validHighlights = highlightedWords.filter(Boolean);
+      if (validHighlights.length === 0) return false;
+      const pattern = validHighlights.map(hw => hw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+      const regex = new RegExp(`(^|[^a-zA-Z0-9'-])(${pattern})(?=$|[^a-zA-Z0-9'-])`, 'i');
+      return regex.test(enText);
+    }
+
     function formatHighlightedText(enText, useNowrap = false) {
       if (!enText) return "";
       const escapeHtml = (str) => str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -992,7 +1001,7 @@
       const highlightPart = (segment) => {
         if (validHighlights.length === 0) return escapeHtml(segment);
         const pattern = validHighlights.map(hw => hw.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
-        const regex = new RegExp(`(^|[^a-zA-Z0-9'-])(${pattern})(?=$|[^a-zA-Z0-9'-])`, 'gi');
+        const regex = new RegExp(`(^|[^a-zA-Z0-9'-])(${pattern})(?=$|[^a-zA-Z0-9'-]|[\u4e00-\u9fff])`, 'gi');
         let result = "";
         let lastIdx = 0;
         let match;
@@ -1088,6 +1097,11 @@
       for (const el of zhElements) {
         const enText = el.getAttribute('data-en');
         if (enText) {
+          if (isTextHighlighted(enText)) {
+            el.classList.add('hl-word');
+          } else {
+            el.classList.remove('hl-word');
+          }
           const normKey = normalizeExplainKey(enText);
           if (explainWordsMap[normKey]) {
             el.textContent = explainWordsMap[normKey];
@@ -1864,7 +1878,7 @@
           <div class="word-card" id="card_${idx}" onclick="clickPlayVocab(${idx})">
             <div class="word-index">#${idx + 1}</div>
             <div class="word-text" title="${en}">${formatHighlightedText(en, false)}</div>
-            <div class="zh-text" data-en="${en}">${zh}</div>
+            <div class="zh-text${isTextHighlighted(en) ? ' hl-word' : ''}" data-en="${en}">${zh}</div>
             <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(${idx})">▶</button>
           </div>
         `;
@@ -1895,7 +1909,7 @@
               <div>
                 <div class="sentence-index">#${item.index}</div>
                 <div class="sentence-text">${formattedText}</div>
-                <div class="zh-text" data-en="${en}">${zh}</div>
+                <div class="zh-text${isTextHighlighted(en) ? ' hl-word' : ''}" data-en="${en}">${zh}</div>
               </div>
               <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(${item.index})">▶</button>
             </div>
