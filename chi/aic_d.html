@@ -1524,22 +1524,13 @@
 
     let dynamicCustomPinyinMap = {};
 
-    function getDynamicPinyin(text) {
+function getDynamicPinyin(text) {
       if (!text) return "";
       const convertedText = autoConvertCharacters(text);
       const cleanText = convertedText.replace(/[。\.，,！？\?；;：:\s]/g, '');
 
       if (dynamicCustomPinyinMap && dynamicCustomPinyinMap[cleanText]) {
         return dynamicCustomPinyinMap[cleanText];
-      }
-
-      if (dynamicCustomPinyinMap) {
-        for (let key in dynamicCustomPinyinMap) {
-          if (key.length > 1 && cleanText.includes(key)) {
-            let keyPinyin = dynamicCustomPinyinMap[key];
-            if (cleanText === key) return keyPinyin;
-          }
-        }
       }
 
       if (embeddedPinyinCache && embeddedPinyinCache[cleanText]) {
@@ -1555,18 +1546,54 @@
 
           let res = window.pinyinPro.pinyin(simpText, { toneType: 'symbol' });
 
-          if (dynamicCustomPinyinMap) {
-            let chars = cleanText.split('');
+          if (dynamicCustomPinyinMap && Object.keys(dynamicCustomPinyinMap).length > 0) {
+            let chars = Array.from(cleanText);
             let pinyinArray = res.split(' ');
             if (chars.length === pinyinArray.length) {
               let modified = false;
-              for (let i = 0; i < chars.length; i++) {
-                if (dynamicCustomPinyinMap[chars[i]]) {
-                  pinyinArray[i] = dynamicCustomPinyinMap[chars[i]];
-                  modified = true;
+              const sortedKeys = Object.keys(dynamicCustomPinyinMap).sort((a, b) => b.length - a.length);
+              const locked = new Array(chars.length).fill(false);
+
+              for (let key of sortedKeys) {
+                const keyChars = Array.from(key);
+                const keyLen = keyChars.length;
+                if (keyLen === 0 || keyLen > chars.length) continue;
+
+                const customParts = dynamicCustomPinyinMap[key].trim().split(/\s+/);
+                for (let i = 0; i <= chars.length - keyLen; i++) {
+                  if (locked.slice(i, i + keyLen).some(Boolean)) continue;
+
+                  let match = true;
+                  for (let j = 0; j < keyLen; j++) {
+                    if (chars[i + j] !== keyChars[j]) {
+                      match = false;
+                      break;
+                    }
+                  }
+
+                  if (match) {
+                    if (customParts.length === keyLen) {
+                      for (let j = 0; j < keyLen; j++) {
+                        pinyinArray[i + j] = customParts[j];
+                        locked[i + j] = true;
+                      }
+                    } else {
+                      // Handles concatenated pinyin without spaces (e.g., 康弟=kāngdì)
+                      pinyinArray[i] = dynamicCustomPinyinMap[key].trim();
+                      locked[i] = true;
+                      for (let j = 1; j < keyLen; j++) {
+                        pinyinArray[i + j] = "";
+                        locked[i + j] = true;
+                      }
+                    }
+                    modified = true;
+                  }
                 }
               }
-              if (modified) res = pinyinArray.join(' ');
+
+              if (modified) {
+                res = pinyinArray.filter(Boolean).join(' ');
+              }
             }
           }
 
@@ -1864,13 +1891,13 @@
           newRecite.push(autoConvertCharacters(line));
         } else if (currentSection === 'pinyinFix') {
           if (trimmed) {
-            const pairs = trimmed.split(/[\s,;\t]+/).filter(Boolean);
+            const pairs = trimmed.split(/[,，;；\t]+/).filter(Boolean);
             pairs.forEach(pair => {
               if (pair.includes('=') || pair.includes('＝')) {
                 const parts = pair.split(/[=＝]/);
                 if (parts.length >= 2) {
                   const word = autoConvertCharacters(parts[0].trim().replace(/\s+/g, ''));
-                  const customPy = parts[1].trim();
+                  const customPy = parts.slice(1).join('=').trim().replace(/\s+/g, ' ');
                   if (word && customPy) {
                     dynamicCustomPinyinMap[word] = customPy;
                   }
