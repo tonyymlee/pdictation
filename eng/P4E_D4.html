@@ -800,13 +800,13 @@
           </button>
         </div>
         <div class="nav-tabs">
-          <button class="tab-btn active" id="btn_tab1" onclick="switchTab('tab1', this)">
+          <button class="tab-btn" id="btn_tab1" onclick="switchTab('tab1', this)">
             <span class="tab-icon">🔤</span> Vocabulary
           </button>
           <button class="tab-btn" id="btn_tab2" onclick="switchTab('tab2', this)">
             <span class="tab-icon">📖</span> Passage
           </button>
-          <button class="tab-btn" id="btn_tab3" onclick="switchTab('tab3', this)">
+          <button class="tab-btn active" id="btn_tab3" onclick="switchTab('tab3', this)">
             <span class="tab-icon">🎯</span> Unseen
           </button>
         </div>
@@ -872,7 +872,7 @@ A new study has found that children in Hong Kong have grown taller and heavier o
     </aside>
 
     <main id="mainContent" class="mode-C">
-      <div class="toolbar-card" id="vocabToolbar">
+      <div class="toolbar-card hidden" id="vocabToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
           <button class="btn-tag-icon" id="vocabTagBtn" onclick="scrollToTop()" title="Back to Top">Vocab.</button>
           <span class="toolbar-options">
@@ -882,9 +882,9 @@ A new study has found that children in Hong Kong have grown taller and heavier o
                 <option value="0.95">0.95x</option>
                 <option value="0.88">0.88x</option>
                 <option value="0.7">0.7x</option>
-                <option value="0.6">0.6x</option>
+                <option value="0.6" selected="selected">0.6x</option>
                 <option value="0.5">0.5x</option>
-                <option value="0.38" selected="selected">0.38x</option>
+                <option value="0.38">0.38x</option>
                 <option value="0.3">0.3x</option>
                 <option value="0.2">0.2x</option>
                 <option value="0.1">0.1x</option>
@@ -895,9 +895,9 @@ A new study has found that children in Hong Kong have grown taller and heavier o
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="Copy Content">C</button>
       </div>
 
-      <div class="toolbar-card hidden" id="dictationToolbar">
+      <div class="toolbar-card" id="dictationToolbar">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="Back to Top">Passage</button>
+          <button class="btn-tag-icon" id="dictationTagBtn" onclick="scrollToTop()" title="Back to Top">Unseen</button>
           <span class="toolbar-options">
             <label>I: <input type="number" id="secPerWordInput" value="2.8" min="0.5" step="0.1" max="99"> s</label>
             <label>S: 
@@ -918,105 +918,61 @@ A new study has found that children in Hong Kong have grown taller and heavier o
         <button class="btn-copy-icon" onclick="copyCurrentContent(this)" title="Copy Content">C</button>
       </div>
 
-      <div id="contentArea"><div class="words-grid">
-          <div class="word-card" id="card_0" onclick="clickPlayVocab(0)">
-            <div class="word-index">#1</div>
-            <div class="word-text" title="emerge">emerge</div>
-            <div class="zh-text" data-en="emerge">出現</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(0)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_1" onclick="clickPlayVocab(1)">
-            <div class="word-index">#2</div>
-            <div class="word-text" title="bristly">bristly</div>
-            <div class="zh-text" data-en="bristly">粗糙</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(1)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_2" onclick="clickPlayVocab(2)">
-            <div class="word-index">#3</div>
-            <div class="word-text" title="murmur">murmur</div>
-            <div class="zh-text" data-en="murmur">潺潺</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(2)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_3" onclick="clickPlayVocab(3)">
-            <div class="word-index">#4</div>
-            <div class="word-text" title="hobble">hobble</div>
-            <div class="zh-text" data-en="hobble">跛行</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(3)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_4" onclick="clickPlayVocab(4)">
-            <div class="word-index">#5</div>
-            <div class="word-text" title="beckon"><span class="hl-word">beckon</span></div>
-            <div class="zh-text hl-word" data-en="beckon">招手</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(4)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_5" onclick="clickPlayVocab(5)">
-            <div class="word-index">#6</div>
-            <div class="word-text" title="creaky">creaky</div>
-            <div class="zh-text" data-en="creaky">吱吱作響</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(5)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_6" onclick="clickPlayVocab(6)">
-            <div class="word-index">#7</div>
-            <div class="word-text" title="musty">musty</div>
-            <div class="zh-text" data-en="musty">霉味</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(6)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_7" onclick="clickPlayVocab(7)">
-            <div class="word-index">#8</div>
-            <div class="word-text" title="luminous">luminous</div>
-            <div class="zh-text" data-en="luminous">發光的</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(7)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_8" onclick="clickPlayVocab(8)">
-            <div class="word-index">#9</div>
-            <div class="word-text" title="clutch"><span class="hl-word">clutch</span></div>
-            <div class="zh-text hl-word" data-en="clutch">一群</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(8)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_9" onclick="clickPlayVocab(9)">
-            <div class="word-index">#10</div>
-            <div class="word-text" title="rustling">rustling</div>
-            <div class="zh-text" data-en="rustling">沙沙聲</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(9)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_10" onclick="clickPlayVocab(10)">
-            <div class="word-index">#11</div>
-            <div class="word-text" title="stale">stale</div>
-            <div class="zh-text" data-en="stale">不新鮮的, 發霉的</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(10)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_11" onclick="clickPlayVocab(11)">
-            <div class="word-index">#12</div>
-            <div class="word-text" title="crouch">crouch</div>
-            <div class="zh-text" data-en="crouch">蹲下</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(11)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_12" onclick="clickPlayVocab(12)">
-            <div class="word-index">#13</div>
-            <div class="word-text" title="froth">froth</div>
-            <div class="zh-text" data-en="froth">泡沫</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(12)">▶</button>
-          </div>
-        
-          <div class="word-card" id="card_13" onclick="clickPlayVocab(13)">
-            <div class="word-index">#14</div>
-            <div class="word-text" title="fabulous">fabulous</div>
-            <div class="zh-text" data-en="fabulous">超棒</div>
-            <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayVocab(13)">▶</button>
-          </div>
-        </div></div>
+      <div id="contentArea"><div class="dictation-list" id="dictationList">
+            <div class="dictation-row" id="dcard_1" onclick="clickPlayDictation(1)">
+              <div>
+                <div class="sentence-index">#1</div>
+                <div class="sentence-text"><span class="nowrap-word">A</span> <span class="nowrap-word">new</span> <span class="nowrap-word">study</span> <span class="nowrap-word">has</span> <span class="nowrap-word">found</span> <span class="nowrap-word">that</span> <span class="nowrap-word">children</span></div>
+                <div class="zh-text" data-en="A new study has found that children">一項新研究發現，兒童</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(1)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_2" onclick="clickPlayDictation(2)">
+              <div>
+                <div class="sentence-index">#2</div>
+                <div class="sentence-text"><span class="nowrap-word">in</span> <span class="nowrap-word">Hong</span> <span class="nowrap-word">Kong</span> <span class="nowrap-word">have</span> <span class="nowrap-word">grown</span> <span class="nowrap-word">taller</span> <span class="nowrap-word">and</span></div>
+                <div class="zh-text" data-en="in Hong Kong have grown taller and">在香港長得更高，而且</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(2)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_3" onclick="clickPlayDictation(3)">
+              <div>
+                <div class="sentence-index">#3</div>
+                <div class="sentence-text"><span class="nowrap-word">heavier</span> <span class="nowrap-word">over</span> <span class="nowrap-word">the</span> <span class="nowrap-word">last</span> <span class="nowrap-word">30</span> <span class="nowrap-word">years.</span></div>
+                <div class="zh-text" data-en="heavier over the last 30 years.">在過去 30 年間變得更重。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(3)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_4" onclick="clickPlayDictation(4)">
+              <div>
+                <div class="sentence-index">#4</div>
+                <div class="sentence-text"><span class="nowrap-word">This</span> <span class="nowrap-word">is</span> <span class="nowrap-word">because</span> <span class="nowrap-word">children</span> <span class="nowrap-word">now</span> <span class="nowrap-word">have</span></div>
+                <div class="zh-text" data-en="This is because children now have">這是因為現在的孩子有</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(4)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_5" onclick="clickPlayDictation(5)">
+              <div>
+                <div class="sentence-index">#5</div>
+                <div class="sentence-text"><span class="nowrap-word">better</span> <span class="nowrap-word">food</span> <span class="nowrap-word">and</span> <span class="nowrap-word">lifestyles</span> <span class="nowrap-word">that</span> <span class="nowrap-word">help</span></div>
+                <div class="zh-text" data-en="better food and lifestyles that help">有益的飲食和生活方式</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(5)">▶</button>
+            </div>
+          
+            <div class="dictation-row" id="dcard_6" onclick="clickPlayDictation(6)">
+              <div>
+                <div class="sentence-index">#6</div>
+                <div class="sentence-text"><span class="nowrap-word">them</span> <span class="nowrap-word">grow</span> <span class="nowrap-word">in</span> <span class="nowrap-word">a</span> <span class="nowrap-word">healthy</span> <span class="nowrap-word">way.</span></div>
+                <div class="zh-text" data-en="them grow in a healthy way.">讓他們健康成長。</div>
+              </div>
+              <button class="card-play-btn" onclick="event.stopPropagation(); clickPlayDictation(6)">▶</button>
+            </div>
+          </div></div>
     </main>
   </div>
 
@@ -2462,12 +2418,26 @@ A new study has found that children in Hong Kong have grown taller and heavier o
         if (playIndex === -1) playIndex = 0;
         playNextVocabStep();
       } else {
+        if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+        currentSpeechId++;
+        const clickSpeechId = currentSpeechId;
+
         if (synth) {
           synth.cancel();
           const emptyUtter = new SpeechSynthesisUtterance('');
           synth.speak(emptyUtter);
         }
-        speakText(wordItem, false, null);
+
+        wakeUpTimeout = setTimeout(() => {
+          if (clickSpeechId !== currentSpeechId || isPlaying) return;
+          speakText(wordItem, false, () => {
+            const afterFirstId = currentSpeechId;
+            wakeUpTimeout = setTimeout(() => {
+              if (afterFirstId !== currentSpeechId || isPlaying) return;
+              speakText(wordItem, false, null);
+            }, 3000);
+          });
+        }, 1000);
       }
     }
 
@@ -2698,13 +2668,13 @@ A new study has found that children in Hong Kong have grown taller and heavier o
 
 <script id="autoLoadScript">
           document.addEventListener('DOMContentLoaded', function() {
-            const savedCache = {"stale":"不新鮮的, 發霉的","emerge":"出現","luminous":"發光的","clutch":"一群","bristly":"粗糙","murmur":"潺潺","hobble":"跛行","beckon":"招手","creaky":"吱吱作響","musty":"霉味","rustling":"沙沙聲","crouch":"蹲下","froth":"泡沫","fabulous":"超棒","the next moment,":"下一刻，","james was running back toward":"詹姆斯正跑回","the house as fast":"盡快離開房子","as he could go.":"他能走多遠就走多遠。","he would do it":"他會這麼做。","all in the kitchen,":"都在廚房裡，","he told himself—if only he":"他心想——要是他","could get in there without aunt sponge":"不用經過海綿姑姑的同意，就能進去。","and aunt spiker seeing him.":"而史派克姑姑也見到他。","he was terribly excited.":"他非常興奮。","he flew through the long":"他飛越了漫長的","grass and the stinging-nettles,":"草和蕁麻，","not caring whether he got stung":"不在乎自己是否被叮到","or not on his bare knees,":"或者不是跪在地上，","and in the distance he":"而在遠處，他","could see aunt sponge and aunt spiker":"可以看到海綿姑姑和尖刺姑姑","sitting in their chairs with":"坐在椅子上，","their backs toward him.":"背對著他。","he swerved away from them so as to":"他轉向避開他們，以便","go around the other":"繞過另一邊","side of the house,":"房子的側邊，","but then suddenly,":"但突然間，","just as he was passing":"就在他經過的時候","underneath the old peach tree":"在老桃樹下","that stood in the middle of the garden,":"那棵樹就站在花園中央，","his foot slipped and he":"他的腳滑了一下，他","fell flat on his":"完全失敗","face in the grass.":"臉朝著草地。","the paper bag burst open as":"紙袋突然爆開，","it hit the ground and the":"它撞到地面，然後","thousands of tiny green things":"成千上萬的小綠色東西","were scattered in all directions.":"散落在各個方向。","james immediately picked himself up onto":"詹姆斯立刻爬起來，","his hands and knees and started":"他跪在地上，開始","searching around for his precious treasures.":"到處尋找他的珍貴寶藏。","but what was this?":"但這是什麼？","they were all sinking":"他們全都沉下去了。","into the soil!":"埋入土壤！","he could actually see them wriggling":"他真的能看到牠們在扭動。","and twisting as they burrowed their":"牠們在鑽洞時扭動身體，","way downward into the hard earth,":"深入堅硬的地面，","and at once he reached out a":"他立刻伸手","hand to pick some of them":"親手挑選其中一些","up before it was too late,":"在為時已晚之前，","but they disappeared right":"但它們馬上就消失了","under his fingers.":"在他的指尖下。","he went after some others,":"他追著其他人跑，","and the same thing happened!":"結果發生了同樣的事情！","a new study has found that children":"一項新研究發現，兒童","in hong kong have grown taller and":"在香港的人變得更高，而且","heavier over the last 30 years.":"在過去 30 年間變得更重。","this is because children now have":"這是因為現在的孩子們有","better food and lifestyles that help":"有益的飲食和生活方式","them grow in a healthy way.":"讓他們健康成長。"};
+            const savedCache = {"stale":"不新鮮的, 發霉的","emerge":"出現","luminous":"發光的","clutch":"一群","bristly":"粗糙","murmur":"潺潺","hobble":"跛行","beckon":"招手","creaky":"吱吱作響","musty":"霉味","rustling":"沙沙聲","crouch":"蹲下","froth":"泡沫","fabulous":"超棒","the next moment,":"下一刻，","james was running back toward":"詹姆斯正跑回","the house as fast":"盡快離開房子","as he could go.":"他能走多快就走多快。","he would do it":"他會這麼做。","all in the kitchen,":"全都在廚房裡，","he told himself—if only he":"他心想——要是他","could get in there without aunt sponge":"不用靠海綿姑姑就能進去","and aunt spiker seeing him.":"而史派克姑姑也見到他。","he was terribly excited.":"他非常興奮。","he flew through the long":"他飛越了漫長的","grass and the stinging-nettles,":"草和蕁麻，","not caring whether he got stung":"不在乎自己是否被叮到","or not on his bare knees,":"或者不是跪在地上，","and in the distance he":"而在遠處，他","could see aunt sponge and aunt spiker":"可以看到海綿姑姑和尖刺姑姑","sitting in their chairs with":"坐在椅子上，","their backs toward him.":"背對著他。","he swerved away from them so as to":"他轉向避開他們，以便","go around the other":"繞到另一邊去","side of the house,":"房子的側邊，","but then suddenly,":"但突然間，","just as he was passing":"就在他經過的時候","underneath the old peach tree":"在老桃樹下","that stood in the middle of the garden,":"那棵樹就立在園子中間，","his foot slipped and he":"他的腳滑了一下，他","fell flat on his":"毫無效果","face in the grass.":"臉朝著草地。","the paper bag burst open as":"紙袋突然爆開，","it hit the ground and the":"它撞到地面，然後","thousands of tiny green things":"成千上萬的小綠色東西","were scattered in all directions.":"散落在各個方向。","james immediately picked himself up onto":"詹姆斯立刻爬起來，","his hands and knees and started":"他跪在地上，開始","searching around for his precious treasures.":"到處尋找他的珍貴寶藏。","but what was this?":"但這是什麼？","they were all sinking":"他們全都沉下去了。","into the soil!":"埋入土壤！","he could actually see them wriggling":"他真的能看到牠們在扭動。","and twisting as they burrowed their":"牠們在鑽洞時扭動著身體","way downward into the hard earth,":"深入堅硬的地面，","and at once he reached out a":"他立刻伸手","hand to pick some of them":"親手挑選一些","up before it was too late,":"在為時已晚之前，","but they disappeared right":"但它們馬上就消失了","under his fingers.":"在他的指尖下。","he went after some others,":"他追著其他人跑，","and the same thing happened!":"結果發生了同樣的事情！","a new study has found that children":"一項新研究發現，兒童","in hong kong have grown taller and":"在香港長得更高，而且","heavier over the last 30 years.":"在過去 30 年間變得更重。","this is because children now have":"這是因為現在的孩子有","better food and lifestyles that help":"有益的飲食和生活方式","them grow in a healthy way.":"讓他們健康成長。"};
             Object.assign(translationCache, savedCache);
 
             const vDelay = document.getElementById('vocabDelayInput');
             if (vDelay) vDelay.value = "10";
             const vSpeed = document.getElementById('vocabVoiceSpeedSelect');
-            if (vSpeed) vSpeed.value = "0.38";
+            if (vSpeed) vSpeed.value = "0.6";
             const pSec = document.getElementById('secPerWordInput');
             if (pSec) pSec.value = "2.8";
             const pSpeed = document.getElementById('voiceSpeedSelect');

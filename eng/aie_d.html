@@ -2333,12 +2333,26 @@
         if (playIndex === -1) playIndex = 0;
         playNextVocabStep();
       } else {
+        if (wakeUpTimeout) clearTimeout(wakeUpTimeout);
+        currentSpeechId++;
+        const clickSpeechId = currentSpeechId;
+
         if (synth) {
           synth.cancel();
           const emptyUtter = new SpeechSynthesisUtterance('');
           synth.speak(emptyUtter);
         }
-        speakText(wordItem, false, null);
+
+        wakeUpTimeout = setTimeout(() => {
+          if (clickSpeechId !== currentSpeechId || isPlaying) return;
+          speakText(wordItem, false, () => {
+            const afterFirstId = currentSpeechId;
+            wakeUpTimeout = setTimeout(() => {
+              if (afterFirstId !== currentSpeechId || isPlaying) return;
+              speakText(wordItem, false, null);
+            }, 3000);
+          });
+        }, 1000);
       }
     }
 
