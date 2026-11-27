@@ -83,7 +83,7 @@
     }
 
     .touch-btn {
-      min-height: 44px;
+      min-height: 40px;
       touch-action: manipulation;
     }
 
@@ -144,37 +144,32 @@
   </header>
 
   <!-- 主要內容 -->
-  <main class="flex-1 max-w-6xl w-full mx-auto px-3.5 sm:px-6 pt-4 sm:pt-8 pb-28 lg:pb-10">
+  <main class="flex-1 max-w-6xl w-full mx-auto px-3.5 sm:px-6 pt-4 sm:pt-6 pb-28 lg:pb-10">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
 
       <!-- 左欄：上傳與頁面排列區 -->
-      <div class="lg:col-span-8 space-y-4 sm:space-y-5">
+      <div class="lg:col-span-8 space-y-4">
 
-        <!-- 上傳區 -->
-        <div id="dropZone" class="border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-8 text-center transition-all hover:border-indigo-400 dark:hover:border-indigo-500 cursor-pointer">
+        <!-- 精簡上傳與掃描控制區 -->
+        <div id="dropZone" class="border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 text-center transition-all hover:border-indigo-400 dark:hover:border-indigo-500 cursor-pointer">
           <input id="fileInput" type="file" accept="image/*" multiple class="hidden" />
           <input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden" />
 
-          <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3">
-            <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-            </svg>
-          </div>
-          <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100">加入或拍攝掃描文件</h2>
-          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
+          <h2 class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100">加入或拍攝掃描文件</h2>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
             從相簿選擇、拖曳圖片到此處，或直接使用相機拍攝並自動切除頁面外邊框。
           </p>
 
-          <div class="mt-4 sm:mt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 max-w-md mx-auto">
-            <button id="browseBtn" type="button" class="touch-btn flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-sm transition-colors">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <div class="mt-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 max-w-md mx-auto">
+            <button id="browseBtn" type="button" class="touch-btn flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-sm transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <span>選擇圖片</span>
             </button>
 
-            <button id="cameraBtn" type="button" class="touch-btn flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 border border-indigo-200 dark:border-indigo-800 rounded-xl transition-colors">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <button id="cameraBtn" type="button" class="touch-btn flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 border border-indigo-200 dark:border-indigo-800 rounded-xl transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -182,57 +177,51 @@
             </button>
           </div>
 
-          <!-- 自動裁切開關 + 全域色彩模式 + 亮度/銳利度 -->
-          <div class="no-drop-click mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3 cursor-default">
-            <div class="flex flex-wrap items-center justify-center gap-3">
-              <button id="autoCropToggle" type="button" role="switch" aria-checked="true" class="touch-btn inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all">
+          <!-- 精簡控制列：第一行（自動裁切 + 原圖/增亮/黑白），第二行（亮度 + 銳利度 + 重設） -->
+          <div class="no-drop-click mt-3.5 pt-3.5 border-t border-slate-100 dark:border-slate-800 space-y-2.5 cursor-default">
+            <!-- Row 1: 自動矩形裁切 + 3 色彩按鈕 -->
+            <div class="flex flex-wrap items-center justify-center gap-2">
+              <button id="autoCropToggle" type="button" role="switch" aria-checked="true" class="touch-btn inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all shrink-0">
                 <span id="autoCropTrack" class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200">
                   <span id="autoCropKnob" class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4"></span>
                 </span>
                 <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300" id="autoCropLabel">自動矩形裁切邊框：開啟</span>
               </button>
-              <span class="text-[11px] text-slate-400 dark:text-slate-500">拍照時自動以標準矩形去背裁切，亦可在每頁手動微調</span>
-            </div>
 
-            <!-- 全域掃描色彩模式（套用至全部圖片） -->
-            <div class="max-w-md mx-auto grid grid-cols-3 gap-2">
-              <button type="button" data-global-filter="none" class="global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white shadow-sm transition-all">
-                原圖色彩
-              </button>
-              <button type="button" data-global-filter="enhance" class="global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
-                文件增亮
-              </button>
-              <button type="button" data-global-filter="bw" class="global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
-                黑白掃描
-              </button>
-            </div>
-
-            <!-- 亮度與銳利度微調（套用至全部圖片） -->
-            <div class="max-w-md mx-auto p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 space-y-2.5 text-left">
-              <div class="flex items-center justify-between gap-2">
-                <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">全域畫面微調（套用至全部圖片）</span>
-                <button id="resetAdjustBtn" type="button" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline px-1.5 py-0.5 rounded">
-                  重設
+              <div class="inline-flex items-center rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
+                <button type="button" data-global-filter="none" class="global-filter-btn touch-btn px-3.5 py-1.5 text-xs font-semibold bg-indigo-600 text-white transition-all">
+                  原圖
+                </button>
+                <button type="button" data-global-filter="enhance" class="global-filter-btn touch-btn px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border-l border-slate-300 dark:border-slate-700 transition-all">
+                  增亮
+                </button>
+                <button type="button" data-global-filter="bw" class="global-filter-btn touch-btn px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border-l border-slate-300 dark:border-slate-700 transition-all">
+                  黑白
                 </button>
               </div>
+            </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <div class="flex items-center justify-between text-[11px] mb-1">
-                    <label for="brightnessSlider" class="font-medium text-slate-700 dark:text-slate-300">亮度（調低字更深）</label>
-                    <span id="brightnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">0</span>
-                  </div>
-                  <input id="brightnessSlider" type="range" min="-60" max="60" step="5" value="0" class="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+            <!-- Row 2: 亮度 + 銳利度 + 重設 -->
+            <div class="p-2.5 sm:px-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 text-left">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between text-[11px] mb-1">
+                  <label for="brightnessSlider" class="font-medium text-slate-700 dark:text-slate-300">亮度（調低字更深）</label>
+                  <span id="brightnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">0</span>
                 </div>
-
-                <div>
-                  <div class="flex items-center justify-between text-[11px] mb-1">
-                    <label for="sharpnessSlider" class="font-medium text-slate-700 dark:text-slate-300">銳利度（字體清晰）</label>
-                    <span id="sharpnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">30%</span>
-                  </div>
-                  <input id="sharpnessSlider" type="range" min="0" max="100" step="5" value="30" class="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 dark:bg-slate-800 rounded-lg" />
-                </div>
+                <input id="brightnessSlider" type="range" min="-60" max="60" step="5" value="0" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg" />
               </div>
+
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between text-[11px] mb-1">
+                  <label for="sharpnessSlider" class="font-medium text-slate-700 dark:text-slate-300">銳利度（字體清晰）</label>
+                  <span id="sharpnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">30%</span>
+                </div>
+                <input id="sharpnessSlider" type="range" min="0" max="100" step="5" value="30" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+              </div>
+
+              <button id="resetAdjustBtn" type="button" class="touch-btn sm:min-h-[34px] px-3 py-1.5 rounded-lg bg-slate-200/70 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-indigo-600 dark:text-indigo-400 shrink-0 transition-colors">
+                重設
+              </button>
             </div>
           </div>
         </div>
@@ -447,9 +436,9 @@
     <div class="px-4 py-3 bg-slate-900 border-t border-slate-800 space-y-3 shrink-0" style="padding-bottom: max(0.875rem, env(safe-area-inset-bottom));">
       <!-- 單頁濾鏡微調 -->
       <div class="max-w-xl mx-auto flex items-center justify-center gap-2">
-        <button type="button" data-filter="none" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white transition-all">原圖色彩</button>
-        <button type="button" data-filter="enhance" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">文件增亮</button>
-        <button type="button" data-filter="bw" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">黑白掃描</button>
+        <button type="button" data-filter="none" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white transition-all">原圖</button>
+        <button type="button" data-filter="enhance" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">增亮</button>
+        <button type="button" data-filter="bw" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">黑白</button>
       </div>
 
       <!-- 操作按鈕 -->
@@ -549,9 +538,9 @@
     let sortableInstance = null;
 
     const filterLabelMap = {
-      none: '原圖色彩',
-      enhance: '文件增亮',
-      bw: '黑白掃描'
+      none: '原圖',
+      enhance: '增亮',
+      bw: '黑白'
     };
 
     const canNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
@@ -660,13 +649,13 @@
     function syncAutoCropUI() {
       autoCropToggle.setAttribute('aria-checked', String(autoCropEnabled));
       if (autoCropEnabled) {
-        autoCropToggle.className = 'touch-btn inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all';
+        autoCropToggle.className = 'touch-btn inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all shrink-0';
         autoCropTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200';
         autoCropKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4';
         autoCropLabel.textContent = '自動矩形裁切邊框：開啟';
         autoCropLabel.className = 'text-xs font-bold text-emerald-700 dark:text-emerald-300';
       } else {
-        autoCropToggle.className = 'touch-btn inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 transition-all';
+        autoCropToggle.className = 'touch-btn inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 transition-all shrink-0';
         autoCropTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-slate-300 dark:bg-slate-600 transition-colors duration-200';
         autoCropKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-1';
         autoCropLabel.textContent = '自動矩形裁切邊框：關閉';
@@ -683,11 +672,12 @@
     syncAutoCropUI();
 
     function syncGlobalFilterUI() {
-      document.querySelectorAll('.global-filter-btn').forEach((btn) => {
+      document.querySelectorAll('.global-filter-btn').forEach((btn, i) => {
         const isActive = btn.dataset.globalFilter === globalScanFilter;
+        const borderCls = i > 0 ? ' border-l border-slate-300 dark:border-slate-700' : '';
         btn.className = isActive
-          ? 'global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white shadow-sm transition-all'
-          : 'global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all';
+          ? `global-filter-btn touch-btn px-3.5 py-1.5 text-xs font-semibold bg-indigo-600 text-white${borderCls} transition-all`
+          : `global-filter-btn touch-btn px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700${borderCls} transition-all`;
       });
     }
 
@@ -875,7 +865,7 @@
       return { dataUrl, width: outW, height: outH };
     }
 
-    // 偵測文件標準矩形外框 { left, top, right, bottom }（合併所有文字與區塊）
+    // 偵測文件標準矩形外框 { left, top, right, bottom }（合併所有文字與區塊，避免切到邊緣文字）
     function detectDocumentRect(img) {
       const maxDetectDim = 320;
       const scale = Math.min(1, maxDetectDim / Math.max(img.naturalWidth, img.naturalHeight));
@@ -1036,12 +1026,19 @@
 
       if (!foundValid) return null;
 
-      // 加上 1% 安全留白，避免貼邊文字被切到
-      const pad = 0.01;
-      const left = Math.max(0, unionMinX / w - pad);
-      const top = Math.max(0, unionMinY / h - pad);
-      const right = Math.min(1, (unionMaxX + 1) / w + pad);
-      const bottom = Math.min(1, (unionMaxY + 1) / h + pad);
+      // 加上 2% 安全留白，且若某邊距離原始圖片邊界不到 6% 則直接貼齊全邊，避免切到邊緣文字
+      const pad = 0.02;
+      const snapEdge = 0.06;
+      let left = Math.max(0, unionMinX / w - pad);
+      let top = Math.max(0, unionMinY / h - pad);
+      let right = Math.min(1, (unionMaxX + 1) / w + pad);
+      let bottom = Math.min(1, (unionMaxY + 1) / h + pad);
+
+      if (left < snapEdge) left = 0;
+      if (top < snapEdge) top = 0;
+      if (right > 1 - snapEdge) right = 1;
+      if (bottom > 1 - snapEdge) bottom = 1;
+
       const rw = right - left;
       const rh = bottom - top;
       const areaRatio = rw * rh;
