@@ -6,7 +6,7 @@
   <meta id="themeColorMeta" name="theme-color" content="#0f172a" />
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <title>PDF merge — 圖片合併工具</title>
+  <title>PDF merge — 圖片合併與文件掃描工具</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -90,6 +90,12 @@
     .drag-handle {
       touch-action: none;
     }
+
+    #cropCanvas {
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
   </style>
 </head>
 <body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
@@ -106,18 +112,16 @@
         </div>
         <div class="truncate">
           <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white leading-none truncate">PDF merge</h1>
-          <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">圖片轉 PDF 合併工具</p>
+          <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">圖片轉 PDF 與文件掃描工具</p>
         </div>
       </div>
 
       <div class="flex items-center gap-2 shrink-0">
         <!-- 深淺色模式切換按鈕 -->
         <button id="themeToggleBtn" type="button" aria-label="切換深色或淺色模式" title="切換模式" class="touch-btn w-10 h-10 sm:w-auto sm:px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 inline-flex items-center justify-center gap-1.5 transition-colors">
-          <!-- 太陽圖示（深色模式顯示） -->
           <svg class="w-4 h-4 text-amber-400 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
-          <!-- 月亮圖示（淺色模式顯示） -->
           <svg class="w-4 h-4 text-indigo-600 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
           </svg>
@@ -156,9 +160,9 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           </div>
-          <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100">加入要合併的圖片</h2>
+          <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100">加入或拍攝掃描文件</h2>
           <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
-            從相簿選擇、拖曳圖片到此處，或直接使用相機拍攝。
+            從相簿選擇、拖曳圖片到此處，或直接使用相機拍攝並自動切除頁面外邊框。
           </p>
 
           <div class="mt-4 sm:mt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 max-w-md mx-auto">
@@ -174,8 +178,62 @@
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              <span>立即拍照</span>
+              <span>立即拍照掃描</span>
             </button>
+          </div>
+
+          <!-- 自動裁切開關 + 全域色彩模式 + 亮度/銳利度 -->
+          <div class="no-drop-click mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3 cursor-default">
+            <div class="flex flex-wrap items-center justify-center gap-3">
+              <button id="autoCropToggle" type="button" role="switch" aria-checked="true" class="touch-btn inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all">
+                <span id="autoCropTrack" class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200">
+                  <span id="autoCropKnob" class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4"></span>
+                </span>
+                <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300" id="autoCropLabel">自動矩形裁切邊框：開啟</span>
+              </button>
+              <span class="text-[11px] text-slate-400 dark:text-slate-500">拍照時自動以標準矩形去背裁切，亦可在每頁手動微調</span>
+            </div>
+
+            <!-- 全域掃描色彩模式（套用至全部圖片） -->
+            <div class="max-w-md mx-auto grid grid-cols-3 gap-2">
+              <button type="button" data-global-filter="none" class="global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white shadow-sm transition-all">
+                原圖色彩
+              </button>
+              <button type="button" data-global-filter="enhance" class="global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                文件增亮
+              </button>
+              <button type="button" data-global-filter="bw" class="global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                黑白掃描
+              </button>
+            </div>
+
+            <!-- 亮度與銳利度微調（套用至全部圖片） -->
+            <div class="max-w-md mx-auto p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 space-y-2.5 text-left">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">全域畫面微調（套用至全部圖片）</span>
+                <button id="resetAdjustBtn" type="button" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline px-1.5 py-0.5 rounded">
+                  重設
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <div class="flex items-center justify-between text-[11px] mb-1">
+                    <label for="brightnessSlider" class="font-medium text-slate-700 dark:text-slate-300">亮度（調低字更深）</label>
+                    <span id="brightnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">0</span>
+                  </div>
+                  <input id="brightnessSlider" type="range" min="-60" max="60" step="5" value="0" class="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between text-[11px] mb-1">
+                    <label for="sharpnessSlider" class="font-medium text-slate-700 dark:text-slate-300">銳利度（字體清晰）</label>
+                    <span id="sharpnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">30%</span>
+                  </div>
+                  <input id="sharpnessSlider" type="range" min="0" max="100" step="5" value="30" class="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -201,7 +259,7 @@
 
         <!-- 空狀態提示 -->
         <div id="emptyStateHint" class="text-center py-6 text-slate-400 dark:text-slate-500 text-xs sm:text-sm">
-          尚未加入任何圖片。請點擊上方的 <span class="font-medium text-slate-600 dark:text-slate-300">選擇圖片</span> 或 <span class="font-medium text-slate-600 dark:text-slate-300">立即拍照</span>。
+          尚未加入任何圖片。請點擊上方的 <span class="font-medium text-slate-600 dark:text-slate-300">選擇圖片</span> 或 <span class="font-medium text-slate-600 dark:text-slate-300">立即拍照掃描</span>。
         </div>
       </div>
 
@@ -366,6 +424,49 @@
     </div>
   </div>
 
+  <!-- 互動式矩形裁切視窗 -->
+  <div id="cropModal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm flex flex-col">
+    <div class="px-4 py-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0">
+      <div>
+        <h3 class="text-sm sm:text-base font-bold text-white">調整矩形裁切框與掃描模式</h3>
+        <p class="text-[11px] text-slate-400">拖曳四個角點調整大小，或拖曳框內移動位置（保持標準矩形，按 Esc 關閉）</p>
+      </div>
+      <button id="closeCropModalBtn" type="button" class="touch-btn w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center" aria-label="關閉">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- 畫布區 -->
+    <div id="cropCanvasWrap" class="flex-1 min-h-0 flex items-center justify-center p-3 sm:p-6 overflow-hidden">
+      <canvas id="cropCanvas" class="max-w-full max-h-full rounded-lg shadow-2xl cursor-crosshair"></canvas>
+    </div>
+
+    <!-- 底部控制列 -->
+    <div class="px-4 py-3 bg-slate-900 border-t border-slate-800 space-y-3 shrink-0" style="padding-bottom: max(0.875rem, env(safe-area-inset-bottom));">
+      <!-- 單頁濾鏡微調 -->
+      <div class="max-w-xl mx-auto flex items-center justify-center gap-2">
+        <button type="button" data-filter="none" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white transition-all">原圖色彩</button>
+        <button type="button" data-filter="enhance" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">文件增亮</button>
+        <button type="button" data-filter="bw" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">黑白掃描</button>
+      </div>
+
+      <!-- 操作按鈕 -->
+      <div class="max-w-xl mx-auto flex items-center gap-2">
+        <button id="cropAutoDetectBtn" type="button" class="touch-btn px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 text-xs font-semibold shrink-0">
+          自動偵測
+        </button>
+        <button id="cropResetFullBtn" type="button" class="touch-btn px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold shrink-0">
+          還原全圖
+        </button>
+        <button id="cropApplyBtn" type="button" class="touch-btn flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-sm">
+          套用裁切
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- 分享選項視窗（WhatsApp / Google Drive / 系統分享） -->
   <div id="shareModal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
     <div class="bg-white dark:bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-fade-in">
@@ -382,7 +483,6 @@
       </div>
 
       <div class="p-4 space-y-2.5" style="padding-bottom: max(1.25rem, env(safe-area-inset-bottom));">
-        <!-- WhatsApp -->
         <button id="shareWhatsAppBtn" type="button" class="touch-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/80 text-left transition-colors">
           <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -395,7 +495,6 @@
           </div>
         </button>
 
-        <!-- Google Drive -->
         <button id="shareDriveBtn" type="button" class="touch-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/50 dark:hover:bg-sky-900/60 border border-sky-200 dark:border-sky-800/80 text-left transition-colors">
           <div class="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0">
             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
@@ -408,7 +507,6 @@
           </div>
         </button>
 
-        <!-- 系統原生分享（手機 / 支援瀏覽器顯示） -->
         <button id="shareNativeBtn" type="button" class="hidden touch-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800/80 text-left transition-colors">
           <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -421,7 +519,6 @@
           </div>
         </button>
 
-        <!-- 直接下載 -->
         <button id="shareDownloadBtn" type="button" class="touch-btn w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -437,6 +534,10 @@
 
     // 應用程式狀態
     let images = [];
+    let autoCropEnabled = true;
+    let globalScanFilter = 'none'; // 'none' | 'enhance' | 'bw'
+    let globalBrightness = 0;      // -60 ~ +60
+    let globalSharpness = 30;      // 0 ~ 100
     let selectedOrientation = 'portrait';
     let selectedMargin = 10;
     let showPageNumbers = true;
@@ -446,6 +547,12 @@
     let lastGeneratedBlob = null;
     let lastGeneratedFilename = '合併文件.pdf';
     let sortableInstance = null;
+
+    const filterLabelMap = {
+      none: '原圖色彩',
+      enhance: '文件增亮',
+      bw: '黑白掃描'
+    };
 
     const canNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
     const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
@@ -463,6 +570,17 @@
     const cameraBtn = document.getElementById('cameraBtn');
     const addMoreBtn = document.getElementById('addMoreBtn');
     const clearAllBtn = document.getElementById('clearAllBtn');
+
+    const autoCropToggle = document.getElementById('autoCropToggle');
+    const autoCropTrack = document.getElementById('autoCropTrack');
+    const autoCropKnob = document.getElementById('autoCropKnob');
+    const autoCropLabel = document.getElementById('autoCropLabel');
+
+    const brightnessSlider = document.getElementById('brightnessSlider');
+    const brightnessVal = document.getElementById('brightnessVal');
+    const sharpnessSlider = document.getElementById('sharpnessSlider');
+    const sharpnessVal = document.getElementById('sharpnessVal');
+    const resetAdjustBtn = document.getElementById('resetAdjustBtn');
 
     const pageNumberToggle = document.getElementById('pageNumberToggle');
     const pageNumTrack = document.getElementById('pageNumTrack');
@@ -505,6 +623,15 @@
     const shareNativeBtn = document.getElementById('shareNativeBtn');
     const shareDownloadBtn = document.getElementById('shareDownloadBtn');
 
+    // 裁切視窗 DOM
+    const cropModal = document.getElementById('cropModal');
+    const closeCropModalBtn = document.getElementById('closeCropModalBtn');
+    const cropCanvas = document.getElementById('cropCanvas');
+    const cropCanvasWrap = document.getElementById('cropCanvasWrap');
+    const cropAutoDetectBtn = document.getElementById('cropAutoDetectBtn');
+    const cropResetFullBtn = document.getElementById('cropResetFullBtn');
+    const cropApplyBtn = document.getElementById('cropApplyBtn');
+
     if (canNativeShare) {
       shareNativeBtn.classList.remove('hidden');
     }
@@ -528,7 +655,712 @@
     syncThemeUI();
 
     // =========================================================================
-    // 右上角頁碼設定
+    // 自動裁切開關、全域色彩模式、亮度與銳利度（套用至全部圖片）
+    // =========================================================================
+    function syncAutoCropUI() {
+      autoCropToggle.setAttribute('aria-checked', String(autoCropEnabled));
+      if (autoCropEnabled) {
+        autoCropToggle.className = 'touch-btn inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all';
+        autoCropTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200';
+        autoCropKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4';
+        autoCropLabel.textContent = '自動矩形裁切邊框：開啟';
+        autoCropLabel.className = 'text-xs font-bold text-emerald-700 dark:text-emerald-300';
+      } else {
+        autoCropToggle.className = 'touch-btn inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 transition-all';
+        autoCropTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-slate-300 dark:bg-slate-600 transition-colors duration-200';
+        autoCropKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-1';
+        autoCropLabel.textContent = '自動矩形裁切邊框：關閉';
+        autoCropLabel.className = 'text-xs font-bold text-slate-600 dark:text-slate-400';
+      }
+    }
+
+    autoCropToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      autoCropEnabled = !autoCropEnabled;
+      syncAutoCropUI();
+    });
+
+    syncAutoCropUI();
+
+    function syncGlobalFilterUI() {
+      document.querySelectorAll('.global-filter-btn').forEach((btn) => {
+        const isActive = btn.dataset.globalFilter === globalScanFilter;
+        btn.className = isActive
+          ? 'global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white shadow-sm transition-all'
+          : 'global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all';
+      });
+    }
+
+    function syncAdjustLabels() {
+      brightnessVal.textContent = globalBrightness > 0 ? `+${globalBrightness}` : String(globalBrightness);
+      sharpnessVal.textContent = `${globalSharpness}%`;
+    }
+
+    async function reprocessAllImages(overrideFilter = null) {
+      if (overrideFilter !== null) {
+        globalScanFilter = overrideFilter;
+        syncGlobalFilterUI();
+      }
+
+      if (images.length === 0) return;
+
+      showStatus(`正在更新全部 ${images.length} 張圖片...`, 'info');
+
+      for (let i = 0; i < images.length; i++) {
+        const item = images[i];
+        if (overrideFilter !== null) {
+          item.scanFilter = overrideFilter;
+        }
+        const mode = item.scanFilter || globalScanFilter;
+        try {
+          const imgEl = await loadImageElement(item.originalDataUrl);
+          const processed = processImageWithRectAndFilter(imgEl, item.cropRect, mode, globalBrightness, globalSharpness);
+          if (processed) {
+            item.dataUrl = processed.dataUrl;
+            item.width = processed.width;
+            item.height = processed.height;
+          } else {
+            item.dataUrl = item.originalDataUrl;
+            item.width = imgEl.naturalWidth;
+            item.height = imgEl.naturalHeight;
+          }
+        } catch (err) {
+          console.error('套用畫面調整失敗:', err);
+        }
+      }
+
+      invalidatePdfCache();
+      renderGrid();
+      showStatus(`已更新全部 ${images.length} 張圖片（${filterLabelMap[globalScanFilter]}，亮度 ${brightnessVal.textContent}，銳利度 ${globalSharpness}%）。`, 'success');
+    }
+
+    document.querySelectorAll('.global-filter-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        reprocessAllImages(btn.dataset.globalFilter);
+      });
+    });
+
+    brightnessSlider.addEventListener('input', () => {
+      globalBrightness = Number(brightnessSlider.value);
+      syncAdjustLabels();
+    });
+    brightnessSlider.addEventListener('change', () => {
+      reprocessAllImages(null);
+    });
+
+    sharpnessSlider.addEventListener('input', () => {
+      globalSharpness = Number(sharpnessSlider.value);
+      syncAdjustLabels();
+    });
+    sharpnessSlider.addEventListener('change', () => {
+      reprocessAllImages(null);
+    });
+
+    resetAdjustBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      globalBrightness = 0;
+      globalSharpness = 30;
+      brightnessSlider.value = 0;
+      sharpnessSlider.value = 30;
+      syncAdjustLabels();
+      reprocessAllImages(null);
+    });
+
+    syncGlobalFilterUI();
+    syncAdjustLabels();
+
+    // =========================================================================
+    // 文件標準矩形邊緣偵測、直接矩形裁切、銳利化與色彩濾鏡引擎（純 JS + Canvas）
+    // =========================================================================
+    function loadImageElement(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    function applyPostProcess(imgData, w, h, filterMode, brightness, sharpness) {
+      const data = imgData.data;
+
+      // 1. 銳利化（3x3 Cross Unsharp Mask）
+      if (sharpness > 0 && w > 2 && h > 2) {
+        const src = new Uint8ClampedArray(data);
+        const k = (sharpness / 100) * 1.25;
+        const centerWeight = 1 + 4 * k;
+        const rowStride = w * 4;
+
+        for (let y = 1; y < h - 1; y++) {
+          let idx = (y * w + 1) * 4;
+          for (let x = 1; x < w - 1; x++) {
+            const up = idx - rowStride;
+            const dn = idx + rowStride;
+            const lt = idx - 4;
+            const rt = idx + 4;
+
+            data[idx]     = src[idx]     * centerWeight - (src[up]     + src[dn]     + src[lt]     + src[rt])     * k;
+            data[idx + 1] = src[idx + 1] * centerWeight - (src[up + 1] + src[dn + 1] + src[lt + 1] + src[rt + 1]) * k;
+            data[idx + 2] = src[idx + 2] * centerWeight - (src[up + 2] + src[dn + 2] + src[lt + 2] + src[rt + 2]) * k;
+            idx += 4;
+          }
+        }
+      }
+
+      // 2. 色彩模式與亮度調整
+      if (filterMode === 'bw') {
+        const pivot = 148 - brightness;
+        const contrast = 2.8;
+        for (let i = 0; i < data.length; i += 4) {
+          let lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+          lum = (lum - pivot) * contrast + 128;
+          if (lum < 0) lum = 0;
+          else if (lum > 255) lum = 255;
+          data[i] = data[i + 1] = data[i + 2] = lum;
+        }
+      } else if (filterMode === 'enhance') {
+        for (let i = 0; i < data.length; i += 4) {
+          data[i]     = (data[i]     - 20) * 1.22 + brightness;
+          data[i + 1] = (data[i + 1] - 20) * 1.22 + brightness;
+          data[i + 2] = (data[i + 2] - 20) * 1.22 + brightness;
+        }
+      } else if (brightness !== 0) {
+        for (let i = 0; i < data.length; i += 4) {
+          data[i]     = data[i]     + brightness;
+          data[i + 1] = data[i + 1] + brightness;
+          data[i + 2] = data[i + 2] + brightness;
+        }
+      }
+    }
+
+    function processImageWithRectAndFilter(img, cropRect, filterMode = 'none', brightness = 0, sharpness = 0) {
+      const hasCrop = !!cropRect;
+      const needsPixelFilter = filterMode !== 'none' || brightness !== 0 || sharpness > 0;
+
+      if (!hasCrop && !needsPixelFilter) {
+        return { dataUrl: img.src, width: img.naturalWidth, height: img.naturalHeight };
+      }
+
+      const sx = hasCrop ? Math.max(0, Math.round(cropRect.left * img.naturalWidth)) : 0;
+      const sy = hasCrop ? Math.max(0, Math.round(cropRect.top * img.naturalHeight)) : 0;
+      const sw = hasCrop
+        ? Math.max(20, Math.min(img.naturalWidth - sx, Math.round((cropRect.right - cropRect.left) * img.naturalWidth)))
+        : img.naturalWidth;
+      const sh = hasCrop
+        ? Math.max(20, Math.min(img.naturalHeight - sy, Math.round((cropRect.bottom - cropRect.top) * img.naturalHeight)))
+        : img.naturalHeight;
+
+      const maxWorkDim = 2200;
+      const scale = Math.min(1, maxWorkDim / Math.max(sw, sh));
+      const outW = Math.max(20, Math.round(sw * scale));
+      const outH = Math.max(20, Math.round(sh * scale));
+
+      const canvas = document.createElement('canvas');
+      canvas.width = outW;
+      canvas.height = outH;
+      const ctx = canvas.getContext('2d', { willReadFrequently: needsPixelFilter });
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
+
+      if (needsPixelFilter) {
+        const imgData = ctx.getImageData(0, 0, outW, outH);
+        applyPostProcess(imgData, outW, outH, filterMode, brightness, sharpness);
+        ctx.putImageData(imgData, 0, 0);
+      }
+
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      canvas.width = 0;
+      canvas.height = 0;
+
+      return { dataUrl, width: outW, height: outH };
+    }
+
+    // 偵測文件標準矩形外框 { left, top, right, bottom }（合併所有文字與區塊）
+    function detectDocumentRect(img) {
+      const maxDetectDim = 320;
+      const scale = Math.min(1, maxDetectDim / Math.max(img.naturalWidth, img.naturalHeight));
+      const w = Math.max(40, Math.round(img.naturalWidth * scale));
+      const h = Math.max(40, Math.round(img.naturalHeight * scale));
+
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(img, 0, 0, w, h);
+      const rgba = ctx.getImageData(0, 0, w, h).data;
+
+      // 1. 中央內容代表色（取較亮的前 60% 像素避開黑色字體）
+      const centerSamples = [];
+      const cx0 = Math.floor(w * 0.22), cx1 = Math.floor(w * 0.78);
+      const cy0 = Math.floor(h * 0.22), cy1 = Math.floor(h * 0.78);
+      for (let y = cy0; y < cy1; y += 2) {
+        for (let x = cx0; x < cx1; x += 2) {
+          const p = (y * w + x) * 4;
+          const r = rgba[p], g = rgba[p + 1], b = rgba[p + 2];
+          const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+          centerSamples.push({ r, g, b, lum });
+        }
+      }
+      centerSamples.sort((a, b) => a.lum - b.lum);
+      const brightStart = Math.floor(centerSamples.length * 0.4);
+      let paperR = 0, paperG = 0, paperB = 0, paperLum = 0;
+      const brightCount = Math.max(1, centerSamples.length - brightStart);
+      for (let i = brightStart; i < centerSamples.length; i++) {
+        paperR += centerSamples[i].r;
+        paperG += centerSamples[i].g;
+        paperB += centerSamples[i].b;
+        paperLum += centerSamples[i].lum;
+      }
+      paperR /= brightCount;
+      paperG /= brightCount;
+      paperB /= brightCount;
+      paperLum /= brightCount;
+
+      // 2. 外圍 4% 邊界背景色
+      let bgR = 0, bgG = 0, bgB = 0, bgLum = 0, bgCount = 0;
+      const bx = Math.max(2, Math.floor(w * 0.04));
+      const by = Math.max(2, Math.floor(h * 0.04));
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          if (x < bx || x >= w - bx || y < by || y >= h - by) {
+            const p = (y * w + x) * 4;
+            const r = rgba[p], g = rgba[p + 1], b = rgba[p + 2];
+            bgR += r;
+            bgG += g;
+            bgB += b;
+            bgLum += 0.299 * r + 0.587 * g + 0.114 * b;
+            bgCount++;
+          }
+        }
+      }
+      bgR /= Math.max(1, bgCount);
+      bgG /= Math.max(1, bgCount);
+      bgB /= Math.max(1, bgCount);
+      bgLum /= Math.max(1, bgCount);
+
+      // 3. 若畫面已經是滿版文件（邊緣與紙張顏色接近），回傳 null 保留全圖
+      const colorDiff = Math.hypot(paperR - bgR, paperG - bgG, paperB - bgB);
+      const lumDiff = Math.abs(paperLum - bgLum);
+      if (colorDiff < 24 && lumDiff < 18) {
+        canvas.width = 0;
+        canvas.height = 0;
+        return null;
+      }
+
+      // 4. 從四邊向內洪水填充背景區域
+      const outside = new Uint8Array(w * h);
+      const queue = new Int32Array(w * h);
+      let head = 0, tail = 0;
+
+      const isBackgroundPixel = (idx) => {
+        const p = idx * 4;
+        const r = rgba[p], g = rgba[p + 1], b = rgba[p + 2];
+        const distToBg = Math.hypot(r - bgR, g - bgG, b - bgB);
+        const distToPaper = Math.hypot(r - paperR, g - paperG, b - paperB);
+        return distToBg < distToPaper * 0.92;
+      };
+
+      const enqueueIfBg = (x, y) => {
+        const idx = y * w + x;
+        if (!outside[idx] && isBackgroundPixel(idx)) {
+          outside[idx] = 1;
+          queue[tail++] = idx;
+        }
+      };
+
+      for (let x = 0; x < w; x++) {
+        enqueueIfBg(x, 0);
+        enqueueIfBg(x, h - 1);
+      }
+      for (let y = 0; y < h; y++) {
+        enqueueIfBg(0, y);
+        enqueueIfBg(w - 1, y);
+      }
+
+      while (head < tail) {
+        const idx = queue[head++];
+        const x = idx % w;
+        const y = (idx - x) / w;
+        if (x > 0) enqueueIfBg(x - 1, y);
+        if (x < w - 1) enqueueIfBg(x + 1, y);
+        if (y > 0) enqueueIfBg(x, y - 1);
+        if (y < h - 1) enqueueIfBg(x, y + 1);
+      }
+
+      if (tail < w * h * 0.04) {
+        canvas.width = 0;
+        canvas.height = 0;
+        return null;
+      }
+
+      // 5. 合併所有有效前景區塊（過濾極小雜點），確保所有表格與文字都包含在內
+      const visited = new Uint8Array(w * h);
+      const minNoisePixels = Math.max(12, Math.floor(w * h * 0.0015));
+      let unionMinX = w, unionMaxX = 0, unionMinY = h, unionMaxY = 0;
+      let foundValid = false;
+
+      for (let i = 0; i < w * h; i++) {
+        if (outside[i] || visited[i]) continue;
+        let qh = 0, qt = 0;
+        visited[i] = 1;
+        queue[qt++] = i;
+
+        let minX = w, maxX = 0, minY = h, maxY = 0;
+
+        while (qh < qt) {
+          const cur = queue[qh++];
+          const x = cur % w;
+          const y = (cur - x) / w;
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+
+          if (x > 0 && !outside[cur - 1] && !visited[cur - 1]) { visited[cur - 1] = 1; queue[qt++] = cur - 1; }
+          if (x < w - 1 && !outside[cur + 1] && !visited[cur + 1]) { visited[cur + 1] = 1; queue[qt++] = cur + 1; }
+          if (y > 0 && !outside[cur - w] && !visited[cur - w]) { visited[cur - w] = 1; queue[qt++] = cur - w; }
+          if (y < h - 1 && !outside[cur + w] && !visited[cur + w]) { visited[cur + w] = 1; queue[qt++] = cur + w; }
+        }
+
+        if (qt >= minNoisePixels) {
+          if (minX < unionMinX) unionMinX = minX;
+          if (maxX > unionMaxX) unionMaxX = maxX;
+          if (minY < unionMinY) unionMinY = minY;
+          if (maxY > unionMaxY) unionMaxY = maxY;
+          foundValid = true;
+        }
+      }
+
+      canvas.width = 0;
+      canvas.height = 0;
+
+      if (!foundValid) return null;
+
+      // 加上 1% 安全留白，避免貼邊文字被切到
+      const pad = 0.01;
+      const left = Math.max(0, unionMinX / w - pad);
+      const top = Math.max(0, unionMinY / h - pad);
+      const right = Math.min(1, (unionMaxX + 1) / w + pad);
+      const bottom = Math.min(1, (unionMaxY + 1) / h + pad);
+      const rw = right - left;
+      const rh = bottom - top;
+      const areaRatio = rw * rh;
+
+      if (rw < 0.20 || rh < 0.20 || areaRatio < 0.12 || areaRatio > 0.96) {
+        return null;
+      }
+
+      return { left, top, right, bottom };
+    }
+
+    // =========================================================================
+    // 互動式矩形裁切視窗
+    // =========================================================================
+    let activeCropId = null;
+    let activeCropImg = null;
+    let activeCropRect = null; // { left, top, right, bottom }
+    let activeCropFilter = 'none';
+    let dragMode = null;       // 'tl' | 'tr' | 'br' | 'bl' | 'move' | null
+    let dragStartPos = null;
+    let dragStartRect = null;
+
+    function syncCropFilterButtons() {
+      document.querySelectorAll('.crop-filter-btn').forEach((btn) => {
+        const isActive = btn.dataset.filter === activeCropFilter;
+        btn.className = isActive
+          ? 'crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white transition-all'
+          : 'crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all';
+      });
+    }
+
+    document.querySelectorAll('.crop-filter-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeCropFilter = btn.dataset.filter;
+        syncCropFilterButtons();
+      });
+    });
+
+    function drawCropEditor() {
+      if (!activeCropImg || !activeCropRect) return;
+      const wrapRect = cropCanvasWrap.getBoundingClientRect();
+      const availW = Math.max(200, wrapRect.width - 24);
+      const availH = Math.max(200, wrapRect.height - 24);
+      const imgRatio = activeCropImg.naturalWidth / activeCropImg.naturalHeight;
+
+      let drawW = availW;
+      let drawH = drawW / imgRatio;
+      if (drawH > availH) {
+        drawH = availH;
+        drawW = drawH * imgRatio;
+      }
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cropCanvas.style.width = `${Math.round(drawW)}px`;
+      cropCanvas.style.height = `${Math.round(drawH)}px`;
+      cropCanvas.width = Math.round(drawW * dpr);
+      cropCanvas.height = Math.round(drawH * dpr);
+
+      const ctx = cropCanvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      ctx.drawImage(activeCropImg, 0, 0, drawW, drawH);
+
+      const x0 = activeCropRect.left * drawW;
+      const y0 = activeCropRect.top * drawH;
+      const x1 = activeCropRect.right * drawW;
+      const y1 = activeCropRect.bottom * drawH;
+      const rw = x1 - x0;
+      const rh = y1 - y0;
+
+      // 外部半透明遮罩
+      ctx.save();
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.58)';
+      ctx.beginPath();
+      ctx.rect(0, 0, drawW, drawH);
+      ctx.rect(x0, y0, rw, rh);
+      ctx.fill('evenodd');
+      ctx.restore();
+
+      // 矩形邊框
+      ctx.save();
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(x0, y0, rw, rh);
+
+      // 九宮格參考線
+      ctx.strokeStyle = 'rgba(52, 211, 153, 0.35)';
+      ctx.lineWidth = 1;
+      for (const t of [1 / 3, 2 / 3]) {
+        ctx.beginPath();
+        ctx.moveTo(x0 + rw * t, y0);
+        ctx.lineTo(x0 + rw * t, y1);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(x0, y0 + rh * t);
+        ctx.lineTo(x1, y0 + rh * t);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // 四個角點控點
+      const handles = [
+        { key: 'tl', x: x0, y: y0 },
+        { key: 'tr', x: x1, y: y0 },
+        { key: 'br', x: x1, y: y1 },
+        { key: 'bl', x: x0, y: y1 }
+      ];
+
+      handles.forEach((h) => {
+        const isDragging = dragMode === h.key;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(h.x, h.y, isDragging ? 15 : 12, 0, Math.PI * 2);
+        ctx.fillStyle = isDragging ? 'rgba(99, 102, 241, 0.95)' : 'rgba(16, 185, 129, 0.92)';
+        ctx.fill();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(h.x, h.y, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
+    async function openCropModal(itemId) {
+      const item = images.find((i) => i.id === itemId);
+      if (!item) return;
+
+      activeCropId = itemId;
+      activeCropFilter = item.scanFilter || globalScanFilter;
+      syncCropFilterButtons();
+
+      cropModal.classList.remove('hidden');
+      activeCropImg = await loadImageElement(item.originalDataUrl);
+
+      if (item.cropRect) {
+        activeCropRect = { ...item.cropRect };
+      } else {
+        const detected = detectDocumentRect(activeCropImg);
+        activeCropRect = detected || { left: 0.02, top: 0.02, right: 0.98, bottom: 0.98 };
+      }
+
+      requestAnimationFrame(drawCropEditor);
+    }
+
+    function closeCropModal() {
+      cropModal.classList.add('hidden');
+      activeCropId = null;
+      activeCropImg = null;
+      dragMode = null;
+    }
+
+    function getPointerNormPos(e) {
+      const rect = cropCanvas.getBoundingClientRect();
+      const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+      return { x, y, px: e.clientX - rect.left, py: e.clientY - rect.top, w: rect.width, h: rect.height };
+    }
+
+    cropCanvas.addEventListener('pointerdown', (e) => {
+      if (!activeCropRect) return;
+      const pos = getPointerNormPos(e);
+      const handles = [
+        { key: 'tl', x: activeCropRect.left * pos.w, y: activeCropRect.top * pos.h },
+        { key: 'tr', x: activeCropRect.right * pos.w, y: activeCropRect.top * pos.h },
+        { key: 'br', x: activeCropRect.right * pos.w, y: activeCropRect.bottom * pos.h },
+        { key: 'bl', x: activeCropRect.left * pos.w, y: activeCropRect.bottom * pos.h }
+      ];
+
+      let closest = null;
+      let minDist = 42;
+      for (const h of handles) {
+        const d = Math.hypot(h.x - pos.px, h.y - pos.py);
+        if (d < minDist) {
+          minDist = d;
+          closest = h.key;
+        }
+      }
+
+      if (closest) {
+        dragMode = closest;
+      } else if (
+        pos.x >= activeCropRect.left && pos.x <= activeCropRect.right &&
+        pos.y >= activeCropRect.top && pos.y <= activeCropRect.bottom
+      ) {
+        dragMode = 'move';
+        dragStartPos = { x: pos.x, y: pos.y };
+        dragStartRect = { ...activeCropRect };
+      }
+
+      if (dragMode) {
+        cropCanvas.setPointerCapture(e.pointerId);
+        drawCropEditor();
+      }
+    });
+
+    cropCanvas.addEventListener('pointermove', (e) => {
+      if (!dragMode || !activeCropRect) return;
+      const pos = getPointerNormPos(e);
+      const minSize = 0.08;
+
+      if (dragMode === 'tl') {
+        activeCropRect.left = Math.min(pos.x, activeCropRect.right - minSize);
+        activeCropRect.top = Math.min(pos.y, activeCropRect.bottom - minSize);
+      } else if (dragMode === 'tr') {
+        activeCropRect.right = Math.max(pos.x, activeCropRect.left + minSize);
+        activeCropRect.top = Math.min(pos.y, activeCropRect.bottom - minSize);
+      } else if (dragMode === 'br') {
+        activeCropRect.right = Math.max(pos.x, activeCropRect.left + minSize);
+        activeCropRect.bottom = Math.max(pos.y, activeCropRect.top + minSize);
+      } else if (dragMode === 'bl') {
+        activeCropRect.left = Math.min(pos.x, activeCropRect.right - minSize);
+        activeCropRect.bottom = Math.max(pos.y, activeCropRect.top + minSize);
+      } else if (dragMode === 'move' && dragStartPos && dragStartRect) {
+        const dx = pos.x - dragStartPos.x;
+        const dy = pos.y - dragStartPos.y;
+        const rw = dragStartRect.right - dragStartRect.left;
+        const rh = dragStartRect.bottom - dragStartRect.top;
+        const newLeft = Math.max(0, Math.min(1 - rw, dragStartRect.left + dx));
+        const newTop = Math.max(0, Math.min(1 - rh, dragStartRect.top + dy));
+        activeCropRect = {
+          left: newLeft,
+          top: newTop,
+          right: newLeft + rw,
+          bottom: newTop + rh
+        };
+      }
+
+      drawCropEditor();
+    });
+
+    cropCanvas.addEventListener('pointerup', (e) => {
+      if (dragMode) {
+        dragMode = null;
+        try { cropCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
+        drawCropEditor();
+      }
+    });
+
+    cropCanvas.addEventListener('pointercancel', () => {
+      dragMode = null;
+      drawCropEditor();
+    });
+
+    window.addEventListener('resize', () => {
+      if (!cropModal.classList.contains('hidden')) drawCropEditor();
+    });
+
+    closeCropModalBtn.addEventListener('click', closeCropModal);
+
+    // Esc 鍵關閉裁切視窗或分享視窗
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (!cropModal.classList.contains('hidden')) {
+        closeCropModal();
+      } else if (!shareModal.classList.contains('hidden')) {
+        closeShareModal();
+      }
+    });
+
+    cropAutoDetectBtn.addEventListener('click', () => {
+      if (!activeCropImg) return;
+      const detected = detectDocumentRect(activeCropImg);
+      if (detected) {
+        activeCropRect = detected;
+        drawCropEditor();
+      } else {
+        activeCropRect = { left: 0, top: 0, right: 1, bottom: 1 };
+        drawCropEditor();
+        showStatus('此圖片已是滿版文件或無明顯背景邊框，已保留全圖。', 'info');
+      }
+    });
+
+    cropResetFullBtn.addEventListener('click', () => {
+      activeCropRect = { left: 0, top: 0, right: 1, bottom: 1 };
+      drawCropEditor();
+    });
+
+    cropApplyBtn.addEventListener('click', () => {
+      if (!activeCropId || !activeCropImg || !activeCropRect) return;
+      const idx = images.findIndex((i) => i.id === activeCropId);
+      if (idx === -1) return;
+
+      const isFullFrame =
+        activeCropRect.left <= 0.005 &&
+        activeCropRect.top <= 0.005 &&
+        activeCropRect.right >= 0.995 &&
+        activeCropRect.bottom >= 0.995;
+
+      const cropRectToUse = isFullFrame ? null : { ...activeCropRect };
+      const processed = processImageWithRectAndFilter(
+        activeCropImg,
+        cropRectToUse,
+        activeCropFilter,
+        globalBrightness,
+        globalSharpness
+      );
+
+      if (processed) {
+        images[idx].dataUrl = processed.dataUrl;
+        images[idx].width = processed.width;
+        images[idx].height = processed.height;
+        images[idx].cropRect = cropRectToUse;
+        images[idx].isCropped = !isFullFrame;
+        images[idx].scanFilter = activeCropFilter;
+      }
+
+      invalidatePdfCache();
+      renderGrid();
+      closeCropModal();
+      showStatus('已更新矩形裁切與掃描效果。', 'success');
+    });
+
+    // =========================================================================
+    // 右側頁碼設定
     // =========================================================================
     function syncPageNumberUI() {
       pageNumberToggle.setAttribute('aria-checked', String(showPageNumbers));
@@ -611,7 +1443,9 @@
     addMoreBtn.addEventListener('click', () => fileInput.click());
 
     dropZone.addEventListener('click', (e) => {
-      if (!e.target.closest('button')) fileInput.click();
+      if (!e.target.closest('button') && !e.target.closest('.no-drop-click')) {
+        fileInput.click();
+      }
     });
 
     fileInput.addEventListener('change', (e) => {
@@ -693,7 +1527,7 @@
     pdfFilenameInput.addEventListener('input', invalidatePdfCache);
 
     // =========================================================================
-    // 圖片載入與預覽格線
+    // 圖片載入、自動矩形裁切與預覽格線
     // =========================================================================
     function invalidatePdfCache() {
       lastGeneratedBlob = null;
@@ -710,15 +1544,6 @@
       });
     }
 
-    function loadImageMetadata(dataUrl) {
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
-        img.onerror = reject;
-        img.src = dataUrl;
-      });
-    }
-
     async function handleFiles(fileList) {
       const files = Array.from(fileList).filter((file) => file.type.startsWith('image/'));
       if (files.length === 0) {
@@ -726,19 +1551,51 @@
         return;
       }
 
-      showStatus(`正在載入 ${files.length} 張圖片...`, 'info');
+      showStatus(
+        autoCropEnabled
+          ? `正在載入並自動矩形裁切 ${files.length} 張圖片...`
+          : `正在載入 ${files.length} 張圖片...`,
+        'info'
+      );
+
+      let croppedCount = 0;
 
       for (const file of files) {
         try {
-          const dataUrl = await readFileAsDataURL(file);
-          const imgMeta = await loadImageMetadata(dataUrl);
+          const originalDataUrl = await readFileAsDataURL(file);
+          const imgEl = await loadImageElement(originalDataUrl);
+
+          let cropRect = null;
+          let isCropped = false;
+
+          if (autoCropEnabled) {
+            const detected = detectDocumentRect(imgEl);
+            if (detected) {
+              cropRect = detected;
+              isCropped = true;
+              croppedCount++;
+            }
+          }
+
+          const processed = processImageWithRectAndFilter(
+            imgEl,
+            cropRect,
+            globalScanFilter,
+            globalBrightness,
+            globalSharpness
+          );
+
           images.push({
             id: 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8),
-            name: file.name,
-            dataUrl,
+            name: file.name || `掃描_${images.length + 1}.jpg`,
+            originalDataUrl,
+            dataUrl: processed ? processed.dataUrl : originalDataUrl,
             rotation: 0,
-            width: imgMeta.width,
-            height: imgMeta.height
+            width: processed ? processed.width : imgEl.naturalWidth,
+            height: processed ? processed.height : imgEl.naturalHeight,
+            cropRect,
+            isCropped,
+            scanFilter: globalScanFilter
           });
         } catch (err) {
           console.error('載入圖片失敗:', err);
@@ -747,7 +1604,16 @@
 
       invalidatePdfCache();
       renderGrid();
-      showStatus(`已加入 ${files.length} 張圖片。`, 'success');
+
+      if (autoCropEnabled) {
+        if (croppedCount > 0) {
+          showStatus(`已加入 ${files.length} 張圖片（自動矩形裁切 ${croppedCount} 張，模式：${filterLabelMap[globalScanFilter]}）。`, 'success');
+        } else {
+          showStatus(`已加入 ${files.length} 張圖片（未偵測到背景外框，保留全圖，模式：${filterLabelMap[globalScanFilter]}）。`, 'info');
+        }
+      } else {
+        showStatus(`已加入 ${files.length} 張圖片（模式：${filterLabelMap[globalScanFilter]}）。`, 'success');
+      }
     }
 
     function updatePdfPageCount() {
@@ -807,9 +1673,12 @@
               class="max-w-full max-h-full object-contain transition-transform duration-200 select-none pointer-events-none"
               style="transform: rotate(${item.rotation}deg);"
             />
-            <span class="absolute top-2 left-2 bg-slate-900/80 text-white text-[11px] font-bold px-2 py-0.5 rounded-lg backdrop-blur-xs">
-              第 ${index + 1} 頁
-            </span>
+            <div class="absolute top-2 left-2 flex items-center gap-1">
+              <span class="bg-slate-900/80 text-white text-[11px] font-bold px-2 py-0.5 rounded-lg backdrop-blur-xs">
+                第 ${index + 1} 頁
+              </span>
+              ${item.isCropped ? '<span class="bg-emerald-600/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-md">已裁切</span>' : ''}
+            </div>
             ${showPageNumbers ? `<span class="absolute ${pageNumberPosition === 'top_right' ? 'top-2 right-12' : 'bottom-2 right-2'} bg-white/95 text-slate-900 border border-slate-300 text-[10px] font-semibold px-1.5 py-0.5 rounded shadow-xs pointer-events-none">${pageNumberFormat === 'slash' ? `${index + 1}/${images.length}` : `Page ${index + 1}/${images.length}`}</span>` : ''}
             <button
               type="button"
@@ -830,6 +1699,19 @@
             </div>
 
             <div class="flex items-center gap-1 shrink-0">
+              <button
+                type="button"
+                data-action="crop"
+                data-id="${item.id}"
+                class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/70 text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400 flex items-center justify-center transition-colors"
+                title="矩形裁切與邊框調整"
+                aria-label="矩形裁切與邊框調整"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 2v14a2 2 0 002 2h14M18 22V8a2 2 0 00-2-2H2" />
+                </svg>
+              </button>
+
               <button
                 type="button"
                 data-action="rotate"
@@ -873,7 +1755,9 @@
       const idx = images.findIndex((i) => i.id === id);
       if (idx === -1) return;
 
-      if (action === 'rotate') {
+      if (action === 'crop') {
+        openCropModal(id);
+      } else if (action === 'rotate') {
         images[idx].rotation = (images[idx].rotation + 90) % 360;
         invalidatePdfCache();
         renderGrid();
@@ -885,7 +1769,7 @@
     });
 
     // =========================================================================
-    // PDF 產生與右上角頁碼繪製
+    // PDF 產生與角落頁碼繪製
     // =========================================================================
     function renderRotatedImageForPdf(item, quality) {
       return new Promise((resolve, reject) => {
@@ -934,7 +1818,6 @@
         ? `${pageIndex}/${totalPages}`
         : `Page ${pageIndex}/${totalPages}`;
 
-      // 依頁面實際尺寸自動調整字體大小（確保原始圖片尺寸模式也清晰可見）
       const fontSize = Math.max(10, Math.round(Math.min(pageW, pageH) * 0.055));
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(fontSize);
@@ -953,7 +1836,6 @@
         ? edgeY
         : pageH - edgeY - boxH;
 
-      // 白色底框確保深色圖片上頁碼依然清晰可讀
       doc.setFillColor(255, 255, 255);
       doc.roundedRect(boxX, boxY, boxW, boxH, 1.2, 1.2, 'F');
 
@@ -1126,7 +2008,6 @@
       updatePdfPageCount();
       closeShareModal();
 
-      // 電腦版先同步開啟分頁，避免非同步產生 PDF 後被瀏覽器封鎖彈出視窗
       let targetPopup = null;
       if (!isMobileDevice && (target === 'drive' || target === 'whatsapp')) {
         targetPopup = window.open('about:blank', '_blank');

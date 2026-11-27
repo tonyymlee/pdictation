@@ -429,7 +429,7 @@
     <div class="px-4 py-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0">
       <div>
         <h3 class="text-sm sm:text-base font-bold text-white">調整矩形裁切框與掃描模式</h3>
-        <p class="text-[11px] text-slate-400">拖曳四個角點調整大小，或拖曳框內移動位置（保持標準矩形）</p>
+        <p class="text-[11px] text-slate-400">拖曳四個角點調整大小，或拖曳框內移動位置（保持標準矩形，按 Esc 關閉）</p>
       </div>
       <button id="closeCropModalBtn" type="button" class="touch-btn w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center" aria-label="關閉">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -875,7 +875,7 @@
       return { dataUrl, width: outW, height: outH };
     }
 
-    // 偵測文件標準矩形外框 { left, top, right, bottom }（正規化 0~1）
+    // 偵測文件標準矩形外框 { left, top, right, bottom }（合併所有文字與區塊）
     function detectDocumentRect(img) {
       const maxDetectDim = 320;
       const scale = Math.min(1, maxDetectDim / Math.max(img.naturalWidth, img.naturalHeight));
@@ -889,7 +889,7 @@
       ctx.drawImage(img, 0, 0, w, h);
       const rgba = ctx.getImageData(0, 0, w, h).data;
 
-      // 1. 中央紙張代表色（取較亮的前 60% 像素避開黑色字體）
+      // 1. 中央內容代表色（取較亮的前 60% 像素避開黑色字體）
       const centerSamples = [];
       const cx0 = Math.floor(w * 0.22), cx1 = Math.floor(w * 0.78);
       const cy0 = Math.floor(h * 0.22), cy1 = Math.floor(h * 0.78);
@@ -940,8 +940,8 @@
 
       // 3. 若畫面已經是滿版文件（邊緣與紙張顏色接近），回傳 null 保留全圖
       const colorDiff = Math.hypot(paperR - bgR, paperG - bgG, paperB - bgB);
-      const lumDiff = paperLum - bgLum;
-      if (colorDiff < 28 && lumDiff < 22) {
+      const lumDiff = Math.abs(paperLum - bgLum);
+      if (colorDiff < 24 && lumDiff < 18) {
         canvas.width = 0;
         canvas.height = 0;
         return null;
@@ -993,10 +993,11 @@
         return null;
       }
 
-      // 5. 找出最大前景區塊，取其標準矩形外框
+      // 5. 合併所有有效前景區塊（過濾極小雜點），確保所有表格與文字都包含在內
       const visited = new Uint8Array(w * h);
-      let bestSize = 0;
-      let bestBox = null;
+      const minNoisePixels = Math.max(12, Math.floor(w * h * 0.0015));
+      let unionMinX = w, unionMaxX = 0, unionMinY = h, unionMaxY = 0;
+      let foundValid = false;
 
       for (let i = 0; i < w * h; i++) {
         if (outside[i] || visited[i]) continue;
@@ -1021,26 +1022,31 @@
           if (y < h - 1 && !outside[cur + w] && !visited[cur + w]) { visited[cur + w] = 1; queue[qt++] = cur + w; }
         }
 
-        if (qt > bestSize) {
-          bestSize = qt;
-          bestBox = { minX, maxX, minY, maxY };
+        if (qt >= minNoisePixels) {
+          if (minX < unionMinX) unionMinX = minX;
+          if (maxX > unionMaxX) unionMaxX = maxX;
+          if (minY < unionMinY) unionMinY = minY;
+          if (maxY > unionMaxY) unionMaxY = maxY;
+          foundValid = true;
         }
       }
 
       canvas.width = 0;
       canvas.height = 0;
 
-      if (!bestBox) return null;
+      if (!foundValid) return null;
 
-      const left = bestBox.minX / w;
-      const top = bestBox.minY / h;
-      const right = Math.min(1, (bestBox.maxX + 1) / w);
-      const bottom = Math.min(1, (bestBox.maxY + 1) / h);
+      // 加上 1% 安全留白，避免貼邊文字被切到
+      const pad = 0.01;
+      const left = Math.max(0, unionMinX / w - pad);
+      const top = Math.max(0, unionMinY / h - pad);
+      const right = Math.min(1, (unionMaxX + 1) / w + pad);
+      const bottom = Math.min(1, (unionMaxY + 1) / h + pad);
       const rw = right - left;
       const rh = bottom - top;
       const areaRatio = rw * rh;
 
-      if (rw < 0.25 || rh < 0.25 || areaRatio < 0.15 || areaRatio > 0.96) {
+      if (rw < 0.20 || rh < 0.20 || areaRatio < 0.12 || areaRatio > 0.96) {
         return null;
       }
 
@@ -1289,6 +1295,16 @@
     });
 
     closeCropModalBtn.addEventListener('click', closeCropModal);
+
+    // Esc 鍵關閉裁切視窗或分享視窗
+    document.addEventListener('keydown', (e) => {
+      if (e.key !== 'Escape') return;
+      if (!cropModal.classList.contains('hidden')) {
+        closeCropModal();
+      } else if (!shareModal.classList.contains('hidden')) {
+        closeShareModal();
+      }
+    });
 
     cropAutoDetectBtn.addEventListener('click', () => {
       if (!activeCropImg) return;
