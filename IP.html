@@ -230,7 +230,7 @@
             <!-- Secure Scanner API Panel -->
             <div id="secureScannerConfigBox" class="p-3 rounded-xl bg-indigo-50/60 border border-indigo-100 space-y-2.5">
               <div class="flex flex-wrap items-center justify-between gap-1">
-                <span class="text-xs font-bold text-indigo-950">Secure Scanner API (`POST /v1/image/remove-handwriting`)</span>
+                <span class="text-xs font-bold text-indigo-950">Secure Scanner API (POST /v1/image/remove-handwriting)</span>
                 <a href="https://secure-scanner.net/zh/api?name=handwriting-removal" target="_blank" rel="noopener noreferrer" class="text-[11px] font-semibold text-indigo-600 hover:text-indigo-800 underline">
                   API Docs ↗
                 </a>
@@ -1144,7 +1144,7 @@
       const base64Body = preparedDataUrl.split(',')[1];
       let publicFileUrl = null;
 
-      // Step A: If ImgBB key is provided, upload local phone image temporarily (auto-expires in 600s) to obtain a public fileUrl
+      // If ImgBB key is provided, upload local phone image temporarily (auto-expires in 600s) to obtain a public fileUrl
       if (imgbbApiKey) {
         const formData = new FormData();
         formData.append('image', base64Body);
@@ -1159,7 +1159,6 @@
         publicFileUrl = uploadJson.data.url;
       }
 
-      // Step B: Call POST /v1/image/remove-handwriting
       const headers = {
         'Content-Type': 'application/json'
       };
@@ -1169,7 +1168,6 @@
         headers['Authorization'] = `Bearer ${ssApiKey}`;
       }
 
-      // Send fileUrl (required by Secure Scanner spec) plus imageBase64 fallback if calling a custom proxy
       const payload = {
         preservePrintedText: true,
         outputFormat: 'png'
@@ -1256,4 +1254,1041 @@
             const maxDim = 1800;
             let w = img.naturalWidth;
             let h = img.naturalHeight;
-            if (w > max
+            if (w > maxDim || h > maxDim) {
+              const scale = maxDim / Math.max(w, h);
+              w = Math.round(w * scale);
+              h = Math.round(h * scale);
+            }
+
+            const canvas = document.createElement('canvas');
+            canvas.width = w;
+            canvas.height = h;
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            ctx.drawImage(img, 0, 0, w, h);
+
+            const imageData = ctx.getImageData(0, 0, w, h);
+            const data = imageData.data;
+            const totalPixels = w * h;
+
+            const blockSize = Math.max(24, Math.round(Math.min(w, h) / 22));
+            const gridCols = Math.ceil(w / blockSize);
+            const gridRows = Math.ceil(h / blockSize);
+            const gridR = new Float32Array(gridCols * gridRows);
+            const gridG = new Float32Array(gridCols * gridRows);
+            const gridB = new Float32Array(gridCols * gridRows);
+
+            for (let gy = 0; gy < gridRows; gy++) {
+              const y0 = gy * blockSize;
+              const y1 = Math.min(h, y0 + blockSize);
+              for (let gx = 0; gx < gridCols; gx++) {
+                const x0 = gx * blockSize;
+                const x1 = Math.min(w, x0 + blockSize);
+                const samples = [];
+                const step = Math.max(1, Math.floor((x1 - x0) / 10));
+
+                for (let y = y0; y < y1; y += step) {
+                  for (let x = x0; x < x1; x += step) {
+                    const idx = (y * w + x) * 4;
+                    const r = data[idx];
+                    const g = data[idx + 1];
+                    const b = data[idx + 2];
+                    const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+                    samples.push({ lum, r, g, b });
+                  }
+                }
+
+                samples.sort((a, b) => a.lum - b.lum);
+                const pIdx = Math.min(samples.length - 1, Math.floor(samples.length * 0.88));
+                const chosen = samples[pIdx] || { r: 250, g: 250, b: 250 };
+                const gIdx = gy * gridCols + gx;
+                gridR[gIdx] = chosen.r;
+                gridG[gIdx] = chosen.g;
+                gridB[gIdx] = chosen.b;
+              }
+            }
+
+            const bgR = new Uint8ClampedArray(totalPixels);
+            const bgG = new Uint8ClampedArray(totalPixels);
+            const bgB = new Uint8ClampedArray(totalPixels);
+            const inkMask = new Uint8Array(totalPixels);
+
+            for (let y = 0; y < h; y++) {
+              const fy = (y + 0.5) / blockSize - 0.5;
+              const gy0 = Math.max(0, Math.min(gridRows - 1, Math.floor(fy)));
+              const gy1 = Math.max(0, Math.min(gridRows - 1, gy0 + 1));
+              const wy = Math.max(0, Math.min(1, fy - gy0));
+
+              for (let x = 0; x < w; x++) {
+                const fx = (x + 0.5) / blockSize - 0.5;
+                const gx0 = Math.max(0, Math.min(gridCols - 1, Math.floor(fx)));
+                const gx1 = Math.max(0, Math.min(gridCols - 1, gx0 + 1));
+                const wx = Math.max(0, Math.min(1, fx - gx0));
+
+                const i00 = gy0 * gridCols + gx0;
+                const i10 = gy0 * gridCols + gx1;
+                const i01 = gy1 * gridCols + gx0;
+                const i11 = gy1 * gridCols + gx1;
+
+                const pr = (1 - wy) * ((1 - wx) * gridR[i00] + wx * gridR[i10]) + wy * ((1 - wx) * gridR[i01] + wx * gridR[i11]);
+                const pg = (1 - wy) * ((1 - wx) * gridG[i00] + wx * gridG[i10]) + wy * ((1 - wx) * gridG[i01] + wx * gridG[i11]);
+                const pb = (1 - wy) * ((1 - wx) * gridB[i00] + wx * gridB[i10]) + wy * ((1 - wx) * gridB[i01] + wx * gridB[i11]);
+
+                const pIdx = y * w + x;
+                bgR[pIdx] = pr;
+                bgG[pIdx] = pg;
+                bgB[pIdx] = pb;
+
+                const idx = pIdx * 4;
+                const r = data[idx];
+                const g = data[idx + 1];
+                const b = data[idx + 2];
+
+                const paperLum = 0.299 * pr + 0.587 * pg + 0.114 * pb;
+                const pixLum = 0.299 * r + 0.587 * g + 0.114 * b;
+                const darkness = Math.max(0, paperLum - pixLum);
+
+                const dr = (pr - r) - darkness;
+                const dg = (pg - g) - darkness;
+                const db = (pb - b) - darkness;
+                const chromaShift = Math.max(Math.abs(dr), Math.abs(dg), Math.abs(db));
+
+                const maxC = Math.max(r, g, b);
+                const minC = Math.min(r, g, b);
+                const saturation = maxC > 12 ? ((maxC - minC) / maxC) * 255 : 0;
+
+                const isPrintedBlack = darkness > 105 && chromaShift < 26 && saturation < 42;
+                let isInk = false;
+                if (!isPrintedBlack && darkness > 12) {
+                  if (chromaShift > 20 || saturation > 30 || (darkness >= 14 && darkness <= 98)) {
+                    isInk = true;
+                  }
+                }
+                inkMask[pIdx] = isInk ? 1 : 0;
+              }
+            }
+
+            // Dilate mask by 2px
+            const finalMask = new Uint8Array(inkMask);
+            for (let y = 1; y < h - 1; y++) {
+              for (let x = 1; x < w - 1; x++) {
+                const i = y * w + x;
+                if (inkMask[i] === 1) continue;
+                if (inkMask[i - 1] || inkMask[i + 1] || inkMask[i - w] || inkMask[i + w]) {
+                  finalMask[i] = 1;
+                }
+              }
+            }
+
+            const outR = new Float32Array(totalPixels);
+            const outG = new Float32Array(totalPixels);
+            const outB = new Float32Array(totalPixels);
+
+            for (let i = 0; i < totalPixels; i++) {
+              if (finalMask[i] === 1) {
+                outR[i] = bgR[i];
+                outG[i] = bgG[i];
+                outB[i] = bgB[i];
+              } else {
+                const idx = i * 4;
+                outR[i] = data[idx];
+                outG[i] = data[idx + 1];
+                outB[i] = data[idx + 2];
+              }
+            }
+
+            for (let pass = 0; pass < 4; pass++) {
+              for (let y = 1; y < h - 1; y++) {
+                for (let x = 1; x < w - 1; x++) {
+                  const i = y * w + x;
+                  if (finalMask[i] === 0) continue;
+                  outR[i] = (bgR[i] * 0.5 + outR[i - 1] + outR[i + 1] + outR[i - w] + outR[i + w]) / 4.5;
+                  outG[i] = (bgG[i] * 0.5 + outG[i - 1] + outG[i + 1] + outG[i - w] + outG[i + w]) / 4.5;
+                  outB[i] = (bgB[i] * 0.5 + outB[i - 1] + outB[i + 1] + outB[i - w] + outB[i + w]) / 4.5;
+                }
+              }
+            }
+
+            for (let i = 0; i < totalPixels; i++) {
+              if (finalMask[i] === 1) {
+                const idx = i * 4;
+                data[idx] = Math.round(outR[i]);
+                data[idx + 1] = Math.round(outG[i]);
+                data[idx + 2] = Math.round(outB[i]);
+              }
+            }
+
+            ctx.putImageData(imageData, 0, 0);
+            const resultUrl = canvas.toDataURL('image/jpeg', 0.92);
+            canvas.width = 0;
+            canvas.height = 0;
+            resolve(resultUrl);
+          } catch (err) {
+            reject(err);
+          }
+        };
+        img.onerror = reject;
+        img.src = dataUrl;
+      });
+    }
+
+    // Unified Handwriting Removal Dispatcher
+    async function runSelectedHandwritingEngine(dataUrl) {
+      if (hwEngine === 'secure_scanner') {
+        const cleanedUrl = await removeHandwritingViaSecureScanner(dataUrl);
+        return { cleanedUrl, engineUsed: 'Secure Scanner API' };
+      } else if (hwEngine === 'gemini') {
+        const cleanedUrl = await removeHandwritingViaGemini(dataUrl);
+        return { cleanedUrl, engineUsed: 'Gemini AI' };
+      } else {
+        const cleanedUrl = await removeHandwritingOffline(dataUrl);
+        return { cleanedUrl, engineUsed: 'Offline Filter' };
+      }
+    }
+
+    async function ensureCleanedImage(imgObj, forceRecompute = false) {
+      if (!forceRecompute && imgObj.cleanedDataUrl) {
+        return imgObj.cleanedDataUrl;
+      }
+      const { cleanedUrl, engineUsed } = await runSelectedHandwritingEngine(imgObj.dataUrl);
+      imgObj.cleanedDataUrl = cleanedUrl;
+      imgObj.cleanedBy = engineUsed;
+      return cleanedUrl;
+    }
+
+    async function cleanSpecificPagesBatch(targetList) {
+      if (isBatchCleaning || targetList.length === 0) return;
+      isBatchCleaning = true;
+      updatePdfPageCount();
+      batchProgressBanner.classList.remove('hidden');
+
+      let successCount = 0;
+      let lastErrorMsg = '';
+
+      for (let i = 0; i < targetList.length; i++) {
+        const imgObj = targetList[i];
+        batchProgressText.textContent = `Removing handwriting from page ${i + 1} of ${targetList.length}...`;
+        batchProgressBar.style.width = `${Math.round(((i + 0.5) / targetList.length) * 100)}%`;
+
+        await new Promise(r => setTimeout(r, 20));
+        try {
+          await ensureCleanedImage(imgObj, true);
+          imgObj.removeHandwriting = true;
+          successCount++;
+        } catch (err) {
+          console.error('Handwriting removal failed:', err);
+          lastErrorMsg = err?.message || 'API request failed.';
+          // Fall back to offline filter if API fails so user still gets a result
+          try {
+            imgObj.cleanedDataUrl = await removeHandwritingOffline(imgObj.dataUrl);
+            imgObj.cleanedBy = 'Offline Fallback';
+            imgObj.removeHandwriting = true;
+          } catch (_) {}
+        }
+      }
+
+      batchProgressBar.style.width = '100%';
+      setTimeout(() => {
+        batchProgressBanner.classList.add('hidden');
+      }, 300);
+
+      isBatchCleaning = false;
+      invalidatePdfCache();
+      renderGrid();
+
+      if (lastErrorMsg) {
+        showStatus(`API Notice: ${lastErrorMsg} (Used offline fallback)`, 'error');
+      } else {
+        showStatus(`Handwriting removed on ${successCount} page${successCount > 1 ? 's' : ''}.`, 'success');
+      }
+    }
+
+    async function cleanAllPagesBatch() {
+      await cleanSpecificPagesBatch(images);
+    }
+
+    // Generate Sample Worksheet for Before/After Preview when 0 photos are uploaded
+    function getSampleWorksheetDataUrl() {
+      if (modalSampleDataUrl) return modalSampleDataUrl;
+      const c = document.createElement('canvas');
+      c.width = 900;
+      c.height = 640;
+      const ctx = c.getContext('2d');
+
+      const grad = ctx.createLinearGradient(0, 0, 900, 640);
+      grad.addColorStop(0, '#f7f5ef');
+      grad.addColorStop(1, '#ece8dc');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 900, 640);
+
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1;
+      for (let y = 135; y < 590; y += 52) {
+        ctx.beginPath();
+        ctx.moveTo(55, y);
+        ctx.lineTo(845, y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 28px Inter, Arial, sans-serif';
+      ctx.fillText('WORKSHEET — SAMPLE PREVIEW', 55, 78);
+
+      ctx.font = 'bold 22px Inter, Arial, sans-serif';
+      ctx.fillText('1. Solve for x:   3x + 7 = 22', 55, 175);
+      ctx.fillText('2. Capital of France:', 55, 330);
+      ctx.fillText('3. Area of circle (r = 5):', 55, 485);
+
+      ctx.save();
+      ctx.strokeStyle = '#1d4ed8';
+      ctx.fillStyle = '#1d4ed8';
+      ctx.font = 'italic 30px Georgia, cursive, serif';
+      ctx.fillText('3x = 15  =>  x = 5', 430, 175);
+      ctx.beginPath();
+      ctx.moveTo(425, 188);
+      ctx.lineTo(665, 184);
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      ctx.strokeStyle = '#dc2626';
+      ctx.fillStyle = '#dc2626';
+      ctx.fillText('Paris  ✓', 340, 330);
+      ctx.beginPath();
+      ctx.arc(385, 322, 54, 0, Math.PI * 2);
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      ctx.fillStyle = '#64748b';
+      ctx.font = 'italic 26px Georgia, cursive, serif';
+      ctx.fillText('A = π × 25 ≈ 78.54 cm²', 370, 485);
+      ctx.restore();
+
+      modalSampleDataUrl = c.toDataURL('image/jpeg', 0.92);
+      return modalSampleDataUrl;
+    }
+
+    // Modal Tool Mode Switching
+    function setModalTool(tool) {
+      modalTool = tool;
+      document.querySelectorAll('.hw-tool-btn').forEach((btn) => {
+        if (btn.dataset.tool === tool) {
+          btn.className = 'hw-tool-btn px-2.5 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white transition-all';
+        } else {
+          btn.className = 'hw-tool-btn px-2.5 py-1.5 text-xs font-semibold rounded-lg text-slate-700 hover:bg-slate-50 transition-all';
+        }
+      });
+
+      if (tool === 'compare') {
+        brushSizeControl.classList.add('hidden');
+        compareDivider.classList.remove('hidden');
+        badgeOriginalTag.classList.remove('hidden');
+        badgeCleanedTag.classList.remove('hidden');
+        brushCursorRing.classList.add('hidden');
+        compareContainer.style.cursor = 'ew-resize';
+        setCompareSliderPercent(50);
+      } else {
+        brushSizeControl.classList.remove('hidden');
+        compareDivider.classList.add('hidden');
+        badgeOriginalTag.classList.add('hidden');
+        badgeCleanedTag.classList.add('hidden');
+        compareCleanedImg.style.clipPath = 'inset(0 0 0 0%)';
+        compareContainer.style.cursor = 'crosshair';
+      }
+    }
+
+    document.querySelectorAll('.hw-tool-btn').forEach((btn) => {
+      btn.addEventListener('click', () => setModalTool(btn.dataset.tool));
+    });
+
+    hwBrushSizeSlider.addEventListener('input', () => {
+      modalBrushSize = parseInt(hwBrushSizeSlider.value, 10);
+      brushCursorRing.style.width = `${modalBrushSize}px`;
+      brushCursorRing.style.height = `${modalBrushSize}px`;
+    });
+
+    hwUndoStrokeBtn.addEventListener('click', () => {
+      if (modalUndoStack.length === 0) return;
+      modalPreviewDataUrl = modalUndoStack.pop();
+      compareCleanedImg.src = modalPreviewDataUrl;
+      hwUndoStrokeBtn.disabled = modalUndoStack.length === 0;
+    });
+
+    function applyTouchUpBrushAt(clientX, clientY) {
+      if (!modalPreviewDataUrl) return;
+      const rect = compareCleanedImg.getBoundingClientRect();
+      if (rect.width <= 0 || rect.height <= 0) return;
+
+      const relX = (clientX - rect.left) / rect.width;
+      const relY = (clientY - rect.top) / rect.height;
+      if (relX < 0 || relX > 1 || relY < 0 || relY > 1) return;
+
+      const origEl = compareOriginalImg;
+      const cleanEl = compareCleanedImg;
+      const w = cleanEl.naturalWidth || origEl.naturalWidth;
+      const h = cleanEl.naturalHeight || origEl.naturalHeight;
+      if (!w || !h) return;
+
+      const cx = relX * w;
+      const cy = relY * h;
+      const radius = (modalBrushSize / rect.width) * w * 0.5;
+
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(cleanEl, 0, 0, w, h);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(cx, cy, Math.max(4, radius), 0, Math.PI * 2);
+      ctx.clip();
+
+      if (modalTool === 'restore') {
+        ctx.drawImage(origEl, 0, 0, w, h);
+      } else if (modalTool === 'erase') {
+        const sampleR = Math.min(w - 1, Math.max(0, Math.round(cx + radius + 6)));
+        const sampleY = Math.min(h - 1, Math.max(0, Math.round(cy)));
+        const pData = ctx.getImageData(sampleR, sampleY, 1, 1).data;
+        const paperColor = (pData[0] > 165 && pData[1] > 165 && pData[2] > 165)
+          ? `rgb(${pData[0]}, ${pData[1]}, ${pData[2]})`
+          : '#f8fafc';
+        ctx.fillStyle = paperColor;
+        ctx.fillRect(cx - radius - 2, cy - radius - 2, radius * 2 + 4, radius * 2 + 4);
+      }
+      ctx.restore();
+
+      modalPreviewDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      cleanEl.src = modalPreviewDataUrl;
+      canvas.width = 0;
+      canvas.height = 0;
+    }
+
+    async function openTuneModal(imageId = null) {
+      let targetImg = imageId ? images.find(i => i.id === imageId) : (images[0] || null);
+      modalUndoStack = [];
+      hwUndoStrokeBtn.disabled = true;
+
+      if (targetImg) {
+        modalIsSampleMode = false;
+        modalImageId = targetImg.id;
+        hwSampleBadge.classList.add('hidden');
+        hwModalSubtitle.textContent = `Editing: ${targetImg.name}`;
+        applyHwOneBtn.classList.remove('hidden');
+        compareOriginalImg.src = targetImg.dataUrl;
+
+        if (targetImg.cleanedDataUrl) {
+          modalPreviewDataUrl = targetImg.cleanedDataUrl;
+          compareCleanedImg.src = targetImg.cleanedDataUrl;
+          setModalTool('compare');
+          hwModal.classList.remove('hidden');
+          document.body.style.overflow = 'hidden';
+          return;
+        }
+      } else {
+        modalIsSampleMode = true;
+        modalImageId = null;
+        hwSampleBadge.classList.remove('hidden');
+        hwModalSubtitle.textContent = 'Sample worksheet preview';
+        applyHwOneBtn.classList.add('hidden');
+        compareOriginalImg.src = getSampleWorksheetDataUrl();
+      }
+
+      setModalTool('compare');
+      hwModal.classList.remove('hidden');
+      document.body.style.overflow = 'hidden';
+      await refreshModalPreview();
+    }
+
+    function closeTuneModal() {
+      hwModal.classList.add('hidden');
+      document.body.style.overflow = '';
+      modalImageId = null;
+      modalIsSampleMode = false;
+      modalPreviewDataUrl = null;
+      modalUndoStack = [];
+    }
+
+    async function refreshModalPreview() {
+      const sourceUrl = modalIsSampleMode
+        ? getSampleWorksheetDataUrl()
+        : images.find(i => i.id === modalImageId)?.dataUrl;
+
+      if (!sourceUrl) return;
+
+      hwModalSpinner.classList.remove('hidden');
+      try {
+        const { cleanedUrl } = await runSelectedHandwritingEngine(sourceUrl);
+        modalPreviewDataUrl = cleanedUrl;
+        modalUndoStack = [];
+        hwUndoStrokeBtn.disabled = true;
+        compareCleanedImg.src = cleanedUrl;
+      } catch (err) {
+        console.error(err);
+        showStatus(`API Error: ${err.message}`, 'error');
+        const fallback = await removeHandwritingOffline(sourceUrl);
+        modalPreviewDataUrl = fallback;
+        compareCleanedImg.src = fallback;
+      } finally {
+        hwModalSpinner.classList.add('hidden');
+      }
+    }
+
+    function setCompareSliderPercent(pct) {
+      const clamped = Math.max(0, Math.min(100, pct));
+      compareCleanedImg.style.clipPath = `inset(0 0 0 ${clamped}%)`;
+      compareDivider.style.left = `${clamped}%`;
+    }
+
+    function updateCompareFromPointer(clientX) {
+      const rect = compareContainer.getBoundingClientRect();
+      if (rect.width <= 0) return;
+      const pct = ((clientX - rect.left) / rect.width) * 100;
+      setCompareSliderPercent(pct);
+    }
+
+    compareContainer.addEventListener('pointerdown', (e) => {
+      compareContainer.setPointerCapture(e.pointerId);
+      if (modalTool === 'compare') {
+        updateCompareFromPointer(e.clientX);
+      } else {
+        isPaintingBrush = true;
+        if (modalPreviewDataUrl) {
+          modalUndoStack.push(modalPreviewDataUrl);
+          if (modalUndoStack.length > 12) modalUndoStack.shift();
+          hwUndoStrokeBtn.disabled = false;
+        }
+        applyTouchUpBrushAt(e.clientX, e.clientY);
+      }
+    });
+
+    compareContainer.addEventListener('pointermove', (e) => {
+      if (modalTool !== 'compare') {
+        const rect = compareContainer.getBoundingClientRect();
+        brushCursorRing.classList.remove('hidden');
+        brushCursorRing.style.width = `${modalBrushSize}px`;
+        brushCursorRing.style.height = `${modalBrushSize}px`;
+        brushCursorRing.style.left = `${e.clientX - rect.left}px`;
+        brushCursorRing.style.top = `${e.clientY - rect.top}px`;
+      }
+
+      if (!compareContainer.hasPointerCapture(e.pointerId)) return;
+
+      if (modalTool === 'compare') {
+        updateCompareFromPointer(e.clientX);
+      } else if (isPaintingBrush) {
+        applyTouchUpBrushAt(e.clientX, e.clientY);
+      }
+    });
+
+    compareContainer.addEventListener('pointerup', (e) => {
+      isPaintingBrush = false;
+      if (compareContainer.hasPointerCapture(e.pointerId)) {
+        compareContainer.releasePointerCapture(e.pointerId);
+      }
+    });
+
+    compareContainer.addEventListener('pointerleave', () => {
+      brushCursorRing.classList.add('hidden');
+      isPaintingBrush = false;
+    });
+
+    closeHwModalBtn.addEventListener('click', closeTuneModal);
+    hwModal.addEventListener('click', (e) => {
+      if (e.target === hwModal) closeTuneModal();
+    });
+
+    reRunAiPageBtn.addEventListener('click', () => {
+      refreshModalPreview();
+    });
+
+    applyHwOneBtn.addEventListener('click', () => {
+      const targetImg = images.find(i => i.id === modalImageId);
+      if (!targetImg) return;
+      targetImg.cleanedDataUrl = modalPreviewDataUrl;
+      targetImg.removeHandwriting = true;
+
+      if (!masterRemoveHandwriting) {
+        masterRemoveHandwriting = true;
+        syncMasterToggleUI();
+      }
+
+      invalidatePdfCache();
+      renderGrid();
+      closeTuneModal();
+      showStatus(`Saved cleaned image for "${targetImg.name}".`, 'success');
+    });
+
+    // Render Thumbnail Grid
+    function renderGrid() {
+      const hasImages = images.length > 0;
+      const cleanedCount = images.filter(img => img.removeHandwriting).length;
+
+      workspaceHeader.classList.toggle('hidden', !hasImages);
+      emptyStateHint.classList.toggle('hidden', hasImages);
+      clearAllBtn.classList.toggle('hidden', !hasImages);
+
+      imageCount.textContent = images.length;
+      if (cleanedCount > 0) {
+        cleanedCountBadge.textContent = `${cleanedCount} Cleaned`;
+        cleanedCountBadge.classList.remove('hidden');
+      } else {
+        cleanedCountBadge.classList.add('hidden');
+      }
+
+      updatePdfPageCount();
+      imageGrid.innerHTML = '';
+
+      images.forEach((img, index) => {
+        const card = document.createElement('div');
+        card.dataset.id = img.id;
+        card.className = `group relative bg-white border ${img.removeHandwriting ? 'border-teal-300 ring-1 ring-teal-100' : 'border-slate-200'} rounded-2xl overflow-hidden shadow-xs hover:shadow-md transition-all animate-fade-in flex flex-col`;
+
+        const isRotated90 = img.rotation % 180 !== 0;
+        const displayW = isRotated90 ? img.height : img.width;
+        const displayH = isRotated90 ? img.width : img.height;
+        const previewSrc = (img.removeHandwriting && img.cleanedDataUrl) ? img.cleanedDataUrl : img.dataUrl;
+
+        card.innerHTML = `
+          <div class="flex items-center justify-between px-2.5 py-2 bg-slate-50 border-b border-slate-100">
+            <div class="flex items-center gap-1.5">
+              <span class="bg-slate-900 text-white text-xs font-bold px-2.5 py-0.5 rounded-full">
+                Page ${index + 1}
+              </span>
+              ${img.removeHandwriting ? `
+                <span class="bg-teal-600 text-white text-[11px] font-semibold px-2 py-0.5 rounded-full">
+                  Cleaned
+                </span>
+              ` : ''}
+            </div>
+
+            <div class="drag-handle flex items-center gap-1 px-2.5 py-1 rounded-lg bg-white border border-slate-200 text-slate-500 cursor-grab active:cursor-grabbing select-none" title="Hold and drag to reorder">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16" />
+              </svg>
+              <span class="text-[11px] font-semibold">Move</span>
+            </div>
+          </div>
+
+          <div class="relative aspect-[4/3] bg-slate-100 flex items-center justify-center overflow-hidden p-3">
+            <img
+              src="${previewSrc}"
+              alt="${escapeHtml(img.name)}"
+              style="transform: rotate(${img.rotation}deg);"
+              class="max-w-full max-h-full object-contain transition-transform duration-200 shadow-xs rounded"
+              draggable="false"
+            />
+          </div>
+
+          <div class="px-2.5 py-2 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-1.5">
+            <button type="button" data-action="toggle-hw" class="touch-btn flex-1 px-2.5 py-1.5 rounded-xl text-xs font-semibold inline-flex items-center justify-center gap-1.5 transition-colors ${img.removeHandwriting ? 'bg-teal-600 text-white shadow-xs' : 'bg-white border border-slate-200 text-slate-700 hover:bg-slate-100'}">
+              <span>${img.removeHandwriting ? 'Ink Removed' : 'Keep Ink'}</span>
+            </button>
+
+            <button type="button" data-action="tune-hw" class="touch-btn px-2.5 py-1.5 rounded-xl text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 inline-flex items-center justify-center gap-1 transition-colors">
+              <span>Compare</span>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-4 divide-x divide-slate-100 border-t border-slate-100 bg-white">
+            <button type="button" data-action="left" ${index === 0 ? 'disabled' : ''} class="touch-btn flex items-center justify-center text-slate-600 active:bg-slate-100 disabled:opacity-30" title="Move Earlier">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+
+            <button type="button" data-action="right" ${index === images.length - 1 ? 'disabled' : ''} class="touch-btn flex items-center justify-center text-slate-600 active:bg-slate-100 disabled:opacity-30" title="Move Later">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+
+            <button type="button" data-action="rotate" class="touch-btn flex items-center justify-center text-indigo-600 active:bg-indigo-50" title="Rotate 90°">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </button>
+
+            <button type="button" data-action="delete" class="touch-btn flex items-center justify-center text-rose-600 active:bg-rose-50" title="Remove Page">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="px-3 py-2 bg-slate-50/70 border-t border-slate-100 flex items-center justify-between gap-2 text-xs">
+            <span class="font-medium text-slate-700 truncate" title="${escapeHtml(img.name)}">${escapeHtml(img.name)}</span>
+            <span class="text-slate-400 shrink-0">${displayW}×${displayH}</span>
+          </div>
+        `;
+
+        card.querySelector('[data-action="toggle-hw"]').addEventListener('click', async (e) => {
+          e.stopPropagation();
+          const btn = e.currentTarget;
+          if (img.removeHandwriting) {
+            img.removeHandwriting = false;
+            invalidatePdfCache();
+            renderGrid();
+          } else {
+            btn.disabled = true;
+            btn.innerHTML = '<span>Cleaning...</span>';
+            try {
+              await ensureCleanedImage(img);
+              img.removeHandwriting = true;
+              if (!masterRemoveHandwriting) {
+                masterRemoveHandwriting = true;
+                syncMasterToggleUI();
+              }
+              invalidatePdfCache();
+            } catch (err) {
+              showStatus(`Error: ${err.message}`, 'error');
+            }
+            renderGrid();
+          }
+        });
+
+        card.querySelector('[data-action="tune-hw"]').addEventListener('click', (e) => {
+          e.stopPropagation();
+          openTuneModal(img.id);
+        });
+
+        card.querySelector('[data-action="rotate"]').addEventListener('click', (e) => {
+          e.stopPropagation();
+          img.rotation = (img.rotation + 90) % 360;
+          invalidatePdfCache();
+          renderGrid();
+        });
+
+        card.querySelector('[data-action="delete"]').addEventListener('click', (e) => {
+          e.stopPropagation();
+          images.splice(index, 1);
+          invalidatePdfCache();
+          renderGrid();
+        });
+
+        card.querySelector('[data-action="left"]').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (index > 0) {
+            [images[index - 1], images[index]] = [images[index], images[index - 1]];
+            invalidatePdfCache();
+            renderGrid();
+          }
+        });
+
+        card.querySelector('[data-action="right"]').addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (index < images.length - 1) {
+            [images[index + 1], images[index]] = [images[index], images[index + 1]];
+            invalidatePdfCache();
+            renderGrid();
+          }
+        });
+
+        imageGrid.appendChild(card);
+      });
+
+      initSortable();
+    }
+
+    clearAllBtn.addEventListener('click', () => {
+      images = [];
+      invalidatePdfCache();
+      renderGrid();
+      hideStatus();
+    });
+
+    document.querySelectorAll('.orientation-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedOrientation = btn.dataset.orientation;
+        invalidatePdfCache();
+        document.querySelectorAll('.orientation-btn').forEach(b => {
+          b.className = 'orientation-btn touch-btn flex items-center justify-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-medium border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 rounded-xl transition-all';
+        });
+        btn.className = 'orientation-btn touch-btn active flex items-center justify-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-medium border-2 border-indigo-600 bg-indigo-50 text-indigo-700 rounded-xl transition-all';
+      });
+    });
+
+    document.querySelectorAll('.margin-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        selectedMargin = parseInt(btn.dataset.margin, 10);
+        invalidatePdfCache();
+        document.querySelectorAll('.margin-btn').forEach(b => {
+          b.className = 'margin-btn touch-btn py-2.5 px-2 text-xs sm:text-sm font-medium border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 rounded-xl transition-all';
+        });
+        btn.className = 'margin-btn touch-btn active py-2.5 px-2 text-xs sm:text-sm font-medium border-2 border-indigo-600 bg-indigo-50 text-indigo-700 rounded-xl transition-all';
+      });
+    });
+
+    [pageSizeSelect, imageFitSelect, imageQualitySelect, pdfFilenameInput].forEach(el => {
+      el.addEventListener('change', invalidatePdfCache);
+    });
+
+    pageSizeSelect.addEventListener('change', () => {
+      const isFit = pageSizeSelect.value === 'fit';
+      orientationGroup.classList.toggle('opacity-40', isFit);
+      orientationGroup.classList.toggle('pointer-events-none', isFit);
+      marginGroup.classList.toggle('opacity-40', isFit);
+      marginGroup.classList.toggle('pointer-events-none', isFit);
+      fitGroup.classList.toggle('opacity-40', isFit);
+      fitGroup.classList.toggle('pointer-events-none', isFit);
+    });
+
+    // Core PDF Generator
+    async function buildPdfBlob() {
+      const sizeOption = pageSizeSelect.value;
+      const fitOption = imageFitSelect.value;
+      const quality = parseFloat(imageQualitySelect.value);
+      const maxEdgePx = quality <= 0.65 ? 1600 : (quality <= 0.85 ? 2200 : 3200);
+
+      const exportPlan = buildExportPagePlan();
+      let pdf = null;
+
+      for (let i = 0; i < exportPlan.length; i++) {
+        const entry = exportPlan[i];
+        showStatus(`Processing ${entry.label} (${i + 1}/${exportPlan.length})...`, 'info');
+        await new Promise(r => setTimeout(r, 15));
+
+        const processed = await processImageForPdf(entry.img, quality, maxEdgePx, entry.useCleaned);
+
+        if (sizeOption === 'fit') {
+          const pxToMm = 0.264583;
+          const imgWmm = Math.max(10, processed.width * pxToMm);
+          const imgHmm = Math.max(10, processed.height * pxToMm);
+          const pageOrient = imgWmm > imgHmm ? 'landscape' : 'portrait';
+
+          if (i === 0) {
+            pdf = new jsPDF({
+              orientation: pageOrient,
+              unit: 'mm',
+              format: [imgWmm, imgHmm],
+              compress: true
+            });
+          } else {
+            pdf.addPage([imgWmm, imgHmm], pageOrient);
+          }
+
+          pdf.addImage(processed.dataUrl, 'JPEG', 0, 0, imgWmm, imgHmm, undefined, 'FAST');
+        } else {
+          if (i === 0) {
+            pdf = new jsPDF({
+              orientation: selectedOrientation,
+              unit: 'mm',
+              format: sizeOption,
+              compress: true
+            });
+          } else {
+            pdf.addPage(sizeOption, selectedOrientation);
+          }
+
+          const pageW = pdf.internal.pageSize.getWidth();
+          const pageH = pdf.internal.pageSize.getHeight();
+          const availW = Math.max(10, pageW - selectedMargin * 2);
+          const availH = Math.max(10, pageH - selectedMargin * 2);
+
+          const imgRatio = processed.width / processed.height;
+          const boxRatio = availW / availH;
+
+          let renderW, renderH, offsetX, offsetY;
+
+          if (fitOption === 'cover') {
+            if (imgRatio > boxRatio) {
+              renderH = availH;
+              renderW = availH * imgRatio;
+            } else {
+              renderW = availW;
+              renderH = availW / imgRatio;
+            }
+          } else {
+            if (imgRatio > boxRatio) {
+              renderW = availW;
+              renderH = availW / imgRatio;
+            } else {
+              renderH = availH;
+              renderW = availH * imgRatio;
+            }
+          }
+
+          offsetX = selectedMargin + (availW - renderW) / 2;
+          offsetY = selectedMargin + (availH - renderH) / 2;
+
+          pdf.addImage(processed.dataUrl, 'JPEG', offsetX, offsetY, renderW, renderH, undefined, 'FAST');
+        }
+      }
+
+      const rawName = pdfFilenameInput.value.trim() || 'combined-document';
+      const cleanName = rawName.replace(/\.pdf$/i, '') + '.pdf';
+      lastGeneratedFilename = cleanName;
+      lastGeneratedBlob = pdf.output('blob');
+
+      return { blob: lastGeneratedBlob, filename: cleanName, totalPages: exportPlan.length };
+    }
+
+    function setConvertingState(active) {
+      isConverting = active;
+      convertBtn.disabled = active;
+      headerConvertBtn.disabled = active;
+      mobileConvertBtn.disabled = active;
+
+      if (active) {
+        convertBtnText.textContent = 'Building PDF...';
+        mobileConvertText.textContent = 'Building...';
+      } else {
+        updatePdfPageCount();
+      }
+    }
+
+    async function handleCreateAndDownload() {
+      if (images.length === 0 || isConverting || isBatchCleaning) return;
+      setConvertingState(true);
+
+      try {
+        const { blob, filename, totalPages } = await buildPdfBlob();
+
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+
+        if (canNativeShare) {
+          mobileShareBtn.disabled = false;
+          desktopShareBtn.disabled = false;
+        }
+
+        showStatus(`Saved "${filename}" (${totalPages} page${totalPages > 1 ? 's' : ''}).`, 'success');
+      } catch (err) {
+        console.error('PDF generation failed:', err);
+        showStatus('Failed to generate PDF. Try "Medium" quality if photos are huge.', 'error');
+      } finally {
+        setConvertingState(false);
+      }
+    }
+
+    async function handleSharePdf() {
+      if (images.length === 0 || isConverting || isBatchCleaning) return;
+
+      try {
+        let blob = lastGeneratedBlob;
+        let filename = lastGeneratedFilename;
+
+        if (!blob) {
+          setConvertingState(true);
+          const result = await buildPdfBlob();
+          blob = result.blob;
+          filename = result.filename;
+          setConvertingState(false);
+        }
+
+        const pdfFile = new File([blob], filename, { type: 'application/pdf' });
+
+        if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+          await navigator.share({
+            files: [pdfFile],
+            title: filename,
+            text: 'Created with SnapPDF'
+          });
+          showStatus('Shared PDF successfully!', 'success');
+        } else {
+          showStatus('Direct file sharing not supported on this browser; downloading instead.', 'info');
+          handleCreateAndDownload();
+        }
+      } catch (err) {
+        setConvertingState(false);
+        if (err && err.name !== 'AbortError') {
+          console.error('Share failed:', err);
+          showStatus('Could not share file. Try downloading instead.', 'error');
+        }
+      }
+    }
+
+    convertBtn.addEventListener('click', handleCreateAndDownload);
+    headerConvertBtn.addEventListener('click', handleCreateAndDownload);
+    mobileConvertBtn.addEventListener('click', handleCreateAndDownload);
+    mobileShareBtn.addEventListener('click', handleSharePdf);
+    desktopShareBtn.addEventListener('click', handleSharePdf);
+
+    async function processImageForPdf(imgObj, quality = 0.85, maxEdgePx = 2200, useCleanedVersion = false) {
+      let sourceDataUrl = imgObj.dataUrl;
+      if (useCleanedVersion && imgObj.removeHandwriting) {
+        sourceDataUrl = await ensureCleanedImage(imgObj);
+      }
+
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const angle = (imgObj.rotation * Math.PI) / 180;
+          const isRotated90 = imgObj.rotation % 180 !== 0;
+
+          let origW = isRotated90 ? img.naturalHeight : img.naturalWidth;
+          let origH = isRotated90 ? img.naturalWidth : img.naturalHeight;
+
+          let scale = 1;
+          if (origW > maxEdgePx || origH > maxEdgePx) {
+            scale = maxEdgePx / Math.max(origW, origH);
+          }
+
+          const targetW = Math.max(1, Math.round(origW * scale));
+          const targetH = Math.max(1, Math.round(origH * scale));
+
+          const canvas = document.createElement('canvas');
+          canvas.width = targetW;
+          canvas.height = targetH;
+
+          const ctx = canvas.getContext('2d');
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, targetW, targetH);
+
+          ctx.translate(targetW / 2, targetH / 2);
+          ctx.rotate(angle);
+
+          const drawW = Math.round(img.naturalWidth * scale);
+          const drawH = Math.round(img.naturalHeight * scale);
+          ctx.drawImage(img, -drawW / 2, -drawH / 2, drawW, drawH);
+
+          const compressedDataUrl = canvas.toDataURL('image/jpeg', quality);
+          canvas.width = 0;
+          canvas.height = 0;
+
+          resolve({
+            dataUrl: compressedDataUrl,
+            width: targetW,
+            height: targetH
+          });
+        };
+        img.onerror = reject;
+        img.src = sourceDataUrl;
+      });
+    }
+
+    function showStatus(msg, type = 'info') {
+      statusMessage.textContent = msg;
+      statusMessage.classList.remove('hidden', 'bg-emerald-50', 'text-emerald-700', 'bg-rose-50', 'text-rose-700', 'bg-indigo-50', 'text-indigo-700');
+
+      if (type === 'success') {
+        statusMessage.classList.add('bg-emerald-50', 'text-emerald-700');
+      } else if (type === 'error') {
+        statusMessage.classList.add('bg-rose-50', 'text-rose-700');
+      } else {
+        statusMessage.classList.add('bg-indigo-50', 'text-indigo-700');
+      }
+    }
+
+    function hideStatus() {
+      statusMessage.classList.add('hidden');
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[m]));
+    }
+
+    syncMasterToggleUI();
+  </script>
+</body>
+</html>
