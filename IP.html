@@ -599,22 +599,22 @@
     syncThemeUI();
 
     // =========================================================================
-    // 首頁第一行中/英文偵測（自動設定 P4C_ / P4E_）
+    // 首頁上半部中/英文偵測（自動設定 P4C_ / P4E_）
     // =========================================================================
     async function detectFirstLineLanguage(dataUrl) {
       if (typeof Tesseract === 'undefined') return;
       if (filenameManuallyEdited) return;
 
-      ocrDetectBadge.textContent = '偵測首行語言中...';
+      ocrDetectBadge.textContent = '偵測語言中...';
       ocrDetectBadge.classList.remove('hidden');
 
       try {
         const img = await loadImageElement(dataUrl);
-        // 擷取第 1 頁上方 28%（首行標題區）並縮小以加速辨識
-        const cropH = Math.max(40, Math.round(img.naturalHeight * 0.28));
-        const scale = Math.min(1, 900 / img.naturalWidth);
-        const cw = Math.max(80, Math.round(img.naturalWidth * scale));
-        const ch = Math.max(40, Math.round(cropH * scale));
+        // 擷取第 1 頁上方 55%（避開只有插圖標題的誤判，涵蓋正文）
+        const cropH = Math.max(80, Math.round(img.naturalHeight * 0.55));
+        const scale = Math.min(1, 1000 / img.naturalWidth);
+        const cw = Math.max(100, Math.round(img.naturalWidth * scale));
+        const ch = Math.max(80, Math.round(cropH * scale));
 
         const canvas = document.createElement('canvas');
         canvas.width = cw;
@@ -632,23 +632,32 @@
         }
 
         const rawText = (result && result.data && result.data.text) ? result.data.text : '';
-        const lines = rawText.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length >= 2);
-        const firstLine = lines[0] || rawText.trim();
 
-        const zhCount = (firstLine.match(/[\u4e00-\u9fff]/g) || []).length;
-        const enCount = (firstLine.match(/[A-Za-z]/g) || []).length;
+        // 統計完整英文單字（3 個字母以上）與中文字數，避免插圖雜訊被誤判為中文
+        const enWords = rawText.match(/[A-Za-z]{3,}/g) || [];
+        const enLetterCount = enWords.reduce((sum, w) => sum + w.length, 0);
+        const zhChars = rawText.match(/[\u4e00-\u9fff]/g) || [];
+        const zhCount = zhChars.length;
 
         const currentVal = pdfFilenameInput.value.trim();
         const isDefaultPrefix = currentVal === '' || /^P4[XCE]_$/i.test(currentVal);
 
         if (isDefaultPrefix) {
-          if (zhCount > 0 && zhCount * 2 >= enCount) {
+          if (enWords.length >= 3 && enLetterCount >= zhCount * 2) {
+            pdfFilenameInput.value = 'P4E_';
+            ocrDetectBadge.textContent = '偵測為英文 (P4E_)';
+            invalidatePdfCache();
+          } else if (zhCount >= 3 && zhCount * 2 > enLetterCount) {
             pdfFilenameInput.value = 'P4C_';
             ocrDetectBadge.textContent = '偵測為中文 (P4C_)';
             invalidatePdfCache();
-          } else if (enCount > 0) {
+          } else if (enLetterCount > zhCount) {
             pdfFilenameInput.value = 'P4E_';
             ocrDetectBadge.textContent = '偵測為英文 (P4E_)';
+            invalidatePdfCache();
+          } else if (zhCount > 0) {
+            pdfFilenameInput.value = 'P4C_';
+            ocrDetectBadge.textContent = '偵測為中文 (P4C_)';
             invalidatePdfCache();
           } else {
             ocrDetectBadge.classList.add('hidden');
@@ -657,7 +666,7 @@
           ocrDetectBadge.classList.add('hidden');
         }
       } catch (err) {
-        console.warn('首行語言偵測失敗:', err);
+        console.warn('語言偵測失敗:', err);
         ocrDetectBadge.classList.add('hidden');
       }
     }
