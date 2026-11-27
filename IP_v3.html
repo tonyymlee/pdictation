@@ -1,0 +1,2109 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta id="themeColorMeta" name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>PDF merge — 圖片合併與文件掃描工具</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    };
+    (function () {
+      const savedTheme = localStorage.getItem('pdfmerge_theme');
+      const isDark = savedTheme !== 'light';
+      document.documentElement.classList.toggle('dark', isDark);
+      const meta = document.getElementById('themeColorMeta');
+      if (meta) meta.setAttribute('content', isDark ? '#0f172a' : '#4f46e5');
+    })();
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
+
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #334155;
+    }
+
+    .sortable-ghost {
+      opacity: 0.35;
+      transform: scale(0.97);
+    }
+    .sortable-chosen {
+      box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.25), 0 8px 10px -6px rgba(79, 70, 229, 0.2);
+      border-color: #6366f1 !important;
+      z-index: 20;
+    }
+    .sortable-drag {
+      opacity: 0.95;
+    }
+
+    .drag-over {
+      border-color: #6366f1 !important;
+      background-color: #eef2ff !important;
+    }
+    .dark .drag-over {
+      border-color: #818cf8 !important;
+      background-color: rgba(79, 70, 229, 0.15) !important;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
+      animation: fadeIn 0.2s ease-out forwards;
+    }
+
+    .touch-btn {
+      min-height: 44px;
+      touch-action: manipulation;
+    }
+
+    .drag-handle {
+      touch-action: none;
+    }
+
+    #cropCanvas {
+      touch-action: none;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+  </style>
+</head>
+<body class="min-h-screen flex flex-col bg-slate-50 text-slate-900 dark:bg-slate-950 dark:text-slate-100 transition-colors duration-200">
+
+  <!-- 頂部導覽列 -->
+  <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 transition-colors">
+    <div class="max-w-6xl mx-auto px-3.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2">
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-6 4h4" />
+          </svg>
+        </div>
+        <div class="truncate">
+          <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white leading-none truncate">PDF merge</h1>
+          <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">圖片轉 PDF 與文件掃描工具</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <!-- 深淺色模式切換按鈕 -->
+        <button id="themeToggleBtn" type="button" aria-label="切換深色或淺色模式" title="切換模式" class="touch-btn w-10 h-10 sm:w-auto sm:px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 inline-flex items-center justify-center gap-1.5 transition-colors">
+          <svg class="w-4 h-4 text-amber-400 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <svg class="w-4 h-4 text-indigo-600 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+          <span id="themeToggleText" class="hidden sm:inline text-xs font-semibold">淺色模式</span>
+        </button>
+
+        <button id="clearAllBtn" type="button" class="hidden touch-btn px-3 py-2 text-xs sm:text-sm font-medium text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 active:bg-rose-200 dark:bg-rose-950/50 dark:hover:bg-rose-900/60 rounded-xl transition-colors">
+          全部清除
+        </button>
+
+        <button id="headerConvertBtn" type="button" disabled class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 dark:disabled:text-slate-500 disabled:cursor-not-allowed rounded-xl shadow-sm transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>建立 PDF</span>
+          <span id="headerCountBadge" class="hidden bg-indigo-500 text-white text-xs px-2 py-0.5 rounded-full">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要內容 -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-3.5 sm:px-6 pt-4 sm:pt-8 pb-28 lg:pb-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
+
+      <!-- 左欄：上傳與頁面排列區 -->
+      <div class="lg:col-span-8 space-y-4 sm:space-y-5">
+
+        <!-- 上傳區 -->
+        <div id="dropZone" class="border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-2xl p-5 sm:p-8 text-center transition-all hover:border-indigo-400 dark:hover:border-indigo-500 cursor-pointer">
+          <input id="fileInput" type="file" accept="image/*" multiple class="hidden" />
+          <input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden" />
+
+          <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-indigo-50 dark:bg-indigo-950/70 text-indigo-600 dark:text-indigo-400 flex items-center justify-center mx-auto mb-3">
+            <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          </div>
+          <h2 class="text-base sm:text-lg font-semibold text-slate-800 dark:text-slate-100">加入或拍攝掃描文件</h2>
+          <p class="text-xs sm:text-sm text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
+            從相簿選擇、拖曳圖片到此處，或直接使用相機拍攝並自動切除頁面外邊框。
+          </p>
+
+          <div class="mt-4 sm:mt-5 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 max-w-md mx-auto">
+            <button id="browseBtn" type="button" class="touch-btn flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-sm transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>選擇圖片</span>
+            </button>
+
+            <button id="cameraBtn" type="button" class="touch-btn flex-1 inline-flex items-center justify-center gap-2 px-4 py-3 text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 border border-indigo-200 dark:border-indigo-800 rounded-xl transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>立即拍照掃描</span>
+            </button>
+          </div>
+
+          <!-- 自動裁切開關 + 全域色彩模式 + 亮度/銳利度 -->
+          <div class="no-drop-click mt-4 pt-4 border-t border-slate-100 dark:border-slate-800 space-y-3 cursor-default">
+            <div class="flex flex-wrap items-center justify-center gap-3">
+              <button id="autoCropToggle" type="button" role="switch" aria-checked="true" class="touch-btn inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all">
+                <span id="autoCropTrack" class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200">
+                  <span id="autoCropKnob" class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4"></span>
+                </span>
+                <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300" id="autoCropLabel">自動矩形裁切邊框：開啟</span>
+              </button>
+              <span class="text-[11px] text-slate-400 dark:text-slate-500">拍照時自動以標準矩形去背裁切，亦可在每頁手動微調</span>
+            </div>
+
+            <!-- 全域掃描色彩模式（套用至全部圖片） -->
+            <div class="max-w-md mx-auto grid grid-cols-3 gap-2">
+              <button type="button" data-global-filter="none" class="global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white shadow-sm transition-all">
+                原圖色彩
+              </button>
+              <button type="button" data-global-filter="enhance" class="global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                文件增亮
+              </button>
+              <button type="button" data-global-filter="bw" class="global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                黑白掃描
+              </button>
+            </div>
+
+            <!-- 亮度與銳利度微調（套用至全部圖片） -->
+            <div class="max-w-md mx-auto p-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 space-y-2.5 text-left">
+              <div class="flex items-center justify-between gap-2">
+                <span class="text-[11px] font-semibold text-slate-600 dark:text-slate-400">全域畫面微調（套用至全部圖片）</span>
+                <button id="resetAdjustBtn" type="button" class="text-[11px] font-semibold text-indigo-600 dark:text-indigo-400 hover:underline px-1.5 py-0.5 rounded">
+                  重設
+                </button>
+              </div>
+
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <div class="flex items-center justify-between text-[11px] mb-1">
+                    <label for="brightnessSlider" class="font-medium text-slate-700 dark:text-slate-300">亮度（調低字更深）</label>
+                    <span id="brightnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">0</span>
+                  </div>
+                  <input id="brightnessSlider" type="range" min="-60" max="60" step="5" value="0" class="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+                </div>
+
+                <div>
+                  <div class="flex items-center justify-between text-[11px] mb-1">
+                    <label for="sharpnessSlider" class="font-medium text-slate-700 dark:text-slate-300">銳利度（字體清晰）</label>
+                    <span id="sharpnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">30%</span>
+                  </div>
+                  <input id="sharpnessSlider" type="range" min="0" max="100" step="5" value="30" class="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 頁面標題列 -->
+        <div id="workspaceHeader" class="hidden flex flex-wrap items-center justify-between gap-2 pt-1">
+          <div class="flex items-center gap-2">
+            <h3 class="text-sm font-semibold text-slate-800 dark:text-slate-100">頁面列表（共 <span id="imageCount">0</span> 頁）</h3>
+            <span class="text-xs text-slate-500 dark:text-slate-400 bg-slate-200/70 dark:bg-slate-800 px-2.5 py-1 rounded-full hidden sm:inline">按住右上角圖示可拖曳排序</span>
+          </div>
+
+          <div class="flex items-center gap-2 ml-auto">
+            <button id="addMoreBtn" type="button" class="touch-btn px-3 py-2 text-xs sm:text-sm font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 rounded-xl inline-flex items-center gap-1.5 transition-colors">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+              </svg>
+              <span>新增圖片</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- 圖片格線 -->
+        <div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-4"></div>
+
+        <!-- 空狀態提示 -->
+        <div id="emptyStateHint" class="text-center py-6 text-slate-400 dark:text-slate-500 text-xs sm:text-sm">
+          尚未加入任何圖片。請點擊上方的 <span class="font-medium text-slate-600 dark:text-slate-300">選擇圖片</span> 或 <span class="font-medium text-slate-600 dark:text-slate-300">立即拍照掃描</span>。
+        </div>
+      </div>
+
+      <!-- 右欄：PDF 設定 -->
+      <div id="settingsSection" class="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4 sm:space-y-5 lg:sticky lg:top-24 transition-colors">
+        <div class="border-b border-slate-100 dark:border-slate-800 pb-3.5">
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">PDF 設定</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">自訂版面、頁碼、尺寸與壓縮品質。</p>
+        </div>
+
+        <!-- 輸出檔案名稱 -->
+        <div>
+          <label for="pdfFilename" class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">輸出檔案名稱</label>
+          <div class="relative flex items-center">
+            <input id="pdfFilename" type="text" value="合併文件" placeholder="合併文件" class="touch-btn w-full pl-3.5 pr-12 py-2.5 text-base sm:text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+            <span class="absolute right-3.5 text-xs font-semibold text-slate-400 dark:text-slate-500">.pdf</span>
+          </div>
+        </div>
+
+        <!-- 頁碼設定 -->
+        <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/60 space-y-2.5">
+          <div class="flex items-center justify-between gap-2">
+            <div>
+              <span class="block text-xs font-bold text-slate-800 dark:text-slate-100">顯示頁碼</span>
+              <span class="text-[11px] text-slate-500 dark:text-slate-400">在每頁右側角落加上 Page 1/3</span>
+            </div>
+            <button id="pageNumberToggle" type="button" role="switch" aria-checked="true" class="touch-btn inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/60 transition-all shrink-0">
+              <span id="pageNumTrack" class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-indigo-600 transition-colors duration-200">
+                <span id="pageNumKnob" class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4"></span>
+              </span>
+              <span id="pageNumLabel" class="text-xs font-bold text-indigo-700 dark:text-indigo-300">開啟</span>
+            </button>
+          </div>
+
+          <div id="pageNumFormatBox" class="pt-2 border-t border-slate-200/70 dark:border-slate-800 grid grid-cols-2 gap-2">
+            <div>
+              <label for="pageNumPosition" class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">頁碼位置</label>
+              <select id="pageNumPosition" class="w-full px-2.5 py-2 text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="bottom_right" selected>右下角</option>
+                <option value="top_right">右上角</option>
+              </select>
+            </div>
+            <div>
+              <label for="pageNumFormat" class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">頁碼格式</label>
+              <select id="pageNumFormat" class="w-full px-2.5 py-2 text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <option value="page_slash" selected>Page 1/3</option>
+                <option value="slash">1/3</option>
+              </select>
+            </div>
+          </div>
+        </div>
+
+        <!-- 頁面尺寸與方向 -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3.5">
+          <div>
+            <label for="pageSize" class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">頁面尺寸</label>
+            <select id="pageSize" class="touch-btn w-full px-3.5 py-2.5 text-base sm:text-sm border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+              <option value="a4" selected>A4（210 × 297 毫米）</option>
+              <option value="letter">美國信紙（8.5 × 11 吋）</option>
+              <option value="fit">配合每張圖片原始尺寸</option>
+            </select>
+          </div>
+
+          <div id="orientationGroup">
+            <label class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">頁面方向</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" data-orientation="portrait" class="orientation-btn touch-btn active flex items-center justify-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-medium border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-xl transition-all">
+                <span class="w-3 h-4 border-2 border-current rounded-[2px]"></span>
+                直向
+              </button>
+              <button type="button" data-orientation="landscape" class="orientation-btn touch-btn flex items-center justify-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-medium border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all">
+                <span class="w-4 h-3 border-2 border-current rounded-[2px]"></span>
+                橫向
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- 邊距 -->
+        <div id="marginGroup">
+          <label class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">頁面邊距</label>
+          <div class="grid grid-cols-3 gap-2">
+            <button type="button" data-margin="0" class="margin-btn touch-btn py-2.5 px-2 text-xs sm:text-sm font-medium border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all">
+              無邊距
+            </button>
+            <button type="button" data-margin="10" class="margin-btn touch-btn active py-2.5 px-2 text-xs sm:text-sm font-medium border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-xl transition-all">
+              窄邊距
+            </button>
+            <button type="button" data-margin="20" class="margin-btn touch-btn py-2.5 px-2 text-xs sm:text-sm font-medium border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all">
+              標準
+            </button>
+          </div>
+        </div>
+
+        <!-- 圖片縮放 -->
+        <div id="fitGroup">
+          <label for="imageFit" class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">圖片縮放方式</label>
+          <select id="imageFit" class="touch-btn w-full px-3.5 py-2.5 text-base sm:text-sm border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            <option value="contain" selected>完整顯示圖片（不裁切）</option>
+            <option value="cover">填滿整個頁面（裁切邊緣）</option>
+          </select>
+        </div>
+
+        <!-- 壓縮品質 -->
+        <div>
+          <label for="imageQuality" class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">圖片品質與檔案大小</label>
+          <select id="imageQuality" class="touch-btn w-full px-3.5 py-2.5 text-base sm:text-sm border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            <option value="0.85" selected>高畫質（建議手機使用）</option>
+            <option value="0.65">中等畫質（檔案較小）</option>
+            <option value="0.95">原始畫質（檔案較大）</option>
+          </select>
+        </div>
+
+        <!-- 電腦版操作按鈕 -->
+        <div class="hidden lg:block pt-2 space-y-2.5">
+          <button id="convertBtn" type="button" disabled class="w-full py-3.5 px-4 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 dark:disabled:text-slate-500 disabled:cursor-not-allowed rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+            </svg>
+            <span id="convertBtnText">合併並下載 PDF</span>
+          </button>
+
+          <button id="desktopShareBtn" type="button" disabled class="w-full py-3 px-4 text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl flex items-center justify-center gap-2 transition-all">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+            <span>分享 PDF（WhatsApp / Google Drive）</span>
+          </button>
+        </div>
+
+        <!-- 狀態提示 -->
+        <div id="statusMessage" class="hidden text-xs font-medium text-center py-2.5 px-3 rounded-xl"></div>
+      </div>
+    </div>
+  </main>
+
+  <!-- 手機版底部固定操作列 -->
+  <div class="lg:hidden fixed bottom-0 inset-x-0 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-slate-200 dark:border-slate-800 px-3.5 py-2.5 z-30 shadow-[0_-4px_12px_rgba(15,23,42,0.06)] dark:shadow-[0_-4px_16px_rgba(0,0,0,0.4)] transition-colors" style="padding-bottom: max(0.625rem, env(safe-area-inset-bottom));">
+    <div class="max-w-xl mx-auto flex items-center gap-2">
+      <button id="scrollSettingsBtn" type="button" class="touch-btn px-3.5 py-2.5 text-xs font-semibold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 active:bg-slate-200 dark:active:bg-slate-700 rounded-xl flex items-center gap-1.5 shrink-0">
+        <svg class="w-4 h-4 text-slate-600 dark:text-slate-300" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span>設定</span>
+      </button>
+
+      <button id="mobileConvertBtn" type="button" disabled class="touch-btn flex-1 py-2.5 px-4 text-sm font-semibold text-white bg-indigo-600 active:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 dark:disabled:text-slate-500 disabled:cursor-not-allowed rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all">
+        <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        <span id="mobileConvertText" class="truncate">建立 PDF</span>
+        <span id="mobileCountBadge" class="hidden bg-indigo-500 text-white text-xs px-2 py-0.5 rounded-full shrink-0">0</span>
+      </button>
+
+      <button id="mobileShareBtn" type="button" disabled class="touch-btn px-3.5 py-2.5 text-xs font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 dark:bg-indigo-950/60 active:bg-indigo-100 dark:active:bg-indigo-900/70 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl flex items-center justify-center gap-1.5 shrink-0" title="分享 PDF">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+        </svg>
+        <span>分享</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- 互動式矩形裁切視窗 -->
+  <div id="cropModal" class="hidden fixed inset-0 z-50 bg-slate-950/90 backdrop-blur-sm flex flex-col">
+    <div class="px-4 py-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0">
+      <div>
+        <h3 class="text-sm sm:text-base font-bold text-white">調整矩形裁切框與掃描模式</h3>
+        <p class="text-[11px] text-slate-400">拖曳四個角點調整大小，或拖曳框內移動位置（保持標準矩形）</p>
+      </div>
+      <button id="closeCropModalBtn" type="button" class="touch-btn w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center" aria-label="關閉">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
+
+    <!-- 畫布區 -->
+    <div id="cropCanvasWrap" class="flex-1 min-h-0 flex items-center justify-center p-3 sm:p-6 overflow-hidden">
+      <canvas id="cropCanvas" class="max-w-full max-h-full rounded-lg shadow-2xl cursor-crosshair"></canvas>
+    </div>
+
+    <!-- 底部控制列 -->
+    <div class="px-4 py-3 bg-slate-900 border-t border-slate-800 space-y-3 shrink-0" style="padding-bottom: max(0.875rem, env(safe-area-inset-bottom));">
+      <!-- 單頁濾鏡微調 -->
+      <div class="max-w-xl mx-auto flex items-center justify-center gap-2">
+        <button type="button" data-filter="none" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white transition-all">原圖色彩</button>
+        <button type="button" data-filter="enhance" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">文件增亮</button>
+        <button type="button" data-filter="bw" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">黑白掃描</button>
+      </div>
+
+      <!-- 操作按鈕 -->
+      <div class="max-w-xl mx-auto flex items-center gap-2">
+        <button id="cropAutoDetectBtn" type="button" class="touch-btn px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 text-xs font-semibold shrink-0">
+          自動偵測
+        </button>
+        <button id="cropResetFullBtn" type="button" class="touch-btn px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold shrink-0">
+          還原全圖
+        </button>
+        <button id="cropApplyBtn" type="button" class="touch-btn flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-sm">
+          套用裁切
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 分享選項視窗（WhatsApp / Google Drive / 系統分享） -->
+  <div id="shareModal" class="hidden fixed inset-0 z-50 bg-slate-950/75 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+    <div class="bg-white dark:bg-slate-900 w-full sm:max-w-md rounded-t-3xl sm:rounded-2xl shadow-2xl border border-slate-200 dark:border-slate-800 overflow-hidden animate-fade-in">
+      <div class="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+        <div>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">分享 PDF 檔案</h3>
+          <p id="shareModalSubtitle" class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">選擇要傳送或儲存的平台</p>
+        </div>
+        <button id="closeShareModalBtn" type="button" class="touch-btn w-9 h-9 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 flex items-center justify-center" aria-label="關閉">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <div class="p-4 space-y-2.5" style="padding-bottom: max(1.25rem, env(safe-area-inset-bottom));">
+        <button id="shareWhatsAppBtn" type="button" class="touch-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 dark:bg-emerald-950/50 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800/80 text-left transition-colors">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500 text-white flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M20.52 3.48A11.86 11.86 0 0012.06 0C5.49 0 .14 5.35.14 11.92c0 2.1.55 4.15 1.59 5.95L0 24l6.3-1.65a11.88 11.88 0 005.75 1.47h.01c6.57 0 11.92-5.35 11.92-11.92 0-3.18-1.24-6.17-3.46-8.42zM12.06 21.8h-.01a9.87 9.87 0 01-5.04-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 01-1.51-5.25c0-5.46 4.44-9.9 9.91-9.9 2.64 0 5.13 1.03 7 2.9a9.84 9.84 0 012.9 7c0 5.46-4.45 9.88-9.91 9.88zm5.43-7.42c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.64.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.49-1.77-1.66-2.07-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.08-.15-.67-1.61-.92-2.21-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.48 0 1.46 1.07 2.88 1.22 3.08.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.23 1.36.2 1.87.12.57-.08 1.76-.72 2.01-1.41.25-.7.25-1.29.17-1.41-.07-.12-.27-.2-.57-.35z"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="text-sm font-bold text-slate-900 dark:text-white">分享至 WhatsApp</div>
+            <div class="text-xs text-slate-600 dark:text-slate-400">手機直接傳送檔案，電腦將下載並開啟 WhatsApp</div>
+          </div>
+        </button>
+
+        <button id="shareDriveBtn" type="button" class="touch-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl bg-sky-50 hover:bg-sky-100 dark:bg-sky-950/50 dark:hover:bg-sky-900/60 border border-sky-200 dark:border-sky-800/80 text-left transition-colors">
+          <div class="w-10 h-10 rounded-xl bg-sky-600 text-white flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M7.71 3.5L1.15 15l3.43 5.95L11.14 9.5 7.71 3.5zm1.14 0l6.56 11.5h6.86L15.71 3.5H8.85zm6.56 12.5H8.55l-3.43 5.95h13.72L22.27 16h-6.86z"/>
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="text-sm font-bold text-slate-900 dark:text-white">儲存至 Google Drive</div>
+            <div class="text-xs text-slate-600 dark:text-slate-400">手機選擇「雲端硬碟」，電腦將下載並開啟 Google Drive</div>
+          </div>
+        </button>
+
+        <button id="shareNativeBtn" type="button" class="hidden touch-btn w-full flex items-center gap-3.5 px-4 py-3 rounded-xl bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/50 dark:hover:bg-indigo-900/60 border border-indigo-200 dark:border-indigo-800/80 text-left transition-colors">
+          <div class="w-10 h-10 rounded-xl bg-indigo-600 text-white flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+            </svg>
+          </div>
+          <div class="min-w-0 flex-1">
+            <div class="text-sm font-bold text-slate-900 dark:text-white">更多系統分享選項</div>
+            <div class="text-xs text-slate-600 dark:text-slate-400">開啟裝置原生分享選單（電郵、AirDrop、其他應用程式）</div>
+          </div>
+        </button>
+
+        <button id="shareDownloadBtn" type="button" class="touch-btn w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>直接下載 PDF 檔案</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const { jsPDF } = window.jspdf;
+
+    // 應用程式狀態
+    let images = [];
+    let autoCropEnabled = true;
+    let globalScanFilter = 'none'; // 'none' | 'enhance' | 'bw'
+    let globalBrightness = 0;      // -60 ~ +60
+    let globalSharpness = 30;      // 0 ~ 100
+    let selectedOrientation = 'portrait';
+    let selectedMargin = 10;
+    let showPageNumbers = true;
+    let pageNumberPosition = 'bottom_right';
+    let pageNumberFormat = 'page_slash';
+    let isConverting = false;
+    let lastGeneratedBlob = null;
+    let lastGeneratedFilename = '合併文件.pdf';
+    let sortableInstance = null;
+
+    const filterLabelMap = {
+      none: '原圖色彩',
+      enhance: '文件增亮',
+      bw: '黑白掃描'
+    };
+
+    const canNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
+    const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+      (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+
+    // DOM 元素
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeToggleText = document.getElementById('themeToggleText');
+    const themeColorMeta = document.getElementById('themeColorMeta');
+
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+    const cameraInput = document.getElementById('cameraInput');
+    const browseBtn = document.getElementById('browseBtn');
+    const cameraBtn = document.getElementById('cameraBtn');
+    const addMoreBtn = document.getElementById('addMoreBtn');
+    const clearAllBtn = document.getElementById('clearAllBtn');
+
+    const autoCropToggle = document.getElementById('autoCropToggle');
+    const autoCropTrack = document.getElementById('autoCropTrack');
+    const autoCropKnob = document.getElementById('autoCropKnob');
+    const autoCropLabel = document.getElementById('autoCropLabel');
+
+    const brightnessSlider = document.getElementById('brightnessSlider');
+    const brightnessVal = document.getElementById('brightnessVal');
+    const sharpnessSlider = document.getElementById('sharpnessSlider');
+    const sharpnessVal = document.getElementById('sharpnessVal');
+    const resetAdjustBtn = document.getElementById('resetAdjustBtn');
+
+    const pageNumberToggle = document.getElementById('pageNumberToggle');
+    const pageNumTrack = document.getElementById('pageNumTrack');
+    const pageNumKnob = document.getElementById('pageNumKnob');
+    const pageNumLabel = document.getElementById('pageNumLabel');
+    const pageNumFormatBox = document.getElementById('pageNumFormatBox');
+    const pageNumPositionSelect = document.getElementById('pageNumPosition');
+    const pageNumFormatSelect = document.getElementById('pageNumFormat');
+
+    const convertBtn = document.getElementById('convertBtn');
+    const convertBtnText = document.getElementById('convertBtnText');
+    const headerConvertBtn = document.getElementById('headerConvertBtn');
+    const headerCountBadge = document.getElementById('headerCountBadge');
+    const mobileConvertBtn = document.getElementById('mobileConvertBtn');
+    const mobileConvertText = document.getElementById('mobileConvertText');
+    const mobileCountBadge = document.getElementById('mobileCountBadge');
+    const mobileShareBtn = document.getElementById('mobileShareBtn');
+    const desktopShareBtn = document.getElementById('desktopShareBtn');
+    const scrollSettingsBtn = document.getElementById('scrollSettingsBtn');
+    const settingsSection = document.getElementById('settingsSection');
+
+    const workspaceHeader = document.getElementById('workspaceHeader');
+    const imageGrid = document.getElementById('imageGrid');
+    const imageCount = document.getElementById('imageCount');
+    const emptyStateHint = document.getElementById('emptyStateHint');
+    const pdfFilenameInput = document.getElementById('pdfFilename');
+    const pageSizeSelect = document.getElementById('pageSize');
+    const imageFitSelect = document.getElementById('imageFit');
+    const imageQualitySelect = document.getElementById('imageQuality');
+    const orientationGroup = document.getElementById('orientationGroup');
+    const marginGroup = document.getElementById('marginGroup');
+    const fitGroup = document.getElementById('fitGroup');
+    const statusMessage = document.getElementById('statusMessage');
+
+    // 分享視窗 DOM
+    const shareModal = document.getElementById('shareModal');
+    const closeShareModalBtn = document.getElementById('closeShareModalBtn');
+    const shareWhatsAppBtn = document.getElementById('shareWhatsAppBtn');
+    const shareDriveBtn = document.getElementById('shareDriveBtn');
+    const shareNativeBtn = document.getElementById('shareNativeBtn');
+    const shareDownloadBtn = document.getElementById('shareDownloadBtn');
+
+    // 裁切視窗 DOM
+    const cropModal = document.getElementById('cropModal');
+    const closeCropModalBtn = document.getElementById('closeCropModalBtn');
+    const cropCanvas = document.getElementById('cropCanvas');
+    const cropCanvasWrap = document.getElementById('cropCanvasWrap');
+    const cropAutoDetectBtn = document.getElementById('cropAutoDetectBtn');
+    const cropResetFullBtn = document.getElementById('cropResetFullBtn');
+    const cropApplyBtn = document.getElementById('cropApplyBtn');
+
+    if (canNativeShare) {
+      shareNativeBtn.classList.remove('hidden');
+    }
+
+    // =========================================================================
+    // 深淺色模式切換（預設深色）
+    // =========================================================================
+    function syncThemeUI() {
+      const isDark = document.documentElement.classList.contains('dark');
+      themeToggleText.textContent = isDark ? '淺色模式' : '深色模式';
+      themeToggleBtn.title = isDark ? '切換為淺色模式' : '切換為深色模式';
+      themeColorMeta.setAttribute('content', isDark ? '#0f172a' : '#4f46e5');
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      const isNowDark = document.documentElement.classList.toggle('dark');
+      localStorage.setItem('pdfmerge_theme', isNowDark ? 'dark' : 'light');
+      syncThemeUI();
+    });
+
+    syncThemeUI();
+
+    // =========================================================================
+    // 自動裁切開關、全域色彩模式、亮度與銳利度（套用至全部圖片）
+    // =========================================================================
+    function syncAutoCropUI() {
+      autoCropToggle.setAttribute('aria-checked', String(autoCropEnabled));
+      if (autoCropEnabled) {
+        autoCropToggle.className = 'touch-btn inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all';
+        autoCropTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200';
+        autoCropKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4';
+        autoCropLabel.textContent = '自動矩形裁切邊框：開啟';
+        autoCropLabel.className = 'text-xs font-bold text-emerald-700 dark:text-emerald-300';
+      } else {
+        autoCropToggle.className = 'touch-btn inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 transition-all';
+        autoCropTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-slate-300 dark:bg-slate-600 transition-colors duration-200';
+        autoCropKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-1';
+        autoCropLabel.textContent = '自動矩形裁切邊框：關閉';
+        autoCropLabel.className = 'text-xs font-bold text-slate-600 dark:text-slate-400';
+      }
+    }
+
+    autoCropToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      autoCropEnabled = !autoCropEnabled;
+      syncAutoCropUI();
+    });
+
+    syncAutoCropUI();
+
+    function syncGlobalFilterUI() {
+      document.querySelectorAll('.global-filter-btn').forEach((btn) => {
+        const isActive = btn.dataset.globalFilter === globalScanFilter;
+        btn.className = isActive
+          ? 'global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white shadow-sm transition-all'
+          : 'global-filter-btn touch-btn py-2 px-3 rounded-xl text-xs font-semibold border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all';
+      });
+    }
+
+    function syncAdjustLabels() {
+      brightnessVal.textContent = globalBrightness > 0 ? `+${globalBrightness}` : String(globalBrightness);
+      sharpnessVal.textContent = `${globalSharpness}%`;
+    }
+
+    async function reprocessAllImages(overrideFilter = null) {
+      if (overrideFilter !== null) {
+        globalScanFilter = overrideFilter;
+        syncGlobalFilterUI();
+      }
+
+      if (images.length === 0) return;
+
+      showStatus(`正在更新全部 ${images.length} 張圖片...`, 'info');
+
+      for (let i = 0; i < images.length; i++) {
+        const item = images[i];
+        if (overrideFilter !== null) {
+          item.scanFilter = overrideFilter;
+        }
+        const mode = item.scanFilter || globalScanFilter;
+        try {
+          const imgEl = await loadImageElement(item.originalDataUrl);
+          const processed = processImageWithRectAndFilter(imgEl, item.cropRect, mode, globalBrightness, globalSharpness);
+          if (processed) {
+            item.dataUrl = processed.dataUrl;
+            item.width = processed.width;
+            item.height = processed.height;
+          } else {
+            item.dataUrl = item.originalDataUrl;
+            item.width = imgEl.naturalWidth;
+            item.height = imgEl.naturalHeight;
+          }
+        } catch (err) {
+          console.error('套用畫面調整失敗:', err);
+        }
+      }
+
+      invalidatePdfCache();
+      renderGrid();
+      showStatus(`已更新全部 ${images.length} 張圖片（${filterLabelMap[globalScanFilter]}，亮度 ${brightnessVal.textContent}，銳利度 ${globalSharpness}%）。`, 'success');
+    }
+
+    document.querySelectorAll('.global-filter-btn').forEach((btn) => {
+      btn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        reprocessAllImages(btn.dataset.globalFilter);
+      });
+    });
+
+    brightnessSlider.addEventListener('input', () => {
+      globalBrightness = Number(brightnessSlider.value);
+      syncAdjustLabels();
+    });
+    brightnessSlider.addEventListener('change', () => {
+      reprocessAllImages(null);
+    });
+
+    sharpnessSlider.addEventListener('input', () => {
+      globalSharpness = Number(sharpnessSlider.value);
+      syncAdjustLabels();
+    });
+    sharpnessSlider.addEventListener('change', () => {
+      reprocessAllImages(null);
+    });
+
+    resetAdjustBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      globalBrightness = 0;
+      globalSharpness = 30;
+      brightnessSlider.value = 0;
+      sharpnessSlider.value = 30;
+      syncAdjustLabels();
+      reprocessAllImages(null);
+    });
+
+    syncGlobalFilterUI();
+    syncAdjustLabels();
+
+    // =========================================================================
+    // 文件標準矩形邊緣偵測、直接矩形裁切、銳利化與色彩濾鏡引擎（純 JS + Canvas）
+    // =========================================================================
+    function loadImageElement(src) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src;
+      });
+    }
+
+    function applyPostProcess(imgData, w, h, filterMode, brightness, sharpness) {
+      const data = imgData.data;
+
+      // 1. 銳利化（3x3 Cross Unsharp Mask）
+      if (sharpness > 0 && w > 2 && h > 2) {
+        const src = new Uint8ClampedArray(data);
+        const k = (sharpness / 100) * 1.25;
+        const centerWeight = 1 + 4 * k;
+        const rowStride = w * 4;
+
+        for (let y = 1; y < h - 1; y++) {
+          let idx = (y * w + 1) * 4;
+          for (let x = 1; x < w - 1; x++) {
+            const up = idx - rowStride;
+            const dn = idx + rowStride;
+            const lt = idx - 4;
+            const rt = idx + 4;
+
+            data[idx]     = src[idx]     * centerWeight - (src[up]     + src[dn]     + src[lt]     + src[rt])     * k;
+            data[idx + 1] = src[idx + 1] * centerWeight - (src[up + 1] + src[dn + 1] + src[lt + 1] + src[rt + 1]) * k;
+            data[idx + 2] = src[idx + 2] * centerWeight - (src[up + 2] + src[dn + 2] + src[lt + 2] + src[rt + 2]) * k;
+            idx += 4;
+          }
+        }
+      }
+
+      // 2. 色彩模式與亮度調整
+      if (filterMode === 'bw') {
+        const pivot = 148 - brightness;
+        const contrast = 2.8;
+        for (let i = 0; i < data.length; i += 4) {
+          let lum = 0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2];
+          lum = (lum - pivot) * contrast + 128;
+          if (lum < 0) lum = 0;
+          else if (lum > 255) lum = 255;
+          data[i] = data[i + 1] = data[i + 2] = lum;
+        }
+      } else if (filterMode === 'enhance') {
+        for (let i = 0; i < data.length; i += 4) {
+          data[i]     = (data[i]     - 20) * 1.22 + brightness;
+          data[i + 1] = (data[i + 1] - 20) * 1.22 + brightness;
+          data[i + 2] = (data[i + 2] - 20) * 1.22 + brightness;
+        }
+      } else if (brightness !== 0) {
+        for (let i = 0; i < data.length; i += 4) {
+          data[i]     = data[i]     + brightness;
+          data[i + 1] = data[i + 1] + brightness;
+          data[i + 2] = data[i + 2] + brightness;
+        }
+      }
+    }
+
+    function processImageWithRectAndFilter(img, cropRect, filterMode = 'none', brightness = 0, sharpness = 0) {
+      const hasCrop = !!cropRect;
+      const needsPixelFilter = filterMode !== 'none' || brightness !== 0 || sharpness > 0;
+
+      if (!hasCrop && !needsPixelFilter) {
+        return { dataUrl: img.src, width: img.naturalWidth, height: img.naturalHeight };
+      }
+
+      const sx = hasCrop ? Math.max(0, Math.round(cropRect.left * img.naturalWidth)) : 0;
+      const sy = hasCrop ? Math.max(0, Math.round(cropRect.top * img.naturalHeight)) : 0;
+      const sw = hasCrop
+        ? Math.max(20, Math.min(img.naturalWidth - sx, Math.round((cropRect.right - cropRect.left) * img.naturalWidth)))
+        : img.naturalWidth;
+      const sh = hasCrop
+        ? Math.max(20, Math.min(img.naturalHeight - sy, Math.round((cropRect.bottom - cropRect.top) * img.naturalHeight)))
+        : img.naturalHeight;
+
+      const maxWorkDim = 2200;
+      const scale = Math.min(1, maxWorkDim / Math.max(sw, sh));
+      const outW = Math.max(20, Math.round(sw * scale));
+      const outH = Math.max(20, Math.round(sh * scale));
+
+      const canvas = document.createElement('canvas');
+      canvas.width = outW;
+      canvas.height = outH;
+      const ctx = canvas.getContext('2d', { willReadFrequently: needsPixelFilter });
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, outW, outH);
+
+      if (needsPixelFilter) {
+        const imgData = ctx.getImageData(0, 0, outW, outH);
+        applyPostProcess(imgData, outW, outH, filterMode, brightness, sharpness);
+        ctx.putImageData(imgData, 0, 0);
+      }
+
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      canvas.width = 0;
+      canvas.height = 0;
+
+      return { dataUrl, width: outW, height: outH };
+    }
+
+    // 偵測文件標準矩形外框 { left, top, right, bottom }（正規化 0~1）
+    function detectDocumentRect(img) {
+      const maxDetectDim = 320;
+      const scale = Math.min(1, maxDetectDim / Math.max(img.naturalWidth, img.naturalHeight));
+      const w = Math.max(40, Math.round(img.naturalWidth * scale));
+      const h = Math.max(40, Math.round(img.naturalHeight * scale));
+
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(img, 0, 0, w, h);
+      const rgba = ctx.getImageData(0, 0, w, h).data;
+
+      // 1. 中央紙張代表色（取較亮的前 60% 像素避開黑色字體）
+      const centerSamples = [];
+      const cx0 = Math.floor(w * 0.22), cx1 = Math.floor(w * 0.78);
+      const cy0 = Math.floor(h * 0.22), cy1 = Math.floor(h * 0.78);
+      for (let y = cy0; y < cy1; y += 2) {
+        for (let x = cx0; x < cx1; x += 2) {
+          const p = (y * w + x) * 4;
+          const r = rgba[p], g = rgba[p + 1], b = rgba[p + 2];
+          const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+          centerSamples.push({ r, g, b, lum });
+        }
+      }
+      centerSamples.sort((a, b) => a.lum - b.lum);
+      const brightStart = Math.floor(centerSamples.length * 0.4);
+      let paperR = 0, paperG = 0, paperB = 0, paperLum = 0;
+      const brightCount = Math.max(1, centerSamples.length - brightStart);
+      for (let i = brightStart; i < centerSamples.length; i++) {
+        paperR += centerSamples[i].r;
+        paperG += centerSamples[i].g;
+        paperB += centerSamples[i].b;
+        paperLum += centerSamples[i].lum;
+      }
+      paperR /= brightCount;
+      paperG /= brightCount;
+      paperB /= brightCount;
+      paperLum /= brightCount;
+
+      // 2. 外圍 4% 邊界背景色
+      let bgR = 0, bgG = 0, bgB = 0, bgLum = 0, bgCount = 0;
+      const bx = Math.max(2, Math.floor(w * 0.04));
+      const by = Math.max(2, Math.floor(h * 0.04));
+      for (let y = 0; y < h; y++) {
+        for (let x = 0; x < w; x++) {
+          if (x < bx || x >= w - bx || y < by || y >= h - by) {
+            const p = (y * w + x) * 4;
+            const r = rgba[p], g = rgba[p + 1], b = rgba[p + 2];
+            bgR += r;
+            bgG += g;
+            bgB += b;
+            bgLum += 0.299 * r + 0.587 * g + 0.114 * b;
+            bgCount++;
+          }
+        }
+      }
+      bgR /= Math.max(1, bgCount);
+      bgG /= Math.max(1, bgCount);
+      bgB /= Math.max(1, bgCount);
+      bgLum /= Math.max(1, bgCount);
+
+      // 3. 若畫面已經是滿版文件（邊緣與紙張顏色接近），回傳 null 保留全圖
+      const colorDiff = Math.hypot(paperR - bgR, paperG - bgG, paperB - bgB);
+      const lumDiff = paperLum - bgLum;
+      if (colorDiff < 28 && lumDiff < 22) {
+        canvas.width = 0;
+        canvas.height = 0;
+        return null;
+      }
+
+      // 4. 從四邊向內洪水填充背景區域
+      const outside = new Uint8Array(w * h);
+      const queue = new Int32Array(w * h);
+      let head = 0, tail = 0;
+
+      const isBackgroundPixel = (idx) => {
+        const p = idx * 4;
+        const r = rgba[p], g = rgba[p + 1], b = rgba[p + 2];
+        const distToBg = Math.hypot(r - bgR, g - bgG, b - bgB);
+        const distToPaper = Math.hypot(r - paperR, g - paperG, b - paperB);
+        return distToBg < distToPaper * 0.92;
+      };
+
+      const enqueueIfBg = (x, y) => {
+        const idx = y * w + x;
+        if (!outside[idx] && isBackgroundPixel(idx)) {
+          outside[idx] = 1;
+          queue[tail++] = idx;
+        }
+      };
+
+      for (let x = 0; x < w; x++) {
+        enqueueIfBg(x, 0);
+        enqueueIfBg(x, h - 1);
+      }
+      for (let y = 0; y < h; y++) {
+        enqueueIfBg(0, y);
+        enqueueIfBg(w - 1, y);
+      }
+
+      while (head < tail) {
+        const idx = queue[head++];
+        const x = idx % w;
+        const y = (idx - x) / w;
+        if (x > 0) enqueueIfBg(x - 1, y);
+        if (x < w - 1) enqueueIfBg(x + 1, y);
+        if (y > 0) enqueueIfBg(x, y - 1);
+        if (y < h - 1) enqueueIfBg(x, y + 1);
+      }
+
+      if (tail < w * h * 0.04) {
+        canvas.width = 0;
+        canvas.height = 0;
+        return null;
+      }
+
+      // 5. 找出最大前景區塊，取其標準矩形外框
+      const visited = new Uint8Array(w * h);
+      let bestSize = 0;
+      let bestBox = null;
+
+      for (let i = 0; i < w * h; i++) {
+        if (outside[i] || visited[i]) continue;
+        let qh = 0, qt = 0;
+        visited[i] = 1;
+        queue[qt++] = i;
+
+        let minX = w, maxX = 0, minY = h, maxY = 0;
+
+        while (qh < qt) {
+          const cur = queue[qh++];
+          const x = cur % w;
+          const y = (cur - x) / w;
+          if (x < minX) minX = x;
+          if (x > maxX) maxX = x;
+          if (y < minY) minY = y;
+          if (y > maxY) maxY = y;
+
+          if (x > 0 && !outside[cur - 1] && !visited[cur - 1]) { visited[cur - 1] = 1; queue[qt++] = cur - 1; }
+          if (x < w - 1 && !outside[cur + 1] && !visited[cur + 1]) { visited[cur + 1] = 1; queue[qt++] = cur + 1; }
+          if (y > 0 && !outside[cur - w] && !visited[cur - w]) { visited[cur - w] = 1; queue[qt++] = cur - w; }
+          if (y < h - 1 && !outside[cur + w] && !visited[cur + w]) { visited[cur + w] = 1; queue[qt++] = cur + w; }
+        }
+
+        if (qt > bestSize) {
+          bestSize = qt;
+          bestBox = { minX, maxX, minY, maxY };
+        }
+      }
+
+      canvas.width = 0;
+      canvas.height = 0;
+
+      if (!bestBox) return null;
+
+      const left = bestBox.minX / w;
+      const top = bestBox.minY / h;
+      const right = Math.min(1, (bestBox.maxX + 1) / w);
+      const bottom = Math.min(1, (bestBox.maxY + 1) / h);
+      const rw = right - left;
+      const rh = bottom - top;
+      const areaRatio = rw * rh;
+
+      if (rw < 0.25 || rh < 0.25 || areaRatio < 0.15 || areaRatio > 0.96) {
+        return null;
+      }
+
+      return { left, top, right, bottom };
+    }
+
+    // =========================================================================
+    // 互動式矩形裁切視窗
+    // =========================================================================
+    let activeCropId = null;
+    let activeCropImg = null;
+    let activeCropRect = null; // { left, top, right, bottom }
+    let activeCropFilter = 'none';
+    let dragMode = null;       // 'tl' | 'tr' | 'br' | 'bl' | 'move' | null
+    let dragStartPos = null;
+    let dragStartRect = null;
+
+    function syncCropFilterButtons() {
+      document.querySelectorAll('.crop-filter-btn').forEach((btn) => {
+        const isActive = btn.dataset.filter === activeCropFilter;
+        btn.className = isActive
+          ? 'crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white transition-all'
+          : 'crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all';
+      });
+    }
+
+    document.querySelectorAll('.crop-filter-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        activeCropFilter = btn.dataset.filter;
+        syncCropFilterButtons();
+      });
+    });
+
+    function drawCropEditor() {
+      if (!activeCropImg || !activeCropRect) return;
+      const wrapRect = cropCanvasWrap.getBoundingClientRect();
+      const availW = Math.max(200, wrapRect.width - 24);
+      const availH = Math.max(200, wrapRect.height - 24);
+      const imgRatio = activeCropImg.naturalWidth / activeCropImg.naturalHeight;
+
+      let drawW = availW;
+      let drawH = drawW / imgRatio;
+      if (drawH > availH) {
+        drawH = availH;
+        drawW = drawH * imgRatio;
+      }
+
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      cropCanvas.style.width = `${Math.round(drawW)}px`;
+      cropCanvas.style.height = `${Math.round(drawH)}px`;
+      cropCanvas.width = Math.round(drawW * dpr);
+      cropCanvas.height = Math.round(drawH * dpr);
+
+      const ctx = cropCanvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      ctx.drawImage(activeCropImg, 0, 0, drawW, drawH);
+
+      const x0 = activeCropRect.left * drawW;
+      const y0 = activeCropRect.top * drawH;
+      const x1 = activeCropRect.right * drawW;
+      const y1 = activeCropRect.bottom * drawH;
+      const rw = x1 - x0;
+      const rh = y1 - y0;
+
+      // 外部半透明遮罩
+      ctx.save();
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.58)';
+      ctx.beginPath();
+      ctx.rect(0, 0, drawW, drawH);
+      ctx.rect(x0, y0, rw, rh);
+      ctx.fill('evenodd');
+      ctx.restore();
+
+      // 矩形邊框
+      ctx.save();
+      ctx.strokeStyle = '#34d399';
+      ctx.lineWidth = 2.5;
+      ctx.strokeRect(x0, y0, rw, rh);
+
+      // 九宮格參考線
+      ctx.strokeStyle = 'rgba(52, 211, 153, 0.35)';
+      ctx.lineWidth = 1;
+      for (const t of [1 / 3, 2 / 3]) {
+        ctx.beginPath();
+        ctx.moveTo(x0 + rw * t, y0);
+        ctx.lineTo(x0 + rw * t, y1);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(x0, y0 + rh * t);
+        ctx.lineTo(x1, y0 + rh * t);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // 四個角點控點
+      const handles = [
+        { key: 'tl', x: x0, y: y0 },
+        { key: 'tr', x: x1, y: y0 },
+        { key: 'br', x: x1, y: y1 },
+        { key: 'bl', x: x0, y: y1 }
+      ];
+
+      handles.forEach((h) => {
+        const isDragging = dragMode === h.key;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(h.x, h.y, isDragging ? 15 : 12, 0, Math.PI * 2);
+        ctx.fillStyle = isDragging ? 'rgba(99, 102, 241, 0.95)' : 'rgba(16, 185, 129, 0.92)';
+        ctx.fill();
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = '#ffffff';
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.arc(h.x, h.y, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#ffffff';
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+
+    async function openCropModal(itemId) {
+      const item = images.find((i) => i.id === itemId);
+      if (!item) return;
+
+      activeCropId = itemId;
+      activeCropFilter = item.scanFilter || globalScanFilter;
+      syncCropFilterButtons();
+
+      cropModal.classList.remove('hidden');
+      activeCropImg = await loadImageElement(item.originalDataUrl);
+
+      if (item.cropRect) {
+        activeCropRect = { ...item.cropRect };
+      } else {
+        const detected = detectDocumentRect(activeCropImg);
+        activeCropRect = detected || { left: 0.02, top: 0.02, right: 0.98, bottom: 0.98 };
+      }
+
+      requestAnimationFrame(drawCropEditor);
+    }
+
+    function closeCropModal() {
+      cropModal.classList.add('hidden');
+      activeCropId = null;
+      activeCropImg = null;
+      dragMode = null;
+    }
+
+    function getPointerNormPos(e) {
+      const rect = cropCanvas.getBoundingClientRect();
+      const x = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+      const y = Math.max(0, Math.min(1, (e.clientY - rect.top) / rect.height));
+      return { x, y, px: e.clientX - rect.left, py: e.clientY - rect.top, w: rect.width, h: rect.height };
+    }
+
+    cropCanvas.addEventListener('pointerdown', (e) => {
+      if (!activeCropRect) return;
+      const pos = getPointerNormPos(e);
+      const handles = [
+        { key: 'tl', x: activeCropRect.left * pos.w, y: activeCropRect.top * pos.h },
+        { key: 'tr', x: activeCropRect.right * pos.w, y: activeCropRect.top * pos.h },
+        { key: 'br', x: activeCropRect.right * pos.w, y: activeCropRect.bottom * pos.h },
+        { key: 'bl', x: activeCropRect.left * pos.w, y: activeCropRect.bottom * pos.h }
+      ];
+
+      let closest = null;
+      let minDist = 42;
+      for (const h of handles) {
+        const d = Math.hypot(h.x - pos.px, h.y - pos.py);
+        if (d < minDist) {
+          minDist = d;
+          closest = h.key;
+        }
+      }
+
+      if (closest) {
+        dragMode = closest;
+      } else if (
+        pos.x >= activeCropRect.left && pos.x <= activeCropRect.right &&
+        pos.y >= activeCropRect.top && pos.y <= activeCropRect.bottom
+      ) {
+        dragMode = 'move';
+        dragStartPos = { x: pos.x, y: pos.y };
+        dragStartRect = { ...activeCropRect };
+      }
+
+      if (dragMode) {
+        cropCanvas.setPointerCapture(e.pointerId);
+        drawCropEditor();
+      }
+    });
+
+    cropCanvas.addEventListener('pointermove', (e) => {
+      if (!dragMode || !activeCropRect) return;
+      const pos = getPointerNormPos(e);
+      const minSize = 0.08;
+
+      if (dragMode === 'tl') {
+        activeCropRect.left = Math.min(pos.x, activeCropRect.right - minSize);
+        activeCropRect.top = Math.min(pos.y, activeCropRect.bottom - minSize);
+      } else if (dragMode === 'tr') {
+        activeCropRect.right = Math.max(pos.x, activeCropRect.left + minSize);
+        activeCropRect.top = Math.min(pos.y, activeCropRect.bottom - minSize);
+      } else if (dragMode === 'br') {
+        activeCropRect.right = Math.max(pos.x, activeCropRect.left + minSize);
+        activeCropRect.bottom = Math.max(pos.y, activeCropRect.top + minSize);
+      } else if (dragMode === 'bl') {
+        activeCropRect.left = Math.min(pos.x, activeCropRect.right - minSize);
+        activeCropRect.bottom = Math.max(pos.y, activeCropRect.top + minSize);
+      } else if (dragMode === 'move' && dragStartPos && dragStartRect) {
+        const dx = pos.x - dragStartPos.x;
+        const dy = pos.y - dragStartPos.y;
+        const rw = dragStartRect.right - dragStartRect.left;
+        const rh = dragStartRect.bottom - dragStartRect.top;
+        const newLeft = Math.max(0, Math.min(1 - rw, dragStartRect.left + dx));
+        const newTop = Math.max(0, Math.min(1 - rh, dragStartRect.top + dy));
+        activeCropRect = {
+          left: newLeft,
+          top: newTop,
+          right: newLeft + rw,
+          bottom: newTop + rh
+        };
+      }
+
+      drawCropEditor();
+    });
+
+    cropCanvas.addEventListener('pointerup', (e) => {
+      if (dragMode) {
+        dragMode = null;
+        try { cropCanvas.releasePointerCapture(e.pointerId); } catch (_) {}
+        drawCropEditor();
+      }
+    });
+
+    cropCanvas.addEventListener('pointercancel', () => {
+      dragMode = null;
+      drawCropEditor();
+    });
+
+    window.addEventListener('resize', () => {
+      if (!cropModal.classList.contains('hidden')) drawCropEditor();
+    });
+
+    closeCropModalBtn.addEventListener('click', closeCropModal);
+
+    cropAutoDetectBtn.addEventListener('click', () => {
+      if (!activeCropImg) return;
+      const detected = detectDocumentRect(activeCropImg);
+      if (detected) {
+        activeCropRect = detected;
+        drawCropEditor();
+      } else {
+        activeCropRect = { left: 0, top: 0, right: 1, bottom: 1 };
+        drawCropEditor();
+        showStatus('此圖片已是滿版文件或無明顯背景邊框，已保留全圖。', 'info');
+      }
+    });
+
+    cropResetFullBtn.addEventListener('click', () => {
+      activeCropRect = { left: 0, top: 0, right: 1, bottom: 1 };
+      drawCropEditor();
+    });
+
+    cropApplyBtn.addEventListener('click', () => {
+      if (!activeCropId || !activeCropImg || !activeCropRect) return;
+      const idx = images.findIndex((i) => i.id === activeCropId);
+      if (idx === -1) return;
+
+      const isFullFrame =
+        activeCropRect.left <= 0.005 &&
+        activeCropRect.top <= 0.005 &&
+        activeCropRect.right >= 0.995 &&
+        activeCropRect.bottom >= 0.995;
+
+      const cropRectToUse = isFullFrame ? null : { ...activeCropRect };
+      const processed = processImageWithRectAndFilter(
+        activeCropImg,
+        cropRectToUse,
+        activeCropFilter,
+        globalBrightness,
+        globalSharpness
+      );
+
+      if (processed) {
+        images[idx].dataUrl = processed.dataUrl;
+        images[idx].width = processed.width;
+        images[idx].height = processed.height;
+        images[idx].cropRect = cropRectToUse;
+        images[idx].isCropped = !isFullFrame;
+        images[idx].scanFilter = activeCropFilter;
+      }
+
+      invalidatePdfCache();
+      renderGrid();
+      closeCropModal();
+      showStatus('已更新矩形裁切與掃描效果。', 'success');
+    });
+
+    // =========================================================================
+    // 右側頁碼設定
+    // =========================================================================
+    function syncPageNumberUI() {
+      pageNumberToggle.setAttribute('aria-checked', String(showPageNumbers));
+      if (showPageNumbers) {
+        pageNumberToggle.className = 'touch-btn inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/60 transition-all shrink-0';
+        pageNumTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-indigo-600 transition-colors duration-200';
+        pageNumKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4';
+        pageNumLabel.textContent = '開啟';
+        pageNumLabel.className = 'text-xs font-bold text-indigo-700 dark:text-indigo-300';
+        pageNumFormatBox.classList.remove('hidden');
+      } else {
+        pageNumberToggle.className = 'touch-btn inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 transition-all shrink-0';
+        pageNumTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-slate-300 dark:bg-slate-700 transition-colors duration-200';
+        pageNumKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-1';
+        pageNumLabel.textContent = '關閉';
+        pageNumLabel.className = 'text-xs font-bold text-slate-600 dark:text-slate-400';
+        pageNumFormatBox.classList.add('hidden');
+      }
+    }
+
+    pageNumberToggle.addEventListener('click', () => {
+      showPageNumbers = !showPageNumbers;
+      syncPageNumberUI();
+      invalidatePdfCache();
+      renderGrid();
+    });
+
+    pageNumPositionSelect.addEventListener('change', () => {
+      pageNumberPosition = pageNumPositionSelect.value;
+      invalidatePdfCache();
+      renderGrid();
+    });
+
+    pageNumFormatSelect.addEventListener('change', () => {
+      pageNumberFormat = pageNumFormatSelect.value;
+      invalidatePdfCache();
+      renderGrid();
+    });
+
+    syncPageNumberUI();
+
+    // =========================================================================
+    // 拖曳排序
+    // =========================================================================
+    function initSortable() {
+      if (sortableInstance) sortableInstance.destroy();
+      sortableInstance = new Sortable(imageGrid, {
+        animation: 180,
+        handle: '.drag-handle',
+        ghostClass: 'sortable-ghost',
+        chosenClass: 'sortable-chosen',
+        dragClass: 'sortable-drag',
+        delay: 80,
+        delayOnTouchOnly: true,
+        touchStartThreshold: 4,
+        onEnd: function (evt) {
+          const oldIndex = evt.oldIndex;
+          const newIndex = evt.newIndex;
+          if (oldIndex !== undefined && newIndex !== undefined && oldIndex !== newIndex) {
+            const [moved] = images.splice(oldIndex, 1);
+            images.splice(newIndex, 0, moved);
+            invalidatePdfCache();
+            renderGrid();
+          }
+        }
+      });
+    }
+
+    // =========================================================================
+    // 檔案上傳事件
+    // =========================================================================
+    browseBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      fileInput.click();
+    });
+    cameraBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      cameraInput.click();
+    });
+    addMoreBtn.addEventListener('click', () => fileInput.click());
+
+    dropZone.addEventListener('click', (e) => {
+      if (!e.target.closest('button') && !e.target.closest('.no-drop-click')) {
+        fileInput.click();
+      }
+    });
+
+    fileInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+      fileInput.value = '';
+    });
+
+    cameraInput.addEventListener('change', (e) => {
+      handleFiles(e.target.files);
+      cameraInput.value = '';
+    });
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('drag-over');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('drag-over');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      handleFiles(e.dataTransfer.files);
+    });
+
+    scrollSettingsBtn.addEventListener('click', () => {
+      settingsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+
+    clearAllBtn.addEventListener('click', () => {
+      images = [];
+      invalidatePdfCache();
+      renderGrid();
+      showStatus('已清除所有圖片。', 'info');
+    });
+
+    // =========================================================================
+    // PDF 版面設定
+    // =========================================================================
+    document.querySelectorAll('.orientation-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        selectedOrientation = btn.dataset.orientation;
+        document.querySelectorAll('.orientation-btn').forEach((b) => {
+          const active = b.dataset.orientation === selectedOrientation;
+          b.className = active
+            ? 'orientation-btn touch-btn active flex items-center justify-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-medium border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-xl transition-all'
+            : 'orientation-btn touch-btn flex items-center justify-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-medium border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all';
+        });
+        invalidatePdfCache();
+      });
+    });
+
+    document.querySelectorAll('.margin-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        selectedMargin = Number(btn.dataset.margin);
+        document.querySelectorAll('.margin-btn').forEach((b) => {
+          const active = Number(b.dataset.margin) === selectedMargin;
+          b.className = active
+            ? 'margin-btn touch-btn active py-2.5 px-2 text-xs sm:text-sm font-medium border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-xl transition-all'
+            : 'margin-btn touch-btn py-2.5 px-2 text-xs sm:text-sm font-medium border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all';
+        });
+        invalidatePdfCache();
+      });
+    });
+
+    function syncPageSizeControls() {
+      const isFit = pageSizeSelect.value === 'fit';
+      orientationGroup.classList.toggle('hidden', isFit);
+      marginGroup.classList.toggle('hidden', isFit);
+      fitGroup.classList.toggle('hidden', isFit);
+      invalidatePdfCache();
+    }
+
+    pageSizeSelect.addEventListener('change', syncPageSizeControls);
+    imageFitSelect.addEventListener('change', invalidatePdfCache);
+    imageQualitySelect.addEventListener('change', invalidatePdfCache);
+    pdfFilenameInput.addEventListener('input', invalidatePdfCache);
+
+    // =========================================================================
+    // 圖片載入、自動矩形裁切與預覽格線
+    // =========================================================================
+    function invalidatePdfCache() {
+      lastGeneratedBlob = null;
+      mobileShareBtn.disabled = images.length === 0 || isConverting;
+      desktopShareBtn.disabled = images.length === 0 || isConverting;
+    }
+
+    function readFileAsDataURL(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function handleFiles(fileList) {
+      const files = Array.from(fileList).filter((file) => file.type.startsWith('image/'));
+      if (files.length === 0) {
+        showStatus('請選擇有效的圖片檔案（JPG、PNG、WebP）。', 'error');
+        return;
+      }
+
+      showStatus(
+        autoCropEnabled
+          ? `正在載入並自動矩形裁切 ${files.length} 張圖片...`
+          : `正在載入 ${files.length} 張圖片...`,
+        'info'
+      );
+
+      let croppedCount = 0;
+
+      for (const file of files) {
+        try {
+          const originalDataUrl = await readFileAsDataURL(file);
+          const imgEl = await loadImageElement(originalDataUrl);
+
+          let cropRect = null;
+          let isCropped = false;
+
+          if (autoCropEnabled) {
+            const detected = detectDocumentRect(imgEl);
+            if (detected) {
+              cropRect = detected;
+              isCropped = true;
+              croppedCount++;
+            }
+          }
+
+          const processed = processImageWithRectAndFilter(
+            imgEl,
+            cropRect,
+            globalScanFilter,
+            globalBrightness,
+            globalSharpness
+          );
+
+          images.push({
+            id: 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8),
+            name: file.name || `掃描_${images.length + 1}.jpg`,
+            originalDataUrl,
+            dataUrl: processed ? processed.dataUrl : originalDataUrl,
+            rotation: 0,
+            width: processed ? processed.width : imgEl.naturalWidth,
+            height: processed ? processed.height : imgEl.naturalHeight,
+            cropRect,
+            isCropped,
+            scanFilter: globalScanFilter
+          });
+        } catch (err) {
+          console.error('載入圖片失敗:', err);
+        }
+      }
+
+      invalidatePdfCache();
+      renderGrid();
+
+      if (autoCropEnabled) {
+        if (croppedCount > 0) {
+          showStatus(`已加入 ${files.length} 張圖片（自動矩形裁切 ${croppedCount} 張，模式：${filterLabelMap[globalScanFilter]}）。`, 'success');
+        } else {
+          showStatus(`已加入 ${files.length} 張圖片（未偵測到背景外框，保留全圖，模式：${filterLabelMap[globalScanFilter]}）。`, 'info');
+        }
+      } else {
+        showStatus(`已加入 ${files.length} 張圖片（模式：${filterLabelMap[globalScanFilter]}）。`, 'success');
+      }
+    }
+
+    function updatePdfPageCount() {
+      const hasImages = images.length > 0;
+      const totalPdfPages = images.length;
+
+      convertBtn.disabled = !hasImages || isConverting;
+      headerConvertBtn.disabled = !hasImages || isConverting;
+      mobileConvertBtn.disabled = !hasImages || isConverting;
+      mobileShareBtn.disabled = !hasImages || isConverting;
+      desktopShareBtn.disabled = !hasImages || isConverting;
+
+      if (hasImages) {
+        headerCountBadge.textContent = totalPdfPages;
+        headerCountBadge.classList.remove('hidden');
+        mobileCountBadge.textContent = totalPdfPages;
+        mobileCountBadge.classList.remove('hidden');
+        convertBtnText.textContent = `合併 ${totalPdfPages} 頁並下載 PDF`;
+        mobileConvertText.textContent = '建立 PDF';
+      } else {
+        headerCountBadge.classList.add('hidden');
+        mobileCountBadge.classList.add('hidden');
+        convertBtnText.textContent = '合併並下載 PDF';
+        mobileConvertText.textContent = '建立 PDF';
+      }
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/[&<>"']/g, (m) => ({
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;'
+      }[m]));
+    }
+
+    function renderGrid() {
+      const hasImages = images.length > 0;
+      workspaceHeader.classList.toggle('hidden', !hasImages);
+      clearAllBtn.classList.toggle('hidden', !hasImages);
+      emptyStateHint.classList.toggle('hidden', hasImages);
+      imageCount.textContent = images.length;
+
+      imageGrid.innerHTML = '';
+
+      images.forEach((item, index) => {
+        const card = document.createElement('div');
+        card.dataset.id = item.id;
+        card.className = 'group bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden shadow-sm hover:border-indigo-300 dark:hover:border-indigo-700 transition-all animate-fade-in flex flex-col';
+
+        card.innerHTML = `
+          <div class="relative aspect-[4/3] bg-slate-100 dark:bg-slate-950 flex items-center justify-center overflow-hidden p-2">
+            <img
+              src="${item.dataUrl}"
+              alt="${escapeHtml(item.name)}"
+              class="max-w-full max-h-full object-contain transition-transform duration-200 select-none pointer-events-none"
+              style="transform: rotate(${item.rotation}deg);"
+            />
+            <div class="absolute top-2 left-2 flex items-center gap-1">
+              <span class="bg-slate-900/80 text-white text-[11px] font-bold px-2 py-0.5 rounded-lg backdrop-blur-xs">
+                第 ${index + 1} 頁
+              </span>
+              ${item.isCropped ? '<span class="bg-emerald-600/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-md">已裁切</span>' : ''}
+            </div>
+            ${showPageNumbers ? `<span class="absolute ${pageNumberPosition === 'top_right' ? 'top-2 right-12' : 'bottom-2 right-2'} bg-white/95 text-slate-900 border border-slate-300 text-[10px] font-semibold px-1.5 py-0.5 rounded shadow-xs pointer-events-none">${pageNumberFormat === 'slash' ? `${index + 1}/${images.length}` : `Page ${index + 1}/${images.length}`}</span>` : ''}
+            <button
+              type="button"
+              class="drag-handle absolute top-2 right-2 w-8 h-8 rounded-lg bg-white/90 dark:bg-slate-800/90 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center justify-center cursor-grab active:cursor-grabbing shadow-xs"
+              title="按住拖曳排序"
+              aria-label="按住拖曳排序"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16" />
+              </svg>
+            </button>
+          </div>
+
+          <div class="p-3 flex items-center justify-between gap-2 border-t border-slate-100 dark:border-slate-800">
+            <div class="min-w-0">
+              <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate" title="${escapeHtml(item.name)}">${escapeHtml(item.name)}</p>
+              <p class="text-[11px] text-slate-400 dark:text-slate-500 mt-0.5">${item.width} × ${item.height}px${item.rotation ? ` • 旋轉 ${item.rotation}°` : ''}</p>
+            </div>
+
+            <div class="flex items-center gap-1 shrink-0">
+              <button
+                type="button"
+                data-action="crop"
+                data-id="${item.id}"
+                class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-emerald-50 dark:bg-slate-800 dark:hover:bg-emerald-950/70 text-slate-600 hover:text-emerald-600 dark:text-slate-300 dark:hover:text-emerald-400 flex items-center justify-center transition-colors"
+                title="矩形裁切與邊框調整"
+                aria-label="矩形裁切與邊框調整"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M6 2v14a2 2 0 002 2h14M18 22V8a2 2 0 00-2-2H2" />
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                data-action="rotate"
+                data-id="${item.id}"
+                class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-indigo-50 dark:bg-slate-800 dark:hover:bg-indigo-950/70 text-slate-600 hover:text-indigo-600 dark:text-slate-300 dark:hover:text-indigo-400 flex items-center justify-center transition-colors"
+                title="順時針旋轉 90°"
+                aria-label="順時針旋轉 90 度"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+
+              <button
+                type="button"
+                data-action="delete"
+                data-id="${item.id}"
+                class="w-8 h-8 rounded-lg bg-slate-100 hover:bg-rose-50 dark:bg-slate-800 dark:hover:bg-rose-950/60 text-slate-600 hover:text-rose-600 dark:text-slate-300 dark:hover:text-rose-400 flex items-center justify-center transition-colors"
+                title="移除此頁"
+                aria-label="移除此頁"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        `;
+
+        imageGrid.appendChild(card);
+      });
+
+      initSortable();
+      updatePdfPageCount();
+    }
+
+    imageGrid.addEventListener('click', (e) => {
+      const btn = e.target.closest('button[data-action]');
+      if (!btn) return;
+      const { action, id } = btn.dataset;
+      const idx = images.findIndex((i) => i.id === id);
+      if (idx === -1) return;
+
+      if (action === 'crop') {
+        openCropModal(id);
+      } else if (action === 'rotate') {
+        images[idx].rotation = (images[idx].rotation + 90) % 360;
+        invalidatePdfCache();
+        renderGrid();
+      } else if (action === 'delete') {
+        images.splice(idx, 1);
+        invalidatePdfCache();
+        renderGrid();
+      }
+    });
+
+    // =========================================================================
+    // PDF 產生與角落頁碼繪製
+    // =========================================================================
+    function renderRotatedImageForPdf(item, quality) {
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = quality >= 0.95 ? 4000 : quality >= 0.85 ? 2400 : 1600;
+          let srcW = img.naturalWidth;
+          let srcH = img.naturalHeight;
+
+          if (srcW > maxDim || srcH > maxDim) {
+            const scale = maxDim / Math.max(srcW, srcH);
+            srcW = Math.round(srcW * scale);
+            srcH = Math.round(srcH * scale);
+          }
+
+          const rot = item.rotation % 360;
+          const swap = rot === 90 || rot === 270;
+          const canvasW = swap ? srcH : srcW;
+          const canvasH = swap ? srcW : srcH;
+
+          const canvas = document.createElement('canvas');
+          canvas.width = canvasW;
+          canvas.height = canvasH;
+          const ctx = canvas.getContext('2d');
+
+          ctx.fillStyle = '#ffffff';
+          ctx.fillRect(0, 0, canvasW, canvasH);
+
+          ctx.translate(canvasW / 2, canvasH / 2);
+          ctx.rotate((rot * Math.PI) / 180);
+          ctx.drawImage(img, -srcW / 2, -srcH / 2, srcW, srcH);
+
+          const jpegDataUrl = canvas.toDataURL('image/jpeg', quality);
+          canvas.width = 0;
+          canvas.height = 0;
+
+          resolve({ dataUrl: jpegDataUrl, width: canvasW, height: canvasH });
+        };
+        img.onerror = reject;
+        img.src = item.dataUrl;
+      });
+    }
+
+    function drawCornerPageNumber(doc, pageIndex, totalPages, pageW, pageH) {
+      const label = pageNumberFormat === 'slash'
+        ? `${pageIndex}/${totalPages}`
+        : `Page ${pageIndex}/${totalPages}`;
+
+      const fontSize = Math.max(10, Math.round(Math.min(pageW, pageH) * 0.055));
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(fontSize);
+
+      const textW = doc.getTextWidth(label);
+      const textH = fontSize * 0.352778;
+      const padX = Math.max(2, textH * 0.5);
+      const padY = Math.max(1.2, textH * 0.3);
+      const edgeX = Math.max(5, Math.min(10, pageW * 0.03));
+      const edgeY = Math.max(5, Math.min(10, pageH * 0.025));
+
+      const boxW = textW + padX * 2;
+      const boxH = textH + padY * 2;
+      const boxX = pageW - edgeX - boxW;
+      const boxY = pageNumberPosition === 'top_right'
+        ? edgeY
+        : pageH - edgeY - boxH;
+
+      doc.setFillColor(255, 255, 255);
+      doc.roundedRect(boxX, boxY, boxW, boxH, 1.2, 1.2, 'F');
+
+      doc.setTextColor(15, 23, 42);
+      const textBaselineY = boxY + padY + textH * 0.82;
+      doc.text(label, boxX + boxW - padX, textBaselineY, { align: 'right' });
+    }
+
+    function getSanitizedFilename() {
+      const raw = (pdfFilenameInput.value || '合併文件').trim();
+      const cleaned = raw.replace(/[<>:"/\\|?*]+/g, '-').replace(/\.pdf$/i, '') || '合併文件';
+      return `${cleaned}.pdf`;
+    }
+
+    async function buildPdfBlob() {
+      const pageSize = pageSizeSelect.value;
+      const imageFit = imageFitSelect.value;
+      const quality = parseFloat(imageQualitySelect.value) || 0.85;
+      const margin = selectedMargin;
+      const totalPages = images.length;
+
+      let doc = null;
+
+      for (let i = 0; i < totalPages; i++) {
+        showStatus(`正在處理第 ${i + 1} / ${totalPages} 頁...`, 'info');
+        const rendered = await renderRotatedImageForPdf(images[i], quality);
+
+        let pageW, pageH;
+
+        if (pageSize === 'fit') {
+          const pxToMm = 25.4 / 96;
+          pageW = Math.max(20, rendered.width * pxToMm);
+          pageH = Math.max(20, rendered.height * pxToMm);
+          const orient = pageW >= pageH ? 'l' : 'p';
+
+          if (!doc) {
+            doc = new jsPDF({ orientation: orient, unit: 'mm', format: [pageW, pageH], compress: true });
+          } else {
+            doc.addPage([pageW, pageH], orient);
+          }
+
+          doc.addImage(rendered.dataUrl, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
+        } else {
+          const orient = selectedOrientation === 'landscape' ? 'l' : 'p';
+          if (!doc) {
+            doc = new jsPDF({ orientation: orient, unit: 'mm', format: pageSize, compress: true });
+          } else {
+            doc.addPage(pageSize, orient);
+          }
+
+          pageW = doc.internal.pageSize.getWidth();
+          pageH = doc.internal.pageSize.getHeight();
+          const topMargin = (showPageNumbers && pageNumberPosition === 'top_right') ? Math.max(margin, 14) : margin;
+          const bottomMargin = (showPageNumbers && pageNumberPosition === 'bottom_right') ? Math.max(margin, 14) : margin;
+          const availW = Math.max(10, pageW - margin * 2);
+          const availH = Math.max(10, pageH - topMargin - bottomMargin);
+
+          const imgRatio = rendered.width / rendered.height;
+          const boxRatio = availW / availH;
+
+          let drawW, drawH, offsetX, offsetY;
+
+          if (imageFit === 'cover') {
+            if (imgRatio > boxRatio) {
+              drawH = availH;
+              drawW = drawH * imgRatio;
+            } else {
+              drawW = availW;
+              drawH = drawW / imgRatio;
+            }
+            offsetX = margin + (availW - drawW) / 2;
+            offsetY = topMargin + (availH - drawH) / 2;
+          } else {
+            if (imgRatio > boxRatio) {
+              drawW = availW;
+              drawH = drawW / imgRatio;
+            } else {
+              drawH = availH;
+              drawW = drawH * imgRatio;
+            }
+            offsetX = margin + (availW - drawW) / 2;
+            offsetY = topMargin + (availH - drawH) / 2;
+          }
+
+          doc.addImage(rendered.dataUrl, 'JPEG', offsetX, offsetY, drawW, drawH, undefined, 'FAST');
+        }
+
+        if (showPageNumbers) {
+          drawCornerPageNumber(doc, i + 1, totalPages, pageW, pageH);
+        }
+      }
+
+      const filename = getSanitizedFilename();
+      const blob = doc.output('blob');
+      lastGeneratedBlob = blob;
+      lastGeneratedFilename = filename;
+      return { blob, filename };
+    }
+
+    function triggerDownload(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 5000);
+    }
+
+    async function ensurePdfReady() {
+      if (lastGeneratedBlob) {
+        return { blob: lastGeneratedBlob, filename: lastGeneratedFilename };
+      }
+      return await buildPdfBlob();
+    }
+
+    async function handleConvertAndDownload() {
+      if (images.length === 0 || isConverting) return;
+      isConverting = true;
+      updatePdfPageCount();
+
+      try {
+        const { blob, filename } = await buildPdfBlob();
+        triggerDownload(blob, filename);
+        showStatus(`已下載「${filename}」（共 ${images.length} 頁）。`, 'success');
+      } catch (err) {
+        console.error('建立 PDF 失敗:', err);
+        showStatus('建立 PDF 失敗，請嘗試降低圖片品質後重試。', 'error');
+      } finally {
+        isConverting = false;
+        updatePdfPageCount();
+      }
+    }
+
+    // =========================================================================
+    // 分享功能（WhatsApp / Google Drive / 系統原生分享）
+    // =========================================================================
+    function openShareModal() {
+      if (images.length === 0 || isConverting) return;
+      shareModal.classList.remove('hidden');
+    }
+
+    function closeShareModal() {
+      shareModal.classList.add('hidden');
+    }
+
+    closeShareModalBtn.addEventListener('click', closeShareModal);
+    shareModal.addEventListener('click', (e) => {
+      if (e.target === shareModal) closeShareModal();
+    });
+
+    async function tryNativeFileShare(blob, filename, shareText) {
+      if (!canNativeShare) return false;
+      const file = new File([blob], filename, { type: 'application/pdf' });
+      if (navigator.canShare && !navigator.canShare({ files: [file] })) {
+        return false;
+      }
+      await navigator.share({
+        title: filename,
+        text: shareText,
+        files: [file]
+      });
+      return true;
+    }
+
+    async function executeShare(target) {
+      if (images.length === 0 || isConverting) return;
+      isConverting = true;
+      updatePdfPageCount();
+      closeShareModal();
+
+      let targetPopup = null;
+      if (!isMobileDevice && (target === 'drive' || target === 'whatsapp')) {
+        targetPopup = window.open('about:blank', '_blank');
+      }
+
+      try {
+        const { blob, filename } = await ensurePdfReady();
+
+        if (target === 'download') {
+          triggerDownload(blob, filename);
+          showStatus(`已下載「${filename}」。`, 'success');
+          return;
+        }
+
+        if (target === 'native') {
+          const shared = await tryNativeFileShare(blob, filename, `分享 PDF：${filename}`);
+          if (shared) {
+            showStatus('已開啟系統分享選單。', 'success');
+          } else {
+            triggerDownload(blob, filename);
+            showStatus('此瀏覽器不支援直接分享檔案，已自動下載 PDF。', 'info');
+          }
+          return;
+        }
+
+        if (target === 'whatsapp') {
+          if (isMobileDevice) {
+            const shared = await tryNativeFileShare(blob, filename, `請於選單選擇 WhatsApp 傳送「${filename}」`);
+            if (shared) {
+              showStatus('已透過系統選單分享至 WhatsApp。', 'success');
+              return;
+            }
+          }
+          triggerDownload(blob, filename);
+          const waUrl = isMobileDevice
+            ? `https://wa.me/?text=${encodeURIComponent(`已建立 PDF 檔案：${filename}`)}`
+            : 'https://web.whatsapp.com/';
+          if (targetPopup && !targetPopup.closed) {
+            targetPopup.location.href = waUrl;
+          } else {
+            window.open(waUrl, '_blank', 'noopener,noreferrer');
+          }
+          showStatus(`已下載「${filename}」並開啟 WhatsApp，請將檔案拖曳或附加傳送。`, 'success');
+          return;
+        }
+
+        if (target === 'drive') {
+          if (isMobileDevice) {
+            const shared = await tryNativeFileShare(blob, filename, `請於選單選擇 Google Drive 儲存「${filename}」`);
+            if (shared) {
+              showStatus('已透過系統選單儲存至 Google Drive。', 'success');
+              return;
+            }
+          }
+          triggerDownload(blob, filename);
+          const driveUrl = 'https://drive.google.com/drive/my-drive';
+          if (targetPopup && !targetPopup.closed) {
+            targetPopup.location.href = driveUrl;
+          } else {
+            window.open(driveUrl, '_blank', 'noopener,noreferrer');
+          }
+          showStatus(`已下載「${filename}」並開啟 Google Drive，請將檔案拖曳至頁面內上傳。`, 'success');
+        }
+      } catch (err) {
+        if (targetPopup && !targetPopup.closed) {
+          targetPopup.close();
+        }
+        if (err && err.name !== 'AbortError') {
+          console.error('分享失敗:', err);
+          showStatus('分享失敗，請改用直接下載功能。', 'error');
+        }
+      } finally {
+        isConverting = false;
+        updatePdfPageCount();
+      }
+    }
+
+    convertBtn.addEventListener('click', handleConvertAndDownload);
+    headerConvertBtn.addEventListener('click', handleConvertAndDownload);
+    mobileConvertBtn.addEventListener('click', handleConvertAndDownload);
+
+    mobileShareBtn.addEventListener('click', openShareModal);
+    desktopShareBtn.addEventListener('click', openShareModal);
+
+    shareWhatsAppBtn.addEventListener('click', () => executeShare('whatsapp'));
+    shareDriveBtn.addEventListener('click', () => executeShare('drive'));
+    shareNativeBtn.addEventListener('click', () => executeShare('native'));
+    shareDownloadBtn.addEventListener('click', () => executeShare('download'));
+
+    // =========================================================================
+    // 狀態提示列
+    // =========================================================================
+    let statusTimer = null;
+    function showStatus(text, type = 'info') {
+      statusMessage.textContent = text;
+      statusMessage.classList.remove('hidden');
+      if (type === 'error') {
+        statusMessage.className = 'text-xs font-medium text-center py-2.5 px-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800';
+      } else if (type === 'success') {
+        statusMessage.className = 'text-xs font-medium text-center py-2.5 px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
+      } else {
+        statusMessage.className = 'text-xs font-medium text-center py-2.5 px-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800';
+      }
+
+      if (statusTimer) clearTimeout(statusTimer);
+      statusTimer = setTimeout(() => {
+        statusMessage.classList.add('hidden');
+      }, 5000);
+    }
+
+    syncPageSizeControls();
+    renderGrid();
+  </script>
+</body>
+</html>
