@@ -22,6 +22,7 @@
   </script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
 
@@ -147,7 +148,7 @@
   <main class="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 pt-3 sm:pt-6 pb-28 lg:pb-10">
     <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
 
-      <!-- 左欄：上傳與頁面排列區 -->
+      <!-- 左欄：上傳、精簡設定與頁面排列區 -->
       <div class="lg:col-span-8 space-y-4">
 
         <!-- 精簡上傳與掃描控制區 -->
@@ -156,19 +157,16 @@
           <input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden" />
 
           <h2 class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100">加入或拍攝掃描文件</h2>
-          <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 max-w-md mx-auto">
-            從相簿選擇、拖曳圖片到此處，或直接使用相機拍攝並自動切除頁面外邊框。
-          </p>
 
-          <div class="mt-3 grid grid-cols-2 gap-2 max-w-md mx-auto">
-            <button id="browseBtn" type="button" class="touch-btn inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-sm transition-colors">
+          <div class="mt-2.5 grid grid-cols-2 gap-2 max-w-md mx-auto">
+            <button id="browseBtn" type="button" class="touch-btn inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-sm transition-colors">
               <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <span>選擇圖片</span>
             </button>
 
-            <button id="cameraBtn" type="button" class="touch-btn inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs sm:text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 border border-indigo-200 dark:border-indigo-800 rounded-xl transition-colors">
+            <button id="cameraBtn" type="button" class="touch-btn inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 border border-indigo-200 dark:border-indigo-800 rounded-xl transition-colors">
               <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -177,11 +175,19 @@
             </button>
           </div>
 
-          <!-- 精簡控制列：Row 1（裁切 + 原圖/黑白 + 切換式 PDF 選項），Row 2（單行亮度/銳利度/重設） -->
+          <!-- 精簡控制列：Row 1（頁碼 + 裁切 + 黑白 + 方向 + 邊距 + 縮放 + 畫質），Row 2（亮度/銳利度/重設），Row 3（輸出檔案名稱） -->
           <div class="no-drop-click mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2 cursor-default">
-            <!-- Row 1: 裁切開關 + 原圖/黑白 + 方向/邊距/縮放/畫質（點擊輪流切換） -->
+            <!-- Row 1: 全部切換按鈕 -->
             <div class="flex flex-wrap items-center justify-center gap-1.5">
-              <!-- 自動矩形裁切 -->
+              <!-- 頁碼開關（固定右下角） -->
+              <button id="pageNumberToggle" type="button" role="switch" aria-checked="true" title="點擊開關右下角頁碼" class="touch-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all shrink-0">
+                <span id="pageNumTrack" class="relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200">
+                  <span id="pageNumKnob" class="inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-3.5"></span>
+                </span>
+                <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300" id="pageNumLabel">頁碼</span>
+              </button>
+
+              <!-- 自動矩形裁切開關 -->
               <button id="autoCropToggle" type="button" role="switch" aria-checked="true" title="點擊開關自動矩形裁切" class="touch-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all shrink-0">
                 <span id="autoCropTrack" class="relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200">
                   <span id="autoCropKnob" class="inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-3.5"></span>
@@ -189,15 +195,10 @@
                 <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300" id="autoCropLabel">裁切</span>
               </button>
 
-              <!-- 原圖 / 黑白 -->
-              <div class="inline-flex items-center rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 shrink-0">
-                <button type="button" data-global-filter="none" class="global-filter-btn touch-btn px-2.5 py-1 text-xs font-semibold bg-indigo-600 text-white transition-all">
-                  原圖
-                </button>
-                <button type="button" data-global-filter="bw" class="global-filter-btn touch-btn px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border-l border-slate-300 dark:border-slate-700 transition-all">
-                  黑白
-                </button>
-              </div>
+              <!-- 色彩模式切換：預設黑白（點擊切換 黑白 / 原圖） -->
+              <button id="cycleFilterBtn" type="button" title="點擊切換黑白或原圖" class="touch-btn px-2.5 py-1 rounded-xl border border-indigo-500 bg-indigo-600 text-white text-xs font-semibold shadow-xs transition-all shrink-0">
+                黑白
+              </button>
 
               <!-- 方向切換：直向 / 橫向 -->
               <button id="cycleOrientationBtn" type="button" title="點擊切換直向或橫向" class="touch-btn inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
@@ -210,7 +211,7 @@
                 窄邊距
               </button>
 
-              <!-- 縮放切換：不裁切 / 填滿 -->
+              <!-- 縮放切換：(不裁切) / (填滿) -->
               <button id="cycleFitBtn" type="button" title="點擊切換圖片縮放（不裁切 / 填滿）" class="touch-btn px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
                 (不裁切)
               </button>
@@ -221,7 +222,7 @@
               </button>
             </div>
 
-            <!-- Row 2: 單行亮度 + 銳利度 + 重設（手機與電腦皆保持同一行） -->
+            <!-- Row 2: 單行亮度 + 銳利度 + 重設 -->
             <div class="p-2 sm:px-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 flex flex-row items-center gap-2 sm:gap-3 text-left">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between text-[10px] sm:text-[11px] mb-1 gap-1">
@@ -242,6 +243,18 @@
               <button id="resetAdjustBtn" type="button" class="touch-btn min-h-[32px] px-2.5 py-1 rounded-lg bg-slate-200/70 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[11px] sm:text-xs font-semibold text-indigo-600 dark:text-indigo-400 shrink-0 transition-colors">
                 重設
               </button>
+            </div>
+
+            <!-- Row 3: 輸出檔案名稱（自動偵測首頁首行中/英文為 P4C_ / P4E_） -->
+            <div class="max-w-md mx-auto text-left pt-0.5">
+              <div class="flex items-center justify-between mb-1">
+                <label for="pdfFilename" class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">輸出檔案名稱</label>
+                <span id="ocrDetectBadge" class="hidden text-[10px] font-semibold text-emerald-600 dark:text-emerald-400"></span>
+              </div>
+              <div class="relative flex items-center">
+                <input id="pdfFilename" type="text" value="P4X_" placeholder="P4X_" class="touch-btn w-full pl-3 pr-11 py-1.5 text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+                <span class="absolute right-3 text-xs font-semibold text-slate-400 dark:text-slate-500">.pdf</span>
+              </div>
             </div>
           </div>
         </div>
@@ -272,20 +285,11 @@
         </div>
       </div>
 
-      <!-- 右欄：PDF 設定（精簡版） -->
+      <!-- 右欄：PDF 輸出與尺寸 -->
       <div id="settingsSection" class="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4 lg:sticky lg:top-24 transition-colors">
         <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
-          <h3 class="text-base font-bold text-slate-900 dark:text-white">PDF 設定</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">檔名、頁碼與頁面尺寸。</p>
-        </div>
-
-        <!-- 輸出檔案名稱 -->
-        <div>
-          <label for="pdfFilename" class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">輸出檔案名稱</label>
-          <div class="relative flex items-center">
-            <input id="pdfFilename" type="text" value="合併文件" placeholder="合併文件" class="touch-btn w-full pl-3.5 pr-12 py-2 text-base sm:text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
-            <span class="absolute right-3.5 text-xs font-semibold text-slate-400 dark:text-slate-500">.pdf</span>
-          </div>
+          <h3 class="text-base font-bold text-slate-900 dark:text-white">PDF 輸出</h3>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">選擇頁面尺寸並下載或分享。</p>
         </div>
 
         <!-- 頁面尺寸 -->
@@ -296,39 +300,6 @@
             <option value="letter">美國信紙（8.5 × 11 吋）</option>
             <option value="fit">配合每張圖片原始尺寸</option>
           </select>
-        </div>
-
-        <!-- 頁碼設定 -->
-        <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/60 space-y-2.5">
-          <div class="flex items-center justify-between gap-2">
-            <div>
-              <span class="block text-xs font-bold text-slate-800 dark:text-slate-100">顯示頁碼</span>
-              <span class="text-[11px] text-slate-500 dark:text-slate-400">在每頁右側角落加上 Page 1/3</span>
-            </div>
-            <button id="pageNumberToggle" type="button" role="switch" aria-checked="true" class="touch-btn inline-flex items-center gap-2 px-3 py-1 rounded-xl border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/60 transition-all shrink-0">
-              <span id="pageNumTrack" class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-indigo-600 transition-colors duration-200">
-                <span id="pageNumKnob" class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4"></span>
-              </span>
-              <span id="pageNumLabel" class="text-xs font-bold text-indigo-700 dark:text-indigo-300">開啟</span>
-            </button>
-          </div>
-
-          <div id="pageNumFormatBox" class="pt-2 border-t border-slate-200/70 dark:border-slate-800 grid grid-cols-2 gap-2">
-            <div>
-              <label for="pageNumPosition" class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">頁碼位置</label>
-              <select id="pageNumPosition" class="w-full px-2.5 py-1.5 text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <option value="bottom_right" selected>右下角</option>
-                <option value="top_right">右上角</option>
-              </select>
-            </div>
-            <div>
-              <label for="pageNumFormat" class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">頁碼格式</label>
-              <select id="pageNumFormat" class="w-full px-2.5 py-1.5 text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                <option value="page_slash" selected>Page 1/3</option>
-                <option value="slash">1/3</option>
-              </select>
-            </div>
-          </div>
         </div>
 
         <!-- 電腦版操作按鈕 -->
@@ -362,7 +333,7 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
           <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
         </svg>
-        <span>設定</span>
+        <span>尺寸</span>
       </button>
 
       <button id="mobileConvertBtn" type="button" disabled class="touch-btn flex-1 py-2.5 px-4 text-sm font-semibold text-white bg-indigo-600 active:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 dark:disabled:text-slate-500 disabled:cursor-not-allowed rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all">
@@ -405,9 +376,9 @@
     <div class="px-4 py-3 bg-slate-900 border-t border-slate-800 space-y-3 shrink-0" style="padding-bottom: max(0.875rem, env(safe-area-inset-bottom));">
       <!-- 單頁濾鏡微調 -->
       <div class="max-w-xl mx-auto flex items-center justify-center gap-2">
-        <button type="button" data-filter="none" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white transition-all">原圖</button>
+        <button type="button" data-filter="bw" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-indigo-500 bg-indigo-600 text-white transition-all">黑白</button>
+        <button type="button" data-filter="none" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">原圖</button>
         <button type="button" data-filter="enhance" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">增亮</button>
-        <button type="button" data-filter="bw" class="crop-filter-btn flex-1 py-2 px-3 rounded-xl text-xs font-semibold border border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-700 transition-all">黑白</button>
       </div>
 
       <!-- 操作按鈕 -->
@@ -493,20 +464,19 @@
     // 應用程式狀態
     let images = [];
     let autoCropEnabled = true;
-    let globalScanFilter = 'none'; // 'none' | 'bw'
-    let globalBrightness = 0;      // -60 ~ +60
-    let globalSharpness = 30;      // 0 ~ 100
+    let globalScanFilter = 'bw';          // 預設黑白 ('bw' | 'none')
+    let globalBrightness = 0;             // -60 ~ +60
+    let globalSharpness = 30;             // 0 ~ 100
     let selectedOrientation = 'portrait'; // 'portrait' | 'landscape'
     let selectedMargin = 10;              // 10 | 20 | 0
     let selectedImageFit = 'contain';     // 'contain' | 'cover'
     let selectedQuality = 0.85;           // 0.85 | 0.65 | 0.95
-    let showPageNumbers = true;
-    let pageNumberPosition = 'bottom_right';
-    let pageNumberFormat = 'page_slash';
+    let showPageNumbers = true;           // 固定顯示於右下角 Page 1/3
     let isConverting = false;
     let lastGeneratedBlob = null;
-    let lastGeneratedFilename = '合併文件.pdf';
+    let lastGeneratedFilename = 'P4X_.pdf';
     let sortableInstance = null;
+    let filenameManuallyEdited = false;
 
     const filterLabelMap = {
       none: '原圖',
@@ -543,11 +513,17 @@
     const addMoreBtn = document.getElementById('addMoreBtn');
     const clearAllBtn = document.getElementById('clearAllBtn');
 
+    const pageNumberToggle = document.getElementById('pageNumberToggle');
+    const pageNumTrack = document.getElementById('pageNumTrack');
+    const pageNumKnob = document.getElementById('pageNumKnob');
+    const pageNumLabel = document.getElementById('pageNumLabel');
+
     const autoCropToggle = document.getElementById('autoCropToggle');
     const autoCropTrack = document.getElementById('autoCropTrack');
     const autoCropKnob = document.getElementById('autoCropKnob');
     const autoCropLabel = document.getElementById('autoCropLabel');
 
+    const cycleFilterBtn = document.getElementById('cycleFilterBtn');
     const cycleOrientationBtn = document.getElementById('cycleOrientationBtn');
     const cycleOrientationIcon = document.getElementById('cycleOrientationIcon');
     const cycleOrientationText = document.getElementById('cycleOrientationText');
@@ -561,13 +537,8 @@
     const sharpnessVal = document.getElementById('sharpnessVal');
     const resetAdjustBtn = document.getElementById('resetAdjustBtn');
 
-    const pageNumberToggle = document.getElementById('pageNumberToggle');
-    const pageNumTrack = document.getElementById('pageNumTrack');
-    const pageNumKnob = document.getElementById('pageNumKnob');
-    const pageNumLabel = document.getElementById('pageNumLabel');
-    const pageNumFormatBox = document.getElementById('pageNumFormatBox');
-    const pageNumPositionSelect = document.getElementById('pageNumPosition');
-    const pageNumFormatSelect = document.getElementById('pageNumFormat');
+    const pdfFilenameInput = document.getElementById('pdfFilename');
+    const ocrDetectBadge = document.getElementById('ocrDetectBadge');
 
     const convertBtn = document.getElementById('convertBtn');
     const convertBtnText = document.getElementById('convertBtnText');
@@ -585,7 +556,6 @@
     const imageGrid = document.getElementById('imageGrid');
     const imageCount = document.getElementById('imageCount');
     const emptyStateHint = document.getElementById('emptyStateHint');
-    const pdfFilenameInput = document.getElementById('pdfFilename');
     const pageSizeSelect = document.getElementById('pageSize');
     const statusMessage = document.getElementById('statusMessage');
 
@@ -629,21 +599,112 @@
     syncThemeUI();
 
     // =========================================================================
-    // 主框精簡控制列：裁切、原圖/黑白、方向/邊距/縮放/畫質切換、亮度/銳利度
+    // 首頁第一行中/英文偵測（自動設定 P4C_ / P4E_）
     // =========================================================================
+    async function detectFirstLineLanguage(dataUrl) {
+      if (typeof Tesseract === 'undefined') return;
+      if (filenameManuallyEdited) return;
+
+      ocrDetectBadge.textContent = '偵測首行語言中...';
+      ocrDetectBadge.classList.remove('hidden');
+
+      try {
+        const img = await loadImageElement(dataUrl);
+        // 擷取第 1 頁上方 28%（首行標題區）並縮小以加速辨識
+        const cropH = Math.max(40, Math.round(img.naturalHeight * 0.28));
+        const scale = Math.min(1, 900 / img.naturalWidth);
+        const cw = Math.max(80, Math.round(img.naturalWidth * scale));
+        const ch = Math.max(40, Math.round(cropH * scale));
+
+        const canvas = document.createElement('canvas');
+        canvas.width = cw;
+        canvas.height = ch;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, img.naturalWidth, cropH, 0, 0, cw, ch);
+
+        const result = await Tesseract.recognize(canvas, 'chi_tra+eng');
+        canvas.width = 0;
+        canvas.height = 0;
+
+        if (filenameManuallyEdited) {
+          ocrDetectBadge.classList.add('hidden');
+          return;
+        }
+
+        const rawText = (result && result.data && result.data.text) ? result.data.text : '';
+        const lines = rawText.split(/\r?\n/).map((l) => l.trim()).filter((l) => l.length >= 2);
+        const firstLine = lines[0] || rawText.trim();
+
+        const zhCount = (firstLine.match(/[\u4e00-\u9fff]/g) || []).length;
+        const enCount = (firstLine.match(/[A-Za-z]/g) || []).length;
+
+        const currentVal = pdfFilenameInput.value.trim();
+        const isDefaultPrefix = currentVal === '' || /^P4[XCE]_$/i.test(currentVal);
+
+        if (isDefaultPrefix) {
+          if (zhCount > 0 && zhCount * 2 >= enCount) {
+            pdfFilenameInput.value = 'P4C_';
+            ocrDetectBadge.textContent = '偵測為中文 (P4C_)';
+            invalidatePdfCache();
+          } else if (enCount > 0) {
+            pdfFilenameInput.value = 'P4E_';
+            ocrDetectBadge.textContent = '偵測為英文 (P4E_)';
+            invalidatePdfCache();
+          } else {
+            ocrDetectBadge.classList.add('hidden');
+          }
+        } else {
+          ocrDetectBadge.classList.add('hidden');
+        }
+      } catch (err) {
+        console.warn('首行語言偵測失敗:', err);
+        ocrDetectBadge.classList.add('hidden');
+      }
+    }
+
+    pdfFilenameInput.addEventListener('input', () => {
+      filenameManuallyEdited = true;
+      ocrDetectBadge.classList.add('hidden');
+      invalidatePdfCache();
+    });
+
+    // =========================================================================
+    // 主框精簡控制列：頁碼、裁切、黑白/原圖、方向/邊距/縮放/畫質、亮度/銳利度
+    // =========================================================================
+    function syncPageNumberUI() {
+      pageNumberToggle.setAttribute('aria-checked', String(showPageNumbers));
+      if (showPageNumbers) {
+        pageNumberToggle.className = 'touch-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all shrink-0';
+        pageNumTrack.className = 'relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200';
+        pageNumKnob.className = 'inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-3.5';
+        pageNumLabel.className = 'text-xs font-bold text-emerald-700 dark:text-emerald-300';
+      } else {
+        pageNumberToggle.className = 'touch-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 transition-all shrink-0';
+        pageNumTrack.className = 'relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-slate-300 dark:bg-slate-600 transition-colors duration-200';
+        pageNumKnob.className = 'inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-0.5';
+        pageNumLabel.className = 'text-xs font-bold text-slate-500 dark:text-slate-400';
+      }
+    }
+
+    pageNumberToggle.addEventListener('click', (e) => {
+      e.stopPropagation();
+      showPageNumbers = !showPageNumbers;
+      syncPageNumberUI();
+      invalidatePdfCache();
+      renderGrid();
+    });
+
     function syncAutoCropUI() {
       autoCropToggle.setAttribute('aria-checked', String(autoCropEnabled));
       if (autoCropEnabled) {
         autoCropToggle.className = 'touch-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all shrink-0';
         autoCropTrack.className = 'relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200';
         autoCropKnob.className = 'inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-3.5';
-        autoCropLabel.textContent = '裁切';
         autoCropLabel.className = 'text-xs font-bold text-emerald-700 dark:text-emerald-300';
       } else {
         autoCropToggle.className = 'touch-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 transition-all shrink-0';
         autoCropTrack.className = 'relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-slate-300 dark:bg-slate-600 transition-colors duration-200';
         autoCropKnob.className = 'inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-0.5';
-        autoCropLabel.textContent = '裁切';
         autoCropLabel.className = 'text-xs font-bold text-slate-500 dark:text-slate-400';
       }
     }
@@ -654,30 +715,37 @@
       syncAutoCropUI();
     });
 
-    syncAutoCropUI();
+    function syncFilterButtonUI() {
+      const isBW = globalScanFilter === 'bw';
+      cycleFilterBtn.textContent = isBW ? '黑白' : '原圖';
+      cycleFilterBtn.className = isBW
+        ? 'touch-btn px-2.5 py-1 rounded-xl border border-indigo-500 bg-indigo-600 text-white text-xs font-semibold shadow-xs transition-all shrink-0'
+        : 'touch-btn px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0';
+    }
+
+    cycleFilterBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const nextFilter = globalScanFilter === 'bw' ? 'none' : 'bw';
+      reprocessAllImages(nextFilter);
+    });
 
     function syncCycleButtonsUI() {
       const isFit = pageSizeSelect.value === 'fit';
 
-      // 方向
       const isPortrait = selectedOrientation === 'portrait';
       cycleOrientationText.textContent = isPortrait ? '直向' : '橫向';
       cycleOrientationIcon.className = isPortrait
         ? 'w-2.5 h-3.5 border-[1.5px] border-current rounded-[2px] inline-block'
         : 'w-3.5 h-2.5 border-[1.5px] border-current rounded-[2px] inline-block';
 
-      // 邊距
       const marginObj = marginOptions.find((m) => m.value === selectedMargin) || marginOptions[0];
       cycleMarginBtn.textContent = marginObj.label;
 
-      // 縮放
       cycleFitBtn.textContent = selectedImageFit === 'contain' ? '(不裁切)' : '(填滿)';
 
-      // 畫質
       const qualObj = qualityOptions.find((q) => q.value === selectedQuality) || qualityOptions[0];
       cycleQualityBtn.textContent = qualObj.label;
 
-      // 若頁面尺寸為「配合圖片原始尺寸」，隱藏方向/邊距/縮放按鈕
       cycleOrientationBtn.classList.toggle('hidden', isFit);
       cycleMarginBtn.classList.toggle('hidden', isFit);
       cycleFitBtn.classList.toggle('hidden', isFit);
@@ -713,16 +781,6 @@
       invalidatePdfCache();
     });
 
-    function syncGlobalFilterUI() {
-      document.querySelectorAll('.global-filter-btn').forEach((btn, i) => {
-        const isActive = btn.dataset.globalFilter === globalScanFilter;
-        const borderCls = i > 0 ? ' border-l border-slate-300 dark:border-slate-700' : '';
-        btn.className = isActive
-          ? `global-filter-btn touch-btn px-2.5 py-1 text-xs font-semibold bg-indigo-600 text-white${borderCls} transition-all`
-          : `global-filter-btn touch-btn px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700${borderCls} transition-all`;
-      });
-    }
-
     function syncAdjustLabels() {
       brightnessVal.textContent = globalBrightness > 0 ? `+${globalBrightness}` : String(globalBrightness);
       sharpnessVal.textContent = `${globalSharpness}%`;
@@ -731,7 +789,7 @@
     async function reprocessAllImages(overrideFilter = null) {
       if (overrideFilter !== null) {
         globalScanFilter = overrideFilter;
-        syncGlobalFilterUI();
+        syncFilterButtonUI();
       }
 
       if (images.length === 0) return;
@@ -766,13 +824,6 @@
       showStatus(`已更新全部 ${images.length} 張圖片（${filterLabelMap[globalScanFilter]}，亮度 ${brightnessVal.textContent}，銳利度 ${globalSharpness}%）。`, 'success');
     }
 
-    document.querySelectorAll('.global-filter-btn').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        reprocessAllImages(btn.dataset.globalFilter);
-      });
-    });
-
     brightnessSlider.addEventListener('input', () => {
       globalBrightness = Number(brightnessSlider.value);
       syncAdjustLabels();
@@ -799,7 +850,9 @@
       reprocessAllImages(null);
     });
 
-    syncGlobalFilterUI();
+    syncPageNumberUI();
+    syncAutoCropUI();
+    syncFilterButtonUI();
     syncAdjustLabels();
     syncCycleButtonsUI();
 
@@ -818,7 +871,6 @@
     function applyPostProcess(imgData, w, h, filterMode, brightness, sharpness) {
       const data = imgData.data;
 
-      // 1. 銳利化（3x3 Cross Unsharp Mask）
       if (sharpness > 0 && w > 2 && h > 2) {
         const src = new Uint8ClampedArray(data);
         const k = (sharpness / 100) * 1.25;
@@ -841,7 +893,6 @@
         }
       }
 
-      // 2. 色彩模式與亮度調整
       if (filterMode === 'bw') {
         const pivot = 148 - brightness;
         const contrast = 2.8;
@@ -867,7 +918,7 @@
       }
     }
 
-    function processImageWithRectAndFilter(img, cropRect, filterMode = 'none', brightness = 0, sharpness = 0) {
+    function processImageWithRectAndFilter(img, cropRect, filterMode = 'bw', brightness = 0, sharpness = 0) {
       const hasCrop = !!cropRect;
       const needsPixelFilter = filterMode !== 'none' || brightness !== 0 || sharpness > 0;
 
@@ -908,7 +959,6 @@
       return { dataUrl, width: outW, height: outH };
     }
 
-    // 偵測文件標準矩形外框 { left, top, right, bottom }（合併所有文字與區塊，避免切到邊緣文字）
     function detectDocumentRect(img) {
       const maxDetectDim = 320;
       const scale = Math.min(1, maxDetectDim / Math.max(img.naturalWidth, img.naturalHeight));
@@ -1093,7 +1143,7 @@
     let activeCropId = null;
     let activeCropImg = null;
     let activeCropRect = null;
-    let activeCropFilter = 'none';
+    let activeCropFilter = 'bw';
     let dragMode = null;
     let dragStartPos = null;
     let dragStartRect = null;
@@ -1389,55 +1439,10 @@
       showStatus('已更新矩形裁切與掃描效果。', 'success');
     });
 
-    // =========================================================================
-    // 右側頁碼設定與頁面尺寸
-    // =========================================================================
-    function syncPageNumberUI() {
-      pageNumberToggle.setAttribute('aria-checked', String(showPageNumbers));
-      if (showPageNumbers) {
-        pageNumberToggle.className = 'touch-btn inline-flex items-center gap-2 px-3 py-1 rounded-xl border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/60 transition-all shrink-0';
-        pageNumTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-indigo-600 transition-colors duration-200';
-        pageNumKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4';
-        pageNumLabel.textContent = '開啟';
-        pageNumLabel.className = 'text-xs font-bold text-indigo-700 dark:text-indigo-300';
-        pageNumFormatBox.classList.remove('hidden');
-      } else {
-        pageNumberToggle.className = 'touch-btn inline-flex items-center gap-2 px-3 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 transition-all shrink-0';
-        pageNumTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-slate-300 dark:bg-slate-700 transition-colors duration-200';
-        pageNumKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-1';
-        pageNumLabel.textContent = '關閉';
-        pageNumLabel.className = 'text-xs font-bold text-slate-600 dark:text-slate-400';
-        pageNumFormatBox.classList.add('hidden');
-      }
-    }
-
-    pageNumberToggle.addEventListener('click', () => {
-      showPageNumbers = !showPageNumbers;
-      syncPageNumberUI();
-      invalidatePdfCache();
-      renderGrid();
-    });
-
-    pageNumPositionSelect.addEventListener('change', () => {
-      pageNumberPosition = pageNumPositionSelect.value;
-      invalidatePdfCache();
-      renderGrid();
-    });
-
-    pageNumFormatSelect.addEventListener('change', () => {
-      pageNumberFormat = pageNumFormatSelect.value;
-      invalidatePdfCache();
-      renderGrid();
-    });
-
     pageSizeSelect.addEventListener('change', () => {
       syncCycleButtonsUI();
       invalidatePdfCache();
     });
-
-    pdfFilenameInput.addEventListener('input', invalidatePdfCache);
-
-    syncPageNumberUI();
 
     // =========================================================================
     // 拖曳排序
@@ -1516,6 +1521,9 @@
 
     clearAllBtn.addEventListener('click', () => {
       images = [];
+      filenameManuallyEdited = false;
+      pdfFilenameInput.value = 'P4X_';
+      ocrDetectBadge.classList.add('hidden');
       invalidatePdfCache();
       renderGrid();
       showStatus('已清除所有圖片。', 'info');
@@ -1545,6 +1553,8 @@
         showStatus('請選擇有效的圖片檔案（JPG、PNG、WebP）。', 'error');
         return;
       }
+
+      const wasEmpty = images.length === 0;
 
       showStatus(
         autoCropEnabled
@@ -1599,6 +1609,11 @@
 
       invalidatePdfCache();
       renderGrid();
+
+      // 若是首次加入圖片，背景自動偵測第 1 頁首行中/英文以設定 P4C_ / P4E_
+      if (wasEmpty && images.length > 0) {
+        detectFirstLineLanguage(images[0].dataUrl);
+      }
 
       if (autoCropEnabled) {
         if (croppedCount > 0) {
@@ -1674,7 +1689,7 @@
               </span>
               ${item.isCropped ? '<span class="bg-emerald-600/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-md">已裁切</span>' : ''}
             </div>
-            ${showPageNumbers ? `<span class="absolute ${pageNumberPosition === 'top_right' ? 'top-2 right-12' : 'bottom-2 right-2'} bg-white/95 text-slate-900 border border-slate-300 text-[10px] font-semibold px-1.5 py-0.5 rounded shadow-xs pointer-events-none">${pageNumberFormat === 'slash' ? `${index + 1}/${images.length}` : `Page ${index + 1}/${images.length}`}</span>` : ''}
+            ${showPageNumbers ? `<span class="absolute bottom-2 right-2 bg-white/95 text-slate-900 border border-slate-300 text-[10px] font-semibold px-1.5 py-0.5 rounded shadow-xs pointer-events-none">Page ${index + 1}/${images.length}</span>` : ''}
             <button
               type="button"
               class="drag-handle absolute top-2 right-2 w-8 h-8 rounded-lg bg-white/90 dark:bg-slate-800/90 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center justify-center cursor-grab active:cursor-grabbing shadow-xs"
@@ -1764,7 +1779,7 @@
     });
 
     // =========================================================================
-    // PDF 產生與角落頁碼繪製
+    // PDF 產生與右下角頁碼繪製
     // =========================================================================
     function renderRotatedImageForPdf(item, quality) {
       return new Promise((resolve, reject) => {
@@ -1808,10 +1823,8 @@
       });
     }
 
-    function drawCornerPageNumber(doc, pageIndex, totalPages, pageW, pageH) {
-      const label = pageNumberFormat === 'slash'
-        ? `${pageIndex}/${totalPages}`
-        : `Page ${pageIndex}/${totalPages}`;
+    function drawBottomRightPageNumber(doc, pageIndex, totalPages, pageW, pageH) {
+      const label = `Page ${pageIndex}/${totalPages}`;
 
       const fontSize = Math.max(10, Math.round(Math.min(pageW, pageH) * 0.055));
       doc.setFont('helvetica', 'normal');
@@ -1827,9 +1840,7 @@
       const boxW = textW + padX * 2;
       const boxH = textH + padY * 2;
       const boxX = pageW - edgeX - boxW;
-      const boxY = pageNumberPosition === 'top_right'
-        ? edgeY
-        : pageH - edgeY - boxH;
+      const boxY = pageH - edgeY - boxH;
 
       doc.setFillColor(255, 255, 255);
       doc.roundedRect(boxX, boxY, boxW, boxH, 1.2, 1.2, 'F');
@@ -1840,8 +1851,8 @@
     }
 
     function getSanitizedFilename() {
-      const raw = (pdfFilenameInput.value || '合併文件').trim();
-      const cleaned = raw.replace(/[<>:"/\\|?*]+/g, '-').replace(/\.pdf$/i, '') || '合併文件';
+      const raw = (pdfFilenameInput.value || 'P4X_').trim();
+      const cleaned = raw.replace(/[<>:"/\\|?*]+/g, '-').replace(/\.pdf$/i, '') || 'P4X_';
       return `${cleaned}.pdf`;
     }
 
@@ -1883,8 +1894,8 @@
 
           pageW = doc.internal.pageSize.getWidth();
           pageH = doc.internal.pageSize.getHeight();
-          const topMargin = (showPageNumbers && pageNumberPosition === 'top_right') ? Math.max(margin, 14) : margin;
-          const bottomMargin = (showPageNumbers && pageNumberPosition === 'bottom_right') ? Math.max(margin, 14) : margin;
+          const topMargin = margin;
+          const bottomMargin = showPageNumbers ? Math.max(margin, 14) : margin;
           const availW = Math.max(10, pageW - margin * 2);
           const availH = Math.max(10, pageH - topMargin - bottomMargin);
 
@@ -1919,7 +1930,7 @@
         }
 
         if (showPageNumbers) {
-          drawCornerPageNumber(doc, i + 1, totalPages, pageW, pageH);
+          drawBottomRightPageNumber(doc, i + 1, totalPages, pageW, pageH);
         }
       }
 
