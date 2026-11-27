@@ -1,0 +1,2274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <meta name="theme-color" content="#4f46e5">
+    <meta name="mobile-web-app-capable" content="yes">
+    <title>SnapPDF — Android & Mobile Image to PDF Converter</title>
+    <!-- Load Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Load Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Load jsPDF from CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- Load SortableJS for smooth Android touch drag-and-drop -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen flex flex-col pb-24 lg:pb-8 selection:bg-indigo-100 selection:text-indigo-800">
+
+    <!-- Top Mobile-Friendly Navigation Bar -->
+    <header class="bg-white border-b border-slate-200 sticky top-0 z-30 shadow-xs">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between">
+            <div class="flex items-center gap-2.5 sm:gap-3">
+                <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm shrink-0">
+                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 13l2 2 4-4"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 leading-tight">SnapPDF</h1>
+                    <p class="text-[11px] sm:text-xs text-slate-500">Private Mobile & Desktop PDF Studio</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                    100% Offline
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Notification Toast Banner (Positioned above sticky mobile bar) -->
+    <div id="toast-container" class="fixed bottom-24 lg:bottom-6 right-4 left-4 sm:left-auto sm:right-6 z-50 flex flex-col gap-2 pointer-events-none sm:max-w-sm"></div>
+
+    <!-- Main Workspace Layout -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8">
+        <div class="flex flex-col lg:flex-row gap-6 lg:gap-8 items-start">
+
+            <!-- Left Column: Android Camera/Gallery Upload & Touch Reorderable Grid -->
+            <div class="w-full lg:w-2/3 flex flex-col gap-5">
+
+                <!-- Mobile-First Upload Card with Gallery & Camera Buttons -->
+                <div id="dropzone"
+                     class="bg-white border-2 border-dashed border-slate-300 hover:border-indigo-500 rounded-2xl p-5 sm:p-8 text-center transition-all duration-200 shadow-xs">
+                    <!-- Gallery / Files Input -->
+                    <input type="file" id="file-input-gallery" class="hidden" multiple accept="image/*">
+                    <!-- Android Direct Camera Capture Input -->
+                    <input type="file" id="file-input-camera" class="hidden" accept="image/*" capture="environment">
+
+                    <div class="mx-auto w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center mb-3">
+                        <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                        </svg>
+                    </div>
+                    <h2 class="text-base sm:text-lg font-semibold text-slate-900 mb-1">
+                        Add Photos or Scan Documents
+                    </h2>
+                    <p class="text-xs sm:text-sm text-slate-500 max-w-md mx-auto mb-5">
+                        Select images from your gallery, snap photos directly with your camera, or drag & drop files here.
+                    </p>
+
+                    <!-- Large Touch-Friendly Upload Buttons (min 48px height) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-w-md mx-auto">
+                        <button id="btn-choose-photos" type="button"
+                                class="min-h-[48px] px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-sm shadow-xs transition-colors flex items-center justify-center gap-2.5 cursor-pointer">
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                            Choose Photos
+                        </button>
+                        <button id="btn-take-photo" type="button"
+                                class="min-h-[48px] px-4 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 active:bg-slate-950 text-white font-semibold text-sm shadow-xs transition-colors flex items-center justify-center gap-2.5 cursor-pointer">
+                            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"></path>
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                            </svg>
+                            Take Photo
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Grid Toolbar (Visible when images are loaded) -->
+                <div id="grid-toolbar" class="hidden flex-wrap items-center justify-between gap-2.5 bg-white px-4 py-3 rounded-2xl border border-slate-200 shadow-xs">
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-semibold text-slate-800">Pages</span>
+                        <span id="badge-count" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-indigo-100 text-indigo-700">0</span>
+                        <span id="toolbar-combine-badge" class="hidden px-2.5 py-0.5 text-[11px] font-semibold rounded-full bg-teal-50 text-teal-800 border border-teal-200">1 PDF = Cleaned + Original</span>
+                        <span class="text-xs text-slate-400 hidden sm:inline">· Drag handle to reorder</span>
+                    </div>
+                    <div class="flex flex-wrap items-center gap-2">
+                        <!-- Master Remove Handwriting ON/OFF Pill Switch + Adjust Button -->
+                        <div class="inline-flex items-center rounded-xl border border-slate-200 bg-slate-50 p-0.5 shadow-2xs">
+                            <button id="btn-master-clean-toolbar" type="button" role="switch" aria-checked="false"
+                                    class="min-h-[40px] inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer text-slate-700 hover:bg-white">
+                                <svg class="w-4 h-4 shrink-0 text-teal-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                                </svg>
+                                <span>Remove Handwriting</span>
+                                <span id="toolbar-clean-pill" class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-200 text-slate-700 transition-colors">
+                                    <span id="toolbar-clean-dot" class="w-2 h-2 rounded-full bg-slate-500"></span>
+                                    <span id="toolbar-clean-status">OFF</span>
+                                </span>
+                            </button>
+                            <button id="btn-tune-toolbar" type="button" title="Adjust handwriting removal settings"
+                                    class="hidden min-h-[40px] items-center gap-1 px-2.5 py-1.5 ml-0.5 text-xs font-semibold rounded-lg bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 text-indigo-700 transition-colors cursor-pointer">
+                                <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                                </svg>
+                                <span>Adjust</span>
+                            </button>
+                        </div>
+                        <button id="btn-add-more" type="button" class="min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 transition-colors cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"></path>
+                            </svg>
+                            Add More
+                        </button>
+                        <button id="btn-clear-all" type="button" class="min-h-[40px] inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold rounded-xl bg-rose-50 hover:bg-rose-100 active:bg-rose-200 text-rose-600 transition-colors cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+                            </svg>
+                            Clear
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Batch Cleaning Progress Banner -->
+                <div id="batch-clean-progress" class="hidden bg-teal-50 border border-teal-200 rounded-2xl p-3.5 shadow-xs">
+                    <div class="flex items-center justify-between text-xs font-semibold text-teal-800 mb-1.5">
+                        <span id="batch-clean-label">Removing handwriting from page 1 of 1...</span>
+                        <span id="batch-clean-percent">0%</span>
+                    </div>
+                    <div class="w-full h-2 bg-teal-200/70 rounded-full overflow-hidden">
+                        <div id="batch-clean-bar" class="h-full bg-teal-600 transition-all duration-150 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Empty State Helper -->
+                <div id="empty-state" class="bg-white/70 border border-slate-200/80 rounded-2xl p-8 text-center">
+                    <p class="text-sm text-slate-500">No photos added yet. Tap <strong class="text-slate-700">Choose Photos</strong> or <strong class="text-slate-700">Take Photo</strong> above to build your PDF.</p>
+                </div>
+
+                <!-- SortableJS Touch Reorderable Image Grid -->
+                <div id="image-grid" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-5"></div>
+            </div>
+
+            <!-- Right Column: PDF Settings Panel (Scroll target for Quick Settings button) -->
+            <aside id="settings-panel" class="w-full lg:w-1/3 lg:sticky lg:top-24 bg-white rounded-2xl border border-slate-200 shadow-sm p-5 sm:p-6 flex flex-col gap-5">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <h2 class="text-lg font-bold text-slate-900">PDF Settings</h2>
+                        <p class="text-xs text-slate-500 mt-0.5">Customize layout, size & mobile compression.</p>
+                    </div>
+                </div>
+
+                <div class="space-y-5">
+                    <!-- Mirrored Master Remove Handwriting Toggle Card in Settings -->
+                    <div class="p-3.5 rounded-2xl border border-slate-200 bg-slate-50/80 space-y-2.5">
+                        <div class="flex items-center justify-between gap-3">
+                            <div class="min-w-0">
+                                <div class="flex items-center gap-1.5">
+                                    <svg class="w-4 h-4 text-teal-600 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                                    </svg>
+                                    <span class="text-xs font-bold uppercase tracking-wider text-slate-800">Remove Handwriting</span>
+                                </div>
+                                <p class="text-[11px] text-slate-500 mt-0.5">Clean pen & pencil notes before combining.</p>
+                            </div>
+                            <button id="btn-master-clean-settings" type="button" role="switch" aria-checked="false"
+                                    class="min-h-[44px] px-3.5 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold inline-flex items-center gap-2 shrink-0 transition-all cursor-pointer shadow-2xs">
+                                <span id="settings-clean-track" class="w-9 h-5 rounded-full bg-slate-300 relative transition-colors inline-flex items-center p-0.5">
+                                    <span id="settings-clean-knob" class="w-4 h-4 rounded-full bg-white shadow-xs transform translate-x-0 transition-transform"></span>
+                                </span>
+                                <span id="settings-clean-status">OFF</span>
+                            </button>
+                        </div>
+                        <button id="btn-tune-settings" type="button"
+                                class="hidden w-full min-h-[40px] px-3 py-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 text-indigo-700 border border-indigo-200/80 text-xs font-semibold items-center justify-center gap-1.5 transition-colors cursor-pointer">
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                            </svg>
+                            <span>Adjust Strength & Compare Before / After</span>
+                        </button>
+
+                        <!-- PDF Output Pages Selector (Visible when Remove Handwriting is ON or any page is cleaned) -->
+                        <div id="clean-output-mode-wrapper" class="hidden pt-2 border-t border-slate-200/80 space-y-1.5">
+                            <div class="flex items-center justify-between gap-2">
+                                <label for="opt-clean-output-mode" class="text-[11px] font-bold uppercase tracking-wider text-teal-800">
+                                    PDF Output Pages
+                                </label>
+                                <span id="settings-combine-pill" class="px-2 py-0.5 rounded-md bg-teal-100 text-teal-800 text-[10px] font-bold">
+                                    1 PDF = Cleaned + Original
+                                </span>
+                            </div>
+                            <select id="opt-clean-output-mode"
+                                    class="w-full min-h-[42px] rounded-xl border border-teal-300 bg-white focus:bg-white px-3 py-2 text-xs font-semibold text-slate-800 focus:border-teal-600 focus:ring-2 focus:ring-teal-500/20 focus:outline-none transition-all">
+                                <option value="cleaned_then_original" selected>Cleaned + Original (All Cleaned, Then Originals)</option>
+                                <option value="alternating">Cleaned + Original (Alternating per Page)</option>
+                                <option value="cleaned_only">Cleaned Pages Only</option>
+                            </select>
+                            <p id="settings-combine-hint" class="text-[11px] text-slate-600 leading-snug">
+                                Combines all handwriting-removed pages first, followed by all original pages into 1 PDF file.
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Output Filename -->
+                    <div>
+                        <label for="opt-filename" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">Output Filename</label>
+                        <div class="relative flex items-center">
+                            <input type="text" id="opt-filename" value="SnapPDF-Document" placeholder="document-name"
+                                   class="w-full min-h-[44px] rounded-xl border border-slate-300 bg-slate-50 focus:bg-white px-3.5 py-2.5 pr-12 text-sm text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all">
+                            <span class="absolute right-3.5 text-xs font-semibold text-slate-400 select-none">.pdf</span>
+                        </div>
+                    </div>
+
+                    <!-- Android Memory & Image Quality / Compression Selector -->
+                    <div>
+                        <label for="opt-quality" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">
+                            Image Quality & Compression
+                        </label>
+                        <select id="opt-quality"
+                                class="w-full min-h-[44px] rounded-xl border border-slate-300 bg-slate-50 focus:bg-white px-3.5 py-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all">
+                            <option value="high" selected>High — Recommended (Max 2000px, Fast & Safe)</option>
+                            <option value="medium">Medium — Smaller File (Max 1400px, Easy Share)</option>
+                            <option value="original">Original — Full Camera Resolution</option>
+                        </select>
+                        <p class="text-[11px] text-slate-400 mt-1.5">Optimizes large 12MP–50MP Android camera photos to prevent browser memory crashes.</p>
+                    </div>
+
+                    <!-- Page Size -->
+                    <div>
+                        <label for="opt-pagesize" class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">Page Size</label>
+                        <select id="opt-pagesize"
+                                class="w-full min-h-[44px] rounded-xl border border-slate-300 bg-slate-50 focus:bg-white px-3.5 py-2.5 text-sm text-slate-900 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500/20 focus:outline-none transition-all">
+                            <option value="a4" selected>A4 (210 × 297 mm)</option>
+                            <option value="letter">US Letter (8.5 × 11 in)</option>
+                            <option value="fit">Fit to Image (Original Aspect)</option>
+                        </select>
+                    </div>
+
+                    <!-- Page Orientation -->
+                    <div id="orientation-group">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">Orientation</label>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <button type="button" data-orientation="portrait"
+                                    class="orientation-btn active min-h-[44px] flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-sm font-medium transition-all border-indigo-600 bg-indigo-50 text-indigo-700 cursor-pointer">
+                                <span class="w-3.5 h-4.5 border-2 border-current rounded-xs inline-block"></span>
+                                Portrait
+                            </button>
+                            <button type="button" data-orientation="landscape"
+                                    class="orientation-btn min-h-[44px] flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl border text-sm font-medium transition-all border-slate-200 bg-white text-slate-600 hover:bg-slate-50 cursor-pointer">
+                                <span class="w-4.5 h-3.5 border-2 border-current rounded-xs inline-block"></span>
+                                Landscape
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Page Margin -->
+                    <div id="margin-group">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">Page Margin</label>
+                        <div class="grid grid-cols-3 gap-2">
+                            <button type="button" data-margin="none"
+                                    class="margin-btn min-h-[44px] py-2 px-2.5 rounded-xl border text-xs font-semibold transition-all border-slate-200 bg-white text-slate-600 hover:bg-slate-50 cursor-pointer">
+                                None
+                            </button>
+                            <button type="button" data-margin="small"
+                                    class="margin-btn active min-h-[44px] py-2 px-2.5 rounded-xl border text-xs font-semibold transition-all border-indigo-600 bg-indigo-50 text-indigo-700 cursor-pointer">
+                                Small
+                            </button>
+                            <button type="button" data-margin="normal"
+                                    class="margin-btn min-h-[44px] py-2 px-2.5 rounded-xl border text-xs font-semibold transition-all border-slate-200 bg-white text-slate-600 hover:bg-slate-50 cursor-pointer">
+                                Normal
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Image Fit Mode -->
+                    <div id="fit-group">
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600 mb-2">Image Fit</label>
+                        <div class="grid grid-cols-2 gap-2.5">
+                            <button type="button" data-fit="contain"
+                                    class="fit-btn active min-h-[44px] py-2.5 px-3 rounded-xl border text-xs font-semibold transition-all border-indigo-600 bg-indigo-50 text-indigo-700 cursor-pointer">
+                                Contain (Full Image)
+                            </button>
+                            <button type="button" data-fit="cover"
+                                    class="fit-btn min-h-[44px] py-2.5 px-3 rounded-xl border text-xs font-semibold transition-all border-slate-200 bg-white text-slate-600 hover:bg-slate-50 cursor-pointer">
+                                Cover (Fill Page)
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Live Summary Box -->
+                <div class="bg-slate-50 rounded-xl p-4 border border-slate-200/80 space-y-1.5">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-slate-500">Total Pages</span>
+                        <span id="summary-pages" class="font-bold text-slate-900">0 pages</span>
+                    </div>
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="text-slate-500">Layout</span>
+                        <span id="summary-layout" class="font-medium text-slate-700">A4 · Portrait · Small Margin</span>
+                    </div>
+                </div>
+
+                <!-- Processing Progress Bar (Hidden until generating) -->
+                <div id="progress-wrapper" class="hidden space-y-1.5">
+                    <div class="flex items-center justify-between text-xs font-semibold text-indigo-700">
+                        <span id="progress-label">Processing image 1 of 1...</span>
+                        <span id="progress-percent">0%</span>
+                    </div>
+                    <div class="w-full h-2.5 bg-indigo-100 rounded-full overflow-hidden">
+                        <div id="progress-bar" class="h-full bg-indigo-600 transition-all duration-200 rounded-full" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <!-- Desktop & Sidebar Action Buttons (Download + Web Share API) -->
+                <div class="flex flex-col gap-2.5">
+                    <button id="btn-generate" type="button" disabled
+                            class="w-full min-h-[48px] py-3.5 px-5 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold text-sm shadow-sm hover:shadow transition-all flex items-center justify-center gap-2.5 cursor-pointer">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <span id="btn-generate-text">Download PDF</span>
+                    </button>
+
+                    <!-- Android Web Share API Button (Shown automatically if device supports sharing files) -->
+                    <button id="btn-share" type="button" disabled
+                            class="hidden w-full min-h-[48px] py-3 px-5 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-semibold text-sm shadow-xs transition-all items-center justify-center gap-2.5 cursor-pointer">
+                        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                        </svg>
+                        <span id="btn-share-text">Share PDF (WhatsApp, Drive, Gmail)</span>
+                    </button>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <!-- Sticky Bottom Action Bar for Mobile / Android Thumb Reach -->
+    <div class="lg:hidden fixed bottom-0 inset-x-0 z-40 bg-white/95 backdrop-blur-md border-t border-slate-200 px-3 py-2.5 shadow-[0_-4px_16px_rgba(15,23,42,0.08)]">
+        <div class="max-w-xl mx-auto flex items-center gap-2">
+            <!-- Quick Jump to Settings Button -->
+            <button id="btn-mobile-settings" type="button" aria-label="Jump to PDF Settings"
+                    class="min-h-[48px] min-w-[48px] px-3 rounded-xl border border-slate-300 bg-slate-50 active:bg-slate-200 text-slate-700 flex flex-col items-center justify-center shrink-0 cursor-pointer">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                </svg>
+                <span class="text-[10px] font-semibold leading-none mt-0.5">Options</span>
+            </button>
+
+            <!-- Primary Mobile Create/Download PDF Button -->
+            <button id="btn-mobile-create" type="button" disabled
+                    class="flex-1 min-h-[48px] px-4 rounded-xl bg-indigo-600 active:bg-indigo-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold text-sm shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer">
+                <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                </svg>
+                <span id="btn-mobile-create-text">Create PDF</span>
+                <span id="mobile-badge-count" class="px-2 py-0.5 rounded-full bg-white/20 text-white text-xs font-bold">0</span>
+            </button>
+
+            <!-- Mobile Quick Share PDF Button (Visible on Android Chrome) -->
+            <button id="btn-mobile-share" type="button" disabled aria-label="Share PDF"
+                    class="hidden min-h-[48px] min-w-[48px] px-3.5 rounded-xl bg-emerald-600 active:bg-emerald-800 disabled:bg-slate-200 disabled:text-slate-400 disabled:cursor-not-allowed text-white font-semibold text-xs flex-col items-center justify-center shrink-0 cursor-pointer">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z"></path>
+                </svg>
+                <span class="text-[10px] font-semibold leading-none mt-0.5">Share</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Interactive Before / After Handwriting Removal Tuning Modal -->
+    <div id="tune-modal" class="hidden fixed inset-0 z-[100] bg-slate-900/75 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-y-auto">
+        <div class="bg-white w-full max-w-2xl rounded-t-3xl sm:rounded-3xl shadow-2xl border border-slate-200 flex flex-col max-h-[94vh] overflow-hidden">
+            <!-- Modal Header -->
+            <div class="px-5 py-4 border-b border-slate-200 flex items-center justify-between gap-3 bg-white shrink-0">
+                <div class="min-w-0">
+                    <h3 class="text-base sm:text-lg font-bold text-slate-900 truncate">Remove Handwriting — Tune & Compare</h3>
+                    <p id="modal-page-subtitle" class="text-xs text-slate-500 truncate">Page 1 · Drag divider or hold image to inspect</p>
+                </div>
+                <button id="btn-close-modal" type="button" aria-label="Close modal"
+                        class="min-w-[44px] min-h-[44px] rounded-xl bg-slate-100 hover:bg-slate-200 active:bg-slate-300 text-slate-700 flex items-center justify-center shrink-0 cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Modal Body (Scrollable) -->
+            <div class="p-4 sm:p-5 overflow-y-auto space-y-5 flex-1">
+                <!-- Interactive Before / After Comparison Viewport -->
+                <div class="space-y-2">
+                    <div class="flex items-center justify-between text-xs font-semibold">
+                        <span class="inline-flex items-center gap-1.5 text-teal-700 bg-teal-50 px-2.5 py-1 rounded-lg border border-teal-200">
+                            <span class="w-2 h-2 rounded-full bg-teal-500"></span>
+                            Cleaned (After)
+                        </span>
+                        <span id="modal-processing-badge" class="hidden text-indigo-600 animate-pulse">Updating preview...</span>
+                        <span class="inline-flex items-center gap-1.5 text-slate-700 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
+                            Original (Before)
+                            <span class="w-2 h-2 rounded-full bg-slate-500"></span>
+                        </span>
+                    </div>
+
+                    <div id="compare-container"
+                         class="relative w-full h-64 sm:h-80 bg-slate-900 rounded-2xl overflow-hidden select-none touch-none border border-slate-300 shadow-inner flex items-center justify-center">
+                        <!-- Base Layer: Original Image (Right side / Full base) -->
+                        <img id="compare-img-before" src="" alt="Original image"
+                             class="max-h-full max-w-full object-contain pointer-events-none select-none">
+
+                        <!-- Clipped Overlay Layer: Cleaned Image (Left side up to slider %) -->
+                        <div id="compare-after-clip" class="absolute inset-0 flex items-center justify-center pointer-events-none"
+                             style="clip-path: inset(0 50% 0 0);">
+                            <img id="compare-img-after" src="" alt="Cleaned image"
+                                 class="max-h-full max-w-full object-contain pointer-events-none select-none">
+                        </div>
+
+                        <!-- Vertical Split Line & Draggable Handle -->
+                        <div id="compare-divider"
+                             class="absolute top-0 bottom-0 w-0.5 bg-white shadow-[0_0_8px_rgba(0,0,0,0.65)] pointer-events-none"
+                             style="left: 50%;">
+                            <div class="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-white text-indigo-600 shadow-lg border-2 border-indigo-600 flex items-center justify-center">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 9l-3 3 3 3m8-6l3 3-3 3"></path>
+                                </svg>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Accessible Range Slider Backup & Hold-to-Compare Hint -->
+                    <div class="flex items-center gap-3 pt-1">
+                        <span class="text-[11px] font-semibold text-slate-500 shrink-0">Split</span>
+                        <input id="compare-range" type="range" min="0" max="100" value="50"
+                               class="w-full h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                        <button id="btn-hold-original" type="button"
+                                class="min-h-[36px] px-3 py-1.5 rounded-xl bg-slate-100 active:bg-indigo-600 active:text-white text-slate-700 text-xs font-semibold shrink-0 transition-colors cursor-pointer select-none">
+                            Hold: Original
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Removal Mode Selector -->
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold uppercase tracking-wider text-slate-600">Handwriting Removal Mode</label>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                        <button type="button" data-clean-mode="hybrid"
+                                class="clean-mode-btn min-h-[54px] p-3 rounded-xl border text-left transition-all border-indigo-600 bg-indigo-50 text-indigo-900 cursor-pointer">
+                            <div class="text-xs font-bold">Smart Hybrid</div>
+                            <div class="text-[11px] opacity-80 leading-snug mt-0.5">Pen + Pencil + Whiten paper</div>
+                        </button>
+                        <button type="button" data-clean-mode="color"
+                                class="clean-mode-btn min-h-[54px] p-3 rounded-xl border text-left transition-all border-slate-200 bg-white text-slate-700 hover:bg-slate-50 cursor-pointer">
+                            <div class="text-xs font-bold">Colored Pen Ink Only</div>
+                            <div class="text-[11px] opacity-75 leading-snug mt-0.5">Blue, red, green & highlighters</div>
+                        </button>
+                        <button type="button" data-clean-mode="pencil"
+                                class="clean-mode-btn min-h-[54px] p-3 rounded-xl border text-left transition-all border-slate-200 bg-white text-slate-700 hover:bg-slate-50 cursor-pointer">
+                            <div class="text-xs font-bold">Pencil & Faint Notes</div>
+                            <div class="text-[11px] opacity-75 leading-snug mt-0.5">Erases light graphite & smudges</div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Strength / Sensitivity Slider -->
+                <div class="bg-slate-50 p-3.5 rounded-2xl border border-slate-200/80 space-y-2">
+                    <div class="flex items-center justify-between">
+                        <label for="clean-strength-slider" class="text-xs font-semibold uppercase tracking-wider text-slate-600">
+                            Removal Strength / Sensitivity
+                        </label>
+                        <span id="clean-strength-value" class="px-2.5 py-0.5 rounded-lg bg-indigo-100 text-indigo-700 text-xs font-bold">55%</span>
+                    </div>
+                    <input id="clean-strength-slider" type="range" min="1" max="100" value="55"
+                           class="w-full h-2.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600">
+                    <div class="flex justify-between text-[11px] text-slate-400">
+                        <span>1% (Gentle · Keep faint print)</span>
+                        <span>100% (Aggressive · Deep clean)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal Footer Actions (Switches dynamically between Real Page Mode and Sample Worksheet Mode) -->
+            <div id="modal-footer-pages" class="p-4 sm:px-5 border-t border-slate-200 bg-slate-50 grid grid-cols-1 sm:grid-cols-2 gap-2.5 shrink-0">
+                <button id="btn-apply-page" type="button"
+                        class="min-h-[48px] px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-sm shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Apply to This Page
+                </button>
+                <button id="btn-apply-all-pages" type="button"
+                        class="min-h-[48px] px-4 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-semibold text-sm shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Apply to All Pages
+                </button>
+            </div>
+
+            <div id="modal-footer-sample" class="hidden p-4 sm:px-5 border-t border-slate-200 bg-slate-50 grid grid-cols-1 sm:grid-cols-2 gap-2.5 shrink-0">
+                <button id="btn-save-defaults" type="button"
+                        class="min-h-[48px] px-4 py-3 rounded-xl bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white font-semibold text-sm shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                    Save Default Settings
+                </button>
+                <button id="btn-modal-upload-photos" type="button"
+                        class="min-h-[48px] px-4 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 text-white font-semibold text-sm shadow-xs transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    Upload Photos
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Application Logic -->
+    <script>
+        /**
+         * SnapPDF - Mobile-First & Android-Optimized Images-to-PDF Converter
+         * Features:
+         * - Client-side Handwriting Removal (Smart Hybrid, Colored Pen Ink Only, Pencil & Faint Notes)
+         * - Interactive Before/After Tuning Modal with built-in Sample Worksheet Preview when no photos are uploaded yet
+         * - Per-page live preview toggle & master 'Remove Handwriting' ON/OFF switch
+         * - SortableJS touch drag-and-drop reordering with dedicated drag handles
+         * - Native Android Gallery & Camera capture support
+         * - Memory-safe canvas downscaling & rotation for high-res Android camera photos
+         * - Blob URL download + Android Web Share API (navigator.share) integration
+         */
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Application State ---
+            const state = {
+                images: [], // Array of { id, name, objectUrl, cleanedObjectUrl, isCleaned, cleanMode, cleanStrength, cleanCacheKey, rotation, width, height }
+                settings: {
+                    quality: 'high',         // 'high' | 'medium' | 'original'
+                    pageSize: 'a4',          // 'a4' | 'letter' | 'fit'
+                    orientation: 'portrait', // 'portrait' | 'landscape'
+                    margin: 'small',         // 'none' | 'small' | 'normal'
+                    imageFit: 'contain',     // 'contain' | 'cover'
+                    filename: 'SnapPDF-Document',
+                    cleanOutputMode: 'cleaned_then_original' // 'cleaned_then_original' | 'alternating' | 'cleaned_only'
+                },
+                removeHandwritingEnabled: false, // Master ON/OFF toggle state
+                defaultClean: {
+                    mode: 'hybrid',          // 'hybrid' | 'color' | 'pencil'
+                    strength: 55
+                },
+                sampleWorksheetUrl: null,
+                modal: {
+                    isOpen: false,
+                    isSampleMode: false,
+                    pageIndex: 0,
+                    mode: 'hybrid',
+                    strength: 55,
+                    previewObjectUrl: null,
+                    splitPercent: 50
+                },
+                isGenerating: false,
+                isBatchCleaning: false,
+                canWebShareFiles: false
+            };
+
+            // --- DOM References ---
+            const dropzone = document.getElementById('dropzone');
+            const fileInputGallery = document.getElementById('file-input-gallery');
+            const fileInputCamera = document.getElementById('file-input-camera');
+            const btnChoosePhotos = document.getElementById('btn-choose-photos');
+            const btnTakePhoto = document.getElementById('btn-take-photo');
+
+            const gridToolbar = document.getElementById('grid-toolbar');
+            const badgeCount = document.getElementById('badge-count');
+            const toolbarCombineBadge = document.getElementById('toolbar-combine-badge');
+            const mobileBadgeCount = document.getElementById('mobile-badge-count');
+            const emptyState = document.getElementById('empty-state');
+            const imageGrid = document.getElementById('image-grid');
+            const btnMasterCleanToolbar = document.getElementById('btn-master-clean-toolbar');
+            const toolbarCleanPill = document.getElementById('toolbar-clean-pill');
+            const toolbarCleanDot = document.getElementById('toolbar-clean-dot');
+            const toolbarCleanStatus = document.getElementById('toolbar-clean-status');
+            const btnTuneToolbar = document.getElementById('btn-tune-toolbar');
+            const btnMasterCleanSettings = document.getElementById('btn-master-clean-settings');
+            const settingsCleanTrack = document.getElementById('settings-clean-track');
+            const settingsCleanKnob = document.getElementById('settings-clean-knob');
+            const settingsCleanStatus = document.getElementById('settings-clean-status');
+            const btnTuneSettings = document.getElementById('btn-tune-settings');
+            const cleanOutputModeWrapper = document.getElementById('clean-output-mode-wrapper');
+            const optCleanOutputMode = document.getElementById('opt-clean-output-mode');
+            const settingsCombinePill = document.getElementById('settings-combine-pill');
+            const settingsCombineHint = document.getElementById('settings-combine-hint');
+            const btnAddMore = document.getElementById('btn-add-more');
+            const btnClearAll = document.getElementById('btn-clear-all');
+
+            const batchCleanProgress = document.getElementById('batch-clean-progress');
+            const batchCleanLabel = document.getElementById('batch-clean-label');
+            const batchCleanPercent = document.getElementById('batch-clean-percent');
+            const batchCleanBar = document.getElementById('batch-clean-bar');
+
+            const settingsPanel = document.getElementById('settings-panel');
+            const optFilename = document.getElementById('opt-filename');
+            const optQuality = document.getElementById('opt-quality');
+            const optPageSize = document.getElementById('opt-pagesize');
+            const orientationBtns = document.querySelectorAll('.orientation-btn');
+            const marginBtns = document.querySelectorAll('.margin-btn');
+            const fitBtns = document.querySelectorAll('.fit-btn');
+            const orientationGroup = document.getElementById('orientation-group');
+            const marginGroup = document.getElementById('margin-group');
+            const fitGroup = document.getElementById('fit-group');
+
+            const summaryPages = document.getElementById('summary-pages');
+            const summaryLayout = document.getElementById('summary-layout');
+            const progressWrapper = document.getElementById('progress-wrapper');
+            const progressLabel = document.getElementById('progress-label');
+            const progressPercent = document.getElementById('progress-percent');
+            const progressBar = document.getElementById('progress-bar');
+
+            const btnGenerate = document.getElementById('btn-generate');
+            const btnGenerateText = document.getElementById('btn-generate-text');
+            const btnShare = document.getElementById('btn-share');
+            const btnMobileCreate = document.getElementById('btn-mobile-create');
+            const btnMobileCreateText = document.getElementById('btn-mobile-create-text');
+            const btnMobileShare = document.getElementById('btn-mobile-share');
+            const btnMobileSettings = document.getElementById('btn-mobile-settings');
+            const toastContainer = document.getElementById('toast-container');
+
+            // Tuning Modal DOM References
+            const tuneModal = document.getElementById('tune-modal');
+            const btnCloseModal = document.getElementById('btn-close-modal');
+            const modalPageSubtitle = document.getElementById('modal-page-subtitle');
+            const modalProcessingBadge = document.getElementById('modal-processing-badge');
+            const compareContainer = document.getElementById('compare-container');
+            const compareImgBefore = document.getElementById('compare-img-before');
+            const compareImgAfter = document.getElementById('compare-img-after');
+            const compareAfterClip = document.getElementById('compare-after-clip');
+            const compareDivider = document.getElementById('compare-divider');
+            const compareRange = document.getElementById('compare-range');
+            const btnHoldOriginal = document.getElementById('btn-hold-original');
+            const cleanModeBtns = document.querySelectorAll('.clean-mode-btn');
+            const cleanStrengthSlider = document.getElementById('clean-strength-slider');
+            const cleanStrengthValue = document.getElementById('clean-strength-value');
+            const modalFooterPages = document.getElementById('modal-footer-pages');
+            const modalFooterSample = document.getElementById('modal-footer-sample');
+            const btnApplyPage = document.getElementById('btn-apply-page');
+            const btnApplyAllPages = document.getElementById('btn-apply-all-pages');
+            const btnSaveDefaults = document.getElementById('btn-save-defaults');
+            const btnModalUploadPhotos = document.getElementById('btn-modal-upload-photos');
+
+            // --- Detect Android / Mobile Web Share API File Support ---
+            try {
+                if (navigator.canShare && typeof File !== 'undefined') {
+                    const testFile = new File(['test'], 'test.pdf', { type: 'application/pdf' });
+                    if (navigator.canShare({ files: [testFile] })) {
+                        state.canWebShareFiles = true;
+                        btnShare.classList.remove('hidden');
+                        btnShare.classList.add('flex');
+                        btnMobileShare.classList.remove('hidden');
+                        btnMobileShare.classList.add('flex');
+                    }
+                }
+            } catch (e) {
+                state.canWebShareFiles = false;
+            }
+
+            // --- Initialize SortableJS for Smooth Android Touch Reordering ---
+            if (typeof Sortable !== 'undefined') {
+                new Sortable(imageGrid, {
+                    animation: 180,
+                    handle: '.drag-handle',
+                    ghostClass: 'opacity-40',
+                    chosenClass: 'ring-2',
+                    dragClass: 'shadow-xl',
+                    onEnd: (evt) => {
+                        const { oldIndex, newIndex } = evt;
+                        if (oldIndex !== undefined && newIndex !== undefined && oldIndex !== newIndex) {
+                            const [movedItem] = state.images.splice(oldIndex, 1);
+                            state.images.splice(newIndex, 0, movedItem);
+                            renderUI();
+                        }
+                    }
+                });
+            }
+
+            // --- Toast Notification Helper ---
+            function showToast(message, type = 'info') {
+                const toast = document.createElement('div');
+                const colors = {
+                    info: 'bg-slate-900 text-white border-slate-700',
+                    success: 'bg-emerald-600 text-white border-emerald-500',
+                    error: 'bg-rose-600 text-white border-rose-500'
+                };
+                toast.className = `pointer-events-auto px-4 py-3 rounded-xl border shadow-lg text-sm font-medium flex items-center justify-between gap-3 transition-all duration-300 transform translate-y-2 opacity-0 ${colors[type] || colors.info}`;
+                toast.innerHTML = `<span>${message}</span>`;
+                toastContainer.appendChild(toast);
+
+                requestAnimationFrame(() => {
+                    toast.classList.remove('translate-y-2', 'opacity-0');
+                });
+
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'translate-y-2');
+                    setTimeout(() => toast.remove(), 300);
+                }, 3200);
+            }
+
+            // --- Load Image Dimensions & Metadata via Object URL ---
+            function loadImageMetadata(file, indexOffset = 0) {
+                return new Promise((resolve, reject) => {
+                    const objectUrl = URL.createObjectURL(file);
+                    const img = new Image();
+                    img.onload = () => {
+                        const fallbackName = `Photo_${new Date().toISOString().slice(11, 19).replace(/:/g, '-')}_${indexOffset + 1}.jpg`;
+                        resolve({
+                            id: `img-${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+                            name: file.name || fallbackName,
+                            objectUrl,
+                            cleanedObjectUrl: null,
+                            isCleaned: false,
+                            isProcessingClean: false,
+                            cleanMode: state.defaultClean.mode,
+                            cleanStrength: state.defaultClean.strength,
+                            cleanCacheKey: '',
+                            rotation: 0,
+                            width: img.naturalWidth,
+                            height: img.naturalHeight
+                        });
+                    };
+                    img.onerror = (err) => {
+                        URL.revokeObjectURL(objectUrl);
+                        reject(err);
+                    };
+                    img.src = objectUrl;
+                });
+            }
+
+            // --- File Ingestion (Memory-Efficient Object URLs for Mobile) ---
+            async function handleFiles(fileList) {
+                const files = Array.from(fileList).filter(file => file.type.startsWith('image/'));
+
+                if (files.length === 0) {
+                    showToast('Please select valid image files.', 'error');
+                    return;
+                }
+
+                const newlyAdded = [];
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    try {
+                        const imgData = await loadImageMetadata(file, i);
+                        state.images.push(imgData);
+                        newlyAdded.push(imgData);
+                    } catch (err) {
+                        console.error('Error loading photo:', err);
+                        showToast(`Could not load ${file.name || 'photo'}`, 'error');
+                    }
+                }
+
+                renderUI();
+
+                // Automatically clean newly uploaded photos if Master Remove Handwriting is ON
+                if (state.removeHandwritingEnabled && newlyAdded.length > 0) {
+                    await applyCleanStateToItems(newlyAdded, true, 'Cleaning newly added photos...');
+                    showToast(`Added & cleaned ${newlyAdded.length} ${newlyAdded.length === 1 ? 'photo' : 'photos'}.`, 'success');
+                } else {
+                    showToast(`Added ${files.length} ${files.length === 1 ? 'photo' : 'photos'}.`, 'success');
+                }
+            }
+
+            /**
+             * Builds the exact ordered sequence of PDF page tasks ({ item, useCleaned, label })
+             * based on the user's chosen PDF Output Pages mode:
+             *  - 'cleaned_then_original': All cleaned pages first, then all original pages in 1 PDF
+             *  - 'alternating': Page 1 Cleaned, Page 1 Original, Page 2 Cleaned, Page 2 Original, etc.
+             *  - 'cleaned_only': Only the cleaned pages (plus any uncleaned pages as original)
+             */
+            function buildExportPagePlan() {
+                const mode = state.settings.cleanOutputMode || 'cleaned_then_original';
+                const plan = [];
+
+                if (mode === 'cleaned_then_original') {
+                    // First pass: add all cleaned pages (or original if a specific page had cleaning toggled off)
+                    state.images.forEach((item, idx) => {
+                        plan.push({
+                            item,
+                            useCleaned: Boolean(item.isCleaned),
+                            label: item.isCleaned ? `Cleaned Page ${idx + 1}` : `Page ${idx + 1}`
+                        });
+                    });
+                    // Second pass: append original versions of all cleaned pages into the same 1 PDF
+                    state.images.forEach((item, idx) => {
+                        if (item.isCleaned) {
+                            plan.push({
+                                item,
+                                useCleaned: false,
+                                label: `Original Page ${idx + 1}`
+                            });
+                        }
+                    });
+                } else if (mode === 'alternating') {
+                    state.images.forEach((item, idx) => {
+                        if (item.isCleaned) {
+                            plan.push({
+                                item,
+                                useCleaned: true,
+                                label: `Cleaned Page ${idx + 1}`
+                            });
+                            plan.push({
+                                item,
+                                useCleaned: false,
+                                label: `Original Page ${idx + 1}`
+                            });
+                        } else {
+                            plan.push({
+                                item,
+                                useCleaned: false,
+                                label: `Page ${idx + 1}`
+                            });
+                        }
+                    });
+                } else {
+                    // 'cleaned_only'
+                    state.images.forEach((item, idx) => {
+                        plan.push({
+                            item,
+                            useCleaned: Boolean(item.isCleaned),
+                            label: item.isCleaned ? `Cleaned Page ${idx + 1}` : `Page ${idx + 1}`
+                        });
+                    });
+                }
+
+                return plan;
+            }
+
+            /**
+             * Computes and updates the exact total output PDF page count across desktop and mobile badges.
+             */
+            function updatePdfPageCount() {
+                const photoCount = state.images.length;
+                const cleanedCount = state.images.filter(img => img.isCleaned).length;
+                const mode = state.settings.cleanOutputMode || 'cleaned_then_original';
+                const hasAnyCleaned = cleanedCount > 0;
+                const includesOriginals = hasAnyCleaned && (mode === 'cleaned_then_original' || mode === 'alternating');
+
+                const totalOutputPages = includesOriginals
+                    ? (photoCount + cleanedCount)
+                    : photoCount;
+
+                badgeCount.textContent = photoCount;
+                mobileBadgeCount.textContent = totalOutputPages;
+
+                if (photoCount === 0) {
+                    summaryPages.textContent = '0 pages';
+                } else if (includesOriginals) {
+                    summaryPages.textContent = `${totalOutputPages} PDF pages (${cleanedCount} cleaned + ${photoCount} original)`;
+                } else if (cleanedCount > 0) {
+                    summaryPages.textContent = `${totalOutputPages} PDF ${totalOutputPages === 1 ? 'page' : 'pages'} (${cleanedCount} cleaned only)`;
+                } else {
+                    summaryPages.textContent = `${totalOutputPages} ${totalOutputPages === 1 ? 'page' : 'pages'}`;
+                }
+
+                // Update toolbar & settings combine status badges
+                const showCombineControls = state.removeHandwritingEnabled || hasAnyCleaned;
+                if (showCombineControls) {
+                    cleanOutputModeWrapper.classList.remove('hidden');
+
+                    if (mode === 'cleaned_only') {
+                        settingsCombinePill.textContent = '1 PDF = Cleaned Only';
+                        settingsCombineHint.textContent = 'Exports only the handwriting-removed pages into 1 PDF file.';
+                        if (photoCount > 0 && hasAnyCleaned) {
+                            toolbarCombineBadge.textContent = `1 PDF = Cleaned Only (${totalOutputPages} pages)`;
+                            toolbarCombineBadge.classList.remove('hidden');
+                        } else {
+                            toolbarCombineBadge.classList.add('hidden');
+                        }
+                    } else {
+                        settingsCombinePill.textContent = '1 PDF = Cleaned + Original';
+                        settingsCombineHint.textContent = mode === 'alternating'
+                            ? 'Alternates each handwriting-removed page with its original page inside 1 PDF file.'
+                            : 'Combines all handwriting-removed pages first, followed by all original pages into 1 PDF file.';
+
+                        if (photoCount > 0 && hasAnyCleaned) {
+                            toolbarCombineBadge.textContent = `1 PDF = Cleaned + Original (${totalOutputPages} pages total)`;
+                            toolbarCombineBadge.classList.remove('hidden');
+                        } else if (state.removeHandwritingEnabled) {
+                            toolbarCombineBadge.textContent = '1 PDF = Cleaned + Original';
+                            toolbarCombineBadge.classList.remove('hidden');
+                        } else {
+                            toolbarCombineBadge.classList.add('hidden');
+                        }
+                    }
+                } else {
+                    cleanOutputModeWrapper.classList.add('hidden');
+                    toolbarCombineBadge.classList.add('hidden');
+                }
+
+                return totalOutputPages;
+            }
+
+            // =========================================================================
+            // CLIENT-SIDE HANDWRITING REMOVAL & DOCUMENT CLEANING ENGINE
+            // =========================================================================
+
+            /**
+             * Generates a realistic sample worksheet image on an HTML5 Canvas when the user
+             * opens 'Adjust Strength & Compare Before / After' before uploading any photos.
+             */
+            function getSampleWorksheetUrl() {
+                if (state.sampleWorksheetUrl) {
+                    return state.sampleWorksheetUrl;
+                }
+
+                const w = 900;
+                const h = 640;
+                const canvas = document.createElement('canvas');
+                canvas.width = w;
+                canvas.height = h;
+                const ctx = canvas.getContext('2d');
+
+                // Warm off-white paper background with subtle grain
+                ctx.fillStyle = '#f8f6f0';
+                ctx.fillRect(0, 0, w, h);
+
+                // Notebook horizontal ruled lines
+                ctx.strokeStyle = '#dbe4ee';
+                ctx.lineWidth = 1.5;
+                for (let y = 135; y < h - 40; y += 46) {
+                    ctx.beginPath();
+                    ctx.moveTo(45, y);
+                    ctx.lineTo(w - 45, y);
+                    ctx.stroke();
+                }
+
+                // Left margin vertical line
+                ctx.strokeStyle = '#f3c6c6';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(95, 30);
+                ctx.lineTo(95, h - 30);
+                ctx.stroke();
+
+                // Crisp Dark Printed Header & Questions (Should be preserved!)
+                ctx.fillStyle = '#111827';
+                ctx.font = 'bold 26px Inter, sans-serif';
+                ctx.fillText('WORKSHEET 4B — ALGEBRA & GEOMETRY REVIEW', 115, 78);
+
+                ctx.font = '600 18px Inter, sans-serif';
+                ctx.fillStyle = '#1f2937';
+                ctx.fillText('1. Solve for x:   3x + 14 = 38', 115, 126);
+                ctx.fillText('2. Calculate the area of a circle with radius r = 5 cm.', 115, 264);
+                ctx.fillText('3. State the Pythagorean Theorem for a right triangle.', 115, 402);
+
+                // Blue Ballpoint Pen Handwriting Annotations
+                ctx.save();
+                ctx.strokeStyle = '#1d4ed8';
+                ctx.fillStyle = '#1e40af';
+                ctx.lineWidth = 3.2;
+                ctx.lineCap = 'round';
+                ctx.lineJoin = 'round';
+                ctx.font = 'italic 24px Georgia, serif';
+                ctx.fillText('3x = 38 - 14 = 24  =>  x = 8', 145, 174);
+                // Circle around answer x = 8
+                ctx.beginPath();
+                ctx.ellipse(392, 166, 44, 20, -0.06, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+
+                // Red Pen Grading / Checkmark & Note
+                ctx.save();
+                ctx.strokeStyle = '#dc2626';
+                ctx.fillStyle = '#dc2626';
+                ctx.lineWidth = 4;
+                ctx.lineCap = 'round';
+                ctx.beginPath();
+                ctx.moveTo(745, 148);
+                ctx.lineTo(765, 172);
+                ctx.lineTo(808, 122);
+                ctx.stroke();
+                ctx.font = 'bold italic 20px Georgia, serif';
+                ctx.fillText('Correct! +5 pts', 690, 202);
+                ctx.restore();
+
+                // Medium/Light Gray Pencil Handwriting Notes on Question 2 & 3
+                ctx.save();
+                ctx.strokeStyle = '#6b7280';
+                ctx.fillStyle = '#5b6472';
+                ctx.lineWidth = 2.8;
+                ctx.font = 'italic 23px Georgia, serif';
+                ctx.fillText('A = π r² = 3.14 × 25 ≈ 78.5 cm²  (check rounding)', 145, 312);
+                ctx.fillText('a² + b² = c²   (hypotenuse c is opposite 90° angle)', 145, 450);
+
+                // Pencil sketch triangle in bottom right
+                ctx.beginPath();
+                ctx.moveTo(680, 560);
+                ctx.lineTo(810, 560);
+                ctx.lineTo(810, 480);
+                ctx.closePath();
+                ctx.stroke();
+                ctx.restore();
+
+                state.sampleWorksheetUrl = canvas.toDataURL('image/png');
+                canvas.width = 0;
+                canvas.height = 0;
+                return state.sampleWorksheetUrl;
+            }
+
+            /**
+             * Fast integral-image (summed-area table) local box mean estimator.
+             * Estimates local paper illumination so shadows & uneven lighting don't confuse ink detection.
+             */
+            function computeLocalBackground(luma, width, height, radius) {
+                const stride = width + 1;
+                const integral = new Float64Array(stride * (height + 1));
+
+                for (let y = 0; y < height; y++) {
+                    let rowSum = 0;
+                    const srcOffset = y * width;
+                    const dstOffset = (y + 1) * stride;
+                    const prevOffset = y * stride;
+                    for (let x = 0; x < width; x++) {
+                        rowSum += luma[srcOffset + x];
+                        integral[dstOffset + x + 1] = integral[prevOffset + x + 1] + rowSum;
+                    }
+                }
+
+                const bg = new Uint8ClampedArray(width * height);
+                for (let y = 0; y < height; y++) {
+                    const y1 = Math.max(0, y - radius);
+                    const y2 = Math.min(height - 1, y + radius);
+                    const r1 = y1 * stride;
+                    const r2 = (y2 + 1) * stride;
+                    const rowOut = y * width;
+
+                    for (let x = 0; x < width; x++) {
+                        const x1 = Math.max(0, x - radius);
+                        const x2 = Math.min(width - 1, x + radius);
+                        const count = (y2 - y1 + 1) * (x2 - x1 + 1);
+                        const sum = integral[r2 + x2 + 1] - integral[r1 + x2 + 1] - integral[r2 + x1] + integral[r1 + x1];
+                        bg[rowOut + x] = (sum / count) | 0;
+                    }
+                }
+                return bg;
+            }
+
+            /**
+             * Core client-side HTML5 Canvas Handwriting Removal Engine.
+             * Modes:
+             *  - 'hybrid': Removes colored pen ink + light/medium pencil strokes while preserving dark printed text & whitening paper.
+             *  - 'color' : Removes blue, red, green, and highlighter ink via chromatic saturation/hue distance while keeping black/gray print untouched.
+             *  - 'pencil': Targets lighter graphite pencil marks below the dark printed text threshold while preserving crisp black print.
+             */
+            function runHandwritingRemoval(sourceUrl, mode = 'hybrid', strength = 55, maxProcessDim = 2000) {
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let w = img.naturalWidth;
+                        let h = img.naturalHeight;
+                        if (Math.max(w, h) > maxProcessDim) {
+                            const scale = maxProcessDim / Math.max(w, h);
+                            w = Math.round(w * scale);
+                            h = Math.round(h * scale);
+                        }
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+                        ctx.drawImage(img, 0, 0, w, h);
+
+                        const imageData = ctx.getImageData(0, 0, w, h);
+                        const data = imageData.data;
+                        const totalPixels = w * h;
+
+                        // Compute luminance array for local background estimation
+                        const luma = new Uint8ClampedArray(totalPixels);
+                        for (let i = 0, p = 0; i < data.length; i += 4, p++) {
+                            luma[p] = (0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]) | 0;
+                        }
+
+                        const boxRadius = Math.max(12, Math.round(Math.min(w, h) * 0.025));
+                        const localBg = computeLocalBackground(luma, w, h, boxRadius);
+
+                        // Strength normalized [0.01 .. 1.0]
+                        const s = Math.max(1, Math.min(100, strength)) / 100;
+
+                        // Adaptive thresholds driven by strength slider
+                        const chromaThresh = 46 - s * 32;         // Higher strength catches lower-saturation ink (46 -> 14)
+                        const pencilMaxDrop = 45 + s * 85;        // Max darkness drop vs local paper still treated as pencil
+                        const printedTextDrop = 75 + (1 - s) * 65; // Darkness drop considered crisp printed black text
+
+                        // First pass: classify handwriting mask (0..255 confidence)
+                        const mask = new Uint8Array(totalPixels);
+
+                        for (let p = 0, i = 0; p < totalPixels; p++, i += 4) {
+                            const r = data[i];
+                            const g = data[i + 1];
+                            const b = data[i + 2];
+                            const lum = luma[p];
+                            const bg = Math.max(lum, localBg[p]);
+                            const drop = bg - lum; // How much darker than surrounding paper
+
+                            const maxC = Math.max(r, g, b);
+                            const minC = Math.min(r, g, b);
+                            const chroma = maxC - minC;
+
+                            // Chromatic distance from neutral gray
+                            const meanC = (r + g + b) / 3;
+                            const colorDist = Math.sqrt(
+                                (r - meanC) * (r - meanC) +
+                                (g - meanC) * (g - meanC) +
+                                (b - meanC) * (b - meanC)
+                            );
+
+                            let removeScore = 0;
+
+                            if (mode === 'color') {
+                                // Colored Pen Ink Only (Blue, Red, Green, Highlighters)
+                                if (chroma > chromaThresh || colorDist > chromaThresh * 0.85) {
+                                    removeScore = 255;
+                                }
+                            } else if (mode === 'pencil') {
+                                // Pencil & Faint Notes (Neutral gray strokes lighter than dark printed text)
+                                if (drop > 8 && drop < pencilMaxDrop && lum > 55 && chroma < 38) {
+                                    removeScore = 255;
+                                }
+                            } else {
+                                // Smart Hybrid: Colored pen ink + medium/faint pencil + light smudges
+                                const isColoredInk = (chroma > chromaThresh || colorDist > chromaThresh * 0.85) && lum < 245;
+                                const isPencilStroke = (drop > 9 && drop < pencilMaxDrop && lum > (88 - s * 35) && drop < printedTextDrop);
+                                if (isColoredInk || isPencilStroke) {
+                                    removeScore = 255;
+                                }
+                            }
+
+                            mask[p] = removeScore;
+                        }
+
+                        // Second pass: Dilate mask by 1px to catch anti-aliased ink fringes cleanly
+                        const dilated = new Uint8Array(totalPixels);
+                        for (let y = 0; y < h; y++) {
+                            const row = y * w;
+                            for (let x = 0; x < w; x++) {
+                                const idx = row + x;
+                                if (mask[idx] > 0) {
+                                    dilated[idx] = 255;
+                                    continue;
+                                }
+                                if (
+                                    (x > 0 && mask[idx - 1] > 0) ||
+                                    (x < w - 1 && mask[idx + 1] > 0) ||
+                                    (y > 0 && mask[idx - w] > 0) ||
+                                    (y < h - 1 && mask[idx + w] > 0)
+                                ) {
+                                    dilated[idx] = 210;
+                                }
+                            }
+                        }
+
+                        // Third pass: Replace detected handwriting with clean local paper background & enhance print contrast
+                        for (let p = 0, i = 0; p < totalPixels; p++, i += 4) {
+                            const alpha = dilated[p] / 255;
+                            const bgVal = Math.min(255, Math.max(localBg[p], 225));
+
+                            if (alpha > 0) {
+                                // Blend pixel smoothly toward clean local paper white
+                                const targetPaper = mode === 'color' ? localBg[p] : Math.min(255, Math.round(bgVal * 0.7 + 255 * 0.3));
+                                data[i] = Math.round(data[i] * (1 - alpha) + targetPaper * alpha);
+                                data[i + 1] = Math.round(data[i + 1] * (1 - alpha) + targetPaper * alpha);
+                                data[i + 2] = Math.round(data[i + 2] * (1 - alpha) + targetPaper * alpha);
+                            } else if (mode !== 'color') {
+                                // Subtle paper brightening & dark text crispness for non-handwriting pixels
+                                const lum = luma[p];
+                                const drop = localBg[p] - lum;
+                                if (drop <= 10 && lum > 155) {
+                                    // Gently whiten off-white paper background
+                                    const whiten = 0.25 + s * 0.35;
+                                    data[i] = Math.min(255, Math.round(data[i] + (255 - data[i]) * whiten));
+                                    data[i + 1] = Math.min(255, Math.round(data[i + 1] + (255 - data[i + 1]) * whiten));
+                                    data[i + 2] = Math.min(255, Math.round(data[i + 2] + (255 - data[i + 2]) * whiten));
+                                } else if (drop >= printedTextDrop) {
+                                    // Keep printed black text crisp and dark
+                                    const darken = 0.82;
+                                    data[i] = Math.round(data[i] * darken);
+                                    data[i + 1] = Math.round(data[i + 1] * darken);
+                                    data[i + 2] = Math.round(data[i + 2] * darken);
+                                }
+                            }
+                        }
+
+                        ctx.putImageData(imageData, 0, 0);
+
+                        canvas.toBlob((blob) => {
+                            canvas.width = 0;
+                            canvas.height = 0;
+                            if (blob) {
+                                resolve(blob);
+                            } else {
+                                reject(new Error('Canvas toBlob failed'));
+                            }
+                        }, 'image/jpeg', 0.92);
+                    };
+                    img.onerror = reject;
+                    img.src = sourceUrl;
+                });
+            }
+
+            /**
+             * Ensures item.cleanedObjectUrl is generated and cached for its current (mode, strength).
+             */
+            async function ensureCleanedImage(item) {
+                const mode = item.cleanMode || state.defaultClean.mode;
+                const strength = item.cleanStrength ?? state.defaultClean.strength;
+                const cacheKey = `${mode}:${strength}`;
+
+                if (item.cleanedObjectUrl && item.cleanCacheKey === cacheKey) {
+                    return item.cleanedObjectUrl;
+                }
+
+                const blob = await runHandwritingRemoval(item.objectUrl, mode, strength, 2000);
+                if (item.cleanedObjectUrl) {
+                    URL.revokeObjectURL(item.cleanedObjectUrl);
+                }
+                item.cleanedObjectUrl = URL.createObjectURL(blob);
+                item.cleanCacheKey = cacheKey;
+                return item.cleanedObjectUrl;
+            }
+
+            /**
+             * Toggles handwriting removal on a single page card and updates its live thumbnail preview.
+             */
+            async function toggleCleanPage(index) {
+                const item = state.images[index];
+                if (!item || item.isProcessingClean) return;
+
+                if (item.isCleaned) {
+                    item.isCleaned = false;
+                    // If no pages remain cleaned, reflect OFF on the master toggle
+                    if (!state.images.some(img => img.isCleaned)) {
+                        state.removeHandwritingEnabled = false;
+                    }
+                    renderUI();
+                    return;
+                }
+
+                item.isProcessingClean = true;
+                renderUI();
+
+                try {
+                    await ensureCleanedImage(item);
+                    item.isCleaned = true;
+                    state.removeHandwritingEnabled = true;
+                    showToast(`Handwriting removed on Page ${index + 1}.`, 'success');
+                } catch (err) {
+                    console.error('Clean page failed:', err);
+                    showToast('Could not process image.', 'error');
+                } finally {
+                    item.isProcessingClean = false;
+                    renderUI();
+                }
+            }
+
+            /**
+             * Helper to clean a subset or all items with progress indicator.
+             */
+            async function applyCleanStateToItems(itemsToClean, enabled, labelPrefix = 'Removing handwriting') {
+                if (!enabled) {
+                    itemsToClean.forEach(img => {
+                        img.isCleaned = false;
+                    });
+                    renderUI();
+                    return;
+                }
+
+                if (itemsToClean.length === 0) return;
+
+                state.isBatchCleaning = true;
+                batchCleanProgress.classList.remove('hidden');
+                renderUI();
+
+                const total = itemsToClean.length;
+                try {
+                    for (let i = 0; i < total; i++) {
+                        const pct = Math.round(((i + 0.5) / total) * 100);
+                        batchCleanLabel.textContent = `${labelPrefix} (${i + 1} of ${total})...`;
+                        batchCleanPercent.textContent = `${pct}%`;
+                        batchCleanBar.style.width = `${pct}%`;
+
+                        // Yield to main thread so mobile UI stays responsive
+                        await new Promise(r => setTimeout(r, 15));
+
+                        const item = itemsToClean[i];
+                        await ensureCleanedImage(item);
+                        item.isCleaned = true;
+                    }
+
+                    batchCleanLabel.textContent = 'Handwriting removed!';
+                    batchCleanPercent.textContent = '100%';
+                    batchCleanBar.style.width = '100%';
+                } finally {
+                    state.isBatchCleaning = false;
+                    setTimeout(() => {
+                        batchCleanProgress.classList.add('hidden');
+                        batchCleanBar.style.width = '0%';
+                    }, 550);
+                    renderUI();
+                }
+            }
+
+            /**
+             * Master ON/OFF Toggle Handler (shared by Toolbar Switch & Settings Panel Switch).
+             */
+            async function toggleMasterHandwritingRemoval() {
+                if (state.isBatchCleaning || state.isGenerating) return;
+
+                const nextState = !state.removeHandwritingEnabled;
+                state.removeHandwritingEnabled = nextState;
+
+                if (!nextState) {
+                    // Turn OFF: Keep original images across all pages
+                    state.images.forEach(img => {
+                        img.isCleaned = false;
+                    });
+                    renderUI();
+                    showToast('Remove Handwriting: OFF (Keeping original images).', 'info');
+                    return;
+                }
+
+                // Turn ON: Clean all pages
+                if (state.images.length === 0) {
+                    renderUI();
+                    showToast('Remove Handwriting: ON (New photos will be cleaned automatically).', 'success');
+                    return;
+                }
+
+                try {
+                    await applyCleanStateToItems(state.images, true, 'Removing handwriting from page');
+                    showToast(`Remove Handwriting: ON (${state.images.length} ${state.images.length === 1 ? 'page' : 'pages'} cleaned).`, 'success');
+                } catch (err) {
+                    console.error('Master clean error:', err);
+                    showToast('Error cleaning one or more pages.', 'error');
+                }
+            }
+
+            btnMasterCleanToolbar.addEventListener('click', toggleMasterHandwritingRemoval);
+            btnMasterCleanSettings.addEventListener('click', toggleMasterHandwritingRemoval);
+
+            // =========================================================================
+            // INTERACTIVE BEFORE / AFTER TUNING MODAL
+            // =========================================================================
+
+            btnTuneToolbar.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openTuneModal(0);
+            });
+
+            btnTuneSettings.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                openTuneModal(0);
+            });
+
+            async function openTuneModal(index = 0) {
+                const hasPages = state.images.length > 0;
+                const safeIndex = hasPages ? Math.max(0, Math.min(index, state.images.length - 1)) : 0;
+                const item = hasPages ? state.images[safeIndex] : null;
+
+                state.modal.isOpen = true;
+                state.modal.isSampleMode = !hasPages;
+                state.modal.pageIndex = safeIndex;
+                state.modal.mode = item ? (item.cleanMode || state.defaultClean.mode) : state.defaultClean.mode;
+                state.modal.strength = item ? (item.cleanStrength ?? state.defaultClean.strength) : state.defaultClean.strength;
+                state.modal.splitPercent = 50;
+
+                if (hasPages) {
+                    modalPageSubtitle.textContent = `Page ${safeIndex + 1} (${item.name}) · Drag divider to compare`;
+                    modalFooterPages.classList.remove('hidden');
+                    modalFooterPages.classList.add('grid');
+                    modalFooterSample.classList.add('hidden');
+                    modalFooterSample.classList.remove('grid');
+
+                    compareImgBefore.src = item.objectUrl;
+                    compareImgAfter.src = item.cleanedObjectUrl || item.objectUrl;
+                    compareImgBefore.style.transform = `rotate(${item.rotation}deg)`;
+                    compareImgAfter.style.transform = `rotate(${item.rotation}deg)`;
+                } else {
+                    const sampleUrl = getSampleWorksheetUrl();
+                    modalPageSubtitle.textContent = 'Sample Worksheet Preview · Test slider & save defaults before uploading';
+                    modalFooterPages.classList.add('hidden');
+                    modalFooterPages.classList.remove('grid');
+                    modalFooterSample.classList.remove('hidden');
+                    modalFooterSample.classList.add('grid');
+
+                    compareImgBefore.src = sampleUrl;
+                    compareImgAfter.src = sampleUrl;
+                    compareImgBefore.style.transform = 'rotate(0deg)';
+                    compareImgAfter.style.transform = 'rotate(0deg)';
+                }
+
+                cleanStrengthSlider.value = state.modal.strength;
+                cleanStrengthValue.textContent = `${state.modal.strength}%`;
+                updateModalModeButtons();
+                setCompareSplit(50);
+
+                tuneModal.classList.remove('hidden');
+                document.body.classList.add('overflow-hidden');
+
+                await refreshModalPreview();
+            }
+
+            function closeTuneModal() {
+                state.modal.isOpen = false;
+                tuneModal.classList.add('hidden');
+                document.body.classList.remove('overflow-hidden');
+                if (state.modal.previewObjectUrl) {
+                    URL.revokeObjectURL(state.modal.previewObjectUrl);
+                    state.modal.previewObjectUrl = null;
+                }
+            }
+
+            btnCloseModal.addEventListener('click', closeTuneModal);
+            tuneModal.addEventListener('click', (e) => {
+                if (e.target === tuneModal) closeTuneModal();
+            });
+
+            let modalPreviewTimeout = null;
+            function scheduleModalPreview() {
+                clearTimeout(modalPreviewTimeout);
+                modalPreviewTimeout = setTimeout(() => {
+                    refreshModalPreview();
+                }, 120);
+            }
+
+            async function refreshModalPreview() {
+                if (!state.modal.isOpen) return;
+
+                const sourceUrl = state.modal.isSampleMode
+                    ? getSampleWorksheetUrl()
+                    : (state.images[state.modal.pageIndex]?.objectUrl || null);
+
+                if (!sourceUrl) return;
+
+                modalProcessingBadge.classList.remove('hidden');
+                try {
+                    // Use a crisp 1200px preview cap so slider tuning feels snappy on Android phones
+                    const blob = await runHandwritingRemoval(
+                        sourceUrl,
+                        state.modal.mode,
+                        state.modal.strength,
+                        1200
+                    );
+                    if (!state.modal.isOpen) return;
+
+                    if (state.modal.previewObjectUrl) {
+                        URL.revokeObjectURL(state.modal.previewObjectUrl);
+                    }
+                    state.modal.previewObjectUrl = URL.createObjectURL(blob);
+                    compareImgAfter.src = state.modal.previewObjectUrl;
+                } catch (err) {
+                    console.error('Modal preview failed:', err);
+                } finally {
+                    modalProcessingBadge.classList.add('hidden');
+                }
+            }
+
+            function updateModalModeButtons() {
+                cleanModeBtns.forEach(btn => {
+                    const isSelected = btn.dataset.cleanMode === state.modal.mode;
+                    if (isSelected) {
+                        btn.classList.remove('border-slate-200', 'bg-white', 'text-slate-700');
+                        btn.classList.add('border-indigo-600', 'bg-indigo-50', 'text-indigo-900');
+                    } else {
+                        btn.classList.remove('border-indigo-600', 'bg-indigo-50', 'text-indigo-900');
+                        btn.classList.add('border-slate-200', 'bg-white', 'text-slate-700');
+                    }
+                });
+            }
+
+            cleanModeBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    state.modal.mode = btn.dataset.cleanMode;
+                    updateModalModeButtons();
+                    scheduleModalPreview();
+                });
+            });
+
+            cleanStrengthSlider.addEventListener('input', (e) => {
+                state.modal.strength = parseInt(e.target.value, 10);
+                cleanStrengthValue.textContent = `${state.modal.strength}%`;
+                scheduleModalPreview();
+            });
+
+            // Before/After Interactive Split Slider (Touch + Mouse + Range Input)
+            function setCompareSplit(percent) {
+                const clamped = Math.max(0, Math.min(100, percent));
+                state.modal.splitPercent = clamped;
+                compareAfterClip.style.clipPath = `inset(0 ${100 - clamped}% 0 0)`;
+                compareDivider.style.left = `${clamped}%`;
+                compareRange.value = Math.round(clamped);
+            }
+
+            function updateSplitFromClientX(clientX) {
+                const rect = compareContainer.getBoundingClientRect();
+                if (rect.width <= 0) return;
+                const pct = ((clientX - rect.left) / rect.width) * 100;
+                setCompareSplit(pct);
+            }
+
+            let isDraggingSplit = false;
+            compareContainer.addEventListener('pointerdown', (e) => {
+                isDraggingSplit = true;
+                compareContainer.setPointerCapture(e.pointerId);
+                updateSplitFromClientX(e.clientX);
+            });
+            compareContainer.addEventListener('pointermove', (e) => {
+                if (!isDraggingSplit) return;
+                updateSplitFromClientX(e.clientX);
+            });
+            compareContainer.addEventListener('pointerup', (e) => {
+                isDraggingSplit = false;
+                if (compareContainer.hasPointerCapture(e.pointerId)) {
+                    compareContainer.releasePointerCapture(e.pointerId);
+                }
+            });
+
+            compareRange.addEventListener('input', (e) => {
+                setCompareSplit(parseFloat(e.target.value));
+            });
+
+            // Hold-to-Compare Original button
+            let savedSplitBeforeHold = 50;
+            const startHoldOriginal = () => {
+                savedSplitBeforeHold = state.modal.splitPercent;
+                setCompareSplit(0);
+            };
+            const endHoldOriginal = () => {
+                setCompareSplit(savedSplitBeforeHold || 50);
+            };
+            btnHoldOriginal.addEventListener('pointerdown', startHoldOriginal);
+            btnHoldOriginal.addEventListener('pointerup', endHoldOriginal);
+            btnHoldOriginal.addEventListener('pointerleave', endHoldOriginal);
+            btnHoldOriginal.addEventListener('pointercancel', endHoldOriginal);
+
+            // Save Default Settings (when modal opened before uploading photos)
+            btnSaveDefaults.addEventListener('click', () => {
+                state.defaultClean.mode = state.modal.mode;
+                state.defaultClean.strength = state.modal.strength;
+                state.removeHandwritingEnabled = true;
+                closeTuneModal();
+                renderUI();
+                showToast(`Saved default settings (${state.defaultClean.strength}% strength).`, 'success');
+            });
+
+            // Upload Photos directly from Sample Modal
+            btnModalUploadPhotos.addEventListener('click', () => {
+                state.defaultClean.mode = state.modal.mode;
+                state.defaultClean.strength = state.modal.strength;
+                state.removeHandwritingEnabled = true;
+                closeTuneModal();
+                renderUI();
+                fileInputGallery.click();
+            });
+
+            // Apply to This Page
+            btnApplyPage.addEventListener('click', async () => {
+                const idx = state.modal.pageIndex;
+                const item = state.images[idx];
+                if (!item) return;
+
+                item.cleanMode = state.modal.mode;
+                item.cleanStrength = state.modal.strength;
+                state.defaultClean.mode = state.modal.mode;
+                state.defaultClean.strength = state.modal.strength;
+                state.removeHandwritingEnabled = true;
+
+                closeTuneModal();
+                item.isProcessingClean = true;
+                renderUI();
+
+                try {
+                    await ensureCleanedImage(item);
+                    item.isCleaned = true;
+                    showToast(`Applied handwriting removal to Page ${idx + 1}.`, 'success');
+                } catch (err) {
+                    showToast('Failed to apply changes.', 'error');
+                } finally {
+                    item.isProcessingClean = false;
+                    renderUI();
+                }
+            });
+
+            // Apply to All Pages
+            btnApplyAllPages.addEventListener('click', async () => {
+                const chosenMode = state.modal.mode;
+                const chosenStrength = state.modal.strength;
+                state.defaultClean.mode = chosenMode;
+                state.defaultClean.strength = chosenStrength;
+                state.removeHandwritingEnabled = true;
+
+                closeTuneModal();
+                state.images.forEach(item => {
+                    item.cleanMode = chosenMode;
+                    item.cleanStrength = chosenStrength;
+                });
+
+                try {
+                    await applyCleanStateToItems(state.images, true, 'Applying settings to page');
+                    showToast(`Applied handwriting removal to all ${state.images.length} pages!`, 'success');
+                } catch (err) {
+                    showToast('Error applying settings to all pages.', 'error');
+                }
+            });
+
+            // --- Camera, Gallery & Drag-Drop Event Listeners ---
+            btnChoosePhotos.addEventListener('click', () => fileInputGallery.click());
+            btnAddMore.addEventListener('click', () => fileInputGallery.click());
+            btnTakePhoto.addEventListener('click', () => fileInputCamera.click());
+
+            fileInputGallery.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                    handleFiles(e.target.files);
+                    fileInputGallery.value = '';
+                }
+            });
+
+            fileInputCamera.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files.length > 0) {
+                    handleFiles(e.target.files);
+                    fileInputCamera.value = '';
+                }
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.add('border-indigo-500', 'bg-indigo-50/40');
+                });
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropzone.addEventListener(eventName, (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    dropzone.classList.remove('border-indigo-500', 'bg-indigo-50/40');
+                });
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                if (e.dataTransfer && e.dataTransfer.files.length > 0) {
+                    handleFiles(e.dataTransfer.files);
+                }
+            });
+
+            btnClearAll.addEventListener('click', () => {
+                // Free Android browser memory by revoking both original & cleaned Object URLs
+                state.images.forEach(item => {
+                    if (item.objectUrl) URL.revokeObjectURL(item.objectUrl);
+                    if (item.cleanedObjectUrl) URL.revokeObjectURL(item.cleanedObjectUrl);
+                });
+                state.images = [];
+                renderUI();
+                showToast('All photos cleared.', 'info');
+            });
+
+            btnMobileSettings.addEventListener('click', () => {
+                settingsPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+
+            // --- Image Manipulation Actions ---
+            function rotateImage(index) {
+                state.images[index].rotation = (state.images[index].rotation + 90) % 360;
+                renderUI();
+            }
+
+            function deleteImage(index) {
+                const [removed] = state.images.splice(index, 1);
+                if (removed) {
+                    if (removed.objectUrl) URL.revokeObjectURL(removed.objectUrl);
+                    if (removed.cleanedObjectUrl) URL.revokeObjectURL(removed.cleanedObjectUrl);
+                }
+                renderUI();
+            }
+
+            function moveImage(fromIndex, toIndex) {
+                if (toIndex < 0 || toIndex >= state.images.length) return;
+                const [moved] = state.images.splice(fromIndex, 1);
+                state.images.splice(toIndex, 0, moved);
+                renderUI();
+            }
+
+            // --- Render Grid & Live Summary ---
+            function renderUI() {
+                const count = state.images.length;
+                const isMasterOn = state.removeHandwritingEnabled;
+
+                // Synchronize Master Remove Handwriting ON/OFF Toggle UI (Toolbar + Settings Panel)
+                btnMasterCleanToolbar.setAttribute('aria-checked', String(isMasterOn));
+                btnMasterCleanSettings.setAttribute('aria-checked', String(isMasterOn));
+
+                if (isMasterOn) {
+                    toolbarCleanStatus.textContent = 'ON';
+                    toolbarCleanPill.className = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold bg-teal-600 text-white transition-colors';
+                    toolbarCleanDot.className = 'w-2 h-2 rounded-full bg-white';
+                    btnMasterCleanToolbar.classList.add('bg-teal-50/70', 'text-teal-900');
+                    btnMasterCleanToolbar.classList.remove('text-slate-700');
+
+                    btnTuneToolbar.classList.remove('hidden');
+                    btnTuneToolbar.classList.add('inline-flex');
+
+                    settingsCleanStatus.textContent = 'ON';
+                    settingsCleanStatus.className = 'text-teal-700 font-bold';
+                    btnMasterCleanSettings.className = 'min-h-[44px] px-3.5 py-2 rounded-xl border border-teal-500 bg-teal-50 text-teal-800 text-xs font-bold inline-flex items-center gap-2 shrink-0 transition-all cursor-pointer shadow-2xs';
+                    settingsCleanTrack.className = 'w-9 h-5 rounded-full bg-teal-600 relative transition-colors inline-flex items-center p-0.5';
+                    settingsCleanKnob.className = 'w-4 h-4 rounded-full bg-white shadow-xs transform translate-x-4 transition-transform';
+
+                    btnTuneSettings.classList.remove('hidden');
+                    btnTuneSettings.classList.add('flex');
+                } else {
+                    toolbarCleanStatus.textContent = 'OFF';
+                    toolbarCleanPill.className = 'inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-bold bg-slate-200 text-slate-700 transition-colors';
+                    toolbarCleanDot.className = 'w-2 h-2 rounded-full bg-slate-500';
+                    btnMasterCleanToolbar.classList.remove('bg-teal-50/70', 'text-teal-900');
+                    btnMasterCleanToolbar.classList.add('text-slate-700');
+
+                    btnTuneToolbar.classList.add('hidden');
+                    btnTuneToolbar.classList.remove('inline-flex');
+
+                    settingsCleanStatus.textContent = 'OFF';
+                    settingsCleanStatus.className = 'text-slate-700 font-bold';
+                    btnMasterCleanSettings.className = 'min-h-[44px] px-3.5 py-2 rounded-xl border border-slate-300 bg-white hover:bg-slate-100 text-slate-700 text-xs font-bold inline-flex items-center gap-2 shrink-0 transition-all cursor-pointer shadow-2xs';
+                    settingsCleanTrack.className = 'w-9 h-5 rounded-full bg-slate-300 relative transition-colors inline-flex items-center p-0.5';
+                    settingsCleanKnob.className = 'w-4 h-4 rounded-full bg-white shadow-xs transform translate-x-0 transition-transform';
+
+                    btnTuneSettings.classList.add('hidden');
+                    btnTuneSettings.classList.remove('flex');
+                }
+
+                const disableExportActions = count === 0 || state.isGenerating || state.isBatchCleaning;
+                const disableModalOpeners = state.isGenerating || state.isBatchCleaning;
+
+                btnGenerate.disabled = disableExportActions;
+                btnShare.disabled = disableExportActions;
+                btnMobileCreate.disabled = disableExportActions;
+                btnMobileShare.disabled = disableExportActions;
+                btnMasterCleanToolbar.disabled = disableModalOpeners;
+                btnMasterCleanSettings.disabled = disableModalOpeners;
+                // Keep Adjust / Tune buttons clickable even when 0 photos are uploaded (opens Sample Worksheet Preview)
+                btnTuneToolbar.disabled = disableModalOpeners;
+                btnTuneSettings.disabled = disableModalOpeners;
+
+                if (count === 0) {
+                    gridToolbar.classList.add('hidden');
+                    gridToolbar.classList.remove('flex');
+                    emptyState.classList.remove('hidden');
+                    imageGrid.innerHTML = '';
+                } else {
+                    gridToolbar.classList.remove('hidden');
+                    gridToolbar.classList.add('flex');
+                    emptyState.classList.add('hidden');
+                    renderCards();
+                }
+
+                updatePdfPageCount();
+                updateSummaryText();
+            }
+
+            function renderCards() {
+                imageGrid.innerHTML = '';
+
+                state.images.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = `bg-white rounded-2xl border shadow-xs flex flex-col overflow-hidden select-none transition-colors ${
+                        item.isCleaned ? 'border-teal-300 ring-1 ring-teal-500/20' : 'border-slate-200'
+                    }`;
+                    card.dataset.id = item.id;
+
+                    // Top Card Header with Page Badge, Cleaned Status Badge & Touch Drag Handle
+                    const cardHeader = document.createElement('div');
+                    cardHeader.className = 'px-3 py-2 bg-slate-50/90 border-b border-slate-100 flex items-center justify-between gap-1.5';
+
+                    const leftHeader = document.createElement('div');
+                    leftHeader.className = 'flex items-center gap-1.5 min-w-0 flex-wrap';
+                    leftHeader.innerHTML = `
+                        <span class="px-2.5 py-0.5 rounded-lg bg-slate-900 text-white text-xs font-bold shrink-0">Page ${index + 1}</span>
+                        ${item.rotation !== 0 ? `<span class="px-2 py-0.5 rounded-md bg-indigo-100 text-indigo-700 text-[11px] font-bold shrink-0">${item.rotation}°</span>` : ''}
+                        ${item.isCleaned ? `<span class="px-2 py-0.5 rounded-md bg-teal-100 text-teal-800 text-[11px] font-bold shrink-0">Cleaned</span>` : ''}
+                    `;
+
+                    // Dedicated Touch Drag Handle for Android (min 40px tap target)
+                    const dragHandle = document.createElement('div');
+                    dragHandle.className = 'drag-handle min-w-[40px] min-h-[40px] -my-1 -mr-1 flex items-center justify-center rounded-xl text-slate-400 hover:text-slate-700 active:bg-slate-200 cursor-grab active:cursor-grabbing touch-none shrink-0';
+                    dragHandle.title = 'Drag to reorder page';
+                    dragHandle.setAttribute('aria-label', 'Drag to reorder page');
+                    dragHandle.innerHTML = `
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h16M4 16h16"></path>
+                        </svg>
+                    `;
+
+                    cardHeader.appendChild(leftHeader);
+                    cardHeader.appendChild(dragHandle);
+
+                    // Thumbnail Preview Container (Shows Cleaned Preview in Real Time when Enabled)
+                    const thumbWrap = document.createElement('div');
+                    thumbWrap.className = 'relative h-48 bg-slate-100/80 flex items-center justify-center overflow-hidden p-3';
+
+                    const imgEl = document.createElement('img');
+                    imgEl.src = (item.isCleaned && item.cleanedObjectUrl) ? item.cleanedObjectUrl : item.objectUrl;
+                    imgEl.alt = item.name;
+                    imgEl.className = 'max-h-full max-w-full object-contain rounded-lg transition-transform duration-200 pointer-events-none';
+                    imgEl.style.transform = `rotate(${item.rotation}deg)`;
+
+                    thumbWrap.appendChild(imgEl);
+
+                    // Card Footer: Filename, Handwriting Removal Row & Always-Visible Touch Controls
+                    const footer = document.createElement('div');
+                    footer.className = 'p-3 border-t border-slate-100 flex flex-col gap-2 bg-white';
+
+                    const titleRow = document.createElement('div');
+                    titleRow.className = 'flex items-center justify-between gap-2 px-0.5';
+                    titleRow.innerHTML = `
+                        <p class="text-xs font-medium text-slate-700 truncate" title="${item.name}">${item.name}</p>
+                        <span class="text-[11px] text-slate-400 shrink-0">${item.width}×${item.height}</span>
+                    `;
+
+                    // Handwriting Removal Row: 'Clean / Handwriting Removed' Toggle + 'Tune / Preview' Button
+                    const cleanRow = document.createElement('div');
+                    cleanRow.className = 'grid grid-cols-5 gap-1.5';
+
+                    const btnCleanToggle = document.createElement('button');
+                    btnCleanToggle.type = 'button';
+                    btnCleanToggle.disabled = item.isProcessingClean;
+                    btnCleanToggle.className = item.isCleaned
+                        ? 'col-span-3 min-h-[42px] px-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 active:bg-teal-800 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer shadow-2xs'
+                        : 'col-span-3 min-h-[42px] px-2.5 rounded-xl bg-teal-50 hover:bg-teal-100 active:bg-teal-200 text-teal-800 border border-teal-200 text-xs font-semibold flex items-center justify-center gap-1.5 transition-colors cursor-pointer';
+
+                    if (item.isProcessingClean) {
+                        btnCleanToggle.innerHTML = `
+                            <svg class="w-4 h-4 animate-spin shrink-0" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"></path>
+                            </svg>
+                            <span>Cleaning...</span>
+                        `;
+                    } else if (item.isCleaned) {
+                        btnCleanToggle.innerHTML = `
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <span class="truncate">Ink Removed</span>
+                        `;
+                    } else {
+                        btnCleanToggle.innerHTML = `
+                            <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
+                            </svg>
+                            <span class="truncate">Keep Ink</span>
+                        `;
+                    }
+                    btnCleanToggle.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        toggleCleanPage(index);
+                    });
+
+                    const btnTuneCard = document.createElement('button');
+                    btnTuneCard.type = 'button';
+                    btnTuneCard.className = 'col-span-2 min-h-[42px] px-2 rounded-xl bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 text-indigo-700 border border-indigo-200/80 text-xs font-semibold flex items-center justify-center gap-1 transition-colors cursor-pointer';
+                    btnTuneCard.innerHTML = `
+                        <svg class="w-3.5 h-3.5 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
+                        </svg>
+                        <span>Tune</span>
+                    `;
+                    btnTuneCard.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openTuneModal(index);
+                    });
+
+                    cleanRow.appendChild(btnCleanToggle);
+                    cleanRow.appendChild(btnTuneCard);
+
+                    // Always-Visible Touch Controls Row (Move Earlier, Move Later, Rotate 90°, Remove)
+                    const controlsRow = document.createElement('div');
+                    controlsRow.className = 'grid grid-cols-4 gap-1.5';
+
+                    const btnMovePrev = createTouchActionButton(
+                        '<path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>',
+                        'Move earlier',
+                        index === 0,
+                        () => moveImage(index, index - 1)
+                    );
+
+                    const btnMoveNext = createTouchActionButton(
+                        '<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>',
+                        'Move later',
+                        index === state.images.length - 1,
+                        () => moveImage(index, index + 1)
+                    );
+
+                    const btnRotate = createTouchActionButton(
+                        '<path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>',
+                        'Rotate 90°',
+                        false,
+                        () => rotateImage(index)
+                    );
+
+                    const btnDelete = createTouchActionButton(
+                        '<path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>',
+                        'Remove',
+                        false,
+                        () => deleteImage(index),
+                        true
+                    );
+
+                    controlsRow.appendChild(btnMovePrev);
+                    controlsRow.appendChild(btnMoveNext);
+                    controlsRow.appendChild(btnRotate);
+                    controlsRow.appendChild(btnDelete);
+
+                    footer.appendChild(titleRow);
+                    footer.appendChild(cleanRow);
+                    footer.appendChild(controlsRow);
+
+                    card.appendChild(cardHeader);
+                    card.appendChild(thumbWrap);
+                    card.appendChild(footer);
+                    imageGrid.appendChild(card);
+                });
+            }
+
+            function createTouchActionButton(svgPath, title, disabled, onClick, isDanger = false) {
+                const btn = document.createElement('button');
+                btn.type = 'button';
+                btn.title = title;
+                btn.setAttribute('aria-label', title);
+                btn.disabled = disabled;
+                const style = isDanger
+                    ? 'bg-rose-50 text-rose-600 hover:bg-rose-100 active:bg-rose-200 border-rose-200/70'
+                    : 'bg-slate-50 text-slate-700 hover:bg-indigo-50 hover:text-indigo-600 active:bg-indigo-100 border-slate-200/80';
+                btn.className = `min-h-[42px] w-full rounded-xl border flex items-center justify-center transition-colors disabled:opacity-35 disabled:pointer-events-none cursor-pointer ${style}`;
+                btn.innerHTML = `<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">${svgPath}</svg>`;
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    onClick();
+                });
+                return btn;
+            }
+
+            // --- Sidebar Settings Listeners ---
+            optCleanOutputMode.addEventListener('change', (e) => {
+                state.settings.cleanOutputMode = e.target.value;
+                updatePdfPageCount();
+            });
+
+            optFilename.addEventListener('input', (e) => {
+                state.settings.filename = e.target.value.trim() || 'SnapPDF-Document';
+            });
+
+            optQuality.addEventListener('change', (e) => {
+                state.settings.quality = e.target.value;
+            });
+
+            optPageSize.addEventListener('change', (e) => {
+                state.settings.pageSize = e.target.value;
+                const isFitToImage = state.settings.pageSize === 'fit';
+
+                [orientationGroup, marginGroup, fitGroup].forEach(group => {
+                    if (isFitToImage) {
+                        group.classList.add('opacity-45', 'pointer-events-none');
+                    } else {
+                        group.classList.remove('opacity-45', 'pointer-events-none');
+                    }
+                });
+
+                updateSummaryText();
+            });
+
+            function setupToggleGroup(buttons, settingKey, dataAttr) {
+                buttons.forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        buttons.forEach(b => {
+                            b.classList.remove('border-indigo-600', 'bg-indigo-50', 'text-indigo-700');
+                            b.classList.add('border-slate-200', 'bg-white', 'text-slate-600');
+                        });
+                        btn.classList.remove('border-slate-200', 'bg-white', 'text-slate-600');
+                        btn.classList.add('border-indigo-600', 'bg-indigo-50', 'text-indigo-700');
+
+                        state.settings[settingKey] = btn.dataset[dataAttr];
+                        updateSummaryText();
+                    });
+                });
+            }
+
+            setupToggleGroup(orientationBtns, 'orientation', 'orientation');
+            setupToggleGroup(marginBtns, 'margin', 'margin');
+            setupToggleGroup(fitBtns, 'imageFit', 'fit');
+
+            function updateSummaryText() {
+                if (state.settings.pageSize === 'fit') {
+                    summaryLayout.textContent = 'Fit to Image · Original Dimensions';
+                    return;
+                }
+                const sizeLabel = state.settings.pageSize === 'a4' ? 'A4' : 'US Letter';
+                const orientLabel = state.settings.orientation === 'portrait' ? 'Portrait' : 'Landscape';
+                const marginMap = { none: 'No Margin', small: 'Small Margin', normal: 'Normal Margin' };
+                summaryLayout.textContent = `${sizeLabel} · ${orientLabel} · ${marginMap[state.settings.margin]}`;
+            }
+
+            // --- Android Memory-Safe Downscaling & Canvas Rotation Helper ---
+            async function processImageForPdf(item, qualityMode, useCleaned = false) {
+                // Use cleaned image only when requested for this specific output page
+                let activeSourceUrl = item.objectUrl;
+                if (useCleaned && item.isCleaned) {
+                    activeSourceUrl = await ensureCleanedImage(item);
+                }
+
+                return new Promise((resolve, reject) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        // Cap maximum pixel dimension to prevent Android mobile browser OOM crashes on 12MP-50MP cameras
+                        const maxDimensionMap = {
+                            high: 2000,
+                            medium: 1400,
+                            original: Infinity
+                        };
+                        const jpegQualityMap = {
+                            high: 0.88,
+                            medium: 0.78,
+                            original: 0.94
+                        };
+
+                        const maxDim = maxDimensionMap[qualityMode] || 2000;
+                        const jpegQuality = jpegQualityMap[qualityMode] || 0.88;
+
+                        let targetW = img.naturalWidth;
+                        let targetH = img.naturalHeight;
+
+                        if (Math.max(targetW, targetH) > maxDim) {
+                            const scale = maxDim / Math.max(targetW, targetH);
+                            targetW = Math.round(targetW * scale);
+                            targetH = Math.round(targetH * scale);
+                        }
+
+                        const angle = item.rotation % 360;
+                        const isSwapped = angle === 90 || angle === 270;
+
+                        const canvas = document.createElement('canvas');
+                        canvas.width = isSwapped ? targetH : targetW;
+                        canvas.height = isSwapped ? targetW : targetH;
+
+                        const ctx = canvas.getContext('2d');
+                        // White background ensures transparent PNG/WebP images don't turn black in JPEG
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                        ctx.translate(canvas.width / 2, canvas.height / 2);
+                        ctx.rotate((angle * Math.PI) / 180);
+                        ctx.drawImage(img, -targetW / 2, -targetH / 2, targetW, targetH);
+
+                        const dataUrl = canvas.toDataURL('image/jpeg', jpegQuality);
+                        const finalW = canvas.width;
+                        const finalH = canvas.height;
+
+                        // Explicitly release canvas backing memory immediately for Android Chrome
+                        canvas.width = 0;
+                        canvas.height = 0;
+
+                        resolve({
+                            dataUrl,
+                            width: finalW,
+                            height: finalH
+                        });
+                    };
+                    img.onerror = reject;
+                    img.src = activeSourceUrl;
+                });
+            }
+
+            // --- Build PDF Blob ---
+            async function buildPdfBlob() {
+                const { jsPDF } = window.jspdf;
+                const { pageSize, orientation, margin, imageFit, quality } = state.settings;
+                const marginValues = { none: 0, small: 10, normal: 20 };
+                const marginMm = marginValues[margin] ?? 10;
+
+                const pagePlan = buildExportPagePlan();
+                let pdf = null;
+                const total = pagePlan.length;
+
+                progressWrapper.classList.remove('hidden');
+
+                for (let i = 0; i < total; i++) {
+                    const step = pagePlan[i];
+                    const pct = Math.round(((i + 0.5) / total) * 100);
+                    progressLabel.textContent = `Building ${step.label} (${i + 1} of ${total})...`;
+                    progressPercent.textContent = `${pct}%`;
+                    progressBar.style.width = `${pct}%`;
+
+                    // Yield briefly to UI thread so progress bar updates smoothly on Android
+                    await new Promise(r => setTimeout(r, 15));
+
+                    const processed = await processImageForPdf(step.item, quality, step.useCleaned);
+
+                    if (pageSize === 'fit') {
+                        const pxToMm = 0.264583;
+                        const pageW = processed.width * pxToMm;
+                        const pageH = processed.height * pxToMm;
+                        const pageOrient = pageW >= pageH ? 'landscape' : 'portrait';
+
+                        if (i === 0) {
+                            pdf = new jsPDF({
+                                orientation: pageOrient,
+                                unit: 'mm',
+                                format: [pageW, pageH]
+                            });
+                        } else {
+                            pdf.addPage([pageW, pageH], pageOrient);
+                        }
+
+                        pdf.addImage(processed.dataUrl, 'JPEG', 0, 0, pageW, pageH, undefined, 'FAST');
+                    } else {
+                        if (i === 0) {
+                            pdf = new jsPDF({
+                                orientation: orientation,
+                                unit: 'mm',
+                                format: pageSize
+                            });
+                        } else {
+                            pdf.addPage(pageSize, orientation);
+                        }
+
+                        const pageW = pdf.internal.pageSize.getWidth();
+                        const pageH = pdf.internal.pageSize.getHeight();
+                        const availW = Math.max(1, pageW - marginMm * 2);
+                        const availH = Math.max(1, pageH - marginMm * 2);
+
+                        const imgRatio = processed.width / processed.height;
+                        const boxRatio = availW / availH;
+
+                        let drawW, drawH;
+
+                        if (imageFit === 'contain') {
+                            if (imgRatio > boxRatio) {
+                                drawW = availW;
+                                drawH = availW / imgRatio;
+                            } else {
+                                drawH = availH;
+                                drawW = availH * imgRatio;
+                            }
+                        } else {
+                            if (imgRatio > boxRatio) {
+                                drawH = availH;
+                                drawW = availH * imgRatio;
+                            } else {
+                                drawW = availW;
+                                drawH = availW / imgRatio;
+                            }
+                        }
+
+                        const offsetX = marginMm + (availW - drawW) / 2;
+                        const offsetY = marginMm + (availH - drawH) / 2;
+
+                        pdf.addImage(processed.dataUrl, 'JPEG', offsetX, offsetY, drawW, drawH, undefined, 'FAST');
+                    }
+                }
+
+                progressLabel.textContent = 'Finalizing PDF...';
+                progressPercent.textContent = '100%';
+                progressBar.style.width = '100%';
+
+                return pdf.output('blob');
+            }
+
+            // --- Download or Share PDF Handler ---
+            async function exportPdf(mode = 'download') {
+                if (state.images.length === 0 || state.isGenerating) return;
+
+                state.isGenerating = true;
+                btnGenerate.disabled = true;
+                btnShare.disabled = true;
+                btnMobileCreate.disabled = true;
+                btnMobileShare.disabled = true;
+
+                btnGenerateText.textContent = 'Building PDF...';
+                btnMobileCreateText.textContent = 'Building...';
+
+                try {
+                    const pdfBlob = await buildPdfBlob();
+                    const cleanName = state.settings.filename.replace(/\.pdf$/i, '') || 'SnapPDF-Document';
+                    const fullFilename = `${cleanName}.pdf`;
+
+                    if (mode === 'share' && state.canWebShareFiles) {
+                        const pdfFile = new File([pdfBlob], fullFilename, { type: 'application/pdf' });
+                        try {
+                            await navigator.share({
+                                title: cleanName,
+                                files: [pdfFile]
+                            });
+                            showToast('PDF shared successfully!', 'success');
+                        } catch (shareErr) {
+                            if (shareErr.name !== 'AbortError') {
+                                triggerBlobDownload(pdfBlob, fullFilename);
+                                showToast(`Saved "${fullFilename}" to Downloads.`, 'success');
+                            }
+                        }
+                    } else {
+                        triggerBlobDownload(pdfBlob, fullFilename);
+                        showToast(`Downloaded "${fullFilename}"!`, 'success');
+                    }
+                } catch (error) {
+                    console.error('PDF Export Error:', error);
+                    showToast('Failed to create PDF. Try setting Image Quality to Medium.', 'error');
+                } finally {
+                    state.isGenerating = false;
+                    btnGenerateText.textContent = 'Download PDF';
+                    btnMobileCreateText.textContent = 'Create PDF';
+                    setTimeout(() => {
+                        progressWrapper.classList.add('hidden');
+                        progressBar.style.width = '0%';
+                    }, 800);
+                    renderUI();
+                }
+            }
+
+            // Reliable Blob URL download for Android Chrome & Desktop browsers
+            function triggerBlobDownload(blob, filename) {
+                const blobUrl = URL.createObjectURL(blob);
+                const link = document.createElement('a');
+                link.href = blobUrl;
+                link.download = filename;
+                link.style.display = 'none';
+                document.body.appendChild(link);
+                link.click();
+                setTimeout(() => {
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(blobUrl);
+                }, 1500);
+            }
+
+            // --- Wire Up Primary Export & Share Buttons ---
+            btnGenerate.addEventListener('click', () => exportPdf('download'));
+            btnMobileCreate.addEventListener('click', () => exportPdf('download'));
+            btnShare.addEventListener('click', () => exportPdf('share'));
+            btnMobileShare.addEventListener('click', () => exportPdf('share'));
+        });
+    </script>
+</body>
+</html>
