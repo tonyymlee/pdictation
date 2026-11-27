@@ -83,6 +83,14 @@
       animation: fadeIn 0.2s ease-out forwards;
     }
 
+    @keyframes shutterFlash {
+      0% { opacity: 0.75; }
+      100% { opacity: 0; }
+    }
+    .animate-shutter-flash {
+      animation: shutterFlash 0.22s ease-out forwards;
+    }
+
     .touch-btn {
       min-height: 36px;
       touch-action: manipulation;
@@ -245,7 +253,7 @@
               </button>
             </div>
 
-            <!-- Row 3: 輸出檔案名稱（自動偵測首頁首行中/英文為 P4C_ / P4E_） -->
+            <!-- Row 3: 輸出檔案名稱（自動偵測首頁中/英文為 P4C_ / P4E_） -->
             <div class="max-w-md mx-auto text-left pt-0.5">
               <div class="flex items-center justify-between mb-1">
                 <label for="pdfFilename" class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">輸出檔案名稱</label>
@@ -350,6 +358,61 @@
         </svg>
         <span>分享</span>
       </button>
+    </div>
+  </div>
+
+  <!-- 連續拍照全螢幕相機視窗（最多連續 30 張，不彈出檔案總管） -->
+  <div id="liveCameraModal" class="hidden fixed inset-0 z-50 bg-black flex flex-col">
+    <!-- 頂部狀態列 -->
+    <div class="px-4 py-3 bg-black/80 backdrop-blur-sm flex items-center justify-between gap-2 shrink-0 z-10">
+      <div class="flex items-center gap-2">
+        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-600 text-white text-xs font-bold">
+          <span>連續拍照</span>
+          <span id="liveShotCounter" class="tabular-nums">0 / 30</span>
+        </span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="liveSwitchCamBtn" type="button" class="touch-btn px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold">
+          切換鏡頭
+        </button>
+        <button id="liveCancelCamBtn" type="button" class="touch-btn w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 text-white flex items-center justify-center" aria-label="關閉相機">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- 相機即時預覽區 -->
+    <div class="relative flex-1 min-h-0 bg-black flex items-center justify-center overflow-hidden">
+      <video id="liveCameraVideo" autoplay playsinline muted class="w-full h-full object-contain"></video>
+      <!-- 快門閃白效果 -->
+      <div id="liveShutterFlash" class="hidden absolute inset-0 bg-white pointer-events-none"></div>
+      <!-- 四角取景輔助線 -->
+      <div class="pointer-events-none absolute inset-6 sm:inset-10 border border-white/25 rounded-xl"></div>
+    </div>
+
+    <!-- 底部快門控制列 -->
+    <div class="px-5 py-4 bg-black/85 backdrop-blur-sm flex items-center justify-between gap-4 shrink-0" style="padding-bottom: max(1.25rem, env(safe-area-inset-bottom));">
+      <!-- 最新縮圖 -->
+      <div class="w-16 flex items-center justify-start">
+        <div id="liveThumbWrap" class="hidden relative w-12 h-14 rounded-lg overflow-hidden border-2 border-white/70 bg-slate-900">
+          <img id="liveLastThumb" src="" alt="最新拍攝" class="w-full h-full object-cover" />
+          <span id="liveThumbBadge" class="absolute bottom-0 right-0 bg-indigo-600 text-white text-[10px] font-bold px-1 leading-tight">0</span>
+        </div>
+      </div>
+
+      <!-- 大型快門按鈕 -->
+      <button id="liveShutterBtn" type="button" aria-label="拍照" class="w-18 h-18 w-[72px] h-[72px] rounded-full border-4 border-white bg-white/20 active:scale-95 transition-transform flex items-center justify-center disabled:opacity-40">
+        <span class="w-14 h-14 rounded-full bg-white block"></span>
+      </button>
+
+      <!-- 完成按鈕 -->
+      <div class="w-16 flex items-center justify-end">
+        <button id="liveCameraDoneBtn" type="button" class="touch-btn px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-sm">
+          完成
+        </button>
+      </div>
     </div>
   </div>
 
@@ -478,6 +541,8 @@
     let sortableInstance = null;
     let filenameManuallyEdited = false;
 
+    const MAX_CONTINUOUS_SHOTS = 30;
+
     const filterLabelMap = {
       none: '原圖',
       enhance: '增亮',
@@ -559,6 +624,19 @@
     const pageSizeSelect = document.getElementById('pageSize');
     const statusMessage = document.getElementById('statusMessage');
 
+    // 連續拍照相機視窗 DOM
+    const liveCameraModal = document.getElementById('liveCameraModal');
+    const liveCameraVideo = document.getElementById('liveCameraVideo');
+    const liveShotCounter = document.getElementById('liveShotCounter');
+    const liveSwitchCamBtn = document.getElementById('liveSwitchCamBtn');
+    const liveCancelCamBtn = document.getElementById('liveCancelCamBtn');
+    const liveShutterBtn = document.getElementById('liveShutterBtn');
+    const liveShutterFlash = document.getElementById('liveShutterFlash');
+    const liveThumbWrap = document.getElementById('liveThumbWrap');
+    const liveLastThumb = document.getElementById('liveLastThumb');
+    const liveThumbBadge = document.getElementById('liveThumbBadge');
+    const liveCameraDoneBtn = document.getElementById('liveCameraDoneBtn');
+
     // 分享視窗 DOM
     const shareModal = document.getElementById('shareModal');
     const closeShareModalBtn = document.getElementById('closeShareModalBtn');
@@ -599,6 +677,166 @@
     syncThemeUI();
 
     // =========================================================================
+    // 連續拍照相機引擎（直接開啟鏡頭、不顯示檔案資料夾、最多連拍 30 張）
+    // =========================================================================
+    let liveStream = null;
+    let liveFacingMode = 'environment';
+    let liveSessionShots = 0;
+    let liveIsCapturing = false;
+
+    function stopLiveCameraStream() {
+      if (liveStream) {
+        liveStream.getTracks().forEach((t) => t.stop());
+        liveStream = null;
+      }
+      liveCameraVideo.srcObject = null;
+    }
+
+    function updateLiveCameraCounter() {
+      liveShotCounter.textContent = `${liveSessionShots} / ${MAX_CONTINUOUS_SHOTS}`;
+      liveShutterBtn.disabled = liveSessionShots >= MAX_CONTINUOUS_SHOTS;
+      if (liveSessionShots > 0) {
+        liveThumbWrap.classList.remove('hidden');
+        liveThumbBadge.textContent = liveSessionShots;
+      } else {
+        liveThumbWrap.classList.add('hidden');
+      }
+    }
+
+    async function startLiveCamera(facingMode = 'environment') {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        // 無法使用即時鏡頭（例如非 HTTPS 環境）時退回系統相機
+        cameraInput.click();
+        return;
+      }
+
+      stopLiveCameraStream();
+
+      try {
+        const constraints = {
+          audio: false,
+          video: {
+            facingMode: { ideal: facingMode },
+            width: { ideal: 2560 },
+            height: { ideal: 1920 }
+          }
+        };
+        liveStream = await navigator.mediaDevices.getUserMedia(constraints);
+        liveCameraVideo.srcObject = liveStream;
+        await liveCameraVideo.play();
+        liveFacingMode = facingMode;
+        liveCameraModal.classList.remove('hidden');
+        updateLiveCameraCounter();
+      } catch (err) {
+        console.warn('無法開啟內建即時相機，退回系統相機:', err);
+        stopLiveCameraStream();
+        liveCameraModal.classList.add('hidden');
+        cameraInput.click();
+      }
+    }
+
+    function openLiveCameraModal() {
+      liveSessionShots = 0;
+      liveThumbWrap.classList.add('hidden');
+      startLiveCamera('environment');
+    }
+
+    function closeLiveCameraModal() {
+      stopLiveCameraStream();
+      liveCameraModal.classList.add('hidden');
+      if (liveSessionShots > 0) {
+        showStatus(`已完成連續拍攝 ${liveSessionShots} 張照片。`, 'success');
+      }
+    }
+
+    async function captureLivePhoto() {
+      if (liveIsCapturing || liveSessionShots >= MAX_CONTINUOUS_SHOTS) return;
+      if (!liveCameraVideo.videoWidth || !liveCameraVideo.videoHeight) return;
+
+      liveIsCapturing = true;
+
+      // 快門閃光動畫
+      liveShutterFlash.classList.remove('hidden', 'animate-shutter-flash');
+      void liveShutterFlash.offsetWidth;
+      liveShutterFlash.classList.add('animate-shutter-flash');
+
+      try {
+        const vw = liveCameraVideo.videoWidth;
+        const vh = liveCameraVideo.videoHeight;
+        const canvas = document.createElement('canvas');
+        canvas.width = vw;
+        canvas.height = vh;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(liveCameraVideo, 0, 0, vw, vh);
+        const originalDataUrl = canvas.toDataURL('image/jpeg', 0.92);
+        canvas.width = 0;
+        canvas.height = 0;
+
+        const wasEmpty = images.length === 0;
+        const imgEl = await loadImageElement(originalDataUrl);
+
+        let cropRect = null;
+        let isCropped = false;
+        if (autoCropEnabled) {
+          const detected = detectDocumentRect(imgEl);
+          if (detected) {
+            cropRect = detected;
+            isCropped = true;
+          }
+        }
+
+        const processed = processImageWithRectAndFilter(
+          imgEl,
+          cropRect,
+          globalScanFilter,
+          globalBrightness,
+          globalSharpness
+        );
+
+        const finalDataUrl = processed ? processed.dataUrl : originalDataUrl;
+
+        images.push({
+          id: 'img_' + Date.now() + '_' + Math.random().toString(36).substring(2, 8),
+          name: `掃描_${images.length + 1}.jpg`,
+          originalDataUrl,
+          dataUrl: finalDataUrl,
+          rotation: 0,
+          width: processed ? processed.width : imgEl.naturalWidth,
+          height: processed ? processed.height : imgEl.naturalHeight,
+          cropRect,
+          isCropped,
+          scanFilter: globalScanFilter
+        });
+
+        liveSessionShots++;
+        liveLastThumb.src = finalDataUrl;
+        updateLiveCameraCounter();
+        invalidatePdfCache();
+        renderGrid();
+
+        if (wasEmpty && images.length > 0) {
+          detectFirstLineLanguage(images[0].dataUrl);
+        }
+
+        if (liveSessionShots >= MAX_CONTINUOUS_SHOTS) {
+          closeLiveCameraModal();
+        }
+      } catch (err) {
+        console.error('拍照失敗:', err);
+      } finally {
+        liveIsCapturing = false;
+      }
+    }
+
+    liveShutterBtn.addEventListener('click', captureLivePhoto);
+    liveCameraDoneBtn.addEventListener('click', closeLiveCameraModal);
+    liveCancelCamBtn.addEventListener('click', closeLiveCameraModal);
+    liveSwitchCamBtn.addEventListener('click', () => {
+      const nextFacing = liveFacingMode === 'environment' ? 'user' : 'environment';
+      startLiveCamera(nextFacing);
+    });
+
+    // =========================================================================
     // 首頁上半部中/英文偵測（自動設定 P4C_ / P4E_）
     // =========================================================================
     async function detectFirstLineLanguage(dataUrl) {
@@ -610,7 +848,6 @@
 
       try {
         const img = await loadImageElement(dataUrl);
-        // 擷取第 1 頁上方 55%（避開只有插圖標題的誤判，涵蓋正文）
         const cropH = Math.max(80, Math.round(img.naturalHeight * 0.55));
         const scale = Math.min(1, 1000 / img.naturalWidth);
         const cw = Math.max(100, Math.round(img.naturalWidth * scale));
@@ -633,7 +870,6 @@
 
         const rawText = (result && result.data && result.data.text) ? result.data.text : '';
 
-        // 統計完整英文單字（3 個字母以上）與中文字數，避免插圖雜訊被誤判為中文
         const enWords = rawText.match(/[A-Za-z]{3,}/g) || [];
         const enLetterCount = enWords.reduce((sum, w) => sum + w.length, 0);
         const zhChars = rawText.match(/[\u4e00-\u9fff]/g) || [];
@@ -1385,10 +1621,12 @@
 
     closeCropModalBtn.addEventListener('click', closeCropModal);
 
-    // Esc 鍵關閉裁切視窗或分享視窗
+    // Esc 鍵關閉相機、裁切或分享視窗
     document.addEventListener('keydown', (e) => {
       if (e.key !== 'Escape') return;
-      if (!cropModal.classList.contains('hidden')) {
+      if (!liveCameraModal.classList.contains('hidden')) {
+        closeLiveCameraModal();
+      } else if (!cropModal.classList.contains('hidden')) {
         closeCropModal();
       } else if (!shareModal.classList.contains('hidden')) {
         closeShareModal();
@@ -1481,7 +1719,7 @@
     }
 
     // =========================================================================
-    // 檔案上傳事件
+    // 檔案上傳與拍照事件
     // =========================================================================
     browseBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -1489,7 +1727,7 @@
     });
     cameraBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      cameraInput.click();
+      openLiveCameraModal();
     });
     addMoreBtn.addEventListener('click', () => fileInput.click());
 
@@ -1619,7 +1857,6 @@
       invalidatePdfCache();
       renderGrid();
 
-      // 若是首次加入圖片，背景自動偵測第 1 頁首行中/英文以設定 P4C_ / P4E_
       if (wasEmpty && images.length > 0) {
         detectFirstLineLanguage(images[0].dataUrl);
       }
