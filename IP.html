@@ -83,7 +83,7 @@
     }
 
     .touch-btn {
-      min-height: 40px;
+      min-height: 36px;
       touch-action: manipulation;
     }
 
@@ -144,32 +144,32 @@
   </header>
 
   <!-- 主要內容 -->
-  <main class="flex-1 max-w-6xl w-full mx-auto px-3.5 sm:px-6 pt-4 sm:pt-6 pb-28 lg:pb-10">
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 lg:gap-8 items-start">
+  <main class="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 pt-3 sm:pt-6 pb-28 lg:pb-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
 
       <!-- 左欄：上傳與頁面排列區 -->
       <div class="lg:col-span-8 space-y-4">
 
         <!-- 精簡上傳與掃描控制區 -->
-        <div id="dropZone" class="border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-2xl p-4 sm:p-5 text-center transition-all hover:border-indigo-400 dark:hover:border-indigo-500 cursor-pointer">
+        <div id="dropZone" class="border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-2xl p-3.5 sm:p-5 text-center transition-all hover:border-indigo-400 dark:hover:border-indigo-500 cursor-pointer">
           <input id="fileInput" type="file" accept="image/*" multiple class="hidden" />
           <input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden" />
 
           <h2 class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100">加入或拍攝掃描文件</h2>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-md mx-auto">
+          <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 max-w-md mx-auto">
             從相簿選擇、拖曳圖片到此處，或直接使用相機拍攝並自動切除頁面外邊框。
           </p>
 
-          <div class="mt-3.5 flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 max-w-md mx-auto">
-            <button id="browseBtn" type="button" class="touch-btn flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-sm transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <div class="mt-3 grid grid-cols-2 gap-2 max-w-md mx-auto">
+            <button id="browseBtn" type="button" class="touch-btn inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-sm transition-colors">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
               </svg>
               <span>選擇圖片</span>
             </button>
 
-            <button id="cameraBtn" type="button" class="touch-btn flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 border border-indigo-200 dark:border-indigo-800 rounded-xl transition-colors">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <button id="cameraBtn" type="button" class="touch-btn inline-flex items-center justify-center gap-1.5 px-3 py-2.5 text-xs sm:text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 border border-indigo-200 dark:border-indigo-800 rounded-xl transition-colors">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
@@ -177,49 +177,69 @@
             </button>
           </div>
 
-          <!-- 精簡控制列：第一行（自動裁切 + 原圖/增亮/黑白），第二行（亮度 + 銳利度 + 重設） -->
-          <div class="no-drop-click mt-3.5 pt-3.5 border-t border-slate-100 dark:border-slate-800 space-y-2.5 cursor-default">
-            <!-- Row 1: 自動矩形裁切 + 3 色彩按鈕 -->
-            <div class="flex flex-wrap items-center justify-center gap-2">
-              <button id="autoCropToggle" type="button" role="switch" aria-checked="true" class="touch-btn inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all shrink-0">
-                <span id="autoCropTrack" class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200">
-                  <span id="autoCropKnob" class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4"></span>
+          <!-- 精簡控制列：Row 1（裁切 + 原圖/黑白 + 切換式 PDF 選項），Row 2（單行亮度/銳利度/重設） -->
+          <div class="no-drop-click mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2 cursor-default">
+            <!-- Row 1: 裁切開關 + 原圖/黑白 + 方向/邊距/縮放/畫質（點擊輪流切換） -->
+            <div class="flex flex-wrap items-center justify-center gap-1.5">
+              <!-- 自動矩形裁切 -->
+              <button id="autoCropToggle" type="button" role="switch" aria-checked="true" title="點擊開關自動矩形裁切" class="touch-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all shrink-0">
+                <span id="autoCropTrack" class="relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200">
+                  <span id="autoCropKnob" class="inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-3.5"></span>
                 </span>
-                <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300" id="autoCropLabel">自動矩形裁切邊框：開啟</span>
+                <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300" id="autoCropLabel">裁切</span>
               </button>
 
-              <div class="inline-flex items-center rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800">
-                <button type="button" data-global-filter="none" class="global-filter-btn touch-btn px-3.5 py-1.5 text-xs font-semibold bg-indigo-600 text-white transition-all">
+              <!-- 原圖 / 黑白 -->
+              <div class="inline-flex items-center rounded-xl overflow-hidden border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-800 shrink-0">
+                <button type="button" data-global-filter="none" class="global-filter-btn touch-btn px-2.5 py-1 text-xs font-semibold bg-indigo-600 text-white transition-all">
                   原圖
                 </button>
-                <button type="button" data-global-filter="enhance" class="global-filter-btn touch-btn px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border-l border-slate-300 dark:border-slate-700 transition-all">
-                  增亮
-                </button>
-                <button type="button" data-global-filter="bw" class="global-filter-btn touch-btn px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border-l border-slate-300 dark:border-slate-700 transition-all">
+                <button type="button" data-global-filter="bw" class="global-filter-btn touch-btn px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border-l border-slate-300 dark:border-slate-700 transition-all">
                   黑白
                 </button>
               </div>
+
+              <!-- 方向切換：直向 / 橫向 -->
+              <button id="cycleOrientationBtn" type="button" title="點擊切換直向或橫向" class="touch-btn inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
+                <span id="cycleOrientationIcon" class="w-2.5 h-3.5 border-[1.5px] border-current rounded-[2px] inline-block"></span>
+                <span id="cycleOrientationText">直向</span>
+              </button>
+
+              <!-- 邊距切換：窄邊距 / 標準 / 無邊距 -->
+              <button id="cycleMarginBtn" type="button" title="點擊切換邊距（窄邊距 / 標準 / 無邊距）" class="touch-btn px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
+                窄邊距
+              </button>
+
+              <!-- 縮放切換：不裁切 / 填滿 -->
+              <button id="cycleFitBtn" type="button" title="點擊切換圖片縮放（不裁切 / 填滿）" class="touch-btn px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
+                (不裁切)
+              </button>
+
+              <!-- 畫質切換：高畫質 / 中畫質 / 原畫質 -->
+              <button id="cycleQualityBtn" type="button" title="點擊切換圖片畫質（高畫質 / 中畫質 / 原畫質）" class="touch-btn px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
+                高畫質
+              </button>
             </div>
 
-            <!-- Row 2: 亮度 + 銳利度 + 重設 -->
-            <div class="p-2.5 sm:px-3.5 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 text-left">
+            <!-- Row 2: 單行亮度 + 銳利度 + 重設（手機與電腦皆保持同一行） -->
+            <div class="p-2 sm:px-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 flex flex-row items-center gap-2 sm:gap-3 text-left">
               <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between text-[11px] mb-1">
-                  <label for="brightnessSlider" class="font-medium text-slate-700 dark:text-slate-300">亮度（調低字更深）</label>
-                  <span id="brightnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">0</span>
+                <div class="flex items-center justify-between text-[10px] sm:text-[11px] mb-1 gap-1">
+                  <label for="brightnessSlider" class="font-medium text-slate-700 dark:text-slate-300 truncate">亮度</label>
+                  <span id="brightnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums shrink-0">0</span>
                 </div>
                 <input id="brightnessSlider" type="range" min="-60" max="60" step="5" value="0" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg" />
               </div>
 
               <div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between text-[11px] mb-1">
-                  <label for="sharpnessSlider" class="font-medium text-slate-700 dark:text-slate-300">銳利度（字體清晰）</label>
-                  <span id="sharpnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums">30%</span>
+                <div class="flex items-center justify-between text-[10px] sm:text-[11px] mb-1 gap-1">
+                  <label for="sharpnessSlider" class="font-medium text-slate-700 dark:text-slate-300 truncate">銳利度</label>
+                  <span id="sharpnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums shrink-0">30%</span>
                 </div>
                 <input id="sharpnessSlider" type="range" min="0" max="100" step="5" value="30" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg" />
               </div>
 
-              <button id="resetAdjustBtn" type="button" class="touch-btn sm:min-h-[34px] px-3 py-1.5 rounded-lg bg-slate-200/70 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-xs font-semibold text-indigo-600 dark:text-indigo-400 shrink-0 transition-colors">
+              <button id="resetAdjustBtn" type="button" class="touch-btn min-h-[32px] px-2.5 py-1 rounded-lg bg-slate-200/70 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[11px] sm:text-xs font-semibold text-indigo-600 dark:text-indigo-400 shrink-0 transition-colors">
                 重設
               </button>
             </div>
@@ -234,7 +254,7 @@
           </div>
 
           <div class="flex items-center gap-2 ml-auto">
-            <button id="addMoreBtn" type="button" class="touch-btn px-3 py-2 text-xs sm:text-sm font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 rounded-xl inline-flex items-center gap-1.5 transition-colors">
+            <button id="addMoreBtn" type="button" class="touch-btn px-3 py-1.5 text-xs sm:text-sm font-semibold text-indigo-600 dark:text-indigo-400 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 rounded-xl inline-flex items-center gap-1.5 transition-colors">
               <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
               </svg>
@@ -247,35 +267,45 @@
         <div id="imageGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3.5 sm:gap-4"></div>
 
         <!-- 空狀態提示 -->
-        <div id="emptyStateHint" class="text-center py-6 text-slate-400 dark:text-slate-500 text-xs sm:text-sm">
+        <div id="emptyStateHint" class="text-center py-5 text-slate-400 dark:text-slate-500 text-xs sm:text-sm">
           尚未加入任何圖片。請點擊上方的 <span class="font-medium text-slate-600 dark:text-slate-300">選擇圖片</span> 或 <span class="font-medium text-slate-600 dark:text-slate-300">立即拍照掃描</span>。
         </div>
       </div>
 
-      <!-- 右欄：PDF 設定 -->
-      <div id="settingsSection" class="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-6 shadow-sm space-y-4 sm:space-y-5 lg:sticky lg:top-24 transition-colors">
-        <div class="border-b border-slate-100 dark:border-slate-800 pb-3.5">
+      <!-- 右欄：PDF 設定（精簡版） -->
+      <div id="settingsSection" class="lg:col-span-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 sm:p-5 shadow-sm space-y-4 lg:sticky lg:top-24 transition-colors">
+        <div class="border-b border-slate-100 dark:border-slate-800 pb-3">
           <h3 class="text-base font-bold text-slate-900 dark:text-white">PDF 設定</h3>
-          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">自訂版面、頁碼、尺寸與壓縮品質。</p>
+          <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">檔名、頁碼與頁面尺寸。</p>
         </div>
 
         <!-- 輸出檔案名稱 -->
         <div>
           <label for="pdfFilename" class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">輸出檔案名稱</label>
           <div class="relative flex items-center">
-            <input id="pdfFilename" type="text" value="合併文件" placeholder="合併文件" class="touch-btn w-full pl-3.5 pr-12 py-2.5 text-base sm:text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+            <input id="pdfFilename" type="text" value="合併文件" placeholder="合併文件" class="touch-btn w-full pl-3.5 pr-12 py-2 text-base sm:text-sm border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
             <span class="absolute right-3.5 text-xs font-semibold text-slate-400 dark:text-slate-500">.pdf</span>
           </div>
         </div>
 
+        <!-- 頁面尺寸 -->
+        <div>
+          <label for="pageSize" class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">頁面尺寸</label>
+          <select id="pageSize" class="touch-btn w-full px-3.5 py-2 text-base sm:text-sm border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
+            <option value="a4" selected>A4（210 × 297 毫米）</option>
+            <option value="letter">美國信紙（8.5 × 11 吋）</option>
+            <option value="fit">配合每張圖片原始尺寸</option>
+          </select>
+        </div>
+
         <!-- 頁碼設定 -->
-        <div class="p-3.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/60 space-y-2.5">
+        <div class="p-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50/70 dark:bg-slate-950/60 space-y-2.5">
           <div class="flex items-center justify-between gap-2">
             <div>
               <span class="block text-xs font-bold text-slate-800 dark:text-slate-100">顯示頁碼</span>
               <span class="text-[11px] text-slate-500 dark:text-slate-400">在每頁右側角落加上 Page 1/3</span>
             </div>
-            <button id="pageNumberToggle" type="button" role="switch" aria-checked="true" class="touch-btn inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/60 transition-all shrink-0">
+            <button id="pageNumberToggle" type="button" role="switch" aria-checked="true" class="touch-btn inline-flex items-center gap-2 px-3 py-1 rounded-xl border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/60 transition-all shrink-0">
               <span id="pageNumTrack" class="relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-indigo-600 transition-colors duration-200">
                 <span id="pageNumKnob" class="inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4"></span>
               </span>
@@ -286,14 +316,14 @@
           <div id="pageNumFormatBox" class="pt-2 border-t border-slate-200/70 dark:border-slate-800 grid grid-cols-2 gap-2">
             <div>
               <label for="pageNumPosition" class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">頁碼位置</label>
-              <select id="pageNumPosition" class="w-full px-2.5 py-2 text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <select id="pageNumPosition" class="w-full px-2.5 py-1.5 text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <option value="bottom_right" selected>右下角</option>
                 <option value="top_right">右上角</option>
               </select>
             </div>
             <div>
               <label for="pageNumFormat" class="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-1">頁碼格式</label>
-              <select id="pageNumFormat" class="w-full px-2.5 py-2 text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+              <select id="pageNumFormat" class="w-full px-2.5 py-1.5 text-xs font-medium border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500">
                 <option value="page_slash" selected>Page 1/3</option>
                 <option value="slash">1/3</option>
               </select>
@@ -301,77 +331,16 @@
           </div>
         </div>
 
-        <!-- 頁面尺寸與方向 -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-3.5">
-          <div>
-            <label for="pageSize" class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">頁面尺寸</label>
-            <select id="pageSize" class="touch-btn w-full px-3.5 py-2.5 text-base sm:text-sm border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-              <option value="a4" selected>A4（210 × 297 毫米）</option>
-              <option value="letter">美國信紙（8.5 × 11 吋）</option>
-              <option value="fit">配合每張圖片原始尺寸</option>
-            </select>
-          </div>
-
-          <div id="orientationGroup">
-            <label class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">頁面方向</label>
-            <div class="grid grid-cols-2 gap-2">
-              <button type="button" data-orientation="portrait" class="orientation-btn touch-btn active flex items-center justify-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-medium border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-xl transition-all">
-                <span class="w-3 h-4 border-2 border-current rounded-[2px]"></span>
-                直向
-              </button>
-              <button type="button" data-orientation="landscape" class="orientation-btn touch-btn flex items-center justify-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-medium border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all">
-                <span class="w-4 h-3 border-2 border-current rounded-[2px]"></span>
-                橫向
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 邊距 -->
-        <div id="marginGroup">
-          <label class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">頁面邊距</label>
-          <div class="grid grid-cols-3 gap-2">
-            <button type="button" data-margin="0" class="margin-btn touch-btn py-2.5 px-2 text-xs sm:text-sm font-medium border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all">
-              無邊距
-            </button>
-            <button type="button" data-margin="10" class="margin-btn touch-btn active py-2.5 px-2 text-xs sm:text-sm font-medium border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-xl transition-all">
-              窄邊距
-            </button>
-            <button type="button" data-margin="20" class="margin-btn touch-btn py-2.5 px-2 text-xs sm:text-sm font-medium border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all">
-              標準
-            </button>
-          </div>
-        </div>
-
-        <!-- 圖片縮放 -->
-        <div id="fitGroup">
-          <label for="imageFit" class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">圖片縮放方式</label>
-          <select id="imageFit" class="touch-btn w-full px-3.5 py-2.5 text-base sm:text-sm border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-            <option value="contain" selected>完整顯示圖片（不裁切）</option>
-            <option value="cover">填滿整個頁面（裁切邊緣）</option>
-          </select>
-        </div>
-
-        <!-- 壓縮品質 -->
-        <div>
-          <label for="imageQuality" class="block text-xs font-semibold tracking-wider text-slate-500 dark:text-slate-400 mb-1.5">圖片品質與檔案大小</label>
-          <select id="imageQuality" class="touch-btn w-full px-3.5 py-2.5 text-base sm:text-sm border border-slate-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">
-            <option value="0.85" selected>高畫質（建議手機使用）</option>
-            <option value="0.65">中等畫質（檔案較小）</option>
-            <option value="0.95">原始畫質（檔案較大）</option>
-          </select>
-        </div>
-
         <!-- 電腦版操作按鈕 -->
-        <div class="hidden lg:block pt-2 space-y-2.5">
-          <button id="convertBtn" type="button" disabled class="w-full py-3.5 px-4 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 dark:disabled:text-slate-500 disabled:cursor-not-allowed rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all">
+        <div class="hidden lg:block pt-1 space-y-2">
+          <button id="convertBtn" type="button" disabled class="w-full py-3 px-4 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 dark:disabled:text-slate-500 disabled:cursor-not-allowed rounded-xl shadow-sm flex items-center justify-center gap-2 transition-all">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
             </svg>
             <span id="convertBtnText">合併並下載 PDF</span>
           </button>
 
-          <button id="desktopShareBtn" type="button" disabled class="w-full py-3 px-4 text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl flex items-center justify-center gap-2 transition-all">
+          <button id="desktopShareBtn" type="button" disabled class="w-full py-2.5 px-4 text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 disabled:opacity-40 disabled:cursor-not-allowed rounded-xl flex items-center justify-center gap-2 transition-all">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
             </svg>
@@ -380,7 +349,7 @@
         </div>
 
         <!-- 狀態提示 -->
-        <div id="statusMessage" class="hidden text-xs font-medium text-center py-2.5 px-3 rounded-xl"></div>
+        <div id="statusMessage" class="hidden text-xs font-medium text-center py-2 px-3 rounded-xl"></div>
       </div>
     </div>
   </main>
@@ -418,7 +387,7 @@
     <div class="px-4 py-3 bg-slate-900 border-b border-slate-800 flex items-center justify-between gap-2 shrink-0">
       <div>
         <h3 class="text-sm sm:text-base font-bold text-white">調整矩形裁切框與掃描模式</h3>
-        <p class="text-[11px] text-slate-400">拖曳四個角點調整大小，或拖曳框內移動位置（保持標準矩形，按 Esc 關閉）</p>
+        <p class="text-[11px] text-slate-400">拖曳四個角點調整大小，或拖曳框內移動位置（按 Esc 關閉）</p>
       </div>
       <button id="closeCropModalBtn" type="button" class="touch-btn w-9 h-9 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 flex items-center justify-center" aria-label="關閉">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -443,13 +412,13 @@
 
       <!-- 操作按鈕 -->
       <div class="max-w-xl mx-auto flex items-center gap-2">
-        <button id="cropAutoDetectBtn" type="button" class="touch-btn px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 text-xs font-semibold shrink-0">
+        <button id="cropAutoDetectBtn" type="button" class="touch-btn px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 border border-slate-700 text-xs font-semibold shrink-0">
           自動偵測
         </button>
-        <button id="cropResetFullBtn" type="button" class="touch-btn px-3 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold shrink-0">
+        <button id="cropResetFullBtn" type="button" class="touch-btn px-3 py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700 text-xs font-semibold shrink-0">
           還原全圖
         </button>
-        <button id="cropApplyBtn" type="button" class="touch-btn flex-1 py-2.5 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-sm">
+        <button id="cropApplyBtn" type="button" class="touch-btn flex-1 py-2 px-4 rounded-xl bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-bold shadow-sm">
           套用裁切
         </button>
       </div>
@@ -524,11 +493,13 @@
     // 應用程式狀態
     let images = [];
     let autoCropEnabled = true;
-    let globalScanFilter = 'none'; // 'none' | 'enhance' | 'bw'
+    let globalScanFilter = 'none'; // 'none' | 'bw'
     let globalBrightness = 0;      // -60 ~ +60
     let globalSharpness = 30;      // 0 ~ 100
-    let selectedOrientation = 'portrait';
-    let selectedMargin = 10;
+    let selectedOrientation = 'portrait'; // 'portrait' | 'landscape'
+    let selectedMargin = 10;              // 10 | 20 | 0
+    let selectedImageFit = 'contain';     // 'contain' | 'cover'
+    let selectedQuality = 0.85;           // 0.85 | 0.65 | 0.95
     let showPageNumbers = true;
     let pageNumberPosition = 'bottom_right';
     let pageNumberFormat = 'page_slash';
@@ -542,6 +513,18 @@
       enhance: '增亮',
       bw: '黑白'
     };
+
+    const marginOptions = [
+      { value: 10, label: '窄邊距' },
+      { value: 20, label: '標準' },
+      { value: 0, label: '無邊距' }
+    ];
+
+    const qualityOptions = [
+      { value: 0.85, label: '高畫質' },
+      { value: 0.65, label: '中畫質' },
+      { value: 0.95, label: '原畫質' }
+    ];
 
     const canNativeShare = typeof navigator !== 'undefined' && typeof navigator.share === 'function';
     const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
@@ -564,6 +547,13 @@
     const autoCropTrack = document.getElementById('autoCropTrack');
     const autoCropKnob = document.getElementById('autoCropKnob');
     const autoCropLabel = document.getElementById('autoCropLabel');
+
+    const cycleOrientationBtn = document.getElementById('cycleOrientationBtn');
+    const cycleOrientationIcon = document.getElementById('cycleOrientationIcon');
+    const cycleOrientationText = document.getElementById('cycleOrientationText');
+    const cycleMarginBtn = document.getElementById('cycleMarginBtn');
+    const cycleFitBtn = document.getElementById('cycleFitBtn');
+    const cycleQualityBtn = document.getElementById('cycleQualityBtn');
 
     const brightnessSlider = document.getElementById('brightnessSlider');
     const brightnessVal = document.getElementById('brightnessVal');
@@ -597,11 +587,6 @@
     const emptyStateHint = document.getElementById('emptyStateHint');
     const pdfFilenameInput = document.getElementById('pdfFilename');
     const pageSizeSelect = document.getElementById('pageSize');
-    const imageFitSelect = document.getElementById('imageFit');
-    const imageQualitySelect = document.getElementById('imageQuality');
-    const orientationGroup = document.getElementById('orientationGroup');
-    const marginGroup = document.getElementById('marginGroup');
-    const fitGroup = document.getElementById('fitGroup');
     const statusMessage = document.getElementById('statusMessage');
 
     // 分享視窗 DOM
@@ -644,22 +629,22 @@
     syncThemeUI();
 
     // =========================================================================
-    // 自動裁切開關、全域色彩模式、亮度與銳利度（套用至全部圖片）
+    // 主框精簡控制列：裁切、原圖/黑白、方向/邊距/縮放/畫質切換、亮度/銳利度
     // =========================================================================
     function syncAutoCropUI() {
       autoCropToggle.setAttribute('aria-checked', String(autoCropEnabled));
       if (autoCropEnabled) {
-        autoCropToggle.className = 'touch-btn inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all shrink-0';
-        autoCropTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200';
-        autoCropKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4';
-        autoCropLabel.textContent = '自動矩形裁切邊框：開啟';
+        autoCropToggle.className = 'touch-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all shrink-0';
+        autoCropTrack.className = 'relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200';
+        autoCropKnob.className = 'inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-3.5';
+        autoCropLabel.textContent = '裁切';
         autoCropLabel.className = 'text-xs font-bold text-emerald-700 dark:text-emerald-300';
       } else {
-        autoCropToggle.className = 'touch-btn inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 transition-all shrink-0';
-        autoCropTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-slate-300 dark:bg-slate-600 transition-colors duration-200';
-        autoCropKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-1';
-        autoCropLabel.textContent = '自動矩形裁切邊框：關閉';
-        autoCropLabel.className = 'text-xs font-bold text-slate-600 dark:text-slate-400';
+        autoCropToggle.className = 'touch-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 transition-all shrink-0';
+        autoCropTrack.className = 'relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-slate-300 dark:bg-slate-600 transition-colors duration-200';
+        autoCropKnob.className = 'inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-0.5';
+        autoCropLabel.textContent = '裁切';
+        autoCropLabel.className = 'text-xs font-bold text-slate-500 dark:text-slate-400';
       }
     }
 
@@ -671,13 +656,70 @@
 
     syncAutoCropUI();
 
+    function syncCycleButtonsUI() {
+      const isFit = pageSizeSelect.value === 'fit';
+
+      // 方向
+      const isPortrait = selectedOrientation === 'portrait';
+      cycleOrientationText.textContent = isPortrait ? '直向' : '橫向';
+      cycleOrientationIcon.className = isPortrait
+        ? 'w-2.5 h-3.5 border-[1.5px] border-current rounded-[2px] inline-block'
+        : 'w-3.5 h-2.5 border-[1.5px] border-current rounded-[2px] inline-block';
+
+      // 邊距
+      const marginObj = marginOptions.find((m) => m.value === selectedMargin) || marginOptions[0];
+      cycleMarginBtn.textContent = marginObj.label;
+
+      // 縮放
+      cycleFitBtn.textContent = selectedImageFit === 'contain' ? '(不裁切)' : '(填滿)';
+
+      // 畫質
+      const qualObj = qualityOptions.find((q) => q.value === selectedQuality) || qualityOptions[0];
+      cycleQualityBtn.textContent = qualObj.label;
+
+      // 若頁面尺寸為「配合圖片原始尺寸」，隱藏方向/邊距/縮放按鈕
+      cycleOrientationBtn.classList.toggle('hidden', isFit);
+      cycleMarginBtn.classList.toggle('hidden', isFit);
+      cycleFitBtn.classList.toggle('hidden', isFit);
+    }
+
+    cycleOrientationBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectedOrientation = selectedOrientation === 'portrait' ? 'landscape' : 'portrait';
+      syncCycleButtonsUI();
+      invalidatePdfCache();
+    });
+
+    cycleMarginBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = marginOptions.findIndex((m) => m.value === selectedMargin);
+      selectedMargin = marginOptions[(idx + 1) % marginOptions.length].value;
+      syncCycleButtonsUI();
+      invalidatePdfCache();
+    });
+
+    cycleFitBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectedImageFit = selectedImageFit === 'contain' ? 'cover' : 'contain';
+      syncCycleButtonsUI();
+      invalidatePdfCache();
+    });
+
+    cycleQualityBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const idx = qualityOptions.findIndex((q) => q.value === selectedQuality);
+      selectedQuality = qualityOptions[(idx + 1) % qualityOptions.length].value;
+      syncCycleButtonsUI();
+      invalidatePdfCache();
+    });
+
     function syncGlobalFilterUI() {
       document.querySelectorAll('.global-filter-btn').forEach((btn, i) => {
         const isActive = btn.dataset.globalFilter === globalScanFilter;
         const borderCls = i > 0 ? ' border-l border-slate-300 dark:border-slate-700' : '';
         btn.className = isActive
-          ? `global-filter-btn touch-btn px-3.5 py-1.5 text-xs font-semibold bg-indigo-600 text-white${borderCls} transition-all`
-          : `global-filter-btn touch-btn px-3.5 py-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700${borderCls} transition-all`;
+          ? `global-filter-btn touch-btn px-2.5 py-1 text-xs font-semibold bg-indigo-600 text-white${borderCls} transition-all`
+          : `global-filter-btn touch-btn px-2.5 py-1 text-xs font-semibold text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700${borderCls} transition-all`;
       });
     }
 
@@ -759,6 +801,7 @@
 
     syncGlobalFilterUI();
     syncAdjustLabels();
+    syncCycleButtonsUI();
 
     // =========================================================================
     // 文件標準矩形邊緣偵測、直接矩形裁切、銳利化與色彩濾鏡引擎（純 JS + Canvas）
@@ -879,7 +922,6 @@
       ctx.drawImage(img, 0, 0, w, h);
       const rgba = ctx.getImageData(0, 0, w, h).data;
 
-      // 1. 中央內容代表色（取較亮的前 60% 像素避開黑色字體）
       const centerSamples = [];
       const cx0 = Math.floor(w * 0.22), cx1 = Math.floor(w * 0.78);
       const cy0 = Math.floor(h * 0.22), cy1 = Math.floor(h * 0.78);
@@ -906,7 +948,6 @@
       paperB /= brightCount;
       paperLum /= brightCount;
 
-      // 2. 外圍 4% 邊界背景色
       let bgR = 0, bgG = 0, bgB = 0, bgLum = 0, bgCount = 0;
       const bx = Math.max(2, Math.floor(w * 0.04));
       const by = Math.max(2, Math.floor(h * 0.04));
@@ -928,7 +969,6 @@
       bgB /= Math.max(1, bgCount);
       bgLum /= Math.max(1, bgCount);
 
-      // 3. 若畫面已經是滿版文件（邊緣與紙張顏色接近），回傳 null 保留全圖
       const colorDiff = Math.hypot(paperR - bgR, paperG - bgG, paperB - bgB);
       const lumDiff = Math.abs(paperLum - bgLum);
       if (colorDiff < 24 && lumDiff < 18) {
@@ -937,7 +977,6 @@
         return null;
       }
 
-      // 4. 從四邊向內洪水填充背景區域
       const outside = new Uint8Array(w * h);
       const queue = new Int32Array(w * h);
       let head = 0, tail = 0;
@@ -983,7 +1022,6 @@
         return null;
       }
 
-      // 5. 合併所有有效前景區塊（過濾極小雜點），確保所有表格與文字都包含在內
       const visited = new Uint8Array(w * h);
       const minNoisePixels = Math.max(12, Math.floor(w * h * 0.0015));
       let unionMinX = w, unionMaxX = 0, unionMinY = h, unionMaxY = 0;
@@ -1026,7 +1064,6 @@
 
       if (!foundValid) return null;
 
-      // 加上 2% 安全留白，且若某邊距離原始圖片邊界不到 6% 則直接貼齊全邊，避免切到邊緣文字
       const pad = 0.02;
       const snapEdge = 0.06;
       let left = Math.max(0, unionMinX / w - pad);
@@ -1055,9 +1092,9 @@
     // =========================================================================
     let activeCropId = null;
     let activeCropImg = null;
-    let activeCropRect = null; // { left, top, right, bottom }
+    let activeCropRect = null;
     let activeCropFilter = 'none';
-    let dragMode = null;       // 'tl' | 'tr' | 'br' | 'bl' | 'move' | null
+    let dragMode = null;
     let dragStartPos = null;
     let dragStartRect = null;
 
@@ -1109,7 +1146,6 @@
       const rw = x1 - x0;
       const rh = y1 - y0;
 
-      // 外部半透明遮罩
       ctx.save();
       ctx.fillStyle = 'rgba(15, 23, 42, 0.58)';
       ctx.beginPath();
@@ -1118,13 +1154,11 @@
       ctx.fill('evenodd');
       ctx.restore();
 
-      // 矩形邊框
       ctx.save();
       ctx.strokeStyle = '#34d399';
       ctx.lineWidth = 2.5;
       ctx.strokeRect(x0, y0, rw, rh);
 
-      // 九宮格參考線
       ctx.strokeStyle = 'rgba(52, 211, 153, 0.35)';
       ctx.lineWidth = 1;
       for (const t of [1 / 3, 2 / 3]) {
@@ -1140,7 +1174,6 @@
       }
       ctx.restore();
 
-      // 四個角點控點
       const handles = [
         { key: 'tl', x: x0, y: y0 },
         { key: 'tr', x: x1, y: y0 },
@@ -1357,19 +1390,19 @@
     });
 
     // =========================================================================
-    // 右側頁碼設定
+    // 右側頁碼設定與頁面尺寸
     // =========================================================================
     function syncPageNumberUI() {
       pageNumberToggle.setAttribute('aria-checked', String(showPageNumbers));
       if (showPageNumbers) {
-        pageNumberToggle.className = 'touch-btn inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/60 transition-all shrink-0';
+        pageNumberToggle.className = 'touch-btn inline-flex items-center gap-2 px-3 py-1 rounded-xl border border-indigo-500 bg-indigo-50 dark:bg-indigo-950/60 transition-all shrink-0';
         pageNumTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-indigo-600 transition-colors duration-200';
         pageNumKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-4';
         pageNumLabel.textContent = '開啟';
         pageNumLabel.className = 'text-xs font-bold text-indigo-700 dark:text-indigo-300';
         pageNumFormatBox.classList.remove('hidden');
       } else {
-        pageNumberToggle.className = 'touch-btn inline-flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 transition-all shrink-0';
+        pageNumberToggle.className = 'touch-btn inline-flex items-center gap-2 px-3 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 transition-all shrink-0';
         pageNumTrack.className = 'relative inline-flex h-5 w-9 shrink-0 items-center rounded-full bg-slate-300 dark:bg-slate-700 transition-colors duration-200';
         pageNumKnob.className = 'inline-block h-3.5 w-3.5 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-1';
         pageNumLabel.textContent = '關閉';
@@ -1396,6 +1429,13 @@
       invalidatePdfCache();
       renderGrid();
     });
+
+    pageSizeSelect.addEventListener('change', () => {
+      syncCycleButtonsUI();
+      invalidatePdfCache();
+    });
+
+    pdfFilenameInput.addEventListener('input', invalidatePdfCache);
 
     syncPageNumberUI();
 
@@ -1480,48 +1520,6 @@
       renderGrid();
       showStatus('已清除所有圖片。', 'info');
     });
-
-    // =========================================================================
-    // PDF 版面設定
-    // =========================================================================
-    document.querySelectorAll('.orientation-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        selectedOrientation = btn.dataset.orientation;
-        document.querySelectorAll('.orientation-btn').forEach((b) => {
-          const active = b.dataset.orientation === selectedOrientation;
-          b.className = active
-            ? 'orientation-btn touch-btn active flex items-center justify-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-medium border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-xl transition-all'
-            : 'orientation-btn touch-btn flex items-center justify-center gap-2 py-2.5 px-3 text-xs sm:text-sm font-medium border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all';
-        });
-        invalidatePdfCache();
-      });
-    });
-
-    document.querySelectorAll('.margin-btn').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        selectedMargin = Number(btn.dataset.margin);
-        document.querySelectorAll('.margin-btn').forEach((b) => {
-          const active = Number(b.dataset.margin) === selectedMargin;
-          b.className = active
-            ? 'margin-btn touch-btn active py-2.5 px-2 text-xs sm:text-sm font-medium border-2 border-indigo-600 bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 rounded-xl transition-all'
-            : 'margin-btn touch-btn py-2.5 px-2 text-xs sm:text-sm font-medium border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 rounded-xl transition-all';
-        });
-        invalidatePdfCache();
-      });
-    });
-
-    function syncPageSizeControls() {
-      const isFit = pageSizeSelect.value === 'fit';
-      orientationGroup.classList.toggle('hidden', isFit);
-      marginGroup.classList.toggle('hidden', isFit);
-      fitGroup.classList.toggle('hidden', isFit);
-      invalidatePdfCache();
-    }
-
-    pageSizeSelect.addEventListener('change', syncPageSizeControls);
-    imageFitSelect.addEventListener('change', invalidatePdfCache);
-    imageQualitySelect.addEventListener('change', invalidatePdfCache);
-    pdfFilenameInput.addEventListener('input', invalidatePdfCache);
 
     // =========================================================================
     // 圖片載入、自動矩形裁切與預覽格線
@@ -1849,8 +1847,8 @@
 
     async function buildPdfBlob() {
       const pageSize = pageSizeSelect.value;
-      const imageFit = imageFitSelect.value;
-      const quality = parseFloat(imageQualitySelect.value) || 0.85;
+      const imageFit = selectedImageFit;
+      const quality = selectedQuality || 0.85;
       const margin = selectedMargin;
       const totalPages = images.length;
 
@@ -2102,11 +2100,11 @@
       statusMessage.textContent = text;
       statusMessage.classList.remove('hidden');
       if (type === 'error') {
-        statusMessage.className = 'text-xs font-medium text-center py-2.5 px-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800';
+        statusMessage.className = 'text-xs font-medium text-center py-2 px-3 rounded-xl bg-rose-50 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300 border border-rose-200 dark:border-rose-800';
       } else if (type === 'success') {
-        statusMessage.className = 'text-xs font-medium text-center py-2.5 px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
+        statusMessage.className = 'text-xs font-medium text-center py-2 px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800';
       } else {
-        statusMessage.className = 'text-xs font-medium text-center py-2.5 px-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800';
+        statusMessage.className = 'text-xs font-medium text-center py-2 px-3 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800';
       }
 
       if (statusTimer) clearTimeout(statusTimer);
@@ -2115,7 +2113,6 @@
       }, 5000);
     }
 
-    syncPageSizeControls();
     renderGrid();
   </script>
 </body>
