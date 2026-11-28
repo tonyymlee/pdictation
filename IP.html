@@ -239,22 +239,22 @@
               </button>
             </div>
 
-            <!-- Row 2: 單行亮度 + 銳利度 + 重設 -->
+            <!-- Row 2: 單行亮度 + 銳利度 + 重設（預設皆為 20%） -->
             <div class="p-2 sm:px-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 flex flex-row items-center gap-2 sm:gap-3 text-left">
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between text-[10px] sm:text-[11px] mb-1 gap-1">
                   <label for="brightnessSlider" class="font-medium text-slate-700 dark:text-slate-300 truncate">亮度</label>
-                  <span id="brightnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums shrink-0">0</span>
+                  <span id="brightnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums shrink-0">+20%</span>
                 </div>
-                <input id="brightnessSlider" type="range" min="-60" max="60" step="5" value="0" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+                <input id="brightnessSlider" type="range" min="-60" max="60" step="5" value="20" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg" />
               </div>
 
               <div class="flex-1 min-w-0">
                 <div class="flex items-center justify-between text-[10px] sm:text-[11px] mb-1 gap-1">
                   <label for="sharpnessSlider" class="font-medium text-slate-700 dark:text-slate-300 truncate">銳利度</label>
-                  <span id="sharpnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums shrink-0">30%</span>
+                  <span id="sharpnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums shrink-0">20%</span>
                 </div>
-                <input id="sharpnessSlider" type="range" min="0" max="100" step="5" value="30" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+                <input id="sharpnessSlider" type="range" min="0" max="100" step="5" value="20" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg" />
               </div>
 
               <button id="resetAdjustBtn" type="button" class="touch-btn min-h-[32px] px-2.5 py-1 rounded-lg bg-slate-200/70 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[11px] sm:text-xs font-semibold text-indigo-600 dark:text-indigo-400 shrink-0 transition-colors">
@@ -370,7 +370,7 @@
     </div>
   </div>
 
-  <!-- 連續拍照全螢幕相機視窗（自動鎖定支援補光燈的主鏡頭 + 點擊對焦 + 手動對焦） -->
+  <!-- 連續拍照全螢幕相機視窗（自動鎖定最高畫素且支援補光燈的主鏡頭 + 點擊對焦 + 手動對焦） -->
   <div id="liveCameraModal" class="hidden fixed inset-0 z-50 bg-black flex flex-col">
     <!-- 頂部狀態列 -->
     <div class="px-3.5 py-2.5 bg-black/80 backdrop-blur-sm flex items-center justify-between gap-2 shrink-0 z-10">
@@ -556,8 +556,8 @@
     let images = [];
     let autoCropEnabled = true;
     let globalScanFilter = 'bw';          // 預設黑白 ('bw' | 'none')
-    let globalBrightness = 0;             // -60 ~ +60
-    let globalSharpness = 30;             // 0 ~ 100
+    let globalBrightness = 20;            // -60 ~ +60（預設 +20%）
+    let globalSharpness = 20;             // 0 ~ 100（預設 20%）
     let selectedOrientation = 'portrait'; // 'portrait' | 'landscape'
     let selectedMargin = 10;              // 10 | 20 | 0
     let selectedImageFit = 'contain';     // 'contain' | 'cover'
@@ -712,7 +712,7 @@
     syncThemeUI();
 
     // =========================================================================
-    // 連續拍照相機引擎（鎖定有補光燈的主鏡頭 + 點擊對焦 + 硬體靜態拍照）
+    // 連續拍照相機引擎（鎖定最高畫素且支援補光燈的主鏡頭 + 點擊對焦 + 硬體靜態拍照）
     // =========================================================================
     let liveStream = null;
     let liveVideoTrack = null;
@@ -805,7 +805,7 @@
       try {
         const all = await navigator.mediaDevices.enumerateDevices();
         const vids = all.filter((d) => d.kind === 'videoinput');
-        const backCams = vids.filter((d) => /back|rear|environment/i.test(d.label) && !/front|user/i.test(d.label));
+        const backCams = vids.filter((d) => !/front|user|前置/i.test(d.label || ''));
         const otherCams = vids.filter((d) => !backCams.includes(d));
         liveVideoDevices = backCams.concat(otherCams);
 
@@ -839,69 +839,96 @@
       }
 
       try {
-        const savedTorchCamId = deviceId || localStorage.getItem('pdfmerge_torch_cam_id');
-        let track = null;
+        const cacheKey = 'pdfmerge_best_torch_cam_v2';
+        const savedCamId = deviceId || localStorage.getItem(cacheKey);
+        const hasTorch = (t) => !!(t && typeof t.getCapabilities === 'function' && t.getCapabilities().torch);
+        const getMaxPixels = (t) => {
+          if (!t) return 0;
+          const caps = typeof t.getCapabilities === 'function' ? t.getCapabilities() : {};
+          const set = typeof t.getSettings === 'function' ? t.getSettings() : {};
+          const maxW = (caps.width && caps.width.max) || set.width || 0;
+          const maxH = (caps.height && caps.height.max) || set.height || 0;
+          return maxW * maxH;
+        };
 
-        // 1. 優先直接開啟上次記住的「支援補光燈」主鏡頭
-        if (savedTorchCamId) {
+        // 1. 若已有記憶的最佳閃光燈高畫素鏡頭，直接開啟
+        if (savedCamId) {
           try {
-            track = await openCameraByConstraints({
-              deviceId: { exact: savedTorchCamId },
-              width: { ideal: 1920 },
-              height: { ideal: 1080 }
+            const track = await openCameraByConstraints({
+              deviceId: { exact: savedCamId },
+              width: { ideal: 4096 },
+              height: { ideal: 2160 }
             });
+            if (hasTorch(track) || deviceId) {
+              liveSwitchCamBtn.classList.toggle('hidden', hasTorch(track));
+              liveCameraModal.classList.remove('hidden');
+              updateLiveCameraCounter();
+              await configureTrackFocusAndControls(track);
+              return;
+            }
           } catch (_) {
-            localStorage.removeItem('pdfmerge_torch_cam_id');
+            localStorage.removeItem(cacheKey);
           }
         }
 
-        // 2. 若沒有記錄，先開啟預設後置鏡頭
-        if (!track) {
-          track = await openCameraByConstraints({
-            facingMode: { ideal: 'environment' },
-            width: { ideal: 1920 },
-            height: { ideal: 1080 }
-          });
-        }
+        // 2. 先取得相機權限以讀取所有鏡頭列表
+        let bestTrack = await openCameraByConstraints({
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 4096 },
+          height: { ideal: 2160 }
+        });
 
-        const hasTorch = (t) => !!(t && typeof t.getCapabilities === 'function' && t.getCapabilities().torch);
+        let bestTorchId = hasTorch(bestTrack) && bestTrack.getSettings ? bestTrack.getSettings().deviceId : null;
+        let bestTorchPixels = bestTorchId ? getMaxPixels(bestTrack) : -1;
 
-        // 3. 若目前鏡頭沒有補光燈，自動掃描其他後置鏡頭並鎖定有補光燈的主鏡頭
-        if (!hasTorch(track) && navigator.mediaDevices.enumerateDevices) {
+        // 3. 掃描所有非前置鏡頭，找出「支援補光燈」且「最高畫素」的鏡頭
+        if (navigator.mediaDevices.enumerateDevices) {
           const all = await navigator.mediaDevices.enumerateDevices();
           const vids = all.filter((d) => d.kind === 'videoinput');
-          const backCams = vids.filter((d) => /back|rear|environment/i.test(d.label) && !/front|user/i.test(d.label));
-          const candidates = backCams.length > 0 ? backCams : vids;
-          const currentId = track.getSettings ? track.getSettings().deviceId : null;
+          const rearCams = vids.filter((d) => !/front|user|前置/i.test(d.label || ''));
+          const candidates = rearCams.length > 0 ? rearCams : vids;
+          const currentId = bestTrack.getSettings ? bestTrack.getSettings().deviceId : null;
 
           for (const cam of candidates) {
             if (!cam.deviceId || cam.deviceId === currentId) continue;
             try {
               const testTrack = await openCameraByConstraints({
                 deviceId: { exact: cam.deviceId },
-                width: { ideal: 1920 },
-                height: { ideal: 1080 }
+                width: { ideal: 4096 },
+                height: { ideal: 2160 }
               });
               if (hasTorch(testTrack)) {
-                track = testTrack;
-                break;
+                const px = getMaxPixels(testTrack);
+                if (px > bestTorchPixels) {
+                  bestTorchPixels = px;
+                  bestTorchId = cam.deviceId;
+                }
               }
             } catch (_) {}
           }
-        }
 
-        if (hasTorch(track)) {
-          const activeId = track.getSettings ? track.getSettings().deviceId : null;
-          if (activeId) localStorage.setItem('pdfmerge_torch_cam_id', activeId);
-          liveSwitchCamBtn.classList.add('hidden');
-        } else {
-          liveSwitchCamBtn.classList.remove('hidden');
-          await refreshCameraDeviceList(track);
+          if (bestTorchId) {
+            localStorage.setItem(cacheKey, bestTorchId);
+            const activeId = liveVideoTrack && liveVideoTrack.getSettings ? liveVideoTrack.getSettings().deviceId : null;
+            if (activeId !== bestTorchId) {
+              bestTrack = await openCameraByConstraints({
+                deviceId: { exact: bestTorchId },
+                width: { ideal: 4096 },
+                height: { ideal: 2160 }
+              });
+            } else {
+              bestTrack = liveVideoTrack;
+            }
+            liveSwitchCamBtn.classList.add('hidden');
+          } else {
+            liveSwitchCamBtn.classList.remove('hidden');
+            await refreshCameraDeviceList(bestTrack);
+          }
         }
 
         liveCameraModal.classList.remove('hidden');
         updateLiveCameraCounter();
-        await configureTrackFocusAndControls(track);
+        await configureTrackFocusAndControls(bestTrack);
       } catch (err) {
         console.warn('無法開啟內建即時相機，退回系統相機:', err);
         stopLiveCameraStream();
@@ -1310,7 +1337,7 @@
     });
 
     function syncAdjustLabels() {
-      brightnessVal.textContent = globalBrightness > 0 ? `+${globalBrightness}` : String(globalBrightness);
+      brightnessVal.textContent = globalBrightness > 0 ? `+${globalBrightness}%` : `${globalBrightness}%`;
       sharpnessVal.textContent = `${globalSharpness}%`;
     }
 
@@ -1370,10 +1397,10 @@
 
     resetAdjustBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      globalBrightness = 0;
-      globalSharpness = 30;
-      brightnessSlider.value = 0;
-      sharpnessSlider.value = 30;
+      globalBrightness = 20;
+      globalSharpness = 20;
+      brightnessSlider.value = 20;
+      sharpnessSlider.value = 20;
       syncAdjustLabels();
       reprocessAllImages(null);
     });
@@ -1406,7 +1433,7 @@
           lum[i] = (data[p] * 77 + data[p + 1] * 150 + data[p + 2] * 29) >> 8;
         }
 
-        // 1. 保留邊緣的降噪（只平滑相近灰階的紙張雜訊與黑框噪點，不模糊文字筆畫）
+        // 1. 保留邊緣的降噪（平滑紙張與黑框雜訊，保留文字筆畫）
         const denoised = new Uint8Array(len);
         const rangeThresh = 26;
         for (let y = 0; y < h; y++) {
@@ -1434,7 +1461,7 @@
           }
         }
 
-        // 2. 門檻銳利化（只強化真正的文字邊緣，不放大背景顆粒）
+        // 2. 門檻銳利化（只強化文字邊緣，不放大背景雜訊）
         const sharpAmount = sharpness > 0 ? (sharpness / 100) * 1.1 : 0;
         const pivot = 148 - brightness;
         const contrast = 2.6;
@@ -1453,7 +1480,7 @@
               }
             }
 
-            // 3. 黑白對比與純白紙張淨化
+            // 3. 黑白對比與紙張淨化
             val = (val - pivot) * contrast + 128;
             if (val > 235) val = 255;
             else if (val < 18) val = 0;
@@ -1465,7 +1492,6 @@
         return;
       }
 
-      // 原圖 / 增亮模式：同樣使用門檻銳利化避免放大雜訊
       if (sharpness > 0 && w > 2 && h > 2) {
         const src = new Uint8ClampedArray(data);
         const k = (sharpness / 100) * 1.0;
@@ -1506,7 +1532,7 @@
       }
     }
 
-    function processImageWithRectAndFilter(img, cropRect, filterMode = 'bw', brightness = 0, sharpness = 0) {
+    function processImageWithRectAndFilter(img, cropRect, filterMode = 'bw', brightness = 20, sharpness = 20) {
       const hasCrop = !!cropRect;
       const needsPixelFilter = filterMode !== 'none' || brightness !== 0 || sharpness > 0;
 
@@ -1560,7 +1586,6 @@
       ctx.drawImage(img, 0, 0, w, h);
       const rgba = ctx.getImageData(0, 0, w, h).data;
 
-      // 計算中央紙張亮度與色彩
       const centerSamples = [];
       const cx0 = Math.floor(w * 0.22), cx1 = Math.floor(w * 0.78);
       const cy0 = Math.floor(h * 0.22), cy1 = Math.floor(h * 0.78);
@@ -1587,7 +1612,6 @@
       paperB /= brightCount;
       paperLum /= brightCount;
 
-      // 計算外圍 4% 背景色
       let bgR = 0, bgG = 0, bgB = 0, bgLum = 0, bgCount = 0;
       const bx = Math.max(2, Math.floor(w * 0.04));
       const by = Math.max(2, Math.floor(h * 0.04));
@@ -1612,6 +1636,8 @@
       const colorDiff = Math.hypot(paperR - bgR, paperG - bgG, paperB - bgB);
       const lumDiff = Math.abs(paperLum - bgLum);
       const queue = new Int32Array(w * h);
+
+      let methodARect = null;
 
       // 方法 A：深色/彩色桌面上的白色文件
       if (colorDiff >= 24 || lumDiff >= 18) {
@@ -1702,16 +1728,19 @@
             const areaRatio = rw * rh;
 
             if (rw >= 0.20 && rh >= 0.20 && areaRatio >= 0.12 && areaRatio <= 0.94) {
-              canvas.width = 0;
-              canvas.height = 0;
-              return { left, top, right, bottom };
+              methodARect = { left, top, right, bottom };
+              if (areaRatio <= 0.65) {
+                canvas.width = 0;
+                canvas.height = 0;
+                return methodARect;
+              }
             }
           }
         }
       }
 
-      // 方法 B：淺色/白色桌面上的文件（偵測內部印刷框線與文字區域，並排除貼在畫面最外緣的雜物）
-      const darkThresh = Math.min(paperLum, bgLum) - 28;
+      // 方法 B：偵測內部印刷框線與文字區域（適用於白色桌面，或方法 A 仍包含大面積白板/白桌時）
+      const darkThresh = paperLum - 32;
       const isDark = new Uint8Array(w * h);
       for (let i = 0, p = 0; i < w * h; i++, p += 4) {
         const lum = 0.299 * rgba[p] + 0.587 * rgba[p + 1] + 0.114 * rgba[p + 2];
@@ -1719,8 +1748,8 @@
       }
 
       const visited = new Uint8Array(w * h);
-      const borderMarginX = Math.max(3, Math.floor(w * 0.025));
-      const borderMarginY = Math.max(3, Math.floor(h * 0.025));
+      const borderMarginX = Math.max(4, Math.floor(w * 0.03));
+      const borderMarginY = Math.max(4, Math.floor(h * 0.03));
       let uMinX = w, uMaxX = 0, uMinY = h, uMaxY = 0;
       let foundContent = false;
 
@@ -1751,7 +1780,7 @@
           if (y < h - 1 && isDark[cur + w] && !visited[cur + w]) { visited[cur + w] = 1; queue[qt++] = cur + w; }
         }
 
-        if (!touchesOuterEdge && qt >= 6) {
+        if (!touchesOuterEdge && qt >= 8) {
           if (minX < uMinX) uMinX = minX;
           if (maxX > uMaxX) uMaxX = maxX;
           if (minY < uMinY) uMinY = minY;
@@ -1763,29 +1792,29 @@
       canvas.width = 0;
       canvas.height = 0;
 
-      if (!foundContent) return null;
+      if (foundContent) {
+        const pad = 0.03;
+        const snapEdge = 0.06;
+        let left = Math.max(0, uMinX / w - pad);
+        let top = Math.max(0, uMinY / h - pad);
+        let right = Math.min(1, (uMaxX + 1) / w + pad);
+        let bottom = Math.min(1, (uMaxY + 1) / h + pad);
 
-      const pad = 0.03;
-      const snapEdge = 0.06;
-      let left = Math.max(0, uMinX / w - pad);
-      let top = Math.max(0, uMinY / h - pad);
-      let right = Math.min(1, (uMaxX + 1) / w + pad);
-      let bottom = Math.min(1, (uMaxY + 1) / h + pad);
+        if (left < snapEdge) left = 0;
+        if (top < snapEdge) top = 0;
+        if (right > 1 - snapEdge) right = 1;
+        if (bottom > 1 - snapEdge) bottom = 1;
 
-      if (left < snapEdge) left = 0;
-      if (top < snapEdge) top = 0;
-      if (right > 1 - snapEdge) right = 1;
-      if (bottom > 1 - snapEdge) bottom = 1;
+        const rw = right - left;
+        const rh = bottom - top;
+        const areaRatio = rw * rh;
 
-      const rw = right - left;
-      const rh = bottom - top;
-      const areaRatio = rw * rh;
-
-      if (rw < 0.20 || rh < 0.20 || areaRatio < 0.12 || areaRatio > 0.94) {
-        return null;
+        if (rw >= 0.20 && rh >= 0.20 && areaRatio >= 0.12 && areaRatio <= 0.94) {
+          return { left, top, right, bottom };
+        }
       }
 
-      return { left, top, right, bottom };
+      return methodARect;
     }
 
     // =========================================================================
@@ -2341,7 +2370,7 @@
               </span>
               ${item.isCropped ? '<span class="bg-emerald-600/90 text-white text-[10px] font-semibold px-1.5 py-0.5 rounded-md">已裁切</span>' : ''}
             </div>
-            ${showPageNumbers ? `<span class="absolute bottom-2 right-2 bg-white/95 text-slate-900 border border-slate-300 text-[10px] font-semibold px-1.5 py-0.5 rounded shadow-xs pointer-events-none">Page ${index + 1}/${images.length}</span>` : ''}
+            ${showPageNumbers ? `<span class="absolute bottom-2 right-2 bg-white/95 text-slate-900 border border-slate-300 text-[8.5px] font-semibold px-1.5 py-0.5 rounded shadow-xs pointer-events-none">Page ${index + 1}/${images.length}</span>` : ''}
             <button
               type="button"
               class="drag-handle absolute top-2 right-2 w-8 h-8 rounded-lg bg-white/90 dark:bg-slate-800/90 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center justify-center cursor-grab active:cursor-grabbing shadow-xs"
@@ -2431,7 +2460,7 @@
     });
 
     // =========================================================================
-    // PDF 產生與右下角頁碼繪製
+    // PDF 產生與右下角頁碼繪製（頁碼字體縮小 15%）
     // =========================================================================
     function renderRotatedImageForPdf(item, quality) {
       return new Promise((resolve, reject) => {
@@ -2478,7 +2507,7 @@
     function drawBottomRightPageNumber(doc, pageIndex, totalPages, pageW, pageH) {
       const label = `Page ${pageIndex}/${totalPages}`;
 
-      const fontSize = Math.max(10, Math.round(Math.min(pageW, pageH) * 0.055));
+      const fontSize = Math.max(8, Math.round(Math.min(pageW, pageH) * 0.047));
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(fontSize);
 
