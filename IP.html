@@ -370,7 +370,7 @@
     </div>
   </div>
 
-  <!-- 連續拍照全螢幕相機視窗（自動鎖定最高畫素且支援補光燈的主鏡頭 + 點擊對焦 + 手動對焦） -->
+  <!-- 連續拍照全螢幕相機視窗（預設開補光燈 + 嚴格 A4 取景框 + 點擊對焦 + 手動對焦） -->
   <div id="liveCameraModal" class="hidden fixed inset-0 z-50 bg-black flex flex-col">
     <!-- 頂部狀態列 -->
     <div class="px-3.5 py-2.5 bg-black/80 backdrop-blur-sm flex items-center justify-between gap-2 shrink-0 z-10">
@@ -381,8 +381,8 @@
         </span>
       </div>
       <div class="flex items-center gap-1.5 shrink-0">
-        <button id="liveTorchBtn" type="button" class="hidden touch-btn px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold">
-          補光燈
+        <button id="liveTorchBtn" type="button" class="hidden touch-btn px-2.5 py-1 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold">
+          補光燈：開
         </button>
         <button id="liveSwitchCamBtn" type="button" class="hidden touch-btn px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold">
           切換鏡頭
@@ -395,18 +395,18 @@
       </div>
     </div>
 
-    <!-- 相機即時預覽區（點擊任意處觸發對焦） -->
-    <div id="liveVideoWrap" class="relative flex-1 min-h-0 bg-black flex items-center justify-center overflow-hidden cursor-pointer">
-      <video id="liveCameraVideo" autoplay playsinline muted class="w-full h-full object-contain"></video>
-      <!-- 快門閃白效果 -->
-      <div id="liveShutterFlash" class="hidden absolute inset-0 bg-white pointer-events-none"></div>
-      <!-- 點擊對焦框 -->
-      <div id="liveFocusRing" class="hidden absolute w-16 h-16 border-2 border-amber-400 rounded-xl pointer-events-none shadow-[0_0_12px_rgba(251,191,36,0.6)]"></div>
-      <!-- 四角取景輔助線 -->
-      <div class="pointer-events-none absolute inset-5 sm:inset-10 border border-white/20 rounded-xl"></div>
+    <!-- 相機即時預覽區（固定 A4 比例取景框，框外不會被拍攝） -->
+    <div id="liveVideoWrap" class="relative flex-1 min-h-0 bg-black flex items-center justify-center p-3 overflow-hidden cursor-pointer">
+      <div id="liveA4Frame" class="relative overflow-hidden rounded-xl border-2 border-emerald-400/85 shadow-2xl bg-black">
+        <video id="liveCameraVideo" autoplay playsinline muted class="w-full h-full object-cover"></video>
+        <!-- 快門閃白效果 -->
+        <div id="liveShutterFlash" class="hidden absolute inset-0 bg-white pointer-events-none"></div>
+        <!-- 點擊對焦框 -->
+        <div id="liveFocusRing" class="hidden absolute w-16 h-16 border-2 border-amber-400 rounded-xl pointer-events-none shadow-[0_0_12px_rgba(251,191,36,0.6)]"></div>
+      </div>
       <!-- 對焦提示 -->
       <div id="liveFocusHint" class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 text-white/85 text-[11px] font-medium backdrop-blur-xs">
-        點擊畫面對焦
+        A4 取景框 • 點擊畫面對焦
       </div>
     </div>
 
@@ -684,6 +684,7 @@
     // 連續拍照相機視窗 DOM
     const liveCameraModal = document.getElementById('liveCameraModal');
     const liveVideoWrap = document.getElementById('liveVideoWrap');
+    const liveA4Frame = document.getElementById('liveA4Frame');
     const liveCameraVideo = document.getElementById('liveCameraVideo');
     const liveShotCounter = document.getElementById('liveShotCounter');
     const liveTorchBtn = document.getElementById('liveTorchBtn');
@@ -741,7 +742,7 @@
     syncThemeUI();
 
     // =========================================================================
-    // 連續拍照相機引擎（鎖定最高畫素且支援補光燈的主鏡頭 + 點擊對焦 + 硬體靜態拍照）
+    // 連續拍照相機引擎（預設開補光燈 + 嚴格 A4 取景框 + 最高畫素主鏡頭 + 點擊對焦）
     // =========================================================================
     let liveStream = null;
     let liveVideoTrack = null;
@@ -750,6 +751,27 @@
     let liveTorchOn = false;
     let liveSessionShots = 0;
     let liveIsCapturing = false;
+
+    function getTargetA4Ratio() {
+      return selectedOrientation === 'landscape' ? (297 / 210) : (210 / 297);
+    }
+
+    function syncLiveA4Frame() {
+      const rect = liveVideoWrap.getBoundingClientRect();
+      const availW = Math.max(120, rect.width - 24);
+      const availH = Math.max(120, rect.height - 24);
+      const a4Ratio = getTargetA4Ratio();
+
+      let frameW = availW;
+      let frameH = frameW / a4Ratio;
+      if (frameH > availH) {
+        frameH = availH;
+        frameW = frameH * a4Ratio;
+      }
+
+      liveA4Frame.style.width = `${Math.round(frameW)}px`;
+      liveA4Frame.style.height = `${Math.round(frameH)}px`;
+    }
 
     function stopLiveCameraStream() {
       if (liveVideoTrack && liveTorchOn) {
@@ -801,11 +823,20 @@
         }
       }
 
+      // 預設自動開啟補光燈
       if (caps.torch) {
         liveTorchBtn.classList.remove('hidden');
-        liveTorchOn = false;
-        liveTorchBtn.textContent = '補光燈';
-        liveTorchBtn.className = 'touch-btn px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold';
+        try {
+          await track.applyConstraints({ advanced: [{ torch: true }] });
+          liveTorchOn = true;
+          liveTorchBtn.textContent = '補光燈：開';
+          liveTorchBtn.className = 'touch-btn px-2.5 py-1 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold';
+        } catch (err) {
+          console.warn('無法預設開啟補光燈:', err);
+          liveTorchOn = false;
+          liveTorchBtn.textContent = '補光燈';
+          liveTorchBtn.className = 'touch-btn px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold';
+        }
       } else {
         liveTorchBtn.classList.add('hidden');
       }
@@ -890,6 +921,7 @@
             if (hasTorch(track) || deviceId) {
               liveSwitchCamBtn.classList.toggle('hidden', hasTorch(track));
               liveCameraModal.classList.remove('hidden');
+              requestAnimationFrame(syncLiveA4Frame);
               updateLiveCameraCounter();
               await configureTrackFocusAndControls(track);
               return;
@@ -953,6 +985,7 @@
         }
 
         liveCameraModal.classList.remove('hidden');
+        requestAnimationFrame(syncLiveA4Frame);
         updateLiveCameraCounter();
         await configureTrackFocusAndControls(bestTrack);
       } catch (err) {
@@ -966,9 +999,9 @@
     async function triggerTapToFocus(clientX, clientY) {
       if (!liveVideoTrack) return;
 
-      const wrapRect = liveVideoWrap.getBoundingClientRect();
-      const relX = clientX - wrapRect.left;
-      const relY = clientY - wrapRect.top;
+      const frameRect = liveA4Frame.getBoundingClientRect();
+      const relX = Math.max(0, Math.min(frameRect.width, clientX - frameRect.left));
+      const relY = Math.max(0, Math.min(frameRect.height, clientY - frameRect.top));
 
       liveFocusRing.style.left = `${relX}px`;
       liveFocusRing.style.top = `${relY}px`;
@@ -979,8 +1012,8 @@
       if (typeof liveVideoTrack.getCapabilities !== 'function') return;
       const caps = liveVideoTrack.getCapabilities();
 
-      const normX = Math.max(0, Math.min(1, relX / wrapRect.width));
-      const normY = Math.max(0, Math.min(1, relY / wrapRect.height));
+      const normX = Math.max(0, Math.min(1, relX / Math.max(1, frameRect.width)));
+      const normY = Math.max(0, Math.min(1, relY / Math.max(1, frameRect.height)));
 
       liveFocusHint.textContent = '重新對焦中...';
       liveAutoFocusBtn.className = 'px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[11px] font-bold shrink-0';
@@ -1007,7 +1040,7 @@
       }
 
       setTimeout(() => {
-        liveFocusHint.textContent = '點擊畫面對焦';
+        liveFocusHint.textContent = 'A4 取景框 • 點擊畫面對焦';
       }, 900);
     }
 
@@ -1064,30 +1097,48 @@
       }
     }
 
+    function cropImageToA4Ratio(img) {
+      const srcW = img.naturalWidth || img.videoWidth;
+      const srcH = img.naturalHeight || img.videoHeight;
+      const targetRatio = getTargetA4Ratio();
+      const srcRatio = srcW / srcH;
+
+      let sx = 0, sy = 0, sw = srcW, sh = srcH;
+      if (srcRatio > targetRatio) {
+        sw = Math.round(srcH * targetRatio);
+        sx = Math.round((srcW - sw) / 2);
+      } else {
+        sh = Math.round(srcW / targetRatio);
+        sy = Math.round((srcH - sh) / 2);
+      }
+
+      const canvas = document.createElement('canvas');
+      canvas.width = sw;
+      canvas.height = sh;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, sx, sy, sw, sh, 0, 0, sw, sh);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      canvas.width = 0;
+      canvas.height = 0;
+      return dataUrl;
+    }
+
     async function captureHighResFrame() {
       if (liveVideoTrack && typeof ImageCapture !== 'undefined') {
         try {
           const imageCapture = new ImageCapture(liveVideoTrack);
           const photoBlob = await imageCapture.takePhoto();
           if (photoBlob && photoBlob.size > 0) {
-            return await readFileAsDataURL(photoBlob);
+            const rawUrl = await readFileAsDataURL(photoBlob);
+            const imgEl = await loadImageElement(rawUrl);
+            return cropImageToA4Ratio(imgEl);
           }
         } catch (err) {
           console.warn('ImageCapture.takePhoto 失敗，改用畫面擷取:', err);
         }
       }
 
-      const vw = liveCameraVideo.videoWidth;
-      const vh = liveCameraVideo.videoHeight;
-      const canvas = document.createElement('canvas');
-      canvas.width = vw;
-      canvas.height = vh;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(liveCameraVideo, 0, 0, vw, vh);
-      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
-      canvas.width = 0;
-      canvas.height = 0;
-      return dataUrl;
+      return cropImageToA4Ratio(liveCameraVideo);
     }
 
     async function captureLivePhoto() {
@@ -2065,6 +2116,7 @@
 
     window.addEventListener('resize', () => {
       if (!cropModal.classList.contains('hidden')) drawCropEditor();
+      if (!liveCameraModal.classList.contains('hidden')) syncLiveA4Frame();
     });
 
     closeCropModalBtn.addEventListener('click', closeCropModal);
