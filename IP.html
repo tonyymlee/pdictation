@@ -91,6 +91,15 @@
       animation: shutterFlash 0.22s ease-out forwards;
     }
 
+    @keyframes focusPulse {
+      0% { transform: translate(-50%, -50%) scale(1.35); opacity: 1; }
+      60% { transform: translate(-50%, -50%) scale(0.96); opacity: 1; }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+    }
+    .animate-focus-ring {
+      animation: focusPulse 0.9s ease-out forwards;
+    }
+
     .touch-btn {
       min-height: 36px;
       touch-action: manipulation;
@@ -361,18 +370,21 @@
     </div>
   </div>
 
-  <!-- 連續拍照全螢幕相機視窗（最多連續 30 張，不彈出檔案總管） -->
+  <!-- 連續拍照全螢幕相機視窗（支援點擊對焦、硬體靜態拍照、多鏡頭切換、補光燈、手動對焦） -->
   <div id="liveCameraModal" class="hidden fixed inset-0 z-50 bg-black flex flex-col">
     <!-- 頂部狀態列 -->
-    <div class="px-4 py-3 bg-black/80 backdrop-blur-sm flex items-center justify-between gap-2 shrink-0 z-10">
-      <div class="flex items-center gap-2">
-        <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-600 text-white text-xs font-bold">
-          <span>連續拍照</span>
+    <div class="px-3.5 py-2.5 bg-black/80 backdrop-blur-sm flex items-center justify-between gap-2 shrink-0 z-10">
+      <div class="flex items-center gap-1.5 min-w-0">
+        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-indigo-600 text-white text-xs font-bold shrink-0">
+          <span>連拍</span>
           <span id="liveShotCounter" class="tabular-nums">0 / 30</span>
         </span>
       </div>
-      <div class="flex items-center gap-2">
-        <button id="liveSwitchCamBtn" type="button" class="touch-btn px-3 py-1.5 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold">
+      <div class="flex items-center gap-1.5 shrink-0">
+        <button id="liveTorchBtn" type="button" class="hidden touch-btn px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold">
+          補光燈
+        </button>
+        <button id="liveSwitchCamBtn" type="button" class="touch-btn px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold">
           切換鏡頭
         </button>
         <button id="liveCancelCamBtn" type="button" class="touch-btn w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 text-white flex items-center justify-center" aria-label="關閉相機">
@@ -383,17 +395,33 @@
       </div>
     </div>
 
-    <!-- 相機即時預覽區 -->
-    <div class="relative flex-1 min-h-0 bg-black flex items-center justify-center overflow-hidden">
+    <!-- 相機即時預覽區（點擊任意處觸發對焦） -->
+    <div id="liveVideoWrap" class="relative flex-1 min-h-0 bg-black flex items-center justify-center overflow-hidden cursor-pointer">
       <video id="liveCameraVideo" autoplay playsinline muted class="w-full h-full object-contain"></video>
       <!-- 快門閃白效果 -->
       <div id="liveShutterFlash" class="hidden absolute inset-0 bg-white pointer-events-none"></div>
+      <!-- 點擊對焦框 -->
+      <div id="liveFocusRing" class="hidden absolute w-16 h-16 border-2 border-amber-400 rounded-xl pointer-events-none shadow-[0_0_12px_rgba(251,191,36,0.6)]"></div>
       <!-- 四角取景輔助線 -->
-      <div class="pointer-events-none absolute inset-6 sm:inset-10 border border-white/25 rounded-xl"></div>
+      <div class="pointer-events-none absolute inset-5 sm:inset-10 border border-white/20 rounded-xl"></div>
+      <!-- 對焦提示 -->
+      <div id="liveFocusHint" class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 text-white/85 text-[11px] font-medium backdrop-blur-xs">
+        點擊畫面對焦 • 若模糊請點上方「切換鏡頭」
+      </div>
+    </div>
+
+    <!-- 可選手動對焦列（僅在硬體支援 focusDistance 時顯示） -->
+    <div id="liveManualFocusWrap" class="hidden px-4 py-2 bg-black/85 border-t border-white/10 flex items-center gap-2.5 shrink-0">
+      <button id="liveAutoFocusBtn" type="button" class="px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[11px] font-bold shrink-0">
+        自動 AF
+      </button>
+      <span class="text-[11px] text-white/70 shrink-0">近</span>
+      <input id="liveFocusSlider" type="range" min="0" max="1" step="0.01" value="0.5" class="flex-1 accent-amber-400 cursor-pointer h-1.5 bg-white/20 rounded-lg" />
+      <span class="text-[11px] text-white/70 shrink-0">遠</span>
     </div>
 
     <!-- 底部快門控制列 -->
-    <div class="px-5 py-4 bg-black/85 backdrop-blur-sm flex items-center justify-between gap-4 shrink-0" style="padding-bottom: max(1.25rem, env(safe-area-inset-bottom));">
+    <div class="px-5 py-3.5 bg-black/90 backdrop-blur-sm flex items-center justify-between gap-4 shrink-0" style="padding-bottom: max(1.1rem, env(safe-area-inset-bottom));">
       <!-- 最新縮圖 -->
       <div class="w-16 flex items-center justify-start">
         <div id="liveThumbWrap" class="hidden relative w-12 h-14 rounded-lg overflow-hidden border-2 border-white/70 bg-slate-900">
@@ -403,13 +431,13 @@
       </div>
 
       <!-- 大型快門按鈕 -->
-      <button id="liveShutterBtn" type="button" aria-label="拍照" class="w-18 h-18 w-[72px] h-[72px] rounded-full border-4 border-white bg-white/20 active:scale-95 transition-transform flex items-center justify-center disabled:opacity-40">
+      <button id="liveShutterBtn" type="button" aria-label="拍照" class="w-[70px] h-[70px] rounded-full border-4 border-white bg-white/20 active:scale-95 transition-transform flex items-center justify-center disabled:opacity-40">
         <span class="w-14 h-14 rounded-full bg-white block"></span>
       </button>
 
       <!-- 完成按鈕 -->
       <div class="w-16 flex items-center justify-end">
-        <button id="liveCameraDoneBtn" type="button" class="touch-btn px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-sm">
+        <button id="liveCameraDoneBtn" type="button" class="touch-btn px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-bold shadow-sm">
           完成
         </button>
       </div>
@@ -626,12 +654,19 @@
 
     // 連續拍照相機視窗 DOM
     const liveCameraModal = document.getElementById('liveCameraModal');
+    const liveVideoWrap = document.getElementById('liveVideoWrap');
     const liveCameraVideo = document.getElementById('liveCameraVideo');
     const liveShotCounter = document.getElementById('liveShotCounter');
+    const liveTorchBtn = document.getElementById('liveTorchBtn');
     const liveSwitchCamBtn = document.getElementById('liveSwitchCamBtn');
     const liveCancelCamBtn = document.getElementById('liveCancelCamBtn');
     const liveShutterBtn = document.getElementById('liveShutterBtn');
     const liveShutterFlash = document.getElementById('liveShutterFlash');
+    const liveFocusRing = document.getElementById('liveFocusRing');
+    const liveFocusHint = document.getElementById('liveFocusHint');
+    const liveManualFocusWrap = document.getElementById('liveManualFocusWrap');
+    const liveAutoFocusBtn = document.getElementById('liveAutoFocusBtn');
+    const liveFocusSlider = document.getElementById('liveFocusSlider');
     const liveThumbWrap = document.getElementById('liveThumbWrap');
     const liveLastThumb = document.getElementById('liveLastThumb');
     const liveThumbBadge = document.getElementById('liveThumbBadge');
@@ -677,18 +712,31 @@
     syncThemeUI();
 
     // =========================================================================
-    // 連續拍照相機引擎（直接開啟鏡頭、不顯示檔案資料夾、最多連拍 30 張）
+    // 連續拍照相機引擎（自動對焦 + 點擊對焦 + 多鏡頭切換 + 補光燈 + 硬體靜態拍照）
     // =========================================================================
     let liveStream = null;
-    let liveFacingMode = 'environment';
+    let liveVideoTrack = null;
+    let liveVideoDevices = [];
+    let liveDeviceIndex = 0;
+    let liveTorchOn = false;
     let liveSessionShots = 0;
     let liveIsCapturing = false;
 
     function stopLiveCameraStream() {
+      if (liveVideoTrack && liveTorchOn) {
+        try {
+          liveVideoTrack.applyConstraints({ advanced: [{ torch: false }] });
+        } catch (_) {}
+      }
+      liveTorchOn = false;
+      liveTorchBtn.className = 'hidden touch-btn px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold';
+      liveManualFocusWrap.classList.add('hidden');
+
       if (liveStream) {
         liveStream.getTracks().forEach((t) => t.stop());
         liveStream = null;
       }
+      liveVideoTrack = null;
       liveCameraVideo.srcObject = null;
     }
 
@@ -703,9 +751,81 @@
       }
     }
 
-    async function startLiveCamera(facingMode = 'environment') {
+    function updateSwitchCamLabel() {
+      if (liveVideoDevices.length > 1) {
+        liveSwitchCamBtn.textContent = `切換鏡頭 ${liveDeviceIndex + 1}/${liveVideoDevices.length}`;
+      } else {
+        liveSwitchCamBtn.textContent = '切換鏡頭';
+      }
+    }
+
+    async function configureTrackFocusAndControls(track) {
+      if (!track || typeof track.getCapabilities !== 'function') return;
+
+      const caps = track.getCapabilities();
+
+      // 1. 強制啟用連續自動對焦（Continuous Autofocus）
+      if (caps.focusMode && Array.isArray(caps.focusMode) && caps.focusMode.includes('continuous')) {
+        try {
+          await track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+        } catch (err) {
+          console.warn('無法設定連續對焦:', err);
+        }
+      }
+
+      // 2. 檢查是否支援補光燈（Torch）
+      if (caps.torch) {
+        liveTorchBtn.classList.remove('hidden');
+        liveTorchOn = false;
+        liveTorchBtn.textContent = '補光燈';
+        liveTorchBtn.className = 'touch-btn px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold';
+      } else {
+        liveTorchBtn.classList.add('hidden');
+      }
+
+      // 3. 檢查是否支援手動對焦距離滑桿（focusDistance）
+      if (
+        caps.focusMode &&
+        caps.focusMode.includes('manual') &&
+        caps.focusDistance &&
+        typeof caps.focusDistance.min === 'number' &&
+        typeof caps.focusDistance.max === 'number'
+      ) {
+        liveFocusSlider.min = caps.focusDistance.min;
+        liveFocusSlider.max = caps.focusDistance.max;
+        liveFocusSlider.step = caps.focusDistance.step || ((caps.focusDistance.max - caps.focusDistance.min) / 50);
+        const settings = track.getSettings ? track.getSettings() : {};
+        liveFocusSlider.value = settings.focusDistance ?? ((caps.focusDistance.min + caps.focusDistance.max) / 2);
+        liveManualFocusWrap.classList.remove('hidden');
+        liveAutoFocusBtn.className = 'px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[11px] font-bold shrink-0';
+      } else {
+        liveManualFocusWrap.classList.add('hidden');
+      }
+    }
+
+    async function refreshCameraDeviceList(activeTrack) {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) return;
+      try {
+        const all = await navigator.mediaDevices.enumerateDevices();
+        const vids = all.filter((d) => d.kind === 'videoinput');
+        // 將後置鏡頭排在前面，前置鏡頭排在最後
+        const backCams = vids.filter((d) => /back|rear|environment/i.test(d.label) && !/front|user/i.test(d.label));
+        const otherCams = vids.filter((d) => !backCams.includes(d));
+        liveVideoDevices = backCams.concat(otherCams);
+
+        const activeId = activeTrack && activeTrack.getSettings ? activeTrack.getSettings().deviceId : null;
+        if (activeId) {
+          const foundIdx = liveVideoDevices.findIndex((d) => d.deviceId === activeId);
+          if (foundIdx !== -1) liveDeviceIndex = foundIdx;
+        }
+        updateSwitchCamLabel();
+      } catch (err) {
+        console.warn('無法列舉相機裝置:', err);
+      }
+    }
+
+    async function startLiveCamera(deviceId = null) {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        // 無法使用即時鏡頭（例如非 HTTPS 環境）時退回系統相機
         cameraInput.click();
         return;
       }
@@ -713,20 +833,32 @@
       stopLiveCameraStream();
 
       try {
-        const constraints = {
+        const videoConstraints = deviceId
+          ? {
+              deviceId: { exact: deviceId },
+              width: { ideal: 1920 },
+              height: { ideal: 1080 }
+            }
+          : {
+              facingMode: { ideal: 'environment' },
+              width: { ideal: 1920 },
+              height: { ideal: 1080 }
+            };
+
+        liveStream = await navigator.mediaDevices.getUserMedia({
           audio: false,
-          video: {
-            facingMode: { ideal: facingMode },
-            width: { ideal: 2560 },
-            height: { ideal: 1920 }
-          }
-        };
-        liveStream = await navigator.mediaDevices.getUserMedia(constraints);
+          video: videoConstraints
+        });
+
+        liveVideoTrack = liveStream.getVideoTracks()[0] || null;
         liveCameraVideo.srcObject = liveStream;
         await liveCameraVideo.play();
-        liveFacingMode = facingMode;
+
         liveCameraModal.classList.remove('hidden');
         updateLiveCameraCounter();
+
+        await configureTrackFocusAndControls(liveVideoTrack);
+        await refreshCameraDeviceList(liveVideoTrack);
       } catch (err) {
         console.warn('無法開啟內建即時相機，退回系統相機:', err);
         stopLiveCameraStream();
@@ -735,10 +867,101 @@
       }
     }
 
+    // 點擊取景畫面觸發硬體重新對焦
+    async function triggerTapToFocus(clientX, clientY) {
+      if (!liveVideoTrack) return;
+
+      const wrapRect = liveVideoWrap.getBoundingClientRect();
+      const relX = clientX - wrapRect.left;
+      const relY = clientY - wrapRect.top;
+
+      liveFocusRing.style.left = `${relX}px`;
+      liveFocusRing.style.top = `${relY}px`;
+      liveFocusRing.classList.remove('hidden', 'animate-focus-ring');
+      void liveFocusRing.offsetWidth;
+      liveFocusRing.classList.add('animate-focus-ring');
+
+      if (typeof liveVideoTrack.getCapabilities !== 'function') return;
+      const caps = liveVideoTrack.getCapabilities();
+
+      const normX = Math.max(0, Math.min(1, relX / wrapRect.width));
+      const normY = Math.max(0, Math.min(1, relY / wrapRect.height));
+
+      liveFocusHint.textContent = '重新對焦中...';
+      liveAutoFocusBtn.className = 'px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[11px] font-bold shrink-0';
+
+      try {
+        // 先嘗試單次對焦 + 對焦點（Android Chrome 支援），再恢復連續自動對焦
+        if (caps.focusMode && caps.focusMode.includes('single-shot')) {
+          const singleConstraint = { focusMode: 'single-shot' };
+          if (caps.pointsOfInterest) {
+            singleConstraint.pointsOfInterest = [{ x: normX, y: normY }];
+          }
+          await liveVideoTrack.applyConstraints({ advanced: [singleConstraint] });
+          setTimeout(async () => {
+            if (liveVideoTrack && caps.focusMode.includes('continuous')) {
+              try {
+                await liveVideoTrack.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+              } catch (_) {}
+            }
+          }, 700);
+        } else if (caps.focusMode && caps.focusMode.includes('continuous')) {
+          await liveVideoTrack.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+        }
+      } catch (err) {
+        console.warn('點擊對焦不支援:', err);
+      }
+
+      setTimeout(() => {
+        liveFocusHint.textContent = '點擊畫面對焦 • 若模糊請點上方「切換鏡頭」';
+      }, 900);
+    }
+
+    liveVideoWrap.addEventListener('click', (e) => {
+      triggerTapToFocus(e.clientX, e.clientY);
+    });
+
+    // 補光燈切換
+    liveTorchBtn.addEventListener('click', async () => {
+      if (!liveVideoTrack) return;
+      try {
+        liveTorchOn = !liveTorchOn;
+        await liveVideoTrack.applyConstraints({ advanced: [{ torch: liveTorchOn }] });
+        liveTorchBtn.textContent = liveTorchOn ? '補光燈：開' : '補光燈';
+        liveTorchBtn.className = liveTorchOn
+          ? 'touch-btn px-2.5 py-1 rounded-xl bg-amber-500 text-slate-950 text-xs font-bold'
+          : 'touch-btn px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold';
+      } catch (err) {
+        console.warn('補光燈切換失敗:', err);
+      }
+    });
+
+    // 手動對焦距離滑桿
+    liveFocusSlider.addEventListener('input', async () => {
+      if (!liveVideoTrack) return;
+      const dist = parseFloat(liveFocusSlider.value);
+      try {
+        await liveVideoTrack.applyConstraints({
+          advanced: [{ focusMode: 'manual', focusDistance: dist }]
+        });
+        liveAutoFocusBtn.className = 'px-2.5 py-1 rounded-lg bg-white/15 text-white/80 text-[11px] font-semibold shrink-0';
+      } catch (err) {
+        console.warn('手動對焦失敗:', err);
+      }
+    });
+
+    liveAutoFocusBtn.addEventListener('click', async () => {
+      if (!liveVideoTrack) return;
+      try {
+        await liveVideoTrack.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
+        liveAutoFocusBtn.className = 'px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[11px] font-bold shrink-0';
+      } catch (_) {}
+    });
+
     function openLiveCameraModal() {
       liveSessionShots = 0;
       liveThumbWrap.classList.add('hidden');
-      startLiveCamera('environment');
+      startLiveCamera(null);
     }
 
     function closeLiveCameraModal() {
@@ -749,11 +972,39 @@
       }
     }
 
+    // 優先使用硬體 ImageCapture.takePhoto()（啟用硬體靜態對焦與高畫質），不支援時退回視訊擷取
+    async function captureHighResFrame() {
+      if (liveVideoTrack && typeof ImageCapture !== 'undefined') {
+        try {
+          const imageCapture = new ImageCapture(liveVideoTrack);
+          const photoBlob = await imageCapture.takePhoto();
+          if (photoBlob && photoBlob.size > 0) {
+            return await readFileAsDataURL(photoBlob);
+          }
+        } catch (err) {
+          console.warn('ImageCapture.takePhoto 失敗，改用畫面擷取:', err);
+        }
+      }
+
+      const vw = liveCameraVideo.videoWidth;
+      const vh = liveCameraVideo.videoHeight;
+      const canvas = document.createElement('canvas');
+      canvas.width = vw;
+      canvas.height = vh;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(liveCameraVideo, 0, 0, vw, vh);
+      const dataUrl = canvas.toDataURL('image/jpeg', 0.92);
+      canvas.width = 0;
+      canvas.height = 0;
+      return dataUrl;
+    }
+
     async function captureLivePhoto() {
       if (liveIsCapturing || liveSessionShots >= MAX_CONTINUOUS_SHOTS) return;
       if (!liveCameraVideo.videoWidth || !liveCameraVideo.videoHeight) return;
 
       liveIsCapturing = true;
+      liveShutterBtn.classList.add('opacity-60');
 
       // 快門閃光動畫
       liveShutterFlash.classList.remove('hidden', 'animate-shutter-flash');
@@ -761,17 +1012,7 @@
       liveShutterFlash.classList.add('animate-shutter-flash');
 
       try {
-        const vw = liveCameraVideo.videoWidth;
-        const vh = liveCameraVideo.videoHeight;
-        const canvas = document.createElement('canvas');
-        canvas.width = vw;
-        canvas.height = vh;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(liveCameraVideo, 0, 0, vw, vh);
-        const originalDataUrl = canvas.toDataURL('image/jpeg', 0.92);
-        canvas.width = 0;
-        canvas.height = 0;
-
+        const originalDataUrl = await captureHighResFrame();
         const wasEmpty = images.length === 0;
         const imgEl = await loadImageElement(originalDataUrl);
 
@@ -825,6 +1066,7 @@
         console.error('拍照失敗:', err);
       } finally {
         liveIsCapturing = false;
+        liveShutterBtn.classList.remove('opacity-60');
       }
     }
 
@@ -832,8 +1074,12 @@
     liveCameraDoneBtn.addEventListener('click', closeLiveCameraModal);
     liveCancelCamBtn.addEventListener('click', closeLiveCameraModal);
     liveSwitchCamBtn.addEventListener('click', () => {
-      const nextFacing = liveFacingMode === 'environment' ? 'user' : 'environment';
-      startLiveCamera(nextFacing);
+      if (liveVideoDevices.length > 1) {
+        liveDeviceIndex = (liveDeviceIndex + 1) % liveVideoDevices.length;
+        startLiveCamera(liveVideoDevices[liveDeviceIndex].deviceId);
+      } else {
+        startLiveCamera(null);
+      }
     });
 
     // =========================================================================
