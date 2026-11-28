@@ -1,7 +1,82 @@
-<div class="flex-1 min-w-0">
-                <div class="flex items-center justify-between text-[10px] sm:text-[11px] mb-1 gap-1">
-                  <label for="brightnessSlider" class="font-medium text-slate-700 dark:text-slate-300 truncate">亮度</label>
-                  <span id="brightnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums shrink-0">+12%</span>
-                </div>
-                <input id="brightnessSlider" type="range" min="-60" max="60" step="1" value="12" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg" />
-              </div>
+<!DOCTYPE html>
+<html lang="zh-Hant" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover" />
+  <meta id="themeColorMeta" name="theme-color" content="#0f172a" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <title>PDF merge — 圖片合併與文件掃描工具</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    };
+    (function () {
+      const savedTheme = localStorage.getItem('pdfmerge_theme');
+      const isDark = savedTheme !== 'light';
+      document.documentElement.classList.toggle('dark', isDark);
+      const meta = document.getElementById('themeColorMeta');
+      if (meta) meta.setAttribute('content', isDark ? '#0f172a' : '#4f46e5');
+    })();
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;600;700&display=swap');
+
+    * {
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', 'Noto Sans TC', -apple-system, BlinkMacSystemFont, sans-serif;
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #f1f5f9;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 3px;
+    }
+    .dark ::-webkit-scrollbar-track {
+      background: #0f172a;
+    }
+    .dark ::-webkit-scrollbar-thumb {
+      background: #334155;
+    }
+
+    .sortable-ghost {
+      opacity: 0.35;
+      transform: scale(0.97);
+    }
+    .sortable-chosen {
+      box-shadow: 0 20px 25px -5px rgba(79, 70, 229, 0.25), 0 8px 10px -6px rgba(79, 70, 229, 0.2);
+      border-color: #6366f1 !important;
+      z-index: 20;
+    }
+    .sortable-drag {
+      opacity: 0.95;
+    }
+
+    .drag-over {
+      border-color: #6366f1 !important;
+      background-color: #eef2ff !important;
+    }
+    .dark .drag-over {
+      border-color: #818cf8 !important;
+      background-color: rgba(79, 70, 229, 0.15) !important;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .animate-fade-in {
