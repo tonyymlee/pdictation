@@ -192,7 +192,7 @@
             </button>
           </div>
 
-          <!-- 精簡控制列：Row 1（頁碼 + 裁切 + 黑白 + 方向 + 邊距 + 縮放 + 畫質），Row 2（亮度/銳利度/重設），Row 3（輸出檔案名稱） -->
+          <!-- 精簡控制列：Row 1（頁碼 + 裁切 + 黑白 + 方向 + 無邊距 + 填滿 + 高畫質），Row 2（亮度/銳利度/重設），Row 3（輸出檔案名稱） -->
           <div class="no-drop-click mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2 cursor-default">
             <!-- Row 1: 全部切換按鈕 -->
             <div class="flex flex-wrap items-center justify-center gap-1.5">
@@ -223,14 +223,14 @@
                 <span id="cycleOrientationText">直向</span>
               </button>
 
-              <!-- 邊距切換：窄邊距 / 標準 / 無邊距 -->
-              <button id="cycleMarginBtn" type="button" title="點擊切換邊距（窄邊距 / 標準 / 無邊距）" class="touch-btn px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
-                窄邊距
+              <!-- 邊距切換：預設無邊距（無邊距 / 窄邊距 / 標準） -->
+              <button id="cycleMarginBtn" type="button" title="點擊切換邊距（無邊距 / 窄邊距 / 標準）" class="touch-btn px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
+                無邊距
               </button>
 
-              <!-- 縮放切換：(不裁切) / (填滿) -->
-              <button id="cycleFitBtn" type="button" title="點擊切換圖片縮放（不裁切 / 填滿）" class="touch-btn px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
-                (不裁切)
+              <!-- 縮放切換：預設填滿（(填滿) / (不裁切)） -->
+              <button id="cycleFitBtn" type="button" title="點擊切換圖片縮放（填滿 / 不裁切）" class="touch-btn px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
+                (填滿)
               </button>
 
               <!-- 畫質切換：高畫質 / 中畫質 / 原畫質 -->
@@ -262,7 +262,7 @@
               </button>
             </div>
 
-            <!-- Row 3: 輸出檔案名稱（自動偵測首頁中/英文為 P4C_ / P4E_） -->
+            <!-- Row 3: 輸出檔案名稱（依學年日期自動帶入 P4~U4，並偵測中/英文） -->
             <div class="max-w-md mx-auto text-left pt-0.5">
               <div class="flex items-center justify-between mb-1">
                 <label for="pdfFilename" class="text-[11px] font-semibold text-slate-500 dark:text-slate-400">輸出檔案名稱</label>
@@ -552,6 +552,32 @@
   <script>
     const { jsPDF } = window.jspdf;
 
+    // 依今天日期自動判斷學年字首（2026-08-02 起每年 8 月 2 日升班）
+    function getAcademicGradePrefix() {
+      const now = new Date();
+      const todayNum = now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+      const schedule = [
+        { start: 20260802, end: 20270801, grade: 'P4' },
+        { start: 20270802, end: 20280801, grade: 'P5' },
+        { start: 20280802, end: 20290801, grade: 'P6' },
+        { start: 20290802, end: 20300801, grade: 'S1' },
+        { start: 20300802, end: 20310801, grade: 'S2' },
+        { start: 20310802, end: 20320801, grade: 'S3' },
+        { start: 20320802, end: 20330801, grade: 'S4' },
+        { start: 20330802, end: 20340801, grade: 'S5' },
+        { start: 20340802, end: 20350801, grade: 'S6' },
+        { start: 20350802, end: 20360801, grade: 'U1' },
+        { start: 20360802, end: 20370801, grade: 'U2' },
+        { start: 20370802, end: 20380801, grade: 'U3' },
+        { start: 20380802, end: 20390801, grade: 'U4' }
+      ];
+      const match = schedule.find((s) => todayNum >= s.start && todayNum <= s.end);
+      return match ? match.grade : 'P4';
+    }
+
+    const gradePrefix = getAcademicGradePrefix();
+    const defaultFilePrefix = `${gradePrefix}X_`;
+
     // 應用程式狀態
     let images = [];
     let autoCropEnabled = true;
@@ -559,13 +585,13 @@
     let globalBrightness = 20;            // -60 ~ +60（預設 +20%）
     let globalSharpness = 20;             // 0 ~ 100（預設 20%）
     let selectedOrientation = 'portrait'; // 'portrait' | 'landscape'
-    let selectedMargin = 10;              // 10 | 20 | 0
-    let selectedImageFit = 'contain';     // 'contain' | 'cover'
+    let selectedMargin = 0;               // 預設無邊距 (0 | 10 | 20)
+    let selectedImageFit = 'cover';       // 預設填滿 ('cover' | 'contain')
     let selectedQuality = 0.85;           // 0.85 | 0.65 | 0.95
     let showPageNumbers = true;           // 固定顯示於右下角 Page 1/3
     let isConverting = false;
     let lastGeneratedBlob = null;
-    let lastGeneratedFilename = 'P4X_.pdf';
+    let lastGeneratedFilename = `${defaultFilePrefix}.pdf`;
     let sortableInstance = null;
     let filenameManuallyEdited = false;
 
@@ -578,9 +604,9 @@
     };
 
     const marginOptions = [
+      { value: 0, label: '無邊距' },
       { value: 10, label: '窄邊距' },
-      { value: 20, label: '標準' },
-      { value: 0, label: '無邊距' }
+      { value: 20, label: '標準' }
     ];
 
     const qualityOptions = [
@@ -632,6 +658,9 @@
 
     const pdfFilenameInput = document.getElementById('pdfFilename');
     const ocrDetectBadge = document.getElementById('ocrDetectBadge');
+
+    pdfFilenameInput.value = defaultFilePrefix;
+    pdfFilenameInput.placeholder = defaultFilePrefix;
 
     const convertBtn = document.getElementById('convertBtn');
     const convertBtnText = document.getElementById('convertBtnText');
@@ -851,7 +880,6 @@
           return maxW * maxH;
         };
 
-        // 1. 若已有記憶的最佳閃光燈高畫素鏡頭，直接開啟
         if (savedCamId) {
           try {
             const track = await openCameraByConstraints({
@@ -871,7 +899,6 @@
           }
         }
 
-        // 2. 先取得相機權限以讀取所有鏡頭列表
         let bestTrack = await openCameraByConstraints({
           facingMode: { ideal: 'environment' },
           width: { ideal: 4096 },
@@ -881,7 +908,6 @@
         let bestTorchId = hasTorch(bestTrack) && bestTrack.getSettings ? bestTrack.getSettings().deviceId : null;
         let bestTorchPixels = bestTorchId ? getMaxPixels(bestTrack) : -1;
 
-        // 3. 掃描所有非前置鏡頭，找出「支援補光燈」且「最高畫素」的鏡頭
         if (navigator.mediaDevices.enumerateDevices) {
           const all = await navigator.mediaDevices.enumerateDevices();
           const vids = all.filter((d) => d.kind === 'videoinput');
@@ -1147,7 +1173,7 @@
     });
 
     // =========================================================================
-    // 首頁上半部中/英文偵測（自動設定 P4C_ / P4E_）
+    // 首頁上半部中/英文偵測（依學年自動設定 P4C_ / P4E_ 等）
     // =========================================================================
     async function detectFirstLineLanguage(dataUrl) {
       if (typeof Tesseract === 'undefined') return;
@@ -1186,24 +1212,25 @@
         const zhCount = zhChars.length;
 
         const currentVal = pdfFilenameInput.value.trim();
-        const isDefaultPrefix = currentVal === '' || /^P4[XCE]_$/i.test(currentVal);
+        const defaultPrefixRegex = new RegExp(`^${gradePrefix}[XCE]_$`, 'i');
+        const isDefaultPrefix = currentVal === '' || defaultPrefixRegex.test(currentVal);
 
         if (isDefaultPrefix) {
           if (enWords.length >= 3 && enLetterCount >= zhCount * 2) {
-            pdfFilenameInput.value = 'P4E_';
-            ocrDetectBadge.textContent = '偵測為英文 (P4E_)';
+            pdfFilenameInput.value = `${gradePrefix}E_`;
+            ocrDetectBadge.textContent = `偵測為英文 (${gradePrefix}E_)`;
             invalidatePdfCache();
           } else if (zhCount >= 3 && zhCount * 2 > enLetterCount) {
-            pdfFilenameInput.value = 'P4C_';
-            ocrDetectBadge.textContent = '偵測為中文 (P4C_)';
+            pdfFilenameInput.value = `${gradePrefix}C_`;
+            ocrDetectBadge.textContent = `偵測為中文 (${gradePrefix}C_)`;
             invalidatePdfCache();
           } else if (enLetterCount > zhCount) {
-            pdfFilenameInput.value = 'P4E_';
-            ocrDetectBadge.textContent = '偵測為英文 (P4E_)';
+            pdfFilenameInput.value = `${gradePrefix}E_`;
+            ocrDetectBadge.textContent = `偵測為英文 (${gradePrefix}E_)`;
             invalidatePdfCache();
           } else if (zhCount > 0) {
-            pdfFilenameInput.value = 'P4C_';
-            ocrDetectBadge.textContent = '偵測為中文 (P4C_)';
+            pdfFilenameInput.value = `${gradePrefix}C_`;
+            ocrDetectBadge.textContent = `偵測為中文 (${gradePrefix}C_)`;
             invalidatePdfCache();
           } else {
             ocrDetectBadge.classList.add('hidden');
@@ -1570,7 +1597,7 @@
       return { dataUrl, width: outW, height: outH };
     }
 
-    // 精準貼合紙張邊緣的矩形裁切偵測（結合白度 whiteness = lum - 1.35 * sat 排除木紋反光，並精細貼邊）
+    // 精準貼合紙張邊緣的矩形裁切偵測（結合白度 whiteness = lum - 1.35 * sat 排除木紋反光）
     function detectDocumentRect(img) {
       const maxDetectDim = 360;
       const scale = Math.min(1, maxDetectDim / Math.max(img.naturalWidth, img.naturalHeight));
@@ -1584,7 +1611,6 @@
       ctx.drawImage(img, 0, 0, w, h);
       const rgba = ctx.getImageData(0, 0, w, h).data;
 
-      // 計算每個像素的「紙張白度」與亮度（白紙高亮度且低飽和度；木桌反光飽和度高會被大幅壓低）
       const whiteness = new Float32Array(w * h);
       const lumArr = new Float32Array(w * h);
       for (let i = 0, p = 0; i < w * h; i++, p += 4) {
@@ -1595,7 +1621,6 @@
         whiteness[i] = lum - sat * 1.35;
       }
 
-      // 1. 中央紙張白度（取較白的前 60% 像素避開黑色字體）
       const centerWhite = [];
       const centerLum = [];
       const cx0 = Math.floor(w * 0.24), cx1 = Math.floor(w * 0.76);
@@ -1619,7 +1644,6 @@
       paperWhite /= brightCount;
       paperLum /= brightCount;
 
-      // 2. 外圍 4% 邊界背景白度（使用中位數抵抗單邊局部反光或小白點干擾）
       const borderWhite = [];
       const bx = Math.max(2, Math.floor(w * 0.04));
       const by = Math.max(2, Math.floor(h * 0.04));
@@ -1636,7 +1660,6 @@
       const queue = new Int32Array(w * h);
       let methodARect = null;
 
-      // 方法 A：深色/木質/彩色桌面上的白色文件（白度差異顯著）
       if (paperWhite - bgWhite >= 28) {
         const thresh = bgWhite + (paperWhite - bgWhite) * 0.46;
         const outside = new Uint8Array(w * h);
@@ -1664,7 +1687,6 @@
         }
 
         if (tail >= w * h * 0.04) {
-          // 找出包住畫面中心的最大前景區塊（排除背景上的獨立反光亮點）
           const visited = new Uint8Array(w * h);
           const midX = w >> 1, midY = h >> 1;
           let bestComp = null;
@@ -1704,7 +1726,6 @@
           }
 
           if (bestComp) {
-            // 僅加 0.5% 極細安全邊緣，緊貼真實紙張邊界
             const pad = 0.005;
             const snapEdge = 0.015;
             let left = Math.max(0, bestComp.minX / w - pad);
@@ -1733,7 +1754,6 @@
         }
       }
 
-      // 方法 B：白色桌面上的文件（偵測內部印刷框線與文字區域，排除貼在外緣的雜物）
       const darkThresh = paperLum - 32;
       const isDark = new Uint8Array(w * h);
       for (let i = 0; i < w * h; i++) {
@@ -2197,7 +2217,7 @@
     clearAllBtn.addEventListener('click', () => {
       images = [];
       filenameManuallyEdited = false;
-      pdfFilenameInput.value = 'P4X_';
+      pdfFilenameInput.value = defaultFilePrefix;
       ocrDetectBadge.classList.add('hidden');
       invalidatePdfCache();
       renderGrid();
@@ -2525,8 +2545,8 @@
     }
 
     function getSanitizedFilename() {
-      const raw = (pdfFilenameInput.value || 'P4X_').trim();
-      const cleaned = raw.replace(/[<>:"/\\|?*]+/g, '-').replace(/\.pdf$/i, '') || 'P4X_';
+      const raw = (pdfFilenameInput.value || defaultFilePrefix).trim();
+      const cleaned = raw.replace(/[<>:"/\\|?*]+/g, '-').replace(/\.pdf$/i, '') || defaultFilePrefix;
       return `${cleaned}.pdf`;
     }
 
