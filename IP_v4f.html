@@ -370,7 +370,7 @@
     </div>
   </div>
 
-  <!-- 連續拍照全螢幕相機視窗（預設開補光燈 + 嚴格 A4 取景框 + 點擊對焦 + 手動對焦） -->
+  <!-- 連續拍照全螢幕相機視窗（預設開補光燈恆亮不閃爍 + 嚴格 A4 取景框 + 點擊對焦 + 手動對焦） -->
   <div id="liveCameraModal" class="hidden fixed inset-0 z-50 bg-black flex flex-col">
     <!-- 頂部狀態列 -->
     <div class="px-3.5 py-2.5 bg-black/80 backdrop-blur-sm flex items-center justify-between gap-2 shrink-0 z-10">
@@ -742,7 +742,7 @@
     syncThemeUI();
 
     // =========================================================================
-    // 連續拍照相機引擎（預設開補光燈 + 嚴格 A4 取景框 + 最高畫素主鏡頭 + 點擊對焦）
+    // 連續拍照相機引擎（預設開補光燈恆亮不閃爍 + 嚴格 A4 取景框 + 最高畫素主鏡頭 + 點擊對焦）
     // =========================================================================
     let liveStream = null;
     let liveVideoTrack = null;
@@ -823,7 +823,7 @@
         }
       }
 
-      // 預設自動開啟補光燈
+      // 預設自動開啟補光燈（恆亮）
       if (caps.torch) {
         liveTorchBtn.classList.remove('hidden');
         try {
@@ -1124,10 +1124,15 @@
     }
 
     async function captureHighResFrame() {
+      // 補光燈開啟時直接從高畫質即時串流擷取，避免 takePhoto() 觸發閃光燈閃爍或中斷補光燈
+      if (liveTorchOn) {
+        return cropImageToA4Ratio(liveCameraVideo);
+      }
+
       if (liveVideoTrack && typeof ImageCapture !== 'undefined') {
         try {
           const imageCapture = new ImageCapture(liveVideoTrack);
-          const photoBlob = await imageCapture.takePhoto();
+          const photoBlob = await imageCapture.takePhoto({ fillLightMode: 'off' });
           if (photoBlob && photoBlob.size > 0) {
             const rawUrl = await readFileAsDataURL(photoBlob);
             const imgEl = await loadImageElement(rawUrl);
@@ -1490,7 +1495,7 @@
     syncCycleButtonsUI();
 
     // =========================================================================
-    // 文件標準矩形邊緣偵測、直接矩形裁切、降噪銳利化與色彩濾鏡引擎
+    // 文件標準矩形邊緣偵測、直接矩形裁切、降噪銳利化、大黑塊轉深灰與色彩濾鏡引擎
     // =========================================================================
     function loadImageElement(src) {
       return new Promise((resolve, reject) => {
@@ -1511,6 +1516,7 @@
           lum[i] = (data[p] * 77 + data[p + 1] * 150 + data[p + 2] * 29) >> 8;
         }
 
+        // 1. 保留邊緣的降噪
         const denoised = new Uint8Array(len);
         const rangeThresh = 26;
         for (let y = 0; y < h; y++) {
@@ -1538,9 +1544,11 @@
           }
         }
 
+        // 2. 門檻銳利化 + 黑白對比
         const sharpAmount = sharpness > 0 ? (sharpness / 100) * 1.1 : 0;
         const pivot = 148 - brightness;
         const contrast = 2.6;
+        const bwOut = new Uint8Array(len);
 
         for (let y = 0; y < h; y++) {
           const row = y * w;
@@ -1559,6 +1567,53 @@
             val = (val - pivot) * contrast + 128;
             if (val > 235) val = 255;
             else if (val < 18) val = 0;
+
+            bwOut[idx] = val;
+          }
+        }
+
+        // 3. 建立深色像素積分圖（Integral Image），區分「大面積黑塊/黑框」與「文字筆畫」
+        const w1 = w + 1;
+        const sat = new Int32Array(w1 * (h + 1));
+        for (let y = 0; y < h; y++) {
+          let rowSum = 0;
+          const srcRow = y * w;
+          const prevSatRow = y * w1;
+          const curSatRow = (y + 1) * w1;
+          for (let x = 0; x < w; x++) {
+            if (bwOut[srcRow + x] < 85) rowSum++;
+            sat[curSatRow + x + 1] = sat[prevSatRow + x + 1] + rowSum;
+          }
+        }
+
+        // 局部視窗半徑約為短邊 1.2%（文字筆畫周圍有白紙密度低，實心黑框密度高）
+        const r = Math.max(6, Math.round(Math.min(w, h) * 0.012));
+        const targetDeepGrey = 105;
+
+        for (let y = 0; y < h; y++) {
+          const y0 = Math.max(0, y - r);
+          const y1 = Math.min(h, y + r + 1);
+          const row = y * w;
+          const satY0 = y0 * w1;
+          const satY1 = y1 * w1;
+
+          for (let x = 0; x < w; x++) {
+            const idx = row + x;
+            let val = bwOut[idx];
+
+            if (val < targetDeepGrey) {
+              const x0 = Math.max(0, x - r);
+              const x1 = Math.min(w, x + r + 1);
+              const area = (x1 - x0) * (y1 - y0);
+              const darkCount = sat[satY1 + x1] - sat[satY0 + x1] - sat[satY1 + x0] + sat[satY0 + x0];
+              const density = darkCount / area;
+
+              // 密度超過 78% 代表屬於大面積實心黑區（非文字），漸進調亮為深灰色
+              if (density > 0.78) {
+                const blend = Math.min(1, (density - 0.78) / 0.14);
+                val = Math.round(val + (targetDeepGrey - val) * blend);
+              }
+            }
 
             const p = idx * 4;
             data[p] = data[p + 1] = data[p + 2] = val;
