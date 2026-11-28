@@ -121,4 +121,146 @@
   <!-- 頂部導覽列 -->
   <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 transition-colors">
     <div class="max-w-6xl mx-auto px-3.5 sm:px-6 h-14 sm:h-16 flex items-center justify-between gap-2">
-      <div class="flex items-center gap
+      <div class="flex items-center gap-2.5 min-w-0">
+        <div class="w-9 h-9 rounded-xl bg-indigo-600 flex items-center justify-center text-white shadow-sm shrink-0">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-6 4h4" />
+          </svg>
+        </div>
+        <div class="truncate">
+          <h1 class="text-base sm:text-lg font-bold tracking-tight text-slate-900 dark:text-white leading-none truncate">PDF merge</h1>
+          <p class="text-[11px] sm:text-xs text-slate-500 dark:text-slate-400 mt-0.5 truncate">圖片轉 PDF 與文件掃描工具</p>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 shrink-0">
+        <!-- 深淺色模式切換按鈕 -->
+        <button id="themeToggleBtn" type="button" aria-label="切換深色或淺色模式" title="切換模式" class="touch-btn w-10 h-10 sm:w-auto sm:px-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 inline-flex items-center justify-center gap-1.5 transition-colors">
+          <svg class="w-4 h-4 text-amber-400 hidden dark:block" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <svg class="w-4 h-4 text-indigo-600 block dark:hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+          <span id="themeToggleText" class="hidden sm:inline text-xs font-semibold">淺色模式</span>
+        </button>
+
+        <button id="clearAllBtn" type="button" class="hidden touch-btn px-3 py-2 text-xs sm:text-sm font-medium text-rose-600 dark:text-rose-400 bg-rose-50 hover:bg-rose-100 active:bg-rose-200 dark:bg-rose-950/50 dark:hover:bg-rose-900/60 rounded-xl transition-colors">
+          全部清除
+        </button>
+
+        <button id="headerConvertBtn" type="button" disabled class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 dark:disabled:bg-slate-800 dark:disabled:text-slate-500 disabled:cursor-not-allowed rounded-xl shadow-sm transition-all">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          <span>建立 PDF</span>
+          <span id="headerCountBadge" class="hidden bg-indigo-500 text-white text-xs px-2 py-0.5 rounded-full">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 主要內容 -->
+  <main class="flex-1 max-w-6xl w-full mx-auto px-3 sm:px-6 pt-3 sm:pt-6 pb-28 lg:pb-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-8 items-start">
+
+      <!-- 左欄：上傳、精簡設定與頁面排列區 -->
+      <div class="lg:col-span-8 space-y-4">
+
+        <!-- 精簡上傳與掃描控制區 -->
+        <div id="dropZone" class="border-2 border-dashed border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 rounded-2xl p-3.5 sm:p-5 text-center transition-all hover:border-indigo-400 dark:hover:border-indigo-500 cursor-pointer">
+          <input id="fileInput" type="file" accept="image/*" multiple class="hidden" />
+          <input id="cameraInput" type="file" accept="image/*" capture="environment" class="hidden" />
+
+          <h2 class="text-base sm:text-lg font-bold text-slate-800 dark:text-slate-100">加入或拍攝掃描文件</h2>
+
+          <div class="mt-2.5 grid grid-cols-2 gap-2 max-w-md mx-auto">
+            <button id="browseBtn" type="button" class="touch-btn inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 rounded-xl shadow-sm transition-colors">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+              <span>選擇圖片</span>
+            </button>
+
+            <button id="cameraBtn" type="button" class="touch-btn inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-semibold text-indigo-700 dark:text-indigo-300 bg-indigo-50 hover:bg-indigo-100 active:bg-indigo-200 dark:bg-indigo-950/60 dark:hover:bg-indigo-900/70 border border-indigo-200 dark:border-indigo-800 rounded-xl transition-colors">
+              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+              </svg>
+              <span>立即拍照掃描</span>
+            </button>
+          </div>
+
+          <!-- 精簡控制列：Row 1（頁碼 + 裁切 + 黑白 + 方向 + 無邊距 + 填滿 + 高畫質），Row 2（亮度/銳利度/重設），Row 3（輸出檔案名稱） -->
+          <div class="no-drop-click mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 space-y-2 cursor-default">
+            <!-- Row 1: 全部切換按鈕 -->
+            <div class="flex flex-wrap items-center justify-center gap-1.5">
+              <!-- 頁碼開關（固定右下角） -->
+              <button id="pageNumberToggle" type="button" role="switch" aria-checked="true" title="點擊開關右下角頁碼" class="touch-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all shrink-0">
+                <span id="pageNumTrack" class="relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200">
+                  <span id="pageNumKnob" class="inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-3.5"></span>
+                </span>
+                <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300" id="pageNumLabel">頁碼</span>
+              </button>
+
+              <!-- 自動矩形裁切開關 -->
+              <button id="autoCropToggle" type="button" role="switch" aria-checked="true" title="點擊開關自動矩形裁切" class="touch-btn inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl border border-emerald-500/60 bg-emerald-50 dark:bg-emerald-950/40 transition-all shrink-0">
+                <span id="autoCropTrack" class="relative inline-flex h-4 w-7 shrink-0 items-center rounded-full bg-emerald-500 transition-colors duration-200">
+                  <span id="autoCropKnob" class="inline-block h-3 w-3 transform rounded-full bg-white shadow transition-transform duration-200 translate-x-3.5"></span>
+                </span>
+                <span class="text-xs font-bold text-emerald-700 dark:text-emerald-300" id="autoCropLabel">裁切</span>
+              </button>
+
+              <!-- 色彩模式切換：預設黑白（點擊切換 黑白 / 原圖） -->
+              <button id="cycleFilterBtn" type="button" title="點擊切換黑白或原圖" class="touch-btn px-2.5 py-1 rounded-xl border border-indigo-500 bg-indigo-600 text-white text-xs font-semibold shadow-xs transition-all shrink-0">
+                黑白
+              </button>
+
+              <!-- 方向切換：直向 / 橫向 -->
+              <button id="cycleOrientationBtn" type="button" title="點擊切換直向或橫向" class="touch-btn inline-flex items-center gap-1 px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
+                <span id="cycleOrientationIcon" class="w-2.5 h-3.5 border-[1.5px] border-current rounded-[2px] inline-block"></span>
+                <span id="cycleOrientationText">直向</span>
+              </button>
+
+              <!-- 邊距切換：預設無邊距（無邊距 / 窄邊距 / 標準） -->
+              <button id="cycleMarginBtn" type="button" title="點擊切換邊距（無邊距 / 窄邊距 / 標準）" class="touch-btn px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
+                無邊距
+              </button>
+
+              <!-- 縮放切換：預設填滿（(填滿) / (不裁切)） -->
+              <button id="cycleFitBtn" type="button" title="點擊切換圖片縮放（填滿 / 不裁切）" class="touch-btn px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
+                (填滿)
+              </button>
+
+              <!-- 畫質切換：高畫質 / 中畫質 / 原畫質 -->
+              <button id="cycleQualityBtn" type="button" title="點擊切換圖片畫質（高畫質 / 中畫質 / 原畫質）" class="touch-btn px-2.5 py-1 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-all shrink-0">
+                高畫質
+              </button>
+            </div>
+
+            <!-- Row 2: 單行亮度（預設 +12%）+ 銳利度（預設 20%）+ 重設 -->
+            <div class="p-2 sm:px-3 rounded-xl bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 flex flex-row items-center gap-2 sm:gap-3 text-left">
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between text-[10px] sm:text-[11px] mb-1 gap-1">
+                  <label for="brightnessSlider" class="font-medium text-slate-700 dark:text-slate-300 truncate">亮度</label>
+                  <span id="brightnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums shrink-0">+12%</span>
+                </div>
+                <input id="brightnessSlider" type="range" min="-60" max="60" step="1" value="12" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+              </div>
+
+              <div class="flex-1 min-w-0">
+                <div class="flex items-center justify-between text-[10px] sm:text-[11px] mb-1 gap-1">
+                  <label for="sharpnessSlider" class="font-medium text-slate-700 dark:text-slate-300 truncate">銳利度</label>
+                  <span id="sharpnessVal" class="font-bold text-indigo-600 dark:text-indigo-400 tabular-nums shrink-0">20%</span>
+                </div>
+                <input id="sharpnessSlider" type="range" min="0" max="100" step="5" value="20" class="w-full accent-indigo-600 cursor-pointer h-1.5 bg-slate-200 dark:bg-slate-800 rounded-lg" />
+              </div>
+
+              <button id="resetAdjustBtn" type="button" class="touch-btn min-h-[32px] px-2.5 py-1 rounded-lg bg-slate-200/70 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-[11px] sm:text-xs font-semibold text-indigo-600 dark:text-indigo-400 shrink-0 transition-colors">
+                重設
+              </button>
+            </div>
+
+            <!-- Row 3: 輸出檔案名稱（依學年日期自動帶入 P4~U4，並偵測中/英文） -->
+            <div class="max-w-md mx-auto text-left pt-
