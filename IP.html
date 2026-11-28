@@ -370,7 +370,7 @@
     </div>
   </div>
 
-  <!-- 連續拍照全螢幕相機視窗（支援點擊對焦、硬體靜態拍照、多鏡頭切換、補光燈、手動對焦） -->
+  <!-- 連續拍照全螢幕相機視窗（自動鎖定支援補光燈的主鏡頭 + 點擊對焦 + 手動對焦） -->
   <div id="liveCameraModal" class="hidden fixed inset-0 z-50 bg-black flex flex-col">
     <!-- 頂部狀態列 -->
     <div class="px-3.5 py-2.5 bg-black/80 backdrop-blur-sm flex items-center justify-between gap-2 shrink-0 z-10">
@@ -384,7 +384,7 @@
         <button id="liveTorchBtn" type="button" class="hidden touch-btn px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold">
           補光燈
         </button>
-        <button id="liveSwitchCamBtn" type="button" class="touch-btn px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold">
+        <button id="liveSwitchCamBtn" type="button" class="hidden touch-btn px-2.5 py-1 rounded-xl bg-white/15 hover:bg-white/25 text-white text-xs font-semibold">
           切換鏡頭
         </button>
         <button id="liveCancelCamBtn" type="button" class="touch-btn w-9 h-9 rounded-xl bg-white/15 hover:bg-white/25 text-white flex items-center justify-center" aria-label="關閉相機">
@@ -406,7 +406,7 @@
       <div class="pointer-events-none absolute inset-5 sm:inset-10 border border-white/20 rounded-xl"></div>
       <!-- 對焦提示 -->
       <div id="liveFocusHint" class="pointer-events-none absolute bottom-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full bg-black/60 text-white/85 text-[11px] font-medium backdrop-blur-xs">
-        點擊畫面對焦 • 若模糊請點上方「切換鏡頭」
+        點擊畫面對焦
       </div>
     </div>
 
@@ -712,7 +712,7 @@
     syncThemeUI();
 
     // =========================================================================
-    // 連續拍照相機引擎（自動對焦 + 點擊對焦 + 多鏡頭切換 + 補光燈 + 硬體靜態拍照）
+    // 連續拍照相機引擎（鎖定有補光燈的主鏡頭 + 點擊對焦 + 硬體靜態拍照）
     // =========================================================================
     let liveStream = null;
     let liveVideoTrack = null;
@@ -764,7 +764,6 @@
 
       const caps = track.getCapabilities();
 
-      // 1. 強制啟用連續自動對焦（Continuous Autofocus）
       if (caps.focusMode && Array.isArray(caps.focusMode) && caps.focusMode.includes('continuous')) {
         try {
           await track.applyConstraints({ advanced: [{ focusMode: 'continuous' }] });
@@ -773,7 +772,6 @@
         }
       }
 
-      // 2. 檢查是否支援補光燈（Torch）
       if (caps.torch) {
         liveTorchBtn.classList.remove('hidden');
         liveTorchOn = false;
@@ -783,7 +781,6 @@
         liveTorchBtn.classList.add('hidden');
       }
 
-      // 3. 檢查是否支援手動對焦距離滑桿（focusDistance）
       if (
         caps.focusMode &&
         caps.focusMode.includes('manual') &&
@@ -808,7 +805,6 @@
       try {
         const all = await navigator.mediaDevices.enumerateDevices();
         const vids = all.filter((d) => d.kind === 'videoinput');
-        // 將後置鏡頭排在前面，前置鏡頭排在最後
         const backCams = vids.filter((d) => /back|rear|environment/i.test(d.label) && !/front|user/i.test(d.label));
         const otherCams = vids.filter((d) => !backCams.includes(d));
         liveVideoDevices = backCams.concat(otherCams);
@@ -824,41 +820,88 @@
       }
     }
 
+    async function openCameraByConstraints(videoConstraints) {
+      stopLiveCameraStream();
+      liveStream = await navigator.mediaDevices.getUserMedia({
+        audio: false,
+        video: videoConstraints
+      });
+      liveVideoTrack = liveStream.getVideoTracks()[0] || null;
+      liveCameraVideo.srcObject = liveStream;
+      await liveCameraVideo.play();
+      return liveVideoTrack;
+    }
+
     async function startLiveCamera(deviceId = null) {
       if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
         cameraInput.click();
         return;
       }
 
-      stopLiveCameraStream();
-
       try {
-        const videoConstraints = deviceId
-          ? {
-              deviceId: { exact: deviceId },
+        const savedTorchCamId = deviceId || localStorage.getItem('pdfmerge_torch_cam_id');
+        let track = null;
+
+        // 1. 優先直接開啟上次記住的「支援補光燈」主鏡頭
+        if (savedTorchCamId) {
+          try {
+            track = await openCameraByConstraints({
+              deviceId: { exact: savedTorchCamId },
               width: { ideal: 1920 },
               height: { ideal: 1080 }
-            }
-          : {
-              facingMode: { ideal: 'environment' },
-              width: { ideal: 1920 },
-              height: { ideal: 1080 }
-            };
+            });
+          } catch (_) {
+            localStorage.removeItem('pdfmerge_torch_cam_id');
+          }
+        }
 
-        liveStream = await navigator.mediaDevices.getUserMedia({
-          audio: false,
-          video: videoConstraints
-        });
+        // 2. 若沒有記錄，先開啟預設後置鏡頭
+        if (!track) {
+          track = await openCameraByConstraints({
+            facingMode: { ideal: 'environment' },
+            width: { ideal: 1920 },
+            height: { ideal: 1080 }
+          });
+        }
 
-        liveVideoTrack = liveStream.getVideoTracks()[0] || null;
-        liveCameraVideo.srcObject = liveStream;
-        await liveCameraVideo.play();
+        const hasTorch = (t) => !!(t && typeof t.getCapabilities === 'function' && t.getCapabilities().torch);
+
+        // 3. 若目前鏡頭沒有補光燈，自動掃描其他後置鏡頭並鎖定有補光燈的主鏡頭
+        if (!hasTorch(track) && navigator.mediaDevices.enumerateDevices) {
+          const all = await navigator.mediaDevices.enumerateDevices();
+          const vids = all.filter((d) => d.kind === 'videoinput');
+          const backCams = vids.filter((d) => /back|rear|environment/i.test(d.label) && !/front|user/i.test(d.label));
+          const candidates = backCams.length > 0 ? backCams : vids;
+          const currentId = track.getSettings ? track.getSettings().deviceId : null;
+
+          for (const cam of candidates) {
+            if (!cam.deviceId || cam.deviceId === currentId) continue;
+            try {
+              const testTrack = await openCameraByConstraints({
+                deviceId: { exact: cam.deviceId },
+                width: { ideal: 1920 },
+                height: { ideal: 1080 }
+              });
+              if (hasTorch(testTrack)) {
+                track = testTrack;
+                break;
+              }
+            } catch (_) {}
+          }
+        }
+
+        if (hasTorch(track)) {
+          const activeId = track.getSettings ? track.getSettings().deviceId : null;
+          if (activeId) localStorage.setItem('pdfmerge_torch_cam_id', activeId);
+          liveSwitchCamBtn.classList.add('hidden');
+        } else {
+          liveSwitchCamBtn.classList.remove('hidden');
+          await refreshCameraDeviceList(track);
+        }
 
         liveCameraModal.classList.remove('hidden');
         updateLiveCameraCounter();
-
-        await configureTrackFocusAndControls(liveVideoTrack);
-        await refreshCameraDeviceList(liveVideoTrack);
+        await configureTrackFocusAndControls(track);
       } catch (err) {
         console.warn('無法開啟內建即時相機，退回系統相機:', err);
         stopLiveCameraStream();
@@ -867,7 +910,6 @@
       }
     }
 
-    // 點擊取景畫面觸發硬體重新對焦
     async function triggerTapToFocus(clientX, clientY) {
       if (!liveVideoTrack) return;
 
@@ -891,7 +933,6 @@
       liveAutoFocusBtn.className = 'px-2.5 py-1 rounded-lg bg-emerald-600 text-white text-[11px] font-bold shrink-0';
 
       try {
-        // 先嘗試單次對焦 + 對焦點（Android Chrome 支援），再恢復連續自動對焦
         if (caps.focusMode && caps.focusMode.includes('single-shot')) {
           const singleConstraint = { focusMode: 'single-shot' };
           if (caps.pointsOfInterest) {
@@ -913,7 +954,7 @@
       }
 
       setTimeout(() => {
-        liveFocusHint.textContent = '點擊畫面對焦 • 若模糊請點上方「切換鏡頭」';
+        liveFocusHint.textContent = '點擊畫面對焦';
       }, 900);
     }
 
@@ -921,7 +962,6 @@
       triggerTapToFocus(e.clientX, e.clientY);
     });
 
-    // 補光燈切換
     liveTorchBtn.addEventListener('click', async () => {
       if (!liveVideoTrack) return;
       try {
@@ -936,7 +976,6 @@
       }
     });
 
-    // 手動對焦距離滑桿
     liveFocusSlider.addEventListener('input', async () => {
       if (!liveVideoTrack) return;
       const dist = parseFloat(liveFocusSlider.value);
@@ -972,7 +1011,6 @@
       }
     }
 
-    // 優先使用硬體 ImageCapture.takePhoto()（啟用硬體靜態對焦與高畫質），不支援時退回視訊擷取
     async function captureHighResFrame() {
       if (liveVideoTrack && typeof ImageCapture !== 'undefined') {
         try {
@@ -1006,7 +1044,6 @@
       liveIsCapturing = true;
       liveShutterBtn.classList.add('opacity-60');
 
-      // 快門閃光動畫
       liveShutterFlash.classList.remove('hidden', 'animate-shutter-flash');
       void liveShutterFlash.offsetWidth;
       liveShutterFlash.classList.add('animate-shutter-flash');
@@ -1348,7 +1385,7 @@
     syncCycleButtonsUI();
 
     // =========================================================================
-    // 文件標準矩形邊緣偵測、直接矩形裁切、銳利化與色彩濾鏡引擎（純 JS + Canvas）
+    // 文件標準矩形邊緣偵測、直接矩形裁切、降噪銳利化與色彩濾鏡引擎
     // =========================================================================
     function loadImageElement(src) {
       return new Promise((resolve, reject) => {
@@ -1523,6 +1560,7 @@
       ctx.drawImage(img, 0, 0, w, h);
       const rgba = ctx.getImageData(0, 0, w, h).data;
 
+      // 計算中央紙張亮度與色彩
       const centerSamples = [];
       const cx0 = Math.floor(w * 0.22), cx1 = Math.floor(w * 0.78);
       const cy0 = Math.floor(h * 0.22), cy1 = Math.floor(h * 0.78);
@@ -1549,6 +1587,7 @@
       paperB /= brightCount;
       paperLum /= brightCount;
 
+      // 計算外圍 4% 背景色
       let bgR = 0, bgG = 0, bgB = 0, bgLum = 0, bgCount = 0;
       const bx = Math.max(2, Math.floor(w * 0.04));
       const by = Math.max(2, Math.floor(h * 0.04));
@@ -1572,69 +1611,127 @@
 
       const colorDiff = Math.hypot(paperR - bgR, paperG - bgG, paperB - bgB);
       const lumDiff = Math.abs(paperLum - bgLum);
-      if (colorDiff < 24 && lumDiff < 18) {
-        canvas.width = 0;
-        canvas.height = 0;
-        return null;
-      }
-
-      const outside = new Uint8Array(w * h);
       const queue = new Int32Array(w * h);
-      let head = 0, tail = 0;
 
-      const isBackgroundPixel = (idx) => {
-        const p = idx * 4;
-        const r = rgba[p], g = rgba[p + 1], b = rgba[p + 2];
-        const distToBg = Math.hypot(r - bgR, g - bgG, b - bgB);
-        const distToPaper = Math.hypot(r - paperR, g - paperG, b - paperB);
-        return distToBg < distToPaper * 0.92;
-      };
+      // 方法 A：深色/彩色桌面上的白色文件
+      if (colorDiff >= 24 || lumDiff >= 18) {
+        const outside = new Uint8Array(w * h);
+        let head = 0, tail = 0;
 
-      const enqueueIfBg = (x, y) => {
-        const idx = y * w + x;
-        if (!outside[idx] && isBackgroundPixel(idx)) {
-          outside[idx] = 1;
-          queue[tail++] = idx;
+        const isBackgroundPixel = (idx) => {
+          const p = idx * 4;
+          const r = rgba[p], g = rgba[p + 1], b = rgba[p + 2];
+          const distToBg = Math.hypot(r - bgR, g - bgG, b - bgB);
+          const distToPaper = Math.hypot(r - paperR, g - paperG, b - paperB);
+          return distToBg < distToPaper * 0.92;
+        };
+
+        const enqueueIfBg = (x, y) => {
+          const idx = y * w + x;
+          if (!outside[idx] && isBackgroundPixel(idx)) {
+            outside[idx] = 1;
+            queue[tail++] = idx;
+          }
+        };
+
+        for (let x = 0; x < w; x++) { enqueueIfBg(x, 0); enqueueIfBg(x, h - 1); }
+        for (let y = 0; y < h; y++) { enqueueIfBg(0, y); enqueueIfBg(w - 1, y); }
+
+        while (head < tail) {
+          const idx = queue[head++];
+          const x = idx % w;
+          const y = (idx - x) / w;
+          if (x > 0) enqueueIfBg(x - 1, y);
+          if (x < w - 1) enqueueIfBg(x + 1, y);
+          if (y > 0) enqueueIfBg(x, y - 1);
+          if (y < h - 1) enqueueIfBg(x, y + 1);
         }
-      };
 
-      for (let x = 0; x < w; x++) {
-        enqueueIfBg(x, 0);
-        enqueueIfBg(x, h - 1);
-      }
-      for (let y = 0; y < h; y++) {
-        enqueueIfBg(0, y);
-        enqueueIfBg(w - 1, y);
+        if (tail >= w * h * 0.04) {
+          const visited = new Uint8Array(w * h);
+          const minNoisePixels = Math.max(12, Math.floor(w * h * 0.0015));
+          let unionMinX = w, unionMaxX = 0, unionMinY = h, unionMaxY = 0;
+          let foundValid = false;
+
+          for (let i = 0; i < w * h; i++) {
+            if (outside[i] || visited[i]) continue;
+            let qh = 0, qt = 0;
+            visited[i] = 1;
+            queue[qt++] = i;
+            let minX = w, maxX = 0, minY = h, maxY = 0;
+
+            while (qh < qt) {
+              const cur = queue[qh++];
+              const x = cur % w;
+              const y = (cur - x) / w;
+              if (x < minX) minX = x;
+              if (x > maxX) maxX = x;
+              if (y < minY) minY = y;
+              if (y > maxY) maxY = y;
+
+              if (x > 0 && !outside[cur - 1] && !visited[cur - 1]) { visited[cur - 1] = 1; queue[qt++] = cur - 1; }
+              if (x < w - 1 && !outside[cur + 1] && !visited[cur + 1]) { visited[cur + 1] = 1; queue[qt++] = cur + 1; }
+              if (y > 0 && !outside[cur - w] && !visited[cur - w]) { visited[cur - w] = 1; queue[qt++] = cur - w; }
+              if (y < h - 1 && !outside[cur + w] && !visited[cur + w]) { visited[cur + w] = 1; queue[qt++] = cur + w; }
+            }
+
+            if (qt >= minNoisePixels) {
+              if (minX < unionMinX) unionMinX = minX;
+              if (maxX > unionMaxX) unionMaxX = maxX;
+              if (minY < unionMinY) unionMinY = minY;
+              if (maxY > unionMaxY) unionMaxY = maxY;
+              foundValid = true;
+            }
+          }
+
+          if (foundValid) {
+            const pad = 0.02;
+            const snapEdge = 0.06;
+            let left = Math.max(0, unionMinX / w - pad);
+            let top = Math.max(0, unionMinY / h - pad);
+            let right = Math.min(1, (unionMaxX + 1) / w + pad);
+            let bottom = Math.min(1, (unionMaxY + 1) / h + pad);
+
+            if (left < snapEdge) left = 0;
+            if (top < snapEdge) top = 0;
+            if (right > 1 - snapEdge) right = 1;
+            if (bottom > 1 - snapEdge) bottom = 1;
+
+            const rw = right - left;
+            const rh = bottom - top;
+            const areaRatio = rw * rh;
+
+            if (rw >= 0.20 && rh >= 0.20 && areaRatio >= 0.12 && areaRatio <= 0.94) {
+              canvas.width = 0;
+              canvas.height = 0;
+              return { left, top, right, bottom };
+            }
+          }
+        }
       }
 
-      while (head < tail) {
-        const idx = queue[head++];
-        const x = idx % w;
-        const y = (idx - x) / w;
-        if (x > 0) enqueueIfBg(x - 1, y);
-        if (x < w - 1) enqueueIfBg(x + 1, y);
-        if (y > 0) enqueueIfBg(x, y - 1);
-        if (y < h - 1) enqueueIfBg(x, y + 1);
-      }
-
-      if (tail < w * h * 0.04) {
-        canvas.width = 0;
-        canvas.height = 0;
-        return null;
+      // 方法 B：淺色/白色桌面上的文件（偵測內部印刷框線與文字區域，並排除貼在畫面最外緣的雜物）
+      const darkThresh = Math.min(paperLum, bgLum) - 28;
+      const isDark = new Uint8Array(w * h);
+      for (let i = 0, p = 0; i < w * h; i++, p += 4) {
+        const lum = 0.299 * rgba[p] + 0.587 * rgba[p + 1] + 0.114 * rgba[p + 2];
+        if (lum < darkThresh) isDark[i] = 1;
       }
 
       const visited = new Uint8Array(w * h);
-      const minNoisePixels = Math.max(12, Math.floor(w * h * 0.0015));
-      let unionMinX = w, unionMaxX = 0, unionMinY = h, unionMaxY = 0;
-      let foundValid = false;
+      const borderMarginX = Math.max(3, Math.floor(w * 0.025));
+      const borderMarginY = Math.max(3, Math.floor(h * 0.025));
+      let uMinX = w, uMaxX = 0, uMinY = h, uMaxY = 0;
+      let foundContent = false;
 
       for (let i = 0; i < w * h; i++) {
-        if (outside[i] || visited[i]) continue;
+        if (!isDark[i] || visited[i]) continue;
         let qh = 0, qt = 0;
         visited[i] = 1;
         queue[qt++] = i;
 
         let minX = w, maxX = 0, minY = h, maxY = 0;
+        let touchesOuterEdge = false;
 
         while (qh < qt) {
           const cur = queue[qh++];
@@ -1644,33 +1741,36 @@
           if (x > maxX) maxX = x;
           if (y < minY) minY = y;
           if (y > maxY) maxY = y;
+          if (x <= borderMarginX || x >= w - 1 - borderMarginX || y <= borderMarginY || y >= h - 1 - borderMarginY) {
+            touchesOuterEdge = true;
+          }
 
-          if (x > 0 && !outside[cur - 1] && !visited[cur - 1]) { visited[cur - 1] = 1; queue[qt++] = cur - 1; }
-          if (x < w - 1 && !outside[cur + 1] && !visited[cur + 1]) { visited[cur + 1] = 1; queue[qt++] = cur + 1; }
-          if (y > 0 && !outside[cur - w] && !visited[cur - w]) { visited[cur - w] = 1; queue[qt++] = cur - w; }
-          if (y < h - 1 && !outside[cur + w] && !visited[cur + w]) { visited[cur + w] = 1; queue[qt++] = cur + w; }
+          if (x > 0 && isDark[cur - 1] && !visited[cur - 1]) { visited[cur - 1] = 1; queue[qt++] = cur - 1; }
+          if (x < w - 1 && isDark[cur + 1] && !visited[cur + 1]) { visited[cur + 1] = 1; queue[qt++] = cur + 1; }
+          if (y > 0 && isDark[cur - w] && !visited[cur - w]) { visited[cur - w] = 1; queue[qt++] = cur - w; }
+          if (y < h - 1 && isDark[cur + w] && !visited[cur + w]) { visited[cur + w] = 1; queue[qt++] = cur + w; }
         }
 
-        if (qt >= minNoisePixels) {
-          if (minX < unionMinX) unionMinX = minX;
-          if (maxX > unionMaxX) unionMaxX = maxX;
-          if (minY < unionMinY) unionMinY = minY;
-          if (maxY > unionMaxY) unionMaxY = maxY;
-          foundValid = true;
+        if (!touchesOuterEdge && qt >= 6) {
+          if (minX < uMinX) uMinX = minX;
+          if (maxX > uMaxX) uMaxX = maxX;
+          if (minY < uMinY) uMinY = minY;
+          if (maxY > uMaxY) uMaxY = maxY;
+          foundContent = true;
         }
       }
 
       canvas.width = 0;
       canvas.height = 0;
 
-      if (!foundValid) return null;
+      if (!foundContent) return null;
 
-      const pad = 0.02;
+      const pad = 0.03;
       const snapEdge = 0.06;
-      let left = Math.max(0, unionMinX / w - pad);
-      let top = Math.max(0, unionMinY / h - pad);
-      let right = Math.min(1, (unionMaxX + 1) / w + pad);
-      let bottom = Math.min(1, (unionMaxY + 1) / h + pad);
+      let left = Math.max(0, uMinX / w - pad);
+      let top = Math.max(0, uMinY / h - pad);
+      let right = Math.min(1, (uMaxX + 1) / w + pad);
+      let bottom = Math.min(1, (uMaxY + 1) / h + pad);
 
       if (left < snapEdge) left = 0;
       if (top < snapEdge) top = 0;
@@ -1681,7 +1781,7 @@
       const rh = bottom - top;
       const areaRatio = rw * rh;
 
-      if (rw < 0.20 || rh < 0.20 || areaRatio < 0.12 || areaRatio > 0.96) {
+      if (rw < 0.20 || rh < 0.20 || areaRatio < 0.12 || areaRatio > 0.94) {
         return null;
       }
 
