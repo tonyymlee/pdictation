@@ -1433,7 +1433,6 @@
           lum[i] = (data[p] * 77 + data[p + 1] * 150 + data[p + 2] * 29) >> 8;
         }
 
-        // 1. 保留邊緣的降噪（平滑紙張與黑框雜訊，保留文字筆畫）
         const denoised = new Uint8Array(len);
         const rangeThresh = 26;
         for (let y = 0; y < h; y++) {
@@ -1461,7 +1460,6 @@
           }
         }
 
-        // 2. 門檻銳利化（只強化文字邊緣，不放大背景雜訊）
         const sharpAmount = sharpness > 0 ? (sharpness / 100) * 1.1 : 0;
         const pivot = 148 - brightness;
         const contrast = 2.6;
@@ -1480,7 +1478,6 @@
               }
             }
 
-            // 3. 黑白對比與紙張淨化
             val = (val - pivot) * contrast + 128;
             if (val > 235) val = 255;
             else if (val < 18) val = 0;
@@ -1573,8 +1570,9 @@
       return { dataUrl, width: outW, height: outH };
     }
 
+    // 精準貼合紙張邊緣的矩形裁切偵測（結合白度 whiteness = lum - 1.35 * sat 排除木紋反光，並精細貼邊）
     function detectDocumentRect(img) {
-      const maxDetectDim = 320;
+      const maxDetectDim = 360;
       const scale = Math.min(1, maxDetectDim / Math.max(img.naturalWidth, img.naturalHeight));
       const w = Math.max(40, Math.round(img.naturalWidth * scale));
       const h = Math.max(40, Math.round(img.naturalHeight * scale));
@@ -1586,75 +1584,67 @@
       ctx.drawImage(img, 0, 0, w, h);
       const rgba = ctx.getImageData(0, 0, w, h).data;
 
-      const centerSamples = [];
-      const cx0 = Math.floor(w * 0.22), cx1 = Math.floor(w * 0.78);
-      const cy0 = Math.floor(h * 0.22), cy1 = Math.floor(h * 0.78);
+      // 計算每個像素的「紙張白度」與亮度（白紙高亮度且低飽和度；木桌反光飽和度高會被大幅壓低）
+      const whiteness = new Float32Array(w * h);
+      const lumArr = new Float32Array(w * h);
+      for (let i = 0, p = 0; i < w * h; i++, p += 4) {
+        const r = rgba[p], g = rgba[p + 1], b = rgba[p + 2];
+        const lum = 0.299 * r + 0.587 * g + 0.114 * b;
+        const sat = Math.max(r, g, b) - Math.min(r, g, b);
+        lumArr[i] = lum;
+        whiteness[i] = lum - sat * 1.35;
+      }
+
+      // 1. 中央紙張白度（取較白的前 60% 像素避開黑色字體）
+      const centerWhite = [];
+      const centerLum = [];
+      const cx0 = Math.floor(w * 0.24), cx1 = Math.floor(w * 0.76);
+      const cy0 = Math.floor(h * 0.24), cy1 = Math.floor(h * 0.76);
       for (let y = cy0; y < cy1; y += 2) {
         for (let x = cx0; x < cx1; x += 2) {
-          const p = (y * w + x) * 4;
-          const r = rgba[p], g = rgba[p + 1], b = rgba[p + 2];
-          const lum = 0.299 * r + 0.587 * g + 0.114 * b;
-          centerSamples.push({ r, g, b, lum });
+          const idx = y * w + x;
+          centerWhite.push(whiteness[idx]);
+          centerLum.push(lumArr[idx]);
         }
       }
-      centerSamples.sort((a, b) => a.lum - b.lum);
-      const brightStart = Math.floor(centerSamples.length * 0.4);
-      let paperR = 0, paperG = 0, paperB = 0, paperLum = 0;
-      const brightCount = Math.max(1, centerSamples.length - brightStart);
-      for (let i = brightStart; i < centerSamples.length; i++) {
-        paperR += centerSamples[i].r;
-        paperG += centerSamples[i].g;
-        paperB += centerSamples[i].b;
-        paperLum += centerSamples[i].lum;
+      centerWhite.sort((a, b) => a - b);
+      centerLum.sort((a, b) => a - b);
+      const brightStart = Math.floor(centerWhite.length * 0.4);
+      let paperWhite = 0, paperLum = 0;
+      const brightCount = Math.max(1, centerWhite.length - brightStart);
+      for (let i = brightStart; i < centerWhite.length; i++) {
+        paperWhite += centerWhite[i];
+        paperLum += centerLum[i];
       }
-      paperR /= brightCount;
-      paperG /= brightCount;
-      paperB /= brightCount;
+      paperWhite /= brightCount;
       paperLum /= brightCount;
 
-      let bgR = 0, bgG = 0, bgB = 0, bgLum = 0, bgCount = 0;
+      // 2. 外圍 4% 邊界背景白度（使用中位數抵抗單邊局部反光或小白點干擾）
+      const borderWhite = [];
       const bx = Math.max(2, Math.floor(w * 0.04));
       const by = Math.max(2, Math.floor(h * 0.04));
       for (let y = 0; y < h; y++) {
         for (let x = 0; x < w; x++) {
           if (x < bx || x >= w - bx || y < by || y >= h - by) {
-            const p = (y * w + x) * 4;
-            const r = rgba[p], g = rgba[p + 1], b = rgba[p + 2];
-            bgR += r;
-            bgG += g;
-            bgB += b;
-            bgLum += 0.299 * r + 0.587 * g + 0.114 * b;
-            bgCount++;
+            borderWhite.push(whiteness[y * w + x]);
           }
         }
       }
-      bgR /= Math.max(1, bgCount);
-      bgG /= Math.max(1, bgCount);
-      bgB /= Math.max(1, bgCount);
-      bgLum /= Math.max(1, bgCount);
+      borderWhite.sort((a, b) => a - b);
+      const bgWhite = borderWhite[Math.floor(borderWhite.length * 0.5)] || 0;
 
-      const colorDiff = Math.hypot(paperR - bgR, paperG - bgG, paperB - bgB);
-      const lumDiff = Math.abs(paperLum - bgLum);
       const queue = new Int32Array(w * h);
-
       let methodARect = null;
 
-      // 方法 A：深色/彩色桌面上的白色文件
-      if (colorDiff >= 24 || lumDiff >= 18) {
+      // 方法 A：深色/木質/彩色桌面上的白色文件（白度差異顯著）
+      if (paperWhite - bgWhite >= 28) {
+        const thresh = bgWhite + (paperWhite - bgWhite) * 0.46;
         const outside = new Uint8Array(w * h);
         let head = 0, tail = 0;
 
-        const isBackgroundPixel = (idx) => {
-          const p = idx * 4;
-          const r = rgba[p], g = rgba[p + 1], b = rgba[p + 2];
-          const distToBg = Math.hypot(r - bgR, g - bgG, b - bgB);
-          const distToPaper = Math.hypot(r - paperR, g - paperG, b - paperB);
-          return distToBg < distToPaper * 0.92;
-        };
-
         const enqueueIfBg = (x, y) => {
           const idx = y * w + x;
-          if (!outside[idx] && isBackgroundPixel(idx)) {
+          if (!outside[idx] && whiteness[idx] < thresh) {
             outside[idx] = 1;
             queue[tail++] = idx;
           }
@@ -1674,10 +1664,11 @@
         }
 
         if (tail >= w * h * 0.04) {
+          // 找出包住畫面中心的最大前景區塊（排除背景上的獨立反光亮點）
           const visited = new Uint8Array(w * h);
-          const minNoisePixels = Math.max(12, Math.floor(w * h * 0.0015));
-          let unionMinX = w, unionMaxX = 0, unionMinY = h, unionMaxY = 0;
-          let foundValid = false;
+          const midX = w >> 1, midY = h >> 1;
+          let bestComp = null;
+          let bestScore = -1;
 
           for (let i = 0; i < w * h; i++) {
             if (outside[i] || visited[i]) continue;
@@ -1685,6 +1676,7 @@
             visited[i] = 1;
             queue[qt++] = i;
             let minX = w, maxX = 0, minY = h, maxY = 0;
+            let containsCenter = false;
 
             while (qh < qt) {
               const cur = queue[qh++];
@@ -1694,6 +1686,7 @@
               if (x > maxX) maxX = x;
               if (y < minY) minY = y;
               if (y > maxY) maxY = y;
+              if (Math.abs(x - midX) <= 4 && Math.abs(y - midY) <= 4) containsCenter = true;
 
               if (x > 0 && !outside[cur - 1] && !visited[cur - 1]) { visited[cur - 1] = 1; queue[qt++] = cur - 1; }
               if (x < w - 1 && !outside[cur + 1] && !visited[cur + 1]) { visited[cur + 1] = 1; queue[qt++] = cur + 1; }
@@ -1701,22 +1694,23 @@
               if (y < h - 1 && !outside[cur + w] && !visited[cur + w]) { visited[cur + w] = 1; queue[qt++] = cur + w; }
             }
 
-            if (qt >= minNoisePixels) {
-              if (minX < unionMinX) unionMinX = minX;
-              if (maxX > unionMaxX) unionMaxX = maxX;
-              if (minY < unionMinY) unionMinY = minY;
-              if (maxY > unionMaxY) unionMaxY = maxY;
-              foundValid = true;
+            if (qt >= Math.floor(w * h * 0.05)) {
+              const score = qt * (containsCenter ? 4 : 1);
+              if (score > bestScore) {
+                bestScore = score;
+                bestComp = { minX, maxX, minY, maxY };
+              }
             }
           }
 
-          if (foundValid) {
-            const pad = 0.02;
-            const snapEdge = 0.06;
-            let left = Math.max(0, unionMinX / w - pad);
-            let top = Math.max(0, unionMinY / h - pad);
-            let right = Math.min(1, (unionMaxX + 1) / w + pad);
-            let bottom = Math.min(1, (unionMaxY + 1) / h + pad);
+          if (bestComp) {
+            // 僅加 0.5% 極細安全邊緣，緊貼真實紙張邊界
+            const pad = 0.005;
+            const snapEdge = 0.015;
+            let left = Math.max(0, bestComp.minX / w - pad);
+            let top = Math.max(0, bestComp.minY / h - pad);
+            let right = Math.min(1, (bestComp.maxX + 1) / w + pad);
+            let bottom = Math.min(1, (bestComp.maxY + 1) / h + pad);
 
             if (left < snapEdge) left = 0;
             if (top < snapEdge) top = 0;
@@ -1727,9 +1721,9 @@
             const rh = bottom - top;
             const areaRatio = rw * rh;
 
-            if (rw >= 0.20 && rh >= 0.20 && areaRatio >= 0.12 && areaRatio <= 0.94) {
+            if (rw >= 0.20 && rh >= 0.20 && areaRatio >= 0.12 && areaRatio <= 0.96) {
               methodARect = { left, top, right, bottom };
-              if (areaRatio <= 0.65) {
+              if (areaRatio <= 0.72) {
                 canvas.width = 0;
                 canvas.height = 0;
                 return methodARect;
@@ -1739,12 +1733,11 @@
         }
       }
 
-      // 方法 B：偵測內部印刷框線與文字區域（適用於白色桌面，或方法 A 仍包含大面積白板/白桌時）
+      // 方法 B：白色桌面上的文件（偵測內部印刷框線與文字區域，排除貼在外緣的雜物）
       const darkThresh = paperLum - 32;
       const isDark = new Uint8Array(w * h);
-      for (let i = 0, p = 0; i < w * h; i++, p += 4) {
-        const lum = 0.299 * rgba[p] + 0.587 * rgba[p + 1] + 0.114 * rgba[p + 2];
-        if (lum < darkThresh) isDark[i] = 1;
+      for (let i = 0; i < w * h; i++) {
+        if (lumArr[i] < darkThresh) isDark[i] = 1;
       }
 
       const visited = new Uint8Array(w * h);
@@ -1793,8 +1786,8 @@
       canvas.height = 0;
 
       if (foundContent) {
-        const pad = 0.03;
-        const snapEdge = 0.06;
+        const pad = 0.025;
+        const snapEdge = 0.03;
         let left = Math.max(0, uMinX / w - pad);
         let top = Math.max(0, uMinY / h - pad);
         let right = Math.min(1, (uMaxX + 1) / w + pad);
